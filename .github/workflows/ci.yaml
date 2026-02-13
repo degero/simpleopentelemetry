@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Build
+        run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental
+
+      - name: Test
+        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --verbosity normal
