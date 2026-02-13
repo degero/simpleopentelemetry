@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0;net10.0</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- NuGet Package Properties -->
+    <PackageId>SimpleOpenTelemetry.Exporters.NewRelic</PackageId>
+    <Version>0.0.1</Version>
+    <Authors>Chad Paynter</Authors>
+    <Company>Degero</Company>
+    <Description>New Relic exporter plugin for SimpleOpenTelemetry. Provides OTLP-based trace export to New Relic Observability Platform. Supports both US and EU endpoints with automatic API key configuration from environment variables.</Description>
+    <PackageTags>opentelemetry;telemetry;newrelic;monitoring</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/degero/SimpleOpenTelemetry</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/degero/SimpleOpenTelemetry</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Same major.minor compatibility: e.g. all 1.2.x packages work together. Bump when you bump major/minor. -->
+    <CoreVersionRange>[0.0.1,1.0.0)</CoreVersionRange>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../SimpleOpenTelemetry/SimpleOpenTelemetry.csproj" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="SimpleOpenTelemetry" Version="$(CoreVersionRange)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- New Relic uses OTLP protocol -->
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.0" />
+  </ItemGroup>
+
+</Project>
