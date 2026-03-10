@@ -1,20 +1,30 @@
 namespace SimpleOpenTelemetry.Exporters.AzureMonitor.Tests;
 
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
+using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Exporters.AzureMonitor.Extensions;
 using Xunit;
 
 public class AzureMonitorExporterExtensionsTests
 {
+    private SimpleOpenTelemetryBuilder target; 
+
+    public AzureMonitorExporterExtensionsTests()
+    {
+        target = new SimpleOpenTelemetryBuilder(new Mock<OpenTelemetryBuilder>().Object);
+    }
+
     [Fact]
     public void WithAzureMonitorExporter_WithConnectionString_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
         var connectionString = "InstrumentationKey=test-key";
 
         // Act
-        var result = builder.WithAzureMonitorExporter(connectionString);
+        var result = target.WithAzureMonitorExporter(connectionString);
 
         // Assert
         Assert.NotNull(result);
@@ -25,31 +35,31 @@ public class AzureMonitorExporterExtensionsTests
     public void WithAzureMonitorExporter_NullConnectionString_Throws()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => builder.WithAzureMonitorExporter((string)null!));
+        Assert.Throws<ArgumentException>(() => target.WithAzureMonitorExporter((string)null!));
     }
 
     [Fact]
     public void WithAzureMonitorExporter_EmptyConnectionString_Throws()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => builder.WithAzureMonitorExporter(""));
+        Assert.Throws<ArgumentException>(() => target.WithAzureMonitorExporter(""));
     }
 
     [Fact]
     public void WithAzureMonitorExporter_WithConfiguration_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
         var connectionString = "InstrumentationKey=test-key";
 
         // Act
-        var result = builder.WithAzureMonitorExporter(connectionString, options =>
+        var result = target.WithAzureMonitorExporter(connectionString, options =>
         {
             // Custom configuration
         });
@@ -63,10 +73,9 @@ public class AzureMonitorExporterExtensionsTests
     public void WithAzureMonitorExporter_WithAction_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
-
+        
         // Act
-        var result = builder.WithAzureMonitorExporter(options =>
+        var result = target.WithAzureMonitorExporter(options =>
         {
             // Custom configuration
         });

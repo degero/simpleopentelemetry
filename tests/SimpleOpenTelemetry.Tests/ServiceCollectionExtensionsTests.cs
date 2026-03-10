@@ -15,7 +15,7 @@ public class ServiceCollectionExtensionsTests
         // Act
         services.AddSimpleOpenTelemetry(builder =>
         {
-            builder.WithServiceName("test-service");
+            builder.WithTracing();
         });
 
         var serviceProvider = services.BuildServiceProvider();

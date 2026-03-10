@@ -24,7 +24,7 @@ public static class AzureMonitorExporterExtensions
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new ArgumentException("Connection string cannot be null or empty", nameof(connectionString));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddAzureMonitorTraceExporter(options =>
             {
@@ -48,7 +48,7 @@ public static class AzureMonitorExporterExtensions
         if (builder == null) throw new ArgumentNullException(nameof(builder));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddAzureMonitorTraceExporter(configure);
         });

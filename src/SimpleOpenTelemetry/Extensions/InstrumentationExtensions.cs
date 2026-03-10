@@ -16,7 +16,7 @@ public static class InstrumentationExtensions
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddAspNetCoreInstrumentation();
         });
@@ -32,7 +32,7 @@ public static class InstrumentationExtensions
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddHttpClientInstrumentation();
         });
@@ -48,7 +48,7 @@ public static class InstrumentationExtensions
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddSqlClientInstrumentation();
         });
@@ -64,7 +64,7 @@ public static class InstrumentationExtensions
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddEntityFrameworkCoreInstrumentation();
         });

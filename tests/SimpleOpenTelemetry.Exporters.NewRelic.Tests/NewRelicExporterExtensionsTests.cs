@@ -1,20 +1,28 @@
 namespace SimpleOpenTelemetry.Exporters.NewRelic.Tests;
 
+using Moq;
+using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Exporters.NewRelic.Extensions;
 using Xunit;
 
 public class NewRelicExporterExtensionsTests
 {
+    private SimpleOpenTelemetryBuilder target;
+    public NewRelicExporterExtensionsTests()
+    {
+        target = new SimpleOpenTelemetryBuilder(new Mock<OpenTelemetryBuilder>().Object);
+    }
+
     [Fact]
     public void WithNewRelicExporter_WithApiKey_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
         var apiKey = "test-api-key";
 
         // Act
-        var result = builder.WithNewRelicExporter(apiKey, endpoint: null);
+        var result = target.WithNewRelicExporter(apiKey, endpoint: null);
 
         // Assert
         Assert.NotNull(result);
@@ -25,47 +33,32 @@ public class NewRelicExporterExtensionsTests
     public void WithNewRelicExporter_NullApiKey_Throws()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => builder.WithNewRelicExporter(apiKey: null!));
+        Assert.Throws<ArgumentException>(() => target.WithNewRelicExporter(apiKey: null!));
     }
 
     [Fact]
     public void WithNewRelicExporter_EmptyApiKey_Throws()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => builder.WithNewRelicExporter(apiKey: ""));
+        Assert.Throws<ArgumentException>(() => target.WithNewRelicExporter(apiKey: ""));
     }
 
     [Fact]
     public void WithNewRelicExporter_WithCustomEndpoint_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
         var apiKey = "test-api-key";
         var endpoint = "https://otlp.custom.com:4317";
 
         // Act
-        var result = builder.WithNewRelicExporter(apiKey, endpoint);
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.IsAssignableFrom<ISimpleOpenTelemetryBuilder>(result);
-    }
-
-    [Fact]
-    public void WithNewRelicExporterEU_WithApiKey_ReturnsBuilder()
-    {
-        // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
-        var apiKey = "test-api-key";
-
-        // Act
-        var result = builder.WithNewRelicExporterEU(apiKey);
+        var result = target.WithNewRelicExporter(apiKey, endpoint);
 
         // Assert
         Assert.NotNull(result);
@@ -76,11 +69,11 @@ public class NewRelicExporterExtensionsTests
     public void WithNewRelicExporter_WithConfiguration_ReturnsBuilder()
     {
         // Arrange
-        var builder = new SimpleOpenTelemetryBuilder();
+        
         var apiKey = "test-api-key";
 
         // Act
-        var result = builder.WithNewRelicExporter(apiKey, endpoint: null, configure: options =>
+        var result = target.WithNewRelicExporter(apiKey, endpoint: null, configure: options =>
         {
             // Custom configuration
         });

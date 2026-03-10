@@ -24,7 +24,7 @@ public static class OtlpExporterExtensions
         if (string.IsNullOrWhiteSpace(endpoint))
             throw new ArgumentException("Endpoint cannot be null or empty", nameof(endpoint));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddOtlpExporter(options =>
             {
@@ -48,7 +48,7 @@ public static class OtlpExporterExtensions
         if (builder == null) throw new ArgumentNullException(nameof(builder));
         if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddOtlpExporter(configure);
         });
@@ -64,7 +64,7 @@ public static class OtlpExporterExtensions
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        builder.ConfigureTracing(tracing =>
+        builder.OtelBuilder.WithTracing(tracing =>
         {
             tracing.AddOtlpExporter();
         });

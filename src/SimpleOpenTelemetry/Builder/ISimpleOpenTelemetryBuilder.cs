@@ -1,5 +1,6 @@
 namespace SimpleOpenTelemetry.Builder;
 
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 
 /// <summary>
@@ -7,28 +8,37 @@ using OpenTelemetry.Trace;
 /// </summary>
 public interface ISimpleOpenTelemetryBuilder
 {
-    /// <summary>
-    /// Gets the underlying TracerProviderBuilder for direct configuration
-    /// </summary>
-    TracerProviderBuilder TracerProviderBuilder { get; }
+    // /// <summary>
+    // /// Sets the service name
+    // /// </summary>
+    // ISimpleOpenTelemetryBuilder WithServiceName(string serviceName);
+
+    // /// <summary>
+    // /// Sets the service version
+    // /// </summary>
+    // ISimpleOpenTelemetryBuilder WithServiceVersion(string serviceVersion);
 
     /// <summary>
-    /// Sets the service name
+    /// Enable tracing
     /// </summary>
-    ISimpleOpenTelemetryBuilder WithServiceName(string serviceName);
+    ISimpleOpenTelemetryBuilder WithTracing();
+    /// <summary>
+    /// Enable tracing with additional configuration options
+    /// </summary>
+    /// <returns></returns>
+    ISimpleOpenTelemetryBuilder WithLogging();
+    /// <summary>
+    ///  Enable tracing with additional configuration options
+    /// </summary>
+    /// <returns></returns>
+    ISimpleOpenTelemetryBuilder WithMetrics();
 
     /// <summary>
-    /// Sets the service version
+    ///     Enable tracing with additional configuration options
     /// </summary>
-    ISimpleOpenTelemetryBuilder WithServiceVersion(string serviceVersion);
+    /// <returns></returns>
+    IOpenTelemetryBuilder AddOpenTelemetry();
 
-    /// <summary>
-    /// Configures tracing options
-    /// </summary>
-    ISimpleOpenTelemetryBuilder ConfigureTracing(Action<TracerProviderBuilder> configure);
+    OpenTelemetryBuilder OtelBuilder { get; }
 
-    /// <summary>
-    /// Builds and returns the TracerProvider
-    /// </summary>
-    TracerProvider Build();
 }

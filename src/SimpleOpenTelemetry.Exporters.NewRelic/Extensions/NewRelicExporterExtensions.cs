@@ -10,55 +10,28 @@ using SimpleOpenTelemetry.Builder;
 public static class NewRelicExporterExtensions
 {
     private const string DefaultNewRelicEndpoint = "https://otlp.nr-data.net:4317";
-    private const string EuNewRelicEndpoint = "https://otlp.eu01.nr-data.net:4317";
 
-    /// <summary>
-    /// Adds New Relic exporter with API key
-    /// </summary>
-    /// <param name="builder">The builder</param>
-    /// <param name="apiKey">New Relic Ingest License Key</param>
-    /// <param name="endpoint">New Relic OTLP endpoint (defaults to US endpoint)</param>
-    /// <param name="configure">Optional additional configuration</param>
-    public static ISimpleOpenTelemetryBuilder WithNewRelicExporter(
-        this ISimpleOpenTelemetryBuilder builder,
-        string apiKey,
-        string? endpoint = null,
-        Action<OtlpExporterOptions>? configure = null)
-    {
-        if (builder == null) throw new ArgumentNullException(nameof(builder));
-        if (string.IsNullOrWhiteSpace(apiKey))
-            throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
+    ///// <summary>
+    ///// Adds New Relic exporter with API key
+    ///// </summary>
+    ///// <param name="builder">The builder</param>
+    ///// <param name="apiKey">New Relic Ingest License Key</param>
+    ///// <param name="endpoint">New Relic OTLP endpoint (defaults to US endpoint)</param>
+    ///// <param name="configure">Optional additional configuration</param>
+    //private static ISimpleOpenTelemetryBuilder WithNewRelicExporter(
+    //    this ISimpleOpenTelemetryBuilder builder,
+    //    string apiKey,
+    //    string? endpoint = null,
+    //    Action<OtlpExporterOptions>? configure = null)
+    //{
+    //    if (builder == null) throw new ArgumentNullException(nameof(builder));
+    //    if (string.IsNullOrWhiteSpace(apiKey))
+    //        throw new ArgumentException("API key cannot be null or empty", nameof(apiKey));
 
-        var finalEndpoint = endpoint ?? DefaultNewRelicEndpoint;
+       
 
-        builder.ConfigureTracing(tracing =>
-        {
-            tracing.AddOtlpExporter(options =>
-            {
-                options.Endpoint = new Uri(finalEndpoint);
-                options.Protocol = OtlpExportProtocol.Grpc;
-                options.Headers = $"api-key={apiKey}";
-                
-                configure?.Invoke(options);
-            });
-        });
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Adds New Relic exporter for EU region with API key
-    /// </summary>
-    /// <param name="builder">The builder</param>
-    /// <param name="apiKey">New Relic Ingest License Key</param>
-    /// <param name="configure">Optional additional configuration</param>
-    public static ISimpleOpenTelemetryBuilder WithNewRelicExporterEU(
-        this ISimpleOpenTelemetryBuilder builder,
-        string apiKey,
-        Action<OtlpExporterOptions>? configure = null)
-    {
-        return WithNewRelicExporter(builder, apiKey, EuNewRelicEndpoint, configure);
-    }
+    //    return builder;
+    //}
 
     /// <summary>
     /// Adds New Relic exporter using API key from environment variable
@@ -69,21 +42,38 @@ public static class NewRelicExporterExtensions
     /// <param name="configure">Optional additional configuration</param>
     public static ISimpleOpenTelemetryBuilder WithNewRelicExporter(
         this ISimpleOpenTelemetryBuilder builder,
+        string? apiKey = null,
         string? endpoint = null,
         Action<OtlpExporterOptions>? configure = null)
     {
         if (builder == null) throw new ArgumentNullException(nameof(builder));
 
-        var apiKey = Environment.GetEnvironmentVariable("NEWRELIC_API_KEY");
-        
-        if (string.IsNullOrWhiteSpace(apiKey))
+        var foundApiKey = apiKey ?? Environment.GetEnvironmentVariable("NEWRELIC_API_KEY");
+
+        if (string.IsNullOrWhiteSpace(foundApiKey))
         {
             throw new InvalidOperationException(
                 "New Relic API key not found. " +
                 "Set NEWRELIC_API_KEY environment variable or use the overload that accepts an API key.");
         }
 
-        return WithNewRelicExporter(builder, apiKey, endpoint, configure);
+        var foundEndpoint = endpoint ?? Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? DefaultNewRelicEndpoint;
+         
+        var finalEndpoint = foundEndpoint ?? DefaultNewRelicEndpoint;
+
+        builder.OtelBuilder.WithTracing(tracing =>
+        {
+            tracing.AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri(finalEndpoint);
+                options.Protocol = OtlpExportProtocol.Grpc;
+                // TODO use OTEL_EXPORTER_OTLP_HEADERS instead
+                options.Headers = $"api-key={apiKey}";
+                
+                configure?.Invoke(options);
+            });
+        });
+        return builder;
     }
 
 //      public static void RegisterNewRelicExporter(this OpenTelemetryBuilder builder, params string[] args)

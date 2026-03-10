@@ -20,6 +20,7 @@ obj/
 packages/
 project.lock.json
 artifacts/
+nuget.config
 
 # Rider
 .idea/
@@ -89,5 +90,16 @@ publish/
 
 # Ignore log files
 *.log
+
+# Misc
+spec
+NUGET_*
+SAMPLES_*
+
+# TODO Chad remove
+samples/**/*
+scripts/**/*
+*.code-workspace
+
 
 # Keep this file committed
