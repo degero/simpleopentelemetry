@@ -10,6 +10,4 @@ public interface ISimpleOpenTelemetryBuilder
 {
     ISimpleOpenTelemetryBuilder ConfigureExporterFromOptions(
          IConfiguration configuration);
-
-    //OpenTelemetryBuilder OtelBuilder { get; }
 }

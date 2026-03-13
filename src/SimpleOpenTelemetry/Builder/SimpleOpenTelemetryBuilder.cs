@@ -90,6 +90,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             if (features.AspNetCoreInstrumentation == true)
             {
+                // TODO Chad allow config based meters 
                 metrics.AddMeter("Microsoft.AspNetCore.Hosting");
                 metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
                 metrics.AddAspNetCoreInstrumentation();
@@ -124,6 +125,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             }
         }
     }
+
     private void AddOTLPExporter(MeterProviderBuilder builder, SimpleOpenTelemetryExporterConfig item, string exporterName)
     => builder.AddOtlpExporter(name: exporterName, configure: BuildOtlpConfig(item));
 

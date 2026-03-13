@@ -6,8 +6,16 @@ A lightweight, fluent .NET library for simplified OpenTelemetry integration. Abs
 
 SimpleOpenTelemetry provides a straightforward way to add distributed tracing to .NET applications with minimal setup. It handles the boilerplate configuration of OpenTelemetry and includes built-in support for popular exporters and instrumentation types.
 
-**Supported Frameworks:** .NET 8.0, .NET 10.0, .NET Standard 2.0  
+**Supported Frameworks:** .NET 8.0, .NET 10.0
 **License:** MIT
+
+---
+
+## Monitoring your apps
+
+### Distributed tracing
+
+For an example of all the dotnet tracing features see (MSLearn - Adding distributed tracing instrumentation)[https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing-instrumentation-walkthroughs]
 
 ---
 
