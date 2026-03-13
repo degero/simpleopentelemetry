@@ -71,7 +71,7 @@ public class InstrumentationOptions
     public bool? AddRuntimeInstrumentation { get; set; }
 }
 
-public enum AppTypeMonitoring
+public enum AppTypeMonitoringPreset
 {
     AspnetCore
     // TODO Chad add more
@@ -85,7 +85,7 @@ public class SimpleOpenTelemetryBuilderOptions
     /// <summary>
     /// Preset features / monitoring based on app type
     /// </summary>
-    public AppTypeMonitoring? AppTypeMonitoringPresets { get; set; } = null;
+    public AppTypeMonitoringPreset? AppTypeMonitoringPresets { get; set; } = null;
 
     /// <summary>
     /// Defines which exporters to use for traces, metrics, and logs.

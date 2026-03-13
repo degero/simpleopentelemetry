@@ -1,10 +1,18 @@
-// ConfigurationHelper.cs
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using SimpleOpenTelemetry.Configuration;
+﻿namespace SimpleOpenTelemetry.Utils;
 
-public static class OpenTelemetryConfigurationHelper
+/// <summary>
+/// 
+/// </summary>
+public static class SettingsHelper
 {
+    // TODO Chad get calling assembly name
+    /// <summary>
+    /// Get env var OTEL_SERVICE_NAME or fallback to calling assembly if no setting
+    /// </summary>
+    public static string? OtelServiceName() => Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
+
+    // TODO chad see if these are of any use
+
     ///// <summary>
     ///// Loads SimpleOpenTelemetryConfiguration from configuration
     ///// Works with any IConfiguration instance (console, lib, service, web, etc.)

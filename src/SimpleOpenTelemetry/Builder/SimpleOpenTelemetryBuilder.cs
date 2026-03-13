@@ -21,7 +21,6 @@ public interface IProviderBuilder
 /// </summary>
 public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
-    
     internal SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
     internal IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
 
@@ -35,11 +34,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _otelBuilder = otelBuilder;
     }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    //public OpenTelemetryBuilder OtelBuilder => _otelBuilder;
 
     /// <summary>
     /// Configures the appropriate exporter (AzureMonitor, NewRelic, or OTLP) based on SimpleOpenTelemetryOptions
@@ -230,11 +224,11 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             _options.Features.AzureSDKTracing = options.Features.AzureSDKTracing.Value;
     }
 
-    private void SetPresetsFromAppType(AppTypeMonitoring? appType)
+    private void SetPresetsFromAppType(AppTypeMonitoringPreset? appType)
     {
         switch(appType)
         {
-            case AppTypeMonitoring.AspnetCore:
+            case AppTypeMonitoringPreset.AspnetCore:
                 _options.Features!.AspNetCoreInstrumentation = true;
                 _options.Features!.HttpClientInstrumentation = true;
                 break;
@@ -243,106 +237,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 break;
         }
     }
-
-
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Metrics to the configuration
-    ///// </summary>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithMetrics()
-    //    => this.WithMetrics(b => { });
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Metrics to the configuration with additional configuration options
-    ///// </summary>
-    ///// <param name="configure"></param>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithMetrics(Action<MeterProviderBuilder> configure)
-    //{
-    //    _otelBuilder.WithMetrics(configure);
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Tracing to the configuration
-    ///// </summary>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithTracing()
-    //    => this.WithTracing(b => { });
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Tracing to the configuration with additional configuration options
-    ///// </summary>
-    ///// <param name="configure"></param>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithTracing(Action<TracerProviderBuilder> configure)
-    //{
-    //    _otelBuilder.WithTracing(configure);
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Logging to the configuration
-    // /// </summary>
-    // /// <returns></returns>
-    ///// </summary>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithLogging() 
-    //{
-    //     _otelBuilder.WithLogging(configureBuilder: null, configureOptions: null);
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Logging to the configuration with additional configuration options
-    ///// </summary>
-    ///// <param name="configure"></param>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithLogging(Action<LoggerProviderBuilder> configure)
-    //{
-    //    _otelBuilder.WithLogging(configureBuilder: configure, configureOptions: null);
-    //    return this;
-    //}
-
-    ///// <summary>
-    ///// Adds OpenTelemetry Logging to the configuration with additional configuration options
-    ///// </summary>
-    ///// <param name="configureBuilder"></param>
-    ///// <param name="configureOptions"></param>
-    ///// <returns></returns>
-    //public ISimpleOpenTelemetryBuilder WithLogging(
-    //    Action<LoggerProviderBuilder>? configureBuilder,
-    //    Action<OpenTelemetryLoggerOptions>? configureOptions)
-    //{
-    //    _otelBuilder.WithLogging(configureBuilder, configureOptions);
-
-    //    return this;
-    //}
-
-
-    // /// <inheritdoc />
-    // public ISimpleOpenTelemetryBuilder WithServiceName(string serviceName)
-    // {
-    //     if (string.IsNullOrWhiteSpace(serviceName))
-    //         throw new ArgumentException("Service name cannot be null or empty", nameof(serviceName));
-
-    //     _options.ServiceName = serviceName;
-    //   //  UpdateResourceBuilder();
-    //     return this;
-    // }
-
-    // /// <inheritdoc />
-    // public ISimpleOpenTelemetryBuilder WithServiceVersion(string serviceVersion)
-    // {
-    //     if (string.IsNullOrWhiteSpace(serviceVersion))
-    //         throw new ArgumentException("Service version cannot be null or empty", nameof(serviceVersion));
-
-    //     _options.ServiceVersion = serviceVersion;
-    //     //UpdateResourceBuilder();
-    //     return this;
-    // }
-
 
     // // TODO Chad check if needed
     // private void UpdateResourceBuilder()
