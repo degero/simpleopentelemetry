@@ -13,7 +13,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleOpenTelemetry(builder =>
+        services.ConfigureOpenTelemetry(builder =>
         {
             builder.WithTracing();
         });
@@ -32,6 +32,6 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => services.AddSimpleOpenTelemetry(null!));
+        Assert.Throws<ArgumentNullException>(() => services.ConfigureOpenTelemetry(null!));
     }
 }

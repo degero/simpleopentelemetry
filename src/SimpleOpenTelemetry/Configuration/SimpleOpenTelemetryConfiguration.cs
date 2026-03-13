@@ -10,5 +10,5 @@ public class SimpleOpenTelemetryConfiguration : SimpleOpenTelemetryBuilderOption
     /// <summary>
     /// Section name in configuration files 
     /// </summary>
-    public const string SectionName = "OpenTelemetry";
+    public const string SectionName = "SimpleOpenTelemetry";
 }

@@ -4,12 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
-using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
+using System.Runtime.CompilerServices;
+
 /// <summary>
 /// Extension methods for adding SimpleOpenTelemetry to service collection
 /// </summary>
@@ -19,50 +16,46 @@ public static class ServiceCollectionExtensions
     /// Adds SimpleOpenTelemetry to the service collection
     /// </summary>
     /// <param name="services">The service collection</param>
+    /// <param name="otelBuilder">Open telemetry builder</param>
+    /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
     /// <param name="configure">Configuration action</param>
     /// <returns>The service collection</returns>
-    public static IServiceCollection AddSimpleOpenTelemetry(
+    public static ISimpleOpenTelemetryBuilder ConfigureOpenTelemetry(
         this IServiceCollection services,
-        Action<ISimpleOpenTelemetryBuilder> configure)
+        OpenTelemetryBuilder otelBuilder,
+        IConfiguration configuration)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configure == null) throw new ArgumentNullException(nameof(configure));
 
-        var otelBuilder = services.AddOpenTelemetry();
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder);
-        configure(builder);
-        return services;
+
+        // var options = new SimpleOpenTelemetryConfiguration();
+        // configuration.Bind(options);
+        builder.ConfigureExporterFromOptions(configuration);
+
+        return builder;
     }
 
     /// <summary>
-    /// Adds SimpleOpenTelemetry to the service collection using configuration from IConfiguration
+    /// Adds SimpleOpenTelemetry to the service collection
     /// </summary>
     /// <param name="services">The service collection</param>
+    /// <param name="otelBuilder">Open telemetry builder</param>
     /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
-    /// <param name="configure">Optional additional configuration action</param>
+    /// <param name="configure">Configuration action</param>
     /// <returns>The service collection</returns>
-    public static IServiceCollection AddSimpleOpenTelemetry(
+    public static ISimpleOpenTelemetryBuilder ConfigureOpenTelemetry(
         this IServiceCollection services,
-        IConfiguration configuration,
-        Action<ISimpleOpenTelemetryBuilder>? configure = null)
+        OpenTelemetryBuilder otelBuilder,
+        Action<ISimpleOpenTelemetryBuilder>? configure)
     {
         if (services == null) throw new ArgumentNullException(nameof(services));
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
 
-        var options = new SimpleOpenTelemetryConfiguration();
-        configuration.Bind(options);
+        var builder = new SimpleOpenTelemetryBuilder(otelBuilder);
 
-        return AddSimpleOpenTelemetry(services, builder =>
-        {
-            builder.ConfigureOtlpExporterFromOptions(
-                new SimpleOpenTelemetryBuilderOptions
-                {
-                    EnableTracing = options.EnableTracing,
-                    EnableMetrics = options.EnableMetrics,
-                    EnableLogging = options.EnableLogging
-                }    
-            );
-            configure?.Invoke(builder);
-        });
+        if (configure != null)
+            configure(builder);
+
+        return builder;
     }
 }

@@ -1,44 +1,15 @@
 namespace SimpleOpenTelemetry.Builder;
 
-using OpenTelemetry;
-using OpenTelemetry.Trace;
+using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.Configuration;
 
 /// <summary>
 /// Interface for the fluent OpenTelemetry configuration builder
 /// </summary>
 public interface ISimpleOpenTelemetryBuilder
 {
-    // /// <summary>
-    // /// Sets the service name
-    // /// </summary>
-    // ISimpleOpenTelemetryBuilder WithServiceName(string serviceName);
+    ISimpleOpenTelemetryBuilder ConfigureExporterFromOptions(
+         IConfiguration configuration);
 
-    // /// <summary>
-    // /// Sets the service version
-    // /// </summary>
-    // ISimpleOpenTelemetryBuilder WithServiceVersion(string serviceVersion);
-
-    /// <summary>
-    /// Enable tracing
-    /// </summary>
-    ISimpleOpenTelemetryBuilder WithTracing();
-    /// <summary>
-    /// Enable tracing with additional configuration options
-    /// </summary>
-    /// <returns></returns>
-    ISimpleOpenTelemetryBuilder WithLogging();
-    /// <summary>
-    ///  Enable tracing with additional configuration options
-    /// </summary>
-    /// <returns></returns>
-    ISimpleOpenTelemetryBuilder WithMetrics();
-
-    /// <summary>
-    ///     Enable tracing with additional configuration options
-    /// </summary>
-    /// <returns></returns>
-    IOpenTelemetryBuilder AddOpenTelemetry();
-
-    OpenTelemetryBuilder OtelBuilder { get; }
-
+    //OpenTelemetryBuilder OtelBuilder { get; }
 }
