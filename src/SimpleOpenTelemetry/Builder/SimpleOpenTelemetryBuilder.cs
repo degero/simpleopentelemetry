@@ -10,6 +10,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Utils;
+using System.Diagnostics;
 using System.Text.Json;
 
 public interface IProviderBuilder
@@ -157,6 +158,12 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             {
                 _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
             });
+
+            // add trace sources configured
+            _options.TraceSources.ToList().ForEach(r =>
+            {
+                tracing.AddSource(r);
+            });
             
             // TODO Chad add configuration for this
             // Setup a tracing source
@@ -183,20 +190,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         });
     }
-
-    // private void SetPresetsFromAppType(AppTypeMonitoringPreset? appType)
-    // {
-    //     switch (appType)
-    //     {
-    //         case AppTypeMonitoringPreset.AspNetCore:
-    //             _options.Features!.AspNetCoreInstrumentation = true;
-    //             _options.Features!.HttpClientInstrumentation = true;
-    //             break;
-    //         default:
-    //             // No presets, or set defaults if desired
-    //             break;
-    //     }
-    // }
 
     // // TODO Chad check if needed
     // private void UpdateResourceBuilder()

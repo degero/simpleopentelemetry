@@ -1,3 +1,5 @@
+using SimpleOpenTelemetry.Instrumentation;
+
 namespace SimpleOpenTelemetry.Builder;
 
 public class SimpleOpenTelemetryExportersOptions
@@ -33,27 +35,6 @@ public class SimpleOpenTelemetryExporterConfig
     public int? TimeoutMilliseconds { get; set; }
 }
 
-/// <summary>
-///
-/// </summary>
-public enum TracingInstrumentationEnum
-{
-    HttpClient,
-    AspNetCore,
-    SqlClient,
-    EFCore
-}
-
-/// <summary>
-///
-/// </summary>
-public enum MetricsInstrumentationEnum
-{
-    HttpClient,
-    AspNetCore,
-    SqlClient,
-    Runtime
-}
 
 /// <summary>
 /// Configuration options for SimpleOpenTelemetry Builder
