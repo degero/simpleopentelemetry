@@ -1,7 +1,3 @@
-using OpenTelemetry;
-using OpenTelemetry.Exporter;
-using System;
-
 namespace SimpleOpenTelemetry.Builder;
 
 public class SimpleOpenTelemetryExportersOptions
@@ -37,44 +33,26 @@ public class SimpleOpenTelemetryExporterConfig
     public int? TimeoutMilliseconds { get; set; }
 }
 
-public class InstrumentationOptions
+/// <summary>
+///
+/// </summary>
+public enum TracingInstrumentationEnum
 {
-
-    /// <summary>
-    /// Enable AspNetCoreInstrumentation
-    /// </summary>
-    public bool? AspNetCoreInstrumentation { get; set; }
-
-    /// <summary>
-    /// Enable HttpClientInstrumentation
-    /// </summary>
-    public bool? HttpClientInstrumentation { get; set; }
-
-    /// <summary>
-    /// Enable SqlClientInstrumentation
-    /// </summary>
-    public bool? SqlClientInstrumentation { get; set; }
-
-    /// <summary>
-    /// Enable EFCoreInstrumentation
-    /// </summary>
-    public bool? EFCoreInstrumentation { get; set; }
-
-    /// <summary>
-    /// Send traces for Azure SDK operations (e.g., Azure.Storage.Blobs, Azure.Messaging.ServiceBus, etc.)
-    /// </summary>
-    public bool? AzureSDKTracing { get; set; }
-
-    /// <summary>
-    /// Enable AddRuntimeInstrumentation
-    /// </summary>
-    public bool? AddRuntimeInstrumentation { get; set; }
+    HttpClient,
+    AspNetCore,
+    SqlClient,
+    EFCore
 }
 
-public enum AppTypeMonitoringPreset
+/// <summary>
+///
+/// </summary>
+public enum MetricsInstrumentationEnum
 {
-    AspnetCore
-    // TODO Chad add more
+    HttpClient,
+    AspNetCore,
+    SqlClient,
+    Runtime
 }
 
 /// <summary>
@@ -83,11 +61,6 @@ public enum AppTypeMonitoringPreset
 public class SimpleOpenTelemetryBuilderOptions
 {
     /// <summary>
-    /// Preset features / monitoring based on app type
-    /// </summary>
-    public AppTypeMonitoringPreset? AppTypeMonitoringPresets { get; set; } = null;
-
-    /// <summary>
     /// Defines which exporters to use for traces, metrics, and logs.
     /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
     /// Or override for specific alternate targets when wanting multiple otlp exports
@@ -95,8 +68,22 @@ public class SimpleOpenTelemetryBuilderOptions
     public SimpleOpenTelemetryExportersOptions Exporters { get; set; } = new();
 
     /// <summary>
-    /// Instrumentation features to enable / disable over presets
+    ///
     /// </summary>
-    public InstrumentationOptions? Features { get; set; }
+    public TracingInstrumentationEnum[] TracingInstrumentations { get; set; }
 
+    /// <summary>
+    ///
+    /// </summary>
+    public MetricsInstrumentationEnum[] MetricsInstrumentations { get; set; }
+
+    /// <summary>
+    /// Namespace names for additional metrics sources.
+    /// </summary>
+    public string[] CustomMeters { get; set; }
+
+    /// <summary>
+    /// Namespace names for additional trace sources. Wildcards accepted, eg Azure.*
+    /// </summary>
+    public string[] TraceSources { get; set; }
 }

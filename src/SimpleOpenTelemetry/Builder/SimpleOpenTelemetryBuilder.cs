@@ -1,6 +1,7 @@
 namespace SimpleOpenTelemetry.Builder;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
@@ -26,6 +27,10 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     internal readonly TracerProviderBuilder _tracerProviderBuilder;
     internal readonly OpenTelemetryBuilder _otelBuilder;
+    internal ILogger _logger;
+
+    // TODO Chad extract interface for testing
+    internal readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
 
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
@@ -33,6 +38,14 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     public SimpleOpenTelemetryBuilder(OpenTelemetryBuilder otelBuilder)
     {
         _otelBuilder = otelBuilder;
+        _openTelemetryInstrumentationLoader = new OpenTelemetryInstrumentationLoader();
+        _logger = LoggerFactory.Create(builder =>
+        {
+            builder.AddFilter("Microsoft", LogLevel.Warning)
+               .AddFilter("System", LogLevel.Warning)
+               .AddFilter("SampleApp.Program", LogLevel.Debug)
+               .AddConsole();
+        }).CreateLogger<SimpleOpenTelemetryBuilder>();
     }
 
     /// <summary>
@@ -55,15 +68,11 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         var serviceName = configuration.GetValue<string>("OTEL_SERVICE_NAME"); //SettingsHelper.OtelServiceName() ?? "";
 
-        // Check app type and set presets
-        SetPresetsFromAppType(config.AppTypeMonitoringPresets);
-
-        // Check other options and set instrumentations
-        EnableInstrumentationFeatures(config);
-
         // Now options are in place enable tracking, logging and metrics based on option
         SetupMetrics();
+
         SetupTracing(serviceName);
+        
         SetupLogging();
 
         // TODO Chad figure out how to load in other exporters reffed in config
@@ -80,29 +89,14 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _otelBuilder.WithMetrics(metrics =>
         {
-            // enable features
-            var features = _options.Features;
-            //TODO Chad migrate more in from old demo below
-            if (features.HttpClientInstrumentation == true)
+            // add in tracing instrumenation options from config
+            _options.MetricsInstrumentations.ToList().ForEach(r =>
             {
-                metrics.AddHttpClientInstrumentation();
-            }
-
-            if (features.AspNetCoreInstrumentation == true)
-            {
-                // TODO Chad allow config based meters 
-                metrics.AddMeter("Microsoft.AspNetCore.Hosting");
-                metrics.AddMeter("Microsoft.AspNetCore.Server.Kestrel");
-                metrics.AddAspNetCoreInstrumentation();
-            }
-
-            if (features.AddRuntimeInstrumentation == true)
-            {
-                metrics.AddRuntimeInstrumentation();
-            }
+                _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
+            });
 
             ConfigureExporters(metrics, _options.Exporters.Metrics, AddOTLPExporter);
-            
+
         });
     }
 
@@ -119,7 +113,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 case SimpleOpenTelemetryExporterType.Otlp:
                     addExporter(builder, item, $"OTLPExporter-{i}");
                     break;
-                // TODO add other exporter types
                 default:
                     break;
             }
@@ -159,29 +152,12 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _otelBuilder.WithTracing(tracing =>
         {
-            // enable features
-            var features = _options.Features;
-
-            if (features.AzureSDKTracing == true)
+            // add in tracing instrumenation options from config
+            _options.TracingInstrumentations.ToList().ForEach(r =>
             {
-                tracing.AddSource("Azure.*");
-            }
-
-            if (features.HttpClientInstrumentation == true)
-                tracing.AddHttpClientInstrumentation();
-
-            if (features.AspNetCoreInstrumentation == true)
-                tracing.AddAspNetCoreInstrumentation();
-
-            if (features.AzureSDKTracing == true)
-                tracing.AddSource("Azure.*");
-
-            if (features.SqlClientInstrumentation == true)
-                tracing.AddSqlClientInstrumentation();
-
-            if (features.EFCoreInstrumentation == true)
-                tracing.AddEntityFrameworkCoreInstrumentation();
-
+                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
+            });
+            
             // TODO Chad add configuration for this
             // Setup a tracing source
             tracing.AddSource(serviceName)
@@ -208,37 +184,19 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         });
     }
 
-    /// <summary>
-    /// If the user specifies any settings override options that were preset by SetPresetsFromAppType()
-    /// </summary>
-    /// <param name="options"></param>
-    private void EnableInstrumentationFeatures(SimpleOpenTelemetryBuilderOptions options)
-    {
-        if (options.Features.AspNetCoreInstrumentation.HasValue)
-            _options.Features.AspNetCoreInstrumentation = options.Features.AspNetCoreInstrumentation.Value;
-        if (options.Features.HttpClientInstrumentation.HasValue)
-            _options.Features.HttpClientInstrumentation = options.Features.HttpClientInstrumentation.Value;
-        if (options.Features.SqlClientInstrumentation.HasValue)
-            _options.Features.SqlClientInstrumentation = options.Features.SqlClientInstrumentation.Value;
-        if (options.Features.EFCoreInstrumentation.HasValue)
-            _options.Features.EFCoreInstrumentation = options.Features.EFCoreInstrumentation.Value;
-        if (options.Features.AzureSDKTracing.HasValue)
-            _options.Features.AzureSDKTracing = options.Features.AzureSDKTracing.Value;
-    }
-
-    private void SetPresetsFromAppType(AppTypeMonitoringPreset? appType)
-    {
-        switch(appType)
-        {
-            case AppTypeMonitoringPreset.AspnetCore:
-                _options.Features!.AspNetCoreInstrumentation = true;
-                _options.Features!.HttpClientInstrumentation = true;
-                break;
-            default:
-                // No presets, or set defaults if desired
-                break;
-        }
-    }
+    // private void SetPresetsFromAppType(AppTypeMonitoringPreset? appType)
+    // {
+    //     switch (appType)
+    //     {
+    //         case AppTypeMonitoringPreset.AspNetCore:
+    //             _options.Features!.AspNetCoreInstrumentation = true;
+    //             _options.Features!.HttpClientInstrumentation = true;
+    //             break;
+    //         default:
+    //             // No presets, or set defaults if desired
+    //             break;
+    //     }
+    // }
 
     // // TODO Chad check if needed
     // private void UpdateResourceBuilder()
