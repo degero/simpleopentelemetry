@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
@@ -10,7 +10,7 @@
     <PackageId>SimpleOpenTelemetry</PackageId>
     <Version>0.0.1</Version>
     <Authors>Chad Paynter</Authors>
-    <Company>Degero</Company>
+    <Company></Company>
     <Description>Simplified OpenTelemetry integration for .NET applications. Provides a fluent builder API that abstracts the complexity of OpenTelemetry configuration, making it easy to set up distributed tracing, instrumentation, and exporters. Supports multiple exporters (OTLP, Azure Monitor, New Relic) and automatic instrumentation for common libraries.</Description>
     <PackageTags>opentelemetry;telemetry;monitoring;traces;observability</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
