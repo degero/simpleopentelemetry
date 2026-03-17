@@ -1,13 +1,13 @@
 namespace SimpleOpenTelemetry.Builder;
 
-using Microsoft.Extensions.Configuration;
-using SimpleOpenTelemetry.Configuration;
-
 /// <summary>
-/// Interface for the fluent OpenTelemetry configuration builder
+/// Interface for the SimpleOpenTelemetry configuration builder
 /// </summary>
 public interface ISimpleOpenTelemetryBuilder
 {
-    ISimpleOpenTelemetryBuilder ConfigureExporterFromOptions(
-         IConfiguration configuration);
+    /// <summary>
+    /// Configure OpenTelemetry settings via IConfiguration
+    /// </summary>
+    /// <returns></returns>
+    ISimpleOpenTelemetryBuilder Configure();
 }

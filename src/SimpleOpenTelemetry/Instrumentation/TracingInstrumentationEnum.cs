@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+namespace SimpleOpenTelemetry.Instrumentation;
 
-namespace SimpleOpenTelemetry.Instrumentation
+// TODO Chad check these as some may be missing
+public enum TracingInstrumentationEnum
 {
-    public enum TracingInstrumentationEnum
-    {
-        AspNetCore,
-        HttpClient,
-        SqlClient,
-        EFCore,
-        GrpcNetClient,
-        GrpcCore,
-        Wcf,
-        Hangfire,
-        Quartz,
-        StackExchangeRedis,
-        AWS,
-        AWSLambda,
-    }
+    AspNetCore,
+    HttpClient,
+    SqlClient,
+    EFCore,
+    GrpcNetClient,
+    GrpcCore,
+    Wcf,
+    Hangfire,
+    Quartz,
+    StackExchangeRedis,
+    AWS,
+    AWSXRayTraceId,
+    AWSLambda,
 }

@@ -28,6 +28,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     internal readonly TracerProviderBuilder _tracerProviderBuilder;
     internal readonly OpenTelemetryBuilder _otelBuilder;
+    internal readonly IConfiguration _configuration;
+
     internal ILogger _logger;
 
     // TODO Chad extract interface for testing
@@ -36,10 +38,14 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
-    public SimpleOpenTelemetryBuilder(OpenTelemetryBuilder otelBuilder)
+    public SimpleOpenTelemetryBuilder(OpenTelemetryBuilder otelBuilder,
+        IConfiguration config)
     {
+        _configuration = config;
         _otelBuilder = otelBuilder;
-        _openTelemetryInstrumentationLoader = new OpenTelemetryInstrumentationLoader();
+        _openTelemetryInstrumentationLoader = new OpenTelemetryInstrumentationLoader(config);
+
+        // TODO Chad fix this up to be injected
         _logger = LoggerFactory.Create(builder =>
         {
             builder.AddFilter("Microsoft", LogLevel.Warning)
@@ -53,26 +59,26 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// Configures the appropriate exporter (AzureMonitor, NewRelic, or OTLP) based on SimpleOpenTelemetryOptions
     /// </summary>
     /// <param name="builder">The OpenTelemetry builder</param>
-    /// <param name="configurationManager">builder configurationManager</param>
+    /// <param name="configuration">builder configuration</param>
     /// <returns>The builder for chaining</returns>
-    public ISimpleOpenTelemetryBuilder ConfigureExporterFromOptions(
-         IConfiguration configuration)
+    public ISimpleOpenTelemetryBuilder Configure()
     {
-        var section = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
         var config = new SimpleOpenTelemetryConfiguration();
+       
         section.Bind(config);
 
-        if (config == null) throw new ArgumentNullException(nameof(config));
+        if (config == null) 
+            throw new ArgumentNullException(nameof(config));
 
+        // TODO chad this may not be necessary anymore as there are no overrides
         _options = JsonSerializer.Deserialize<SimpleOpenTelemetryBuilderOptions>(
             JsonSerializer.Serialize(config));
 
-        var serviceName = configuration.GetValue<string>("OTEL_SERVICE_NAME"); //SettingsHelper.OtelServiceName() ?? "";
 
-        // Now options are in place enable tracking, logging and metrics based on option
         SetupMetrics();
 
-        SetupTracing(serviceName);
+        SetupTracing();
         
         SetupLogging();
 
@@ -144,13 +150,17 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         }
         else
         {
-            // Set config through either the Env vars or Configuration json that OpenTelemetry lib loads
+            // If not set in this configsection, set through either the OpenTelemetry Env vars
+            // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
+            // TODO Chad test this scenario
             return null;
         }
     }
 
-    private void SetupTracing(string serviceName)
+    private void SetupTracing()
     {
+        var serviceName = _configuration.GetValue<string>("OTEL_SERVICE_NAME"); // TODO Chad SettingsHelper.OtelServiceName() ?? "";
+
         _otelBuilder.WithTracing(tracing =>
         {
             // add in tracing instrumenation options from config
@@ -159,7 +169,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
             });
 
-            // add trace sources configured
+            // add trace sources from config
             _options.TraceSources.ToList().ForEach(r =>
             {
                 tracing.AddSource(r);
@@ -172,7 +182,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                     ResourceBuilder.CreateDefault()
                         .AddService(serviceName: serviceName));
 
-            //    // TODO Chad check
+            //    // TODO Chad check and any other tracing settings
             //    // tracing.RecordException = true;
 
             // Iterate over exporters for this montioring type
@@ -187,8 +197,13 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         {
             // Iterate over exporters for this montioring type
             ConfigureExporters(logging, _options.Exporters.Logging, AddOTLPExporter);
-
-        });
+        // TODO chad add in other logging related settings and possible move the below here from program.cs
+        // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>
+        //{
+        //    logging.IncludeFormattedMessage = true;
+        //    logging.IncludeScopes = true;
+        //});
+    });
     }
 
     // // TODO Chad check if needed

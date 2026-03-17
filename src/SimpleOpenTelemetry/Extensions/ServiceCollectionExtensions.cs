@@ -20,22 +20,22 @@ public static class ServiceCollectionExtensions
     /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
     /// <param name="configure">Configuration action</param>
     /// <returns>The service collection</returns>
-    public static ISimpleOpenTelemetryBuilder ConfigureOpenTelemetry(
+    public static ISimpleOpenTelemetryBuilder SimpleOpenTelemetry(
         this IServiceCollection services,
         OpenTelemetryBuilder otelBuilder,
         IConfiguration configuration)
     {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+        if (services == null) 
+            throw new ArgumentNullException(nameof(services));
 
-        var builder = new SimpleOpenTelemetryBuilder(otelBuilder);
+        var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
 
-        // var options = new SimpleOpenTelemetryConfiguration();
-        // configuration.Bind(options);
-        builder.ConfigureExporterFromOptions(configuration);
+        builder.Configure();
 
         return builder;
     }
 
+    // TODO Chad remove
     /// <summary>
     /// Adds SimpleOpenTelemetry to the service collection
     /// </summary>
@@ -44,18 +44,19 @@ public static class ServiceCollectionExtensions
     /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
     /// <param name="configure">Configuration action</param>
     /// <returns>The service collection</returns>
-    public static ISimpleOpenTelemetryBuilder ConfigureOpenTelemetry(
-        this IServiceCollection services,
-        OpenTelemetryBuilder otelBuilder,
-        Action<ISimpleOpenTelemetryBuilder>? configure)
-    {
-        if (services == null) throw new ArgumentNullException(nameof(services));
+    //public static ISimpleOpenTelemetryBuilder SimpleOpenTelemetry(
+    //    this IServiceCollection services,
+    //    OpenTelemetryBuilder otelBuilder,
+    //    Action<ISimpleOpenTelemetryBuilder>? configure,
+    //    IConfiguration configuration)
+    //{
+    //    if (services == null) throw new ArgumentNullException(nameof(services));
 
-        var builder = new SimpleOpenTelemetryBuilder(otelBuilder);
+    //    var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
 
-        if (configure != null)
-            configure(builder);
+    //    if (configure != null)
+    //        configure(builder);
 
-        return builder;
-    }
+    //    return builder;
+    //}
 }

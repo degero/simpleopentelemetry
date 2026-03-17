@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+namespace SimpleOpenTelemetry.Instrumentation;
 
-namespace SimpleOpenTelemetry.Instrumentation
+// TODO Chad check these as some may be missing
+public enum MetricsInstrumentationEnum
 {
-  
-    public enum MetricsInstrumentationEnum
-    {
-        AspNetCore,
-        HttpClient,
-        SqlClient,
-        Runtime,
-        Process,
-        Hangfire,
-    }
+    AspNetCore,
+    HttpClient,
+    SqlClient,
+    Runtime,
+    Process,
+    Hangfire,
+    AWS
 }
