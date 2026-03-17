@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-namespace SimpleOpenTelemetry.Instrumentation;
+﻿namespace SimpleOpenTelemetry.Instrumentation;
 
 // TODO Chad check these as some may be missing
 public enum MetricsInstrumentationEnum

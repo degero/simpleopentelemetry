@@ -10,7 +10,6 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Utils;
-using System.Diagnostics;
 using System.Text.Json;
 
 public interface IProviderBuilder
@@ -82,13 +81,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         
         SetupLogging();
 
-        // TODO Chad figure out how to load in other exporters reffed in config
-        //return options.Exporters?.ToUpper() switch
-        //{
-        //    "AZUREMONITOR" => ConfigureAzureMonitor(builder),
-        //    "NEWRELIC" => ConfigureNewRelic(builder),
-        //    _ => ConfigureOtlp(builder)
-        //};
+        // TODO Chad add in other exporter registrations if possible
+
         return this;
     }
 
@@ -97,12 +91,13 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithMetrics(metrics =>
         {
             // add in tracing instrumenation options from config
-            _options.MetricsInstrumentations.ToList().ForEach(r =>
+            _options.MetricsInstrumentations?.ToList().ForEach(r =>
             {
                 _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
             });
 
-            ConfigureExporters(metrics, _options.Exporters.Metrics, AddOTLPExporter);
+            if (_options.Exporters is not null)
+                ConfigureExporters(metrics, _options.Exporters.Metrics, AddOTLPExporter);
 
         });
     }
@@ -164,13 +159,13 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithTracing(tracing =>
         {
             // add in tracing instrumenation options from config
-            _options.TracingInstrumentations.ToList().ForEach(r =>
+            _options.TracingInstrumentations?.ToList().ForEach(r =>
             {
                 _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
             });
 
             // add trace sources from config
-            _options.TraceSources.ToList().ForEach(r =>
+            _options.TraceSources?.ToList().ForEach(r =>
             {
                 tracing.AddSource(r);
             });
@@ -186,7 +181,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             //    // tracing.RecordException = true;
 
             // Iterate over exporters for this montioring type
-            ConfigureExporters(tracing, _options.Exporters.Tracing, AddOTLPExporter);
+            if (_options.Exporters is not null)
+                ConfigureExporters(tracing, _options.Exporters.Tracing, AddOTLPExporter);
 
         });
     }

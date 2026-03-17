@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Exporte
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aspnetcore", "examples\aspnetcore\aspnetcore.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E039}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore", "examples\aspnetcore\AspNetCore.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E039}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "examples\console\Console.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E040}"
 EndProject
