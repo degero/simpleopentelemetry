@@ -15,33 +15,28 @@ Console.WriteLine($"[Configuration] Initialising .Net Generic Host and loading c
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 // Get exporter type from configuration
-var serviceName = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME");
+var serviceName = SimpleOpenTelemetry.Utils.SettingsHelper.OtelServiceName(builder.Configuration);
 
 Console.WriteLine($"[Configuration] OpenTelemetry Service Name: {serviceName}");
 
-// Register opentelemetry and add SimpleOpenTelemetry
-Console.WriteLine("\n[OpenTelemetry] Initialization of AddOpenTelemetry()");
+Console.WriteLine($"[OpenTelemetry] Initialising / Configuring OpenTelemetry with SimpleOpenTelemetry");
 
-var otelBuilder = builder.Services.AddOpenTelemetry();
-
-Console.WriteLine("\n[OpenTelemetry] Initialization complete");
-Console.WriteLine("\n" + new string('─', 60));
-Console.WriteLine($"[OpenTelemetry] Configuring OpenTelemetry with SimpleOpenTelemetry");
-
-builder.Services.SimpleOpenTelemetry(otelBuilder, builder.Configuration);
+builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
 
 Console.WriteLine($"[OpenTelemetry] SimpleOpenTelemetry configuration complete");
 Console.WriteLine("\n" + new string('─', 60));
 
 // Add hosted service to do trigger some telemetry to be sent
 builder.Services.AddHostedService<App>();
-// Add console output for the 
+// Add console output for the
 builder.Logging.AddSimpleConsole(options =>
 {
     options.IncludeScopes = true;
     options.ColorBehavior = LoggerColorBehavior.Enabled;
 });
 var host = builder.Build();
+
+host.Services.SimpleOpenTelemetryValidate();
 
 Console.WriteLine("\n[Demo] Starting hosted service to run operations");
 await host.RunAsync();

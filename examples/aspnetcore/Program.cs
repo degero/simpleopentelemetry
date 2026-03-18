@@ -1,3 +1,5 @@
+using OpenTelemetry;
+using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,12 +17,14 @@ builder.Logging.AddOpenTelemetry(logging =>
     logging.IncludeScopes = true;
 });
 
-var otelBuilder = builder.Services.AddOpenTelemetry();
-
-// Configure OpenTelemetry using configuration-based setup
-builder.Services.SimpleOpenTelemetry(otelBuilder, builder.Configuration);
+// Register OpenTelemetry using SimpleOpenTelemetry configuration-based setup
+// TODO Chad look at way to not pass configuration like AddOpenTelemetry()
+builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
 
 var app = builder.Build();
+
+// Validate OpenTelemetry
+app.Services.SimpleOpenTelemetryValidate();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

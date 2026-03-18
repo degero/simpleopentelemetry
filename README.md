@@ -11,6 +11,12 @@ SimpleOpenTelemetry provides a straightforward way to add distributed tracing to
 
 ---
 
+## Features
+
+- Sets OTEL_RESOURCE_ATTRIBUTES 'service.version' from app assembly version if one is not provided in env var / config
+
+---
+
 ## Monitoring your apps
 
 ### Distributed tracing

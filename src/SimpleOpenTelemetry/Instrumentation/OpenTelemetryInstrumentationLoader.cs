@@ -65,7 +65,7 @@ public class OpenTelemetryInstrumentationLoader
         {
             var assembly = TryLoadAssembly(assemblyName, logger);
             if (assembly == null)
-                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load instrumentation assembly {assemblyName}. " +
+                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load otel instrumentation assembly {assemblyName}. " +
                     $"Ensure you have added the required nuget package to your project.");
             return assembly;
         }
@@ -77,7 +77,7 @@ public class OpenTelemetryInstrumentationLoader
         var existing = AppDomain.CurrentDomain.GetAssemblies()
             .FirstOrDefault(a => a.GetName().Name == assemblyName);
 
-        if (existing != null) 
+        if (existing != null)
             return existing;
 
         // TODO chad test this in win / linux deployments etc
@@ -109,7 +109,7 @@ public class OpenTelemetryInstrumentationLoader
         ILogger? logger)
     {
         var (assemblyName, typeName, methodName, configurationSection) = descriptor;
-        
+
         try
         {
             var builderType = typeof(TBuilder);
@@ -143,7 +143,7 @@ public class OpenTelemetryInstrumentationLoader
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register instrumentation via {typeName}.{methodName}", ex);
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel instrumentation via {typeName}.{methodName}", ex);
         }
     }
 

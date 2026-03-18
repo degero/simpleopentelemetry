@@ -1,6 +1,7 @@
 namespace SimpleOpenTelemetry.Builder;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
@@ -10,6 +11,8 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Utils;
+using System.Reflection;
+using System.Text;
 using System.Text.Json;
 
 public interface IProviderBuilder
@@ -18,7 +21,7 @@ public interface IProviderBuilder
 }
 
 /// <summary>
-/// Fluent builder for configuring SimpleOpenTelemetry
+/// Builder for configuring OpenTelemetry in a simpler fashion
 /// </summary>
 public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
@@ -64,27 +67,113 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
         var config = new SimpleOpenTelemetryConfiguration();
-       
+
         section.Bind(config);
 
-        if (config == null) 
+        if (config == null)
             throw new ArgumentNullException(nameof(config));
 
-        // TODO chad this may not be necessary anymore as there are no overrides
-        _options = JsonSerializer.Deserialize<SimpleOpenTelemetryBuilderOptions>(
-            JsonSerializer.Serialize(config));
+        _options = config;
 
+        var extraAttributes = CreateExtraAttributes();
+
+        // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
+        _otelBuilder.ConfigureResource(config => config
+            .AddEnvironmentVariableDetector()
+            .AddAttributes(extraAttributes)
+        );
+
+        // TODO Chad remove
+        //var (valid, validationErrors) = ValidateConfiguration();
+        //if (!valid)
+        //    throw new Exception($"Aborting startup. Critical OpenTelemetry Configuration errors, {validationErrors}");
 
         SetupMetrics();
 
         SetupTracing();
-        
+
         SetupLogging();
 
         // TODO Chad add in other exporter registrations if possible
 
         return this;
     }
+
+    /// <summary>
+    /// Create an key attributes if not defined
+    /// </summary>
+    /// <returns></returns>
+    private Dictionary<string, object> CreateExtraAttributes()
+    {
+        var attribs = new Dictionary<string, object>();
+
+        // Only set verion from assemly if not set in service.version attribute
+        if (!SettingsHelper.OtelResourceAttributes(_configuration).ToLower()
+            .Contains(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion))
+        {
+            // TODO Chad test on a dotnet build -p:Version=X
+            var version = Assembly.GetEntryAssembly()?
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion?.Split('+')[0];
+
+            // TODO chad remove
+            //.GetName().Version?.ToString();
+
+            if (!string.IsNullOrWhiteSpace(version))
+                attribs.Add(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version);
+        }
+
+        return attribs;
+    }
+
+
+    // TODO Chad just use extension method to validate after all builders are done
+    //private (bool, string?) ValidateConfiguration()
+    //{
+    //    var errors = "";
+    //    var sb = new StringBuilder();
+
+    //    // TODO Chad find out how to get these directly from OpenTelemetryBuilder
+    //    //var tracerProvider = app.Services.GetRequiredService<TracerProvider>();
+    //    //var resource = tracerProvider.GetResource();
+
+    //    //var attrs = resource.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
+
+    //    //// Check the ones you care about
+    //    //var requiredKeys = new[] { "service.name", "service.version", "service.instance.id", "deployment.environment" };
+    //    //var missing = requiredKeys.Where(k => !attrs.ContainsKey(k) || string.IsNullOrEmpty(attrs[k]?.ToString())).ToList();
+
+    //    //if (missing.Any())
+    //    //{
+    //    //    throw new InvalidOperationException(
+    //    //        $"Missing required OpenTelemetry resource attributes: {string.Join(", ", missing)}. " +
+    //    //        "Set OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES env vars.");
+    //    //}
+
+    //    //// Optionally log what was detected
+    //    //foreach (var key in requiredKeys)
+    //    //    app.Logger.LogInformation("OTel resource: {Key}={Value}", key, attrs.GetValueOrDefault(key));
+
+
+    //    var serviceName = SettingsHelper.OtelServiceName(_configuration);
+
+    //    if (serviceName is null)
+    //        sb.AppendLine($"Configuration value: {Utils.OpenTelemetryConstants.EnvironmentVariables.OTELse} missing");
+
+    //    // TODO check instance id and attributes to validate they ar all set
+
+    //    // DO we want to default this to assembly?
+    //    //var serviceName = _options.ServiceName ?? "unknown-service";
+    //    // var serviceVersion = SettingsHelper.OtelServiceVersion(_configuration) ?? "1.0.0";
+
+    //    errors = sb.ToString();
+    //    sb.Clear();
+
+    //    if (!string.IsNullOrWhiteSpace(errors))
+    //        return (false, errors);
+    //    else
+    //        return (true, null);
+    //}
 
     private void SetupMetrics()
     {
@@ -154,7 +243,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void SetupTracing()
     {
-        var serviceName = _configuration.GetValue<string>("OTEL_SERVICE_NAME"); // TODO Chad SettingsHelper.OtelServiceName() ?? "";
 
         _otelBuilder.WithTracing(tracing =>
         {
@@ -169,13 +257,15 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             {
                 tracing.AddSource(r);
             });
-            
-            // TODO Chad add configuration for this
-            // Setup a tracing source
-            tracing.AddSource(serviceName)
-                .SetResourceBuilder(
-                    ResourceBuilder.CreateDefault()
-                        .AddService(serviceName: serviceName));
+
+
+            // TODO Chad remove
+            //tracing.AddSource(serviceName)
+            //    .SetResourceBuilder(
+            //        ResourceBuilder.CreateDefault()
+            //            .AddService(serviceName: serviceName,
+            //                serviceVersion: serviceVersion
+            //            ));
 
             //    // TODO Chad check and any other tracing settings
             //    // tracing.RecordException = true;
@@ -193,13 +283,14 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         {
             // Iterate over exporters for this montioring type
             ConfigureExporters(logging, _options.Exporters.Logging, AddOTLPExporter);
-        // TODO chad add in other logging related settings and possible move the below here from program.cs
-        // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>
-        //{
-        //    logging.IncludeFormattedMessage = true;
-        //    logging.IncludeScopes = true;
-        //});
-    });
+
+            // TODO chad add in other logging related settings and possible move the below here from program.cs
+            // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>
+            //{
+            //    logging.IncludeFormattedMessage = true;
+            //    logging.IncludeScopes = true;
+            //});
+        });
     }
 
     // // TODO Chad check if needed

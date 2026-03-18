@@ -1,7 +1,9 @@
-﻿namespace SimpleOpenTelemetry.Utils;
+﻿using Microsoft.Extensions.Configuration;
+
+namespace SimpleOpenTelemetry.Utils;
 
 /// <summary>
-/// 
+///
 /// </summary>
 public static class SettingsHelper
 {
@@ -9,7 +11,15 @@ public static class SettingsHelper
     /// <summary>
     /// Get env var OTEL_SERVICE_NAME or fallback to calling assembly if no setting
     /// </summary>
-    public static string? OtelServiceName() => Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
+    public static string? OtelServiceName(IConfiguration config) =>
+        GetConfigValue<string?>(config, OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME);
+
+    public static string? OtelResourceAttributes(IConfiguration config) =>
+        GetConfigValue<string?>(config, OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES);
+
+    private static T GetConfigValue<T>(IConfiguration config, string key) =>
+        config.GetValue<T>(key);
+    
 
     // TODO chad see if these are of any use
 
@@ -29,7 +39,7 @@ public static class SettingsHelper
     ///// Registers SimpleOpenTelemetryConfiguration with DI container (optional, for DI-enabled apps)
     ///// </summary>
     //public static IServiceCollection AddOpenTelemetryOptions(
-    //    this IServiceCollection services, 
+    //    this IServiceCollection services,
     //    IConfiguration configuration)
     //{
     //    services.Configure<SimpleOpenTelemetryConfiguration>(
@@ -42,7 +52,7 @@ public static class SettingsHelper
     ///// Loads and registers options in one call (convenience method for DI-enabled apps)
     ///// </summary>
     //public static SimpleOpenTelemetryConfiguration LoadOpenTelemetryOptions(
-    //    this IServiceCollection services, 
+    //    this IServiceCollection services,
     //    IConfiguration configuration)
     //{
     //    services.AddOpenTelemetryOptions(configuration);

@@ -5,10 +5,6 @@ VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry", "src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj", "{934CB77B-DFE8-99F0-8A6C-87F95E3803D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Exporters.AzureMonitor", "src\SimpleOpenTelemetry.Exporters.AzureMonitor\SimpleOpenTelemetry.Exporters.AzureMonitor.csproj", "{21B6A3DE-477A-AD7C-0CF5-117983584274}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Exporters.NewRelic", "src\SimpleOpenTelemetry.Exporters.NewRelic\SimpleOpenTelemetry.Exporters.NewRelic.csproj", "{21B6A3DE-477A-AD7C-0CF5-117983584275}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore", "examples\aspnetcore\AspNetCore.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E039}"
@@ -20,10 +16,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{95C8B8C9-E3D5-4BFB-8727-702038E77D82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Tests", "tests\SimpleOpenTelemetry.Tests\SimpleOpenTelemetry.Tests.csproj", "{CD26694E-037B-40BF-BEAD-6FBED597D245}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Exporters.AzureMonitor.Tests", "tests\SimpleOpenTelemetry.Exporters.AzureMonitor.Tests\SimpleOpenTelemetry.Exporters.AzureMonitor.Tests.csproj", "{4CEA065C-9078-43ED-BB3A-8D34C9AB4C6B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Exporters.NewRelic.Tests", "tests\SimpleOpenTelemetry.Exporters.NewRelic.Tests\SimpleOpenTelemetry.Exporters.NewRelic.Tests.csproj", "{527A2E8B-868B-468C-80AF-FB7ED60A15E2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54E7EF43-AEE9-4324-ABB5-CAB6E163B3D6}"
 	ProjectSection(SolutionItems) = preProject
