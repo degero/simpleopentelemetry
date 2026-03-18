@@ -19,10 +19,12 @@ namespace SimpleOpenTelemetry.Utils;
 public class OpenTelemetryInstrumentationLoader
 {
     private readonly IConfiguration _configuration;
+    private readonly AssemblyExecution _assemblyExec;
 
     public OpenTelemetryInstrumentationLoader(IConfiguration configuration)
     {
         _configuration = configuration;
+        _assemblyExec = new AssemblyExecution();
     }
 
     public void AddTracingInstrumentation(
@@ -48,59 +50,11 @@ public class OpenTelemetryInstrumentationLoader
             throw new InvalidOperationException(
                 $"Critical: {typeof(TEnum).Name} type not found: {instrumentation} to initialise instrumentation");
 
-        var assembly = GetAssembly(descriptor.AssemblyName, logger);
+        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
 
         TryInvokeExtension<TBuilder>(builder, assembly, descriptor, logger);
     }
 
-    private Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
-
-    private Assembly GetAssembly(string assemblyName, ILogger logger)
-    {
-        if (_loadedAssemblies.Keys.Contains(assemblyName))
-        {
-            return _loadedAssemblies[assemblyName];
-        }
-        else
-        {
-            var assembly = TryLoadAssembly(assemblyName, logger);
-            if (assembly == null)
-                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load otel instrumentation assembly {assemblyName}. " +
-                    $"Ensure you have added the required nuget package to your project.");
-            return assembly;
-        }
-    }
-
-    private Assembly? TryLoadAssembly(string assemblyName, ILogger? logger)
-    {
-        // Check if already loaded first
-        var existing = AppDomain.CurrentDomain.GetAssemblies()
-            .FirstOrDefault(a => a.GetName().Name == assemblyName);
-
-        if (existing != null)
-            return existing;
-
-        // TODO chad test this in win / linux deployments etc
-        // Try to load from base directory (i.e. user has the package installed)
-        var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
-        if (!File.Exists(path))
-        {
-            logger?.LogDebug("Instrumentation assembly not found, skipping: {Assembly}", assemblyName);
-            return null;
-        }
-
-        try
-        {
-            var loaded = Assembly.LoadFrom(path);
-            logger?.LogInformation("Loaded instrumentation assembly: {Assembly}", assemblyName);
-            return loaded;
-        }
-        catch (Exception ex)
-        {
-            logger?.LogError(ex, "Failed to load instrumentation assembly: {Assembly}", assemblyName);
-            return null;
-        }
-    }
 
     private void TryInvokeExtension<TBuilder>(
         TBuilder builder,
@@ -118,8 +72,8 @@ public class OpenTelemetryInstrumentationLoader
             var type = assembly.GetType(typeName)
                 ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
 
-            var parameterlessMethod = FindParameterlessMethod(type, builderType, descriptor.MethodName);
-            var actionMethod = FindActionOverload(type, builderType, descriptor.MethodName);
+            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
+            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
 
             // attempt Action<TOptions> path only when section exists in config
             if (descriptor.ConfigurationSection is not null &&
@@ -134,9 +88,9 @@ public class OpenTelemetryInstrumentationLoader
             var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
 
             if (section is not null && section.Exists())
-                InvokeWithAction(actionMethod, builder, section);
+                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
             else
-                InvokeParameterless(type, builderType, methodName, builder);
+                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
             logger?.LogInformation("Successfully registered {TBuilder} instrumentation: {Method}", builderTypeName, methodName);
 
@@ -147,80 +101,4 @@ public class OpenTelemetryInstrumentationLoader
         }
     }
 
-    private MethodInfo? FindParameterlessMethod(
-    Type type,
-    Type builderType,
-    string methodName)
-    => type.GetMethod(
-        methodName,
-        BindingFlags.Public | BindingFlags.Static,
-        binder: null,
-        types: new Type[] { builderType },
-        modifiers: null);
-
-    private object InvokeParameterless(
-    Type type,
-    Type builderType,
-    string methodName,
-    object builder)
-    {
-        var method = type.GetMethod(
-            methodName,
-            BindingFlags.Public | BindingFlags.Static,
-            binder: null,
-            types: new Type[] { builderType },
-            modifiers: null)
-            ?? throw new InvalidOperationException(
-                   $"No parameterless '{methodName}' method accepting {builderType.Name} found on {type.FullName}.");
-
-        return method.Invoke(null, new object[] { builder })!;
-    }
-
-    private static object InvokeWithAction(
-    MethodInfo actionMethod,
-    object builder,
-    IConfigurationSection section)
-    {
-        var optionsType = actionMethod.GetParameters()[1].ParameterType.GetGenericArguments()[0];
-        var configureAction = BuildConfigureAction(optionsType, section);
-
-        return actionMethod.Invoke(null, new object[] { builder, configureAction })!;
-    }
-
-    private MethodInfo? FindActionOverload(
-        Type type,
-        Type builderType,
-        string methodName)
-    {
-        var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
-        return methods.FirstOrDefault(m =>
-                m.Name == methodName &&
-                m.GetParameters() is { Length: 2 } p &&
-                p[0].ParameterType == builderType &&
-                p[1].ParameterType.IsGenericType &&
-                p[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>));
-    }
-
-    private static object BuildConfigureAction(
-    Type optionsType,
-    IConfigurationSection section)
-    {
-        var options = Activator.CreateInstance(optionsType)!;
-        section.Bind(options);
-
-        var param = Expression.Parameter(optionsType, "opts");
-        var source = Expression.Constant(options, optionsType);
-        var assignments = optionsType
-            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.CanRead && p.CanWrite)
-            .Select(p => (Expression)Expression.Assign(
-                Expression.Property(param, p),
-                Expression.Property(source, p)));
-
-        return Expression
-            .Lambda(typeof(Action<>).MakeGenericType(optionsType),
-                    Expression.Block(assignments),
-                    param)
-            .Compile();
-    }
 }
