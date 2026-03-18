@@ -97,9 +97,9 @@ NUGET_*
 SAMPLES_*
 
 # TODO Chad remove
-samples/**/*
+examples/wpf/**/*
 scripts/**/*
 *.code-workspace
-
+tmp/**/*
 
 # Keep this file committed
