@@ -9,12 +9,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
+    <ProjectReference Include="..\..\src\SimpleOpenTelemetry.ClientFactory.AzureMonitor\SimpleOpenTelemetry.ClientFactory.AzureMonitor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AWS" Version="1.15.0" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda" Version="1.15.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" Version="1.15.1" />

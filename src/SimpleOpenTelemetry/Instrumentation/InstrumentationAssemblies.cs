@@ -80,13 +80,6 @@ public static class InstrumentationAssemblies
                 "AddAWSInstrumentation",
                 "SimpleOpenTelemetry:TraceInstrumentationConfig:AWS"),
             
-            // AWS XRay TraceId
-            [TracingInstrumentationEnum.AWSXRayTraceId] = new(
-                "OpenTelemetry.Instrumentation.AWS",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddAWSInstrumentation",
-                null),
-
             // AWS Lambda
             [TracingInstrumentationEnum.AWSLambda] = new(
                 "OpenTelemetry.Instrumentation.AWSLambda",

@@ -47,13 +47,16 @@ Console.WriteLine("\n[Demo] All operations completed with tracing enabled!");
 Console.WriteLine("[Demo] Check your monitoring system for traces.");
 
 
+// TODO Chad check this demo
+// https://github.com/dfederm/GenericHostConsoleApp/blob/main/Program.cs
+// https://github.com/dotnet/docs/blob/main/docs/core/extensions/snippets/configuration/app-lifetime/ExampleHostedService.cs
 
 /// <summary>
 /// Extension method to configure exporters
 /// </summary>
 static class ExporterExtensions
 {
-    // TODO fix up these
+    // TODO Chad fix up these
 
     //public static ISimpleOpenTelemetryBuilder ConfigureExporter(
     //    this ISimpleOpenTelemetryBuilder builder,

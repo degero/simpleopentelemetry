@@ -15,6 +15,5 @@ public enum TracingInstrumentationEnum
     Quartz,
     StackExchangeRedis,
     AWS,
-    AWSXRayTraceId,
-    AWSLambda,
+    AWSLambda
 }

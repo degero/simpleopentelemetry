@@ -29,7 +29,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     internal IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
 
     internal readonly TracerProviderBuilder _tracerProviderBuilder;
-    internal readonly OpenTelemetryBuilder _otelBuilder;
+    internal readonly IOpenTelemetryBuilder _otelBuilder;
     internal readonly IConfiguration _configuration;
 
     internal ILogger _logger;
@@ -40,7 +40,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
-    public SimpleOpenTelemetryBuilder(OpenTelemetryBuilder otelBuilder,
+    public SimpleOpenTelemetryBuilder(IOpenTelemetryBuilder otelBuilder,
         IConfiguration config)
     {
         _configuration = config;

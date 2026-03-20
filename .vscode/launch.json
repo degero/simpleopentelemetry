@@ -1,0 +1,86 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET: examples/console",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: examples/console",
+      "program": "${workspaceFolder}/examples/console/bin/Debug/net10.0/Console.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/console",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": ".NET: examples/aspnetcore",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: examples/aspnetcore",
+      "program": "${workspaceFolder}/examples/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples/aspnetcore",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5056"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": ".NET: examples (pick one)",
+      "configurations": [
+        ".NET: examples/console",
+        ".NET: examples/aspnetcore"
+      ],
+      "stopAll": true
+    }
+  ]
+}
+
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET Core Launch (web)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/samples/aspnetcore/bin/Debug/net10.0/aspnetcore.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    },
+    {
+      "name": ".NET Core Launch (web) - Watch",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "watch",
+      "program": "${workspaceFolder}/samples/aspnetcore/bin/Debug/net10.0/aspnetcore.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+      }
+    },
+    {
+      "name": ".NET Core Attach",
+      "type": "coreclr",
+      "request": "attach"
+    }
+  ]
+}

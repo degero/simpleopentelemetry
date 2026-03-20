@@ -27,11 +27,7 @@ public class SimpleOpenTelemetryExporterConfig
     public SimpleOpenTelemetryExporterType Type { get; set; }
     public Uri? Endpoint { get; set; }
     public SimpleOpenTelemetryExporterProtocol? Protocol { get; set; }
-
-    /// <inheritdoc/>
     public string? Headers { get; set; }
-
-    /// <inheritdoc/>
     public int? TimeoutMilliseconds { get; set; }
 }
 

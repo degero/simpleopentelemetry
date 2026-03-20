@@ -1,6 +1,6 @@
 # SimpleOpenTelemetry
 
-A lightweight, .Net Generic Host / Web Core Host (I) .NET library for simplified OpenTelemetry integration. Abstracts the complexity of OpenTelemetry configuration through supporting multiple exporters, easy metrics/tracing instrumentation for many platforms and logging settings.
+A lightweight, .Net Generic Host / Web Core Host (I) .NET library for simplified OpenTelemetry integration. Abstracts the complexity of OpenTelemetry configuration through supporting multiple exporters, easy metrics/tracing instrumentation for many platforms and logging settings. This is not autoinstrumentation, but a low-code alternative to OpenTelemetryBuilder with some added configuration features.
 
 ## Overview
 
