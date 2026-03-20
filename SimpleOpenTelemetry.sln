@@ -24,8 +24,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54E7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf", "examples\wpf\Wpf.csproj", "{0A890749-F4EB-2970-04D5-0CCD714EE981}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.ClientFactory.AzureMonitor", "src\SimpleOpenTelemetry.ClientFactory.AzureMonitor\SimpleOpenTelemetry.ClientFactory.AzureMonitor.csproj", "{7F938220-7E64-48E8-E164-F921083317FA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,10 +50,6 @@ Global
 		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F938220-7E64-48E8-E164-F921083317FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F938220-7E64-48E8-E164-F921083317FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F938220-7E64-48E8-E164-F921083317FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F938220-7E64-48E8-E164-F921083317FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

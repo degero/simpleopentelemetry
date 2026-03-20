@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\src\SimpleOpenTelemetry.ClientFactory.AzureMonitor\SimpleOpenTelemetry.ClientFactory.AzureMonitor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
