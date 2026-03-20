@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Instrumentation;
+using SimpleOpenTelemetry.Instrumenttaion;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 
@@ -83,6 +84,62 @@ public class SimpleOpenTelemetryUtilsTests
 
         var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
         Assert.Contains("Cannot load otel instrumentation assembly", ex.ToString());
+    }
+
+    [Fact]
+    public void AddTracingInstrumentation_ThrowsForInvalidEnumValue()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
+                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
+                    "service.version=1.2.3,deployment.environment.name=dev",
+                ["SimpleOpenTelemetry:TracingInstrumentations:0"] = "999"
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
+        Assert.Contains("type not found", ex.ToString());
+    }
+
+    [Fact]
+    public void AddTracingInstrumentation_WrapsTypeLookupErrors()
+    {
+        var previousDescriptor =
+            InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore];
+
+        InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore] =
+            new InstrumentationExtensionDescriptor(
+                "System.Runtime",
+                "Does.Not.Exist.Type",
+                "AddAspNetCoreInstrumentation",
+                null);
+
+        try
+        {
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string?>
+                {
+                    [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
+                    [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
+                        "service.version=1.2.3,deployment.environment.name=dev",
+                    ["SimpleOpenTelemetry:TracingInstrumentations:0"] =
+                        nameof(TracingInstrumentationEnum.AspNetCore)
+                })
+                .Build();
+
+            var services = new ServiceCollection();
+            var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
+            Assert.Contains("Failed to register otel instrumentation", ex.ToString());
+        }
+        finally
+        {
+            InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore] =
+                previousDescriptor;
+        }
     }
 }
 
