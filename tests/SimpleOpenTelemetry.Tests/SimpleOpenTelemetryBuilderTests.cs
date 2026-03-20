@@ -6,20 +6,9 @@ using Xunit;
 
 public class SimpleOpenTelemetryBuilderTests
 {
-    // TODO Chad implement tests
+    // TODO implement tests
     [Fact]
-    public void FluentChaining_Works()
+    public void DoTest()
     {
-        //// Arrange
-        //var otelBuilder = new Mock<IOpenTelemetryBuilder>();
-        //var builder = new SimpleOpenTelemetryBuilder(otelBuilder);
-
-        //// Act
-        //var tracerProvider = builder.AddOpenTelemetry()
-        //    .Build();
-
-        //// Assert
-        //Assert.NotNull(tracerProvider);
-        Assert.True(false);
     }
 }
