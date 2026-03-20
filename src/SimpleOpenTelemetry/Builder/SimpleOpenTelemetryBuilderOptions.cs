@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
@@ -13,7 +14,8 @@ public enum SimpleOpenTelemetryExporterType
 {
     Otlp,
     Console,
-    Memory
+    Memory,
+    Azure
 }
 
 public enum SimpleOpenTelemetryExporterProtocol
@@ -25,10 +27,9 @@ public enum SimpleOpenTelemetryExporterProtocol
 public class SimpleOpenTelemetryExporterConfig
 {
     public SimpleOpenTelemetryExporterType Type { get; set; }
-    public Uri? Endpoint { get; set; }
-    public SimpleOpenTelemetryExporterProtocol? Protocol { get; set; }
-    public string? Headers { get; set; }
-    public int? TimeoutMilliseconds { get; set; }
+
+
+    public IConfigurationSection? Options { get; set; }
 }
 
 

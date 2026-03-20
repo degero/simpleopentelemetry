@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
+using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Utils;
 using System.Reflection;
 using System.Text;
@@ -25,17 +26,18 @@ public interface IProviderBuilder
 /// </summary>
 public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
-    internal SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
-    internal IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
+    private SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
+    private IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
 
-    internal readonly TracerProviderBuilder _tracerProviderBuilder;
-    internal readonly IOpenTelemetryBuilder _otelBuilder;
-    internal readonly IConfiguration _configuration;
+    private readonly TracerProviderBuilder _tracerProviderBuilder;
+    private readonly IOpenTelemetryBuilder _otelBuilder;
+    private readonly IConfiguration _configuration;
 
-    internal ILogger _logger;
+    private ILogger _logger;
 
-    // TODO Chad extract interface for testing
-    internal readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
+    // TODO Chad extract interface for testing / Change name
+    private readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
+    private readonly ExporterLoader _exporterLoader;
 
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
@@ -45,7 +47,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _configuration = config;
         _otelBuilder = otelBuilder;
-        _openTelemetryInstrumentationLoader = new OpenTelemetryInstrumentationLoader(config);
+        _openTelemetryInstrumentationLoader = new(config);
+        _exporterLoader = new(config);
 
         // TODO Chad fix this up to be injected
         _logger = LoggerFactory.Create(builder =>
@@ -186,60 +189,11 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             });
 
             if (_options.Exporters is not null)
-                ConfigureExporters(metrics, _options.Exporters.Metrics, AddOTLPExporter);
+                _exporterLoader.ConfigureExporters(metrics, _options.Exporters.Metrics, _logger);
 
         });
     }
 
-    private void ConfigureExporters<TBuilder>(
-    TBuilder builder,
-    IList<SimpleOpenTelemetryExporterConfig> exporters,
-    Action<TBuilder, SimpleOpenTelemetryExporterConfig, string> addExporter)
-    {
-        for (var i = 0; i < exporters.Count; i++)
-        {
-            var item = exporters[i];
-            switch (item.Type)
-            {
-                case SimpleOpenTelemetryExporterType.Otlp:
-                    addExporter(builder, item, $"OTLPExporter-{i}");
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    private void AddOTLPExporter(MeterProviderBuilder builder, SimpleOpenTelemetryExporterConfig item, string exporterName)
-    => builder.AddOtlpExporter(name: exporterName, configure: BuildOtlpConfig(item));
-
-    private void AddOTLPExporter(TracerProviderBuilder builder, SimpleOpenTelemetryExporterConfig item, string exporterName)
-        => builder.AddOtlpExporter(name: exporterName, configure: BuildOtlpConfig(item));
-
-    /// TOOO Chad look at making this generic
-
-    private void AddOTLPExporter(LoggerProviderBuilder builder, SimpleOpenTelemetryExporterConfig item, string exporterName)
-        => builder.AddOtlpExporter(name: exporterName, configureExporter: BuildOtlpConfig(item));
-
-    private Action<OtlpExporterOptions> BuildOtlpConfig(SimpleOpenTelemetryExporterConfig item)
-    {
-        if (item.Endpoint != null && item.Protocol != null)
-        {
-            return (Action<OtlpExporterOptions>)(config =>
-            {
-                // TODO Chad add in other config
-                config.Endpoint = item.Endpoint;
-                config.Protocol = item.Protocol == SimpleOpenTelemetryExporterProtocol.Grpc ? OtlpExportProtocol.Grpc : OtlpExportProtocol.HttpProtobuf;
-            });
-        }
-        else
-        {
-            // If not set in this configsection, set through either the OpenTelemetry Env vars
-            // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
-            // TODO Chad test this scenario
-            return null;
-        }
-    }
 
     private void SetupTracing()
     {
@@ -272,7 +226,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // Iterate over exporters for this montioring type
             if (_options.Exporters is not null)
-                ConfigureExporters(tracing, _options.Exporters.Tracing, AddOTLPExporter);
+                _exporterLoader.ConfigureExporters(tracing, _options.Exporters.Tracing, _logger);
 
         });
     }
@@ -281,8 +235,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _otelBuilder.WithLogging(logging =>
         {
-            // Iterate over exporters for this montioring type
-            ConfigureExporters(logging, _options.Exporters.Logging, AddOTLPExporter);
+            // Iterate over exporters for this montioring type and add them
+            _exporterLoader.ConfigureExporters(logging, _options.Exporters.Logging, _logger);
 
             // TODO chad add in other logging related settings and possible move the below here from program.cs
             // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>
