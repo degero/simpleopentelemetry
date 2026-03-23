@@ -6,6 +6,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Exporter;
 
 namespace SimpleOpenTelemetry.Utils;
@@ -26,22 +27,23 @@ public class ExporterLoader
 
     public ExporterLoader(IConfiguration configuration)
     {
-        _configuration = configuration;
+        // TODO seems wrong Configuration is loaded in as the section for this lib
+        _configuration = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
         _assemblyExec = new AssemblyExecution();
     }
 
-    public void ConfigureExporters(MeterProviderBuilder builder, IList<SimpleOpenTelemetryExporterConfig> exporters, ILogger logger)
-        => ConfigureExporters(builder, MetricExporterEnum.Otlp, exporters, 
+    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
+        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Exporters.Metrics, 
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg), 
             _metricExporters, ExporterAssemblies.KnownMetricsExporters, logger);
 
-    public void ConfigureExporters(TracerProviderBuilder builder, IList<SimpleOpenTelemetryExporterConfig> exporters, ILogger logger)
-        => ConfigureExporters(builder, TraceExporterEnum.Otlp, exporters, 
+    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
+        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Exporters.Tracing, 
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg), 
             _traceExporters, ExporterAssemblies.KnownTraceExporters, logger);
 
-    public void ConfigureExporters(LoggerProviderBuilder builder, IList<SimpleOpenTelemetryExporterConfig> exporters, ILogger logger)
-        => ConfigureExporters(builder, LogExporterEnum.Otlp, exporters,
+    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
+        => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Exporters.Logging,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg), 
             _logExporters, ExporterAssemblies.KnownLogExporters, logger);
 
@@ -76,8 +78,6 @@ public class ExporterLoader
 
                 // TODO: fix issue where metrics exporter needs arguments for azure. refac and clean all this crap codegen up
                 AddExporter(builder, descriptor, logger);
-
-            
             }
             else 
             {
@@ -135,17 +135,18 @@ public class ExporterLoader
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
 
+            var section = descriptor.OptionsClassName is not null ? _configuration.GetSection(descriptor.OptionsClassName) : null;
+
             // attempt Action<TOptions> path only when section exists in config
             if (descriptor.OptionsClassName is not null &&
                 actionMethod is not null &&
-                parameterlessMethod is null)
+                section is null)
             {
                 throw new InvalidOperationException(
-                    $"Failed registration {builderTypeName} instrumentation: '{methodName}'. " +
+                    $"Failed registration {builderTypeName} exporter: '{methodName}'. " +
                     $"A 'options' section '{optionsClassName}' is required but not found in config file.");
             }
 
-            var section = descriptor.OptionsClassName is not null ? _configuration.GetSection(descriptor.OptionsClassName) : null;
 
             if (section is not null && section.Exists())
                 _assemblyExec.InvokeWithAction(actionMethod, builder, section);
@@ -157,7 +158,7 @@ public class ExporterLoader
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel expoter via {typeName}.{methodName}", ex);
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel exporter via {typeName}.{methodName}", ex);
         }
     }
 

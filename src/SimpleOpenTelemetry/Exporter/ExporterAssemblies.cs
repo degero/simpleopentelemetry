@@ -45,7 +45,7 @@ public static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorTraceExporter",
-                "AzureMonitorExporterOptions"),
+                "AzureExporterOptions"),
         };
 
 
@@ -62,7 +62,7 @@ public static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorMetricExporter",
-                "AzureMonitorExporterOptions"),
+                "AzureExporterOptions"),
         };
 
     public static readonly Dictionary<LogExporterEnum, ExporterExtensionDescriptor>
@@ -78,7 +78,7 @@ public static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorLogExporter",
-                "AzureMonitorExporterOptions"),
+                "AzureExporterOptions"),
         };
 }
 

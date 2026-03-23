@@ -3,6 +3,7 @@ namespace SimpleOpenTelemetry.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
@@ -68,6 +69,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// <returns>The builder for chaining</returns>
     public ISimpleOpenTelemetryBuilder Configure()
     {
+        // Load in configuration from file
         var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
         var config = new SimpleOpenTelemetryConfiguration();
 
@@ -189,7 +191,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             });
 
             if (_options.Exporters is not null)
-                _exporterLoader.ConfigureExporters(metrics, _options.Exporters.Metrics, _logger);
+                _exporterLoader.ConfigureExporters(metrics, _options, _logger);
 
         });
     }
@@ -226,7 +228,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // Iterate over exporters for this montioring type
             if (_options.Exporters is not null)
-                _exporterLoader.ConfigureExporters(tracing, _options.Exporters.Tracing, _logger);
+                _exporterLoader.ConfigureExporters(tracing, _options, _logger);
 
         });
     }
@@ -236,7 +238,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithLogging(logging =>
         {
             // Iterate over exporters for this montioring type and add them
-            _exporterLoader.ConfigureExporters(logging, _options.Exporters.Logging, _logger);
+            _exporterLoader.ConfigureExporters(logging, _options, _logger);
 
             // TODO chad add in other logging related settings and possible move the below here from program.cs
             // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>

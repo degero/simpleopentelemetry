@@ -89,10 +89,15 @@ public class AssemblyExecution
     object builder,
     IConfigurationSection section)
     {
-        var optionsType = actionMethod.GetParameters()[1].ParameterType.GetGenericArguments()[0];
+        var parameters = actionMethod.GetParameters();
+        var optionsType = parameters[1].ParameterType.GetGenericArguments()[0];
         var configureAction = BuildConfigureAction(optionsType, section);
 
-        return actionMethod.Invoke(null, new object[] { builder, configureAction })!;
+        var args = new object[parameters.Length]; // set so  remaining are set as null
+        args[0] = builder;
+        args[1] = configureAction;
+
+        return actionMethod.Invoke(null, args)!;
     }
 
     public MethodInfo? FindActionOverload(
@@ -103,7 +108,7 @@ public class AssemblyExecution
         var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
         return methods.FirstOrDefault(m =>
                 m.Name == methodName &&
-                m.GetParameters() is { Length: 2 } p &&
+                m.GetParameters() is { Length: >= 2 } p &&
                 p[0].ParameterType == builderType &&
                 p[1].ParameterType.IsGenericType &&
                 p[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>));
