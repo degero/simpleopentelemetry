@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.Examples.AspNetCoreModels;
+namespace SimpleOpenTelemetry.Examples.AspNetCore.Models;
 
 public class ErrorViewModel
 {

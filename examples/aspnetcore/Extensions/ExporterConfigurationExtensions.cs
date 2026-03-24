@@ -2,7 +2,7 @@ using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
 
-namespace SimpleOpenTelemetry.Examples.AspNetCoreExtensions;
+namespace SimpleOpenTelemetry.Examples.AspNetCore.Extensions;
 
 
 // TODO chad remove

@@ -1,8 +1,8 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using SimpleOpenTelemetry.Examples.AspNetCoreModels;
+using SimpleOpenTelemetry.Examples.AspNetCore.Models;
 
-namespace SimpleOpenTelemetry.Examples.AspNetCoreControllers;
+namespace SimpleOpenTelemetry.Examples.AspNetCore.Controllers;
 
 public class HomeController : Controller
 {
@@ -10,11 +10,13 @@ public class HomeController : Controller
 
     private readonly ActivitySource _activitySource;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
     {
         _logger = logger;
-        // activity source name has to match the registere OTEL_SERVICE_NAME setting
-        _activitySource = new ActivitySource("demo-aspnet-simpleopentelemetry");
+
+        // activity source name has to match the registere OTEL_SERVICE_NAME setting 
+        // this could be set to anything so long as the config setting TraceSources matches
+        _activitySource = new ActivitySource(Utils.SettingsHelper.OtelServiceName(configuration));
     }
 
 
