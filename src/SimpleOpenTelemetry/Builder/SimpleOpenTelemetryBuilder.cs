@@ -214,6 +214,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 tracing.AddSource(r);
             });
 
+            // TODO chad add in samplers
 
             // TODO Chad remove
             //tracing.AddSource(serviceName)

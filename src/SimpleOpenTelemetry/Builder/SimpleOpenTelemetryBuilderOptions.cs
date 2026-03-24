@@ -29,7 +29,7 @@ public class SimpleOpenTelemetryExporterConfig
     public SimpleOpenTelemetryExporterType Type { get; set; }
 
 
-    public IConfiguration? Options { get; set; }
+    public IConfigurationSection? Options { get; set; }
 }
 
 
@@ -64,6 +64,11 @@ public class SimpleOpenTelemetryBuilderOptions
     /// Namespace names for additional trace sources. Wildcards accepted, eg Azure.*
     /// </summary>
     public string[]? TraceSources { get; set; }
+
+    /// <summary>
+    /// Options for Vendor distro exporters
+    /// </summary>
+    public IConfigurationSection? ExporterOptions { get; set; }
 
     // TODO chad add option for Prometheus scrape setup
 }

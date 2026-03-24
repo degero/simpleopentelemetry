@@ -59,7 +59,8 @@ public class ExporterLoader
         if (topConfigSection is not null && topConfigSection!.Exists())
         {
             //  override with the output type options if they exist
-            if (config.Options is not null)
+            if (config.Options is not null &&
+                config.Options.Exists())
             {
 
                 var merged = new ConfigurationBuilder()
@@ -181,8 +182,7 @@ public class ExporterLoader
                     $"A 'options' section '{optionsClassName}' is required but not found in config file.");
             }
 
-
-            if (section is not null && (section as IConfigurationSection).Exists())
+            if (section is not null)
                 _assemblyExec.InvokeWithAction(actionMethod, builder, section);
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
