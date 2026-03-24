@@ -29,7 +29,7 @@ public class SimpleOpenTelemetryExporterConfig
     public SimpleOpenTelemetryExporterType Type { get; set; }
 
 
-    public IConfigurationSection? Options { get; set; }
+    public IConfiguration? Options { get; set; }
 }
 
 

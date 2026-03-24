@@ -87,7 +87,7 @@ public class AssemblyExecution
     public object InvokeWithAction(
     MethodInfo actionMethod,
     object builder,
-    IConfigurationSection section)
+    IConfiguration section)
     {
         var parameters = actionMethod.GetParameters();
         var optionsType = parameters[1].ParameterType.GetGenericArguments()[0];
@@ -116,7 +116,7 @@ public class AssemblyExecution
 
     public object BuildConfigureAction(
     Type optionsType,
-    IConfigurationSection section)
+    IConfiguration section)
     {
         var options = Activator.CreateInstance(optionsType)!;
         section.Bind(options);

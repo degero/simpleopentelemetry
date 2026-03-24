@@ -20,6 +20,8 @@ public class ExporterLoader
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
+    private readonly string _exportersTopLevelConfigSectionName = "ExporterOptions";
+
    // Available 3rd parter exporters
     internal readonly Array _traceExporters = Enum.GetValues<TraceExporterEnum>();
     internal readonly Array _metricExporters = Enum.GetValues<MetricExporterEnum>();
@@ -46,6 +48,34 @@ public class ExporterLoader
         => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Exporters.Logging,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg), 
             _logExporters, ExporterAssemblies.KnownLogExporters, logger);
+
+    private IConfiguration? GetCustomExporterConfig(
+        ExporterExtensionDescriptor descriptor,
+        SimpleOpenTelemetryExporterConfig config
+    )
+    {
+        // try get the top level exporter settings 
+        var topConfigSection = _configuration.GetSection(_exportersTopLevelConfigSectionName).GetSection(config.Type.ToString());
+        if (topConfigSection is not null && topConfigSection!.Exists())
+        {
+            //  override with the output type options if they exist
+            if (config.Options is not null)
+            {
+
+                var merged = new ConfigurationBuilder()
+                    .AddConfiguration(topConfigSection)    // base values
+                    .AddConfiguration(config.Options)  // overrides/adds on top
+                    .Build();
+
+                return merged;
+                // return MergeConfigurations(topConfigSection, config.Options);
+            }
+            else
+                return topConfigSection;
+        }
+
+        return null;
+    }
 
     private void ConfigureExporters<TBuilder,TEnum>(TBuilder builder, TEnum enumExporter,
         IList<SimpleOpenTelemetryExporterConfig> exporters,
@@ -76,8 +106,11 @@ public class ExporterLoader
                     throw new InvalidOperationException(
                         $"Critical: {typeof(TEnum).Name} type not found: {matchedExporter} to initialise exporter");
 
-                // TODO: fix issue where metrics exporter needs arguments for azure. refac and clean all this crap codegen up
-                AddExporter(builder, descriptor, logger);
+                // TODO: fix to use a flag if this vendor lib has options, refac and clean all this crap codegen up
+                var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(descriptor, item) : null;
+
+
+                AddExporter(builder, descriptor, config, logger);
             }
             else 
             {
@@ -107,12 +140,13 @@ public class ExporterLoader
     private void AddExporter<TBuilder>(
     TBuilder builder,
     ExporterExtensionDescriptor descriptor,
+    IConfiguration? section,
     ILogger? logger = null)
     {
        
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
 
-        TryInvokeExtension<TBuilder>(builder, assembly, descriptor, logger);
+        TryInvokeExtension<TBuilder>(builder, assembly, descriptor, section, logger);
     }
 
 
@@ -120,6 +154,7 @@ public class ExporterLoader
         TBuilder builder,
         Assembly assembly,
         ExporterExtensionDescriptor descriptor,
+        IConfiguration? section,
         ILogger? logger)
     {
         var (assemblyName, typeName, methodName, optionsClassName) = descriptor;
@@ -135,7 +170,6 @@ public class ExporterLoader
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
 
-            var section = descriptor.OptionsClassName is not null ? _configuration.GetSection(descriptor.OptionsClassName) : null;
 
             // attempt Action<TOptions> path only when section exists in config
             if (descriptor.OptionsClassName is not null &&
@@ -148,7 +182,7 @@ public class ExporterLoader
             }
 
 
-            if (section is not null && section.Exists())
+            if (section is not null && (section as IConfigurationSection).Exists())
                 _assemblyExec.InvokeWithAction(actionMethod, builder, section);
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
