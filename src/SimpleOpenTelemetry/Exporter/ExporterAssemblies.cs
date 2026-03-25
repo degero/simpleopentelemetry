@@ -13,7 +13,6 @@ public enum TraceExporterEnum
 {
     Otlp,
     Console,
-    InMemory,
     Azure
 }
 
@@ -21,7 +20,6 @@ public enum MetricExporterEnum
 {
     Otlp,
     Console,
-    InMemory,
     Azure
 }
 
@@ -29,7 +27,6 @@ public enum LogExporterEnum
 {
     Otlp,
     Console,
-    InMemory,
     Azure
 }
 
@@ -45,13 +42,7 @@ public static class ExporterAssemblies
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Trace.ConsoleExporterHelperExtensions",
                 "AddConsoleExporter",
-                null),
-
-            [TraceExporterEnum.InMemory] = new(
-                "OpenTelemetry.Exporter.InMemory",
-                "OpenTelemetry.Trace.ConsoleTraceExporterExtensions",
-                "AddConsoleExporter",
-                null),
+                "ConsoleExporterOptions"),
             
             [TraceExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
@@ -66,12 +57,6 @@ public static class ExporterAssemblies
         {
             [MetricExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
-                "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
-                "AddConsoleExporter",
-                null),
-
-            [MetricExporterEnum.InMemory] = new(
-                "OpenTelemetry.Exporter.InMemory",
                 "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
                 "AddConsoleExporter",
                 null),
@@ -92,12 +77,6 @@ public static class ExporterAssemblies
                 "AddConsoleExporter",
                 null), 
 
-            [LogExporterEnum.InMemory] = new(
-                "OpenTelemetry.Exporter.InMemory",
-                "OpenTelemetry.Logs.ConsoleExporterLoggingExtensions",
-                "AddConsoleExporter",
-                null),
-                
             [LogExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",

@@ -1,6 +1,6 @@
 # SimpleOpenTelemetry
 
-A lightweight, .Net Generic Host / Web Core Host (I) .NET library for simplified OpenTelemetry integration. Abstracts the complexity of OpenTelemetry configuration through supporting multiple exporters, easy metrics/tracing instrumentation for many platforms and logging settings. This is not autoinstrumentation, but a low-code alternative to OpenTelemetryBuilder with some added configuration features.
+A lightweight .NET library for simplified OpenTelemetry integration, supports .Net Generic Host / Web Core Host / Non generic host. Abstracts the complexity of OpenTelemetry configuration through supporting multiple exporters, easy metrics/tracing instrumentation for many platforms and logging settings. This is not for autoinstrumentation (and related vendor distros), but a low-code alternative to OpenTelemetryBuilder with some added configuration features.
 
 ## Overview
 
@@ -25,22 +25,44 @@ While all configuration can be done via json settings, it is possible to specify
 
 ### Exporters
 
-Under the config section "SimpleOpenTelemtry__Exporters__[Metrics/Tracing/Logging]" you can add array items to register exporting of these sets. It supports both the OpenTelemetry SDK exporters (otlp, console, inmemory TODO add prometheus)Each array can have an 'options' key to specify any settings for that exporter. Note keys under the 'options' object are case insensitive.  
+Under the config section "SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging]" you can add array items to register exporting of these signals. It supports both the OpenTelemetry SDK exporters (otlp, console, inmemory TODO add prometheus)Each array can have an 'options' key to specify any settings for that exporter. Note keys under the 'options' object are case insensitive.  
 
-If a Vendor  exporter does have mandatory options and you have not specified them either for all data sets in "SimpleOpenTelemtry__ExporterOptions__[VendorExporterName]" or under each array item under "options"
+If a Vendor  exporter does have mandatory options and you have not specified them either for all signals in "SimpleOpenTelemtry::ExporterOptions::[VendorExporterName]" or under each array item under "options"
 
-#### OTLP exporters
+#### Opentelemetry Console Exporter
 
-All OpenTelemetry SDK OTEL_ env vars or (root) settings json values will be used to send to standard OTLP endpoints for any array item of just `{ "type": "otlp" }`
+Only for Development purposes. Available to output all signal types to console. Options currently unsupported but [env vars/json config](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Console/README.md) is [
 
-OR (if you want to export to multiple OTLP endpoints / have full configuration options) 
+Nuget Package:
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
 
-Specify your options within `{ "type": "otlp", "options": {} }`. For a full list of available optons see [OtlpExporterOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)  
+SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+
+```json
+{ "type": "otlp" }
+```
+
+
+#### Opentelemetry OTLP exporter
+
+All OpenTelemetry SDK OTEL_ env vars or (root) settings json values will be used to send to OTLP endpoints for entries dont have options defined
+
+Nuget Package: none (builtin to OpenTelemetry .net lib)
+
+SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+ `{ "type": "otlp" }`
+
+If you want to export to multiple OTLP endpoints / have full configuration options
+
+SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+`{ "type": "otlp", "options": {...} }`
+
+For options see [OtlpExporterOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)  
 
 
 #### Vendor distro exporters
 
-Below are the tested Vendor exporters you can add that support all telemetry sets. Add a [new issue here](https://github.com/degero/simpleopentelemetry/issues/new) if there are any others you wish to use. 
+Below are the tested Vendor exporters you can add that support all telemetry signals. Add a [new issue here](https://github.com/degero/simpleopentelemetry/issues/new) if there are any others you wish to use. 
 
 > 
 > **Azure**
@@ -49,8 +71,10 @@ Below are the tested Vendor exporters you can add that support all telemetry set
 > 
 > `dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
 > 
+> SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+> 
 >  ```json
->  { "type": "azure", "options": {} }
+>  { "type": "azure", "options": {...} }
 >  ```
 > 
 >  For options see [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)  
