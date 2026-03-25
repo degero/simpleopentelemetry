@@ -10,12 +10,14 @@ public class SimpleOpenTelemetryExportersOptions
     public List<SimpleOpenTelemetryExporterConfig> Metrics { get; set; } = new();
 }
 
+/// <summary>
+/// Builtin supported OpenTelemetry SDK exporters
+/// </summary>
 public enum SimpleOpenTelemetryExporterType
 {
     Otlp,
     Console,
-    Memory,
-    Azure
+    InMemory
 }
 
 public enum SimpleOpenTelemetryExporterProtocol

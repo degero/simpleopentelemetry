@@ -12,18 +12,24 @@ public record ExporterExtensionDescriptor(
 public enum TraceExporterEnum
 {
     Otlp,
+    Console,
+    InMemory,
     Azure
 }
 
 public enum MetricExporterEnum
 {
     Otlp,
+    Console,
+    InMemory,
     Azure
 }
 
 public enum LogExporterEnum
 {
     Otlp,
+    Console,
+    InMemory,
     Azure
 }
 
@@ -35,12 +41,18 @@ public static class ExporterAssemblies
     public static readonly Dictionary<TraceExporterEnum, ExporterExtensionDescriptor>
         KnownTraceExporters = new()
         {
-            [TraceExporterEnum.Otlp] = new(
-                "OpenTelemetry",
-                "OpenTelemetry.Trace.OtlpMetricExporterExtensions",
-                "AddOltExporter",
-                "OtlpExporterOptions"),
+            [TraceExporterEnum.Console] = new(
+                "OpenTelemetry.Exporter.Console",
+                "OpenTelemetry.Trace.ConsoleExporterHelperExtensions",
+                "AddConsoleExporter",
+                null),
 
+            [TraceExporterEnum.InMemory] = new(
+                "OpenTelemetry.Exporter.InMemory",
+                "OpenTelemetry.Trace.ConsoleTraceExporterExtensions",
+                "AddConsoleExporter",
+                null),
+            
             [TraceExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
@@ -52,11 +64,17 @@ public static class ExporterAssemblies
     public static readonly Dictionary<MetricExporterEnum, ExporterExtensionDescriptor>
         KnownMetricsExporters = new()
         {
-            [MetricExporterEnum.Otlp] = new(
-                "OpenTelemetry",
-                "OpenTelemetry.Metrics.OtlpMetricExporterExtensions",
-                "AddOltExporter",
-                "OtlpExporterOptions"),
+            [MetricExporterEnum.Console] = new(
+                "OpenTelemetry.Exporter.Console",
+                "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
+                "AddConsoleExporter",
+                null),
+
+            [MetricExporterEnum.InMemory] = new(
+                "OpenTelemetry.Exporter.InMemory",
+                "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
+                "AddConsoleExporter",
+                null),
 
             [MetricExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
@@ -68,12 +86,18 @@ public static class ExporterAssemblies
     public static readonly Dictionary<LogExporterEnum, ExporterExtensionDescriptor>
         KnownLogExporters = new()
         {
-            [LogExporterEnum.Otlp] = new(
-                "OpenTelemetry",
-                "OpenTelemetry.Logs.OtlpMetricExporterExtensions",
-                "AddOltExporter",
-                "OtlpExporterOptions"),
+            [LogExporterEnum.Console] = new(
+                "OpenTelemetry.Exporter.Console",
+                "OpenTelemetry.Logs.ConsoleExporterLoggingExtensions",
+                "AddConsoleExporter",
+                null), 
 
+            [LogExporterEnum.InMemory] = new(
+                "OpenTelemetry.Exporter.InMemory",
+                "OpenTelemetry.Logs.ConsoleExporterLoggingExtensions",
+                "AddConsoleExporter",
+                null),
+                
             [LogExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",

@@ -1,5 +1,3 @@
-using OpenTelemetry;
-using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,23 +5,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Setup otel
-builder.Logging.ClearProviders();
-
-// TODO chad move to simple open tel config ?
-builder.Logging.AddOpenTelemetry(logging =>
-{
-    logging.IncludeFormattedMessage = true;
-    logging.IncludeScopes = true;
-});
-
-// Register OpenTelemetry using SimpleOpenTelemetry configuration-based setup
-// TODO Chad look at way to not pass configuration like AddOpenTelemetry()
-builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
+// Register OpenTelemetry using SimpleOpenTelemetry
+builder.AddSimpleOpenTelemetry();
 
 var app = builder.Build();
 
-// Validate OpenTelemetry
+// Optional Validate OpenTelemetry using SimpleOpentelemetry tool
 app.Services.SimpleOpenTelemetryValidate();
 
 // Configure the HTTP request pipeline.

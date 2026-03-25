@@ -3,7 +3,6 @@ namespace SimpleOpenTelemetry.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
@@ -11,11 +10,8 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
-using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Utils;
 using System.Reflection;
-using System.Text;
-using System.Text.Json;
 
 public interface IProviderBuilder
 {
@@ -241,12 +237,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // Iterate over exporters for this montioring type and add them
             _exporterLoader.ConfigureExporters(logging, _options, _logger);
 
-            // TODO chad add in other logging related settings and possible move the below here from program.cs
-            // WebApllicationBuilder.Logging.AddOpenTelemetry(logging =>
-            //{
-            //    logging.IncludeFormattedMessage = true;
-            //    logging.IncludeScopes = true;
-            //});
         });
     }
 

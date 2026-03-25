@@ -96,7 +96,7 @@ public class ExporterLoader
 
             if (item.Type == SimpleOpenTelemetryExporterType.Otlp)
             {
-                // Dont use reflection as we have this lib
+                // Dont use reflection as we have this builtin to OpenTelemetry lib
                 AddOTLPExporter(addOtlp, item, $"OTLPExporter-{i}");
             }
             else if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))

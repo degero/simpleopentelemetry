@@ -45,9 +45,9 @@ Below are the tested Vendor exporters you can add that support all telemetry set
 > 
 > **Azure**
 > 
-> NOTE: this only utilizes the base azure exporter and does not support the AspNetCore package  
+> NOTE: this only utilizes the base azure exporter and does not support the AspNetCore package or EntraID Auth
 > 
-> dotnet add package Azure.Monitor.OpenTelemetry.Exporter
+> `dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
 > 
 >  ```json
 >  { "type": "azure", "options": {} }
