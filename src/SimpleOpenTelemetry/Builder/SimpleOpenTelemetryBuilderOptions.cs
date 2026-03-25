@@ -17,7 +17,10 @@ public enum SimpleOpenTelemetryExporterType
 {
     Otlp,
     Console,
-    InMemory
+    PrometheusHttpListener, // TODO Chad change these from here to end  to only lookup in exporter assemblies than both
+    PrometheusAspNetCore,
+    Azure, 
+
 }
 
 public enum SimpleOpenTelemetryExporterProtocol

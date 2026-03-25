@@ -73,6 +73,11 @@ public class ExporterLoader
             }
             else
                 return topConfigSection;
+        } 
+        else if (config.Options is not null &&
+                config.Options.Exists())
+        {
+            return config.Options;
         }
 
         return null;
@@ -174,7 +179,7 @@ public class ExporterLoader
 
             // attempt Action<TOptions> path only when section exists in config
             if (descriptor.OptionsClassName is not null &&
-                actionMethod is not null &&
+                parameterlessMethod is null &&
                 section is null)
             {
                 throw new InvalidOperationException(

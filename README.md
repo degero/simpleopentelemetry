@@ -29,36 +29,93 @@ Under the config section "SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Loggin
 
 If a Vendor  exporter does have mandatory options and you have not specified them either for all signals in "SimpleOpenTelemtry::ExporterOptions::[VendorExporterName]" or under each array item under "options"
 
-#### Opentelemetry Console Exporter
+#### Opentelemetry Console Exporter (only for Development purposes)
 
-Only for Development purposes. Available to output all signal types to console. Options currently unsupported but [env vars/json config](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Console/README.md) is [
+Options currently unsupported but [env vars/json config](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Console/README.md) supported.
+
+Signals supported: all  
+
+Options: none (unsupported)
 
 Nuget Package:
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`  
 
-SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+SimpleOpenTelemtry::Exporters::<SignalType>[] json:
 
 ```json
 { "type": "otlp" }
 ```
 
+---
+
+#### Opentelemetry Prometheus HttpListener Exporter (prerelease - only for Development purposes)
+
+Defaults to host prometheus scrape endpoint on http://localhost:9464/metrics.  
+
+Signals supported: metrics  
+
+Options: optional [Opentelemetry Prometheus HttpListener Exporter README.md]](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.HttpListener/README.md)  
+
+Nuget Package:
+`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.HttpListener`  
+
+SimpleOpenTelemtry::Exporters::Metrics[] json:
+
+```json
+{ "type": "prometheushttplistener", "options": {...} }
+```
+
+---
+
+#### Opentelemetry Prometheus AspNetCore Exporter (prerelease)
+
+Host prometheus scrape endpoint on aspnetcore WebApplication. Defaults to on http://apphost:port/metrics.  
+
+Signals supported: metrics  
+
+Options: [Opentelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md) the documentation doesn't seem to mention but you can set anything defined in 'PrometheusAspNetCoreOptions.cs' of this project.
+
+Nuget Package:  
+`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.AspNetCore`  
+
+SimpleOpenTelemtry::Exporters::Metrics[] json:
+
+```json
+{ "type": "prometheusaspnetcore", "options": {...} }
+```
+
+Additional setup:
+
+```csharp
+Program.cs
+```
+var app = builder.Build();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+---
 
 #### Opentelemetry OTLP exporter
 
-All OpenTelemetry SDK OTEL_ env vars or (root) settings json values will be used to send to OTLP endpoints for entries dont have options defined
+All OpenTelemetry SDK OTEL_ env vars or (root) settings json values will be used to send to OTLP endpoints for entries dont have options defined  
+
+Signals supported: all  
+
+Options: optional [Opentelemetry OTLP Exporter README.md](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)  
 
 Nuget Package: none (builtin to OpenTelemetry .net lib)
 
-SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
- `{ "type": "otlp" }`
+SimpleOpenTelemtry::Exporters::<SignalType>[] json:
+```json
+{ "type": "otlp" }
+```  
 
 If you want to export to multiple OTLP endpoints / have full configuration options
 
-SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
-`{ "type": "otlp", "options": {...} }`
-
-For options see [OtlpExporterOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)  
-
+SimpleOpenTelemtry::Exporters::<SignalType>[] json:
+```json
+{ "type": "otlp", "options": {...} }
+```
+  
+---
 
 #### Vendor distro exporters
 
@@ -69,17 +126,20 @@ Below are the tested Vendor exporters you can add that support all telemetry sig
 > 
 > NOTE: this only utilizes the base azure exporter and does not support the AspNetCore package or EntraID Auth
 > 
+> Signals supported: all  
+> 
+> Options: mandatory (if not defined in ExporterOptions::Azure) [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)   
+> 
+>
+> Nuget Package:
 > `dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
 > 
-> SimpleOpenTelemtry::Exporters::[Metrics/Tracing/Logging] json:
+> SimpleOpenTelemtry::Exporters::<SignalType>[] json:  
 > 
 >  ```json
 >  { "type": "azure", "options": {...} }
 >  ```
-> 
->  For options see [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)  
 >
-
 
 ---
 
