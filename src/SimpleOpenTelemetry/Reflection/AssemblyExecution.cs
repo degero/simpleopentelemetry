@@ -17,7 +17,7 @@ public class AssemblyExecution
         {
             var assembly = TryLoadAssembly(assemblyName, logger);
             if (assembly == null)
-                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load otel instrumentation assembly {assemblyName}. " +
+                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load assembly {assemblyName}. " +
                     $"Ensure you have added the required nuget package to your project.");
             return assembly;
         }

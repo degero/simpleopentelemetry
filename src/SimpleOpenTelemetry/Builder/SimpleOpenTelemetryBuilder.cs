@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
+using SimpleOpenTelemetry.Resource;
 using SimpleOpenTelemetry.Utils;
 using System.Reflection;
 
@@ -36,6 +37,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     private readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
     private readonly ExporterLoader _exporterLoader;
 
+    private readonly ResourceExtensionLoader _resourceExtensionLoader;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
@@ -45,6 +48,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _configuration = config;
         _otelBuilder = otelBuilder;
         _openTelemetryInstrumentationLoader = new(config);
+        _resourceExtensionLoader = new(config);
         _exporterLoader = new(config);
 
         // TODO Chad fix this up to be injected
@@ -76,18 +80,8 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _options = config;
 
-        var extraAttributes = CreateExtraAttributes();
 
-        // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
-        _otelBuilder.ConfigureResource(config => config
-            .AddEnvironmentVariableDetector()
-            .AddAttributes(extraAttributes)
-        );
-
-        // TODO Chad remove
-        //var (valid, validationErrors) = ValidateConfiguration();
-        //if (!valid)
-        //    throw new Exception($"Aborting startup. Critical OpenTelemetry Configuration errors, {validationErrors}");
+        SetupResource();
 
         SetupMetrics();
 
@@ -98,6 +92,19 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         // TODO Chad add in other exporter registrations if possible
 
         return this;
+    }
+
+    private void SetupResource()
+    {
+        var extraAttributes = CreateExtraAttributes();
+       
+        // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
+        _otelBuilder.ConfigureResource(config => 
+        {
+            config.AddEnvironmentVariableDetector();
+            config.AddAttributes(extraAttributes);
+            _resourceExtensionLoader.SetupResourceExtensions(config, _logger);
+         });
     }
 
     /// <summary>
@@ -116,9 +123,6 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             var version = Assembly.GetEntryAssembly()?
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion?.Split('+')[0];
-
-            // TODO chad remove
-            //.GetName().Version?.ToString();
 
             if (!string.IsNullOrWhiteSpace(version))
                 attribs.Add(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version);
