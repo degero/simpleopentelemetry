@@ -71,7 +71,7 @@ public class AssemblyExecutionTests
         var ex = Assert.Throws<Exception>(() =>
             sut.GetAssembly("Definitely.Not.A.Real.Assembly.For.Tests", logger.Object));
 
-        Assert.Contains("Cannot load otel instrumentation assembly", ex.Message);
+        Assert.Contains("Cannot load assembly", ex.Message);
     }
 
     [Fact]

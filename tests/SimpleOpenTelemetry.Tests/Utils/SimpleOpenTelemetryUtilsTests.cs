@@ -62,7 +62,7 @@ public class SimpleOpenTelemetryUtilsTests
         var services = new ServiceCollection();
 
         var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("Cannot load otel instrumentation assembly", ex.ToString());
+        Assert.Contains("Cannot load assembly", ex.ToString());
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class SimpleOpenTelemetryUtilsTests
         var services = new ServiceCollection();
 
         var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("Cannot load otel instrumentation assembly", ex.ToString());
+        Assert.Contains("Cannot load assembly", ex.ToString());
     }
 
     [Fact]
