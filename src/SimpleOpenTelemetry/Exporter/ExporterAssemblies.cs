@@ -1,5 +1,3 @@
-using SimpleOpenTelemetry.Exporter;
-
 namespace SimpleOpenTelemetry.Exporter;
 
 /// <summary>
@@ -12,7 +10,7 @@ namespace SimpleOpenTelemetry.Exporter;
 /// <param name="TypeName">The full type name of the extension class (e.g., "OpenTelemetry.Trace.ConsoleExporterHelperExtensions").</param>
 /// <param name="MethodName">The name of the public static extension method (e.g., "AddConsoleExporter").</param>
 /// <param name="OptionsClassName">The fully qualified options class name if the method has an Action&lt;TOptions&gt; overload, otherwise null.</param>
-public record ExporterExtensionDescriptor(
+internal record ExporterExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
@@ -73,7 +71,7 @@ public enum LogExporterEnum
 /// <summary>
 /// Provides registry of known exporters and their configurations for reflection-based loading.
 /// </summary>
-public static class ExporterAssemblies
+internal static class ExporterAssemblies
 {
     public static readonly Dictionary<TraceExporterEnum, ExporterExtensionDescriptor>
         KnownTraceExporters = new()

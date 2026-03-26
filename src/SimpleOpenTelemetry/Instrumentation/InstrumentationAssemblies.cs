@@ -2,7 +2,7 @@
 
 namespace SimpleOpenTelemetry.Instrumenttaion;
 
-public record InstrumentationExtensionDescriptor(
+internal record InstrumentationExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
@@ -12,7 +12,7 @@ public record InstrumentationExtensionDescriptor(
 /// <summary>
 /// 
 /// </summary>
-public static class InstrumentationAssemblies
+internal static class InstrumentationAssemblies
 {
     public static readonly Dictionary<TracingInstrumentationEnum, InstrumentationExtensionDescriptor>
         KnownTraceInstrumentations = new()

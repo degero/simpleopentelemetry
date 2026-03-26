@@ -1,6 +1,6 @@
 namespace SimpleOpenTelemetry.Resource;
 
-public record ResourceExtensionDescriptor(
+internal record ResourceExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string[] MethodNames
@@ -15,7 +15,7 @@ public enum ResourceExtensionEnum
 /// <summary>
 /// A list of known opentelemetry-dotnet-contrib and vendor resourcebuilder extensions
 /// </summary>
-public static class ResourceExtensionAssemblies
+internal static class ResourceExtensionAssemblies
 {
     public static readonly Dictionary<ResourceExtensionEnum, ResourceExtensionDescriptor>
        

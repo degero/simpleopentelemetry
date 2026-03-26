@@ -11,19 +11,15 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Exporter;
+using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Resource;
-using SimpleOpenTelemetry.Utils;
-using System.Reflection;
 
-public interface IProviderBuilder
-{
-    void AddOtlpExporter(string name, Action<OtlpExporterOptions>? configure);
-}
 
 /// <summary>
-/// Builder for configuring OpenTelemetry in a simpler fashion
+ /// Configure OpenTelemetry settings via IConfiguration and return
+    /// OpenTelemetryBuilder for an other custom fluent operations
 /// </summary>
-public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
+internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
     private SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
     private IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
@@ -38,18 +34,18 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     private readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
     private readonly ExporterLoader _exporterLoader;
 
-    private readonly ResourceExtensionLoader _resourceExtensionLoader;
+    private readonly ResourceDetectorLoader _resourceDetectorLoader;
 
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
-    public SimpleOpenTelemetryBuilder(IOpenTelemetryBuilder otelBuilder,
+    internal SimpleOpenTelemetryBuilder(IOpenTelemetryBuilder otelBuilder,
         IConfiguration config)
     {
         _configuration = config;
         _otelBuilder = otelBuilder;
         _openTelemetryInstrumentationLoader = new(config);
-        _resourceExtensionLoader = new(config);
+        _resourceDetectorLoader = new(config);
         _exporterLoader = new(config);
 
         // TODO Chad fix this up to be injected
@@ -68,7 +64,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// <param name="builder">The OpenTelemetry builder</param>
     /// <param name="configuration">builder configuration</param>
     /// <returns>The builder for chaining</returns>
-    public ISimpleOpenTelemetryBuilder Configure()
+    public IOpenTelemetryBuilder Configure()
     {
         // Load in configuration from file
         var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
@@ -81,56 +77,36 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _options = config;
 
+        ConfigureResourceAttributes();
 
-        SetupResource();
+        ConfigureMetrics();
 
-        SetupMetrics();
+        ConfigureTracing();
 
-        SetupTracing();
-
-        SetupLogging();
+        ConfigureLogging();
 
         // TODO Chad add in other exporter registrations if possible
 
-        return this;
+        return _otelBuilder;
     }
 
-    private void SetupResource()
+    private void ConfigureResourceAttributes()
     {
-        var extraAttributes = CreateExtraAttributes();
-       
         // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
-        _otelBuilder.ConfigureResource(config => 
-        {
-            config.AddEnvironmentVariableDetector();
-            config.AddAttributes(extraAttributes);
-            _resourceExtensionLoader.SetupResourceExtensions(config, _logger);
+        _otelBuilder.ConfigureResource(builder => 
+        {   
+            // 1. detect the (very important) service.version attribute (it can be overridden by the next steps)
+            builder.AddAssemblyVersionResourceDetector();
+
+            // 2. Run detectors first
+            _resourceDetectorLoader.AddResourceDetectors(builder, _options, _logger);
+
+            // 3. override with any ENV Vars / json config section definitions
+            builder.AddEnvironmentVariableDetector();
+
          });
     }
 
-    /// <summary>
-    /// Create an key attributes if not defined
-    /// </summary>
-    /// <returns></returns>
-    private Dictionary<string, object> CreateExtraAttributes()
-    {
-        var attribs = new Dictionary<string, object>();
-
-        // Only set verion from assemly if not set in service.version attribute
-        if (!SettingsHelper.OtelResourceAttributes(_configuration).ToLower()
-            .Contains(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion))
-        {
-            // TODO Chad test on a dotnet build -p:Version=X
-            var version = Assembly.GetEntryAssembly()?
-                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-                .InformationalVersion?.Split('+')[0];
-
-            if (!string.IsNullOrWhiteSpace(version))
-                attribs.Add(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version);
-        }
-
-        return attribs;
-    }
 
 
     // TODO Chad just use extension method to validate after all builders are done
@@ -181,7 +157,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     //        return (true, null);
     //}
 
-    private void SetupMetrics()
+    private void ConfigureMetrics()
     {
         _otelBuilder.WithMetrics(metrics =>
         {
@@ -198,7 +174,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     }
 
 
-    private void SetupTracing()
+    private void ConfigureTracing()
     {
 
         _otelBuilder.WithTracing(tracing =>
@@ -235,7 +211,7 @@ public class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         });
     }
 
-    private void SetupLogging()
+    private void ConfigureLogging()
     {
         _otelBuilder.WithLogging(logging =>
         {

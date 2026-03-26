@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -16,7 +15,7 @@ namespace SimpleOpenTelemetry.Exporter;
 ///         OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions.AddAspNetCoreInstrumentation()
 ///     in the seperate nupkg OpenTelemetry.Instrumentation.AspNetCore
 /// </summary>
-public class OpenTelemetryInstrumentationLoader
+internal class OpenTelemetryInstrumentationLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;

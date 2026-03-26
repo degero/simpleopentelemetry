@@ -5,7 +5,7 @@ namespace SimpleOpenTelemetry.Configuration;
 /// <summary>
 /// Configuration to use with IConfiguration/IOptions for applications using SimpleOpenTelemetry 
 /// </summary>
-public class SimpleOpenTelemetryConfiguration : SimpleOpenTelemetryBuilderOptions
+internal class SimpleOpenTelemetryConfiguration : SimpleOpenTelemetryBuilderOptions
 {
     /// <summary>
     /// Section name in configuration files 

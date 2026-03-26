@@ -2,6 +2,7 @@ namespace SimpleOpenTelemetry.Extensions;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 
 /// <summary>
@@ -17,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection</param>
     /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
     /// <returns>The service collection</returns>
-    public static ISimpleOpenTelemetryBuilder AddSimpleOpenTelemetry(
+    public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -27,8 +28,6 @@ public static class ServiceCollectionExtensions
         var otelBuilder = services.AddOpenTelemetry();
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
-        builder.Configure();
-
-        return builder;
+        return builder.Configure();
     }
 }

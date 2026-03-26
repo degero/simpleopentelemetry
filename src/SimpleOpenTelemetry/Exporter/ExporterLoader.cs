@@ -15,7 +15,7 @@ namespace SimpleOpenTelemetry.Exporter;
 /// Load vendor exporter assembly and invoke expoter method based on the available types
 /// linked to [Log/Trace/Metric]ExporterEnum
 /// </summary>
-public class ExporterLoader
+internal class ExporterLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;

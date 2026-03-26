@@ -1,13 +1,16 @@
+using OpenTelemetry;
+
 namespace SimpleOpenTelemetry.Builder;
 
 /// <summary>
 /// Interface for the SimpleOpenTelemetry configuration builder
 /// </summary>
-public interface ISimpleOpenTelemetryBuilder
+internal interface ISimpleOpenTelemetryBuilder
 {
     /// <summary>
-    /// Configure OpenTelemetry settings via IConfiguration
+    /// Configure OpenTelemetry settings via IConfiguration and return
+    /// OpenTelemetryBuilder for an other custom fluent operations
     /// </summary>
     /// <returns></returns>
-    ISimpleOpenTelemetryBuilder Configure();
+    IOpenTelemetryBuilder Configure();
 }

@@ -1,25 +1,19 @@
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Logs;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
 
 namespace SimpleOpenTelemetry.Resource;
 
 /// <summary>
-/// Load vendor / contrib assembly and invoke resourcebuilder extension method based on the available types
+/// Load vendor / contrib assembly and invoke resourcebuilder detector extension method based on the available types
 /// linked to [Log/Trace/Metric]ResourceExtensionEnum
 /// </summary>
-public class ResourceExtensionLoader
+internal class ResourceDetectorLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
-
-    private readonly string _exportersTopLevelConfigSectionName = "Resources";
 
     // Available 3rd parter extensions
     internal readonly Array _resourceExtensions = Enum.GetValues<ResourceExtensionEnum>();
@@ -31,7 +25,7 @@ public class ResourceExtensionLoader
     /// </summary>
     /// <param name="configuration">The application configuration containing resource extension settings.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public ResourceExtensionLoader(IConfiguration configuration)
+    public ResourceDetectorLoader(IConfiguration configuration)
     {
         // TODO Chad seems wrong Configuration is loaded in as the section for this lib
         _configuration = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
@@ -39,77 +33,57 @@ public class ResourceExtensionLoader
     }
 
     /// <summary>
-    /// Sets up resource extensions on the provided ResourceBuilder.
+    /// Sets up resource detectors using extension method invocations on the provided ResourceBuilder.
     /// </summary>
     /// <remarks>
     /// Dynamically loads and configures resource extensions from registered assemblies.
-    /// Currently supports Azure and other vendor resource detectors.
     /// </remarks>
     /// <param name="builder">The ResourceBuilder to configure.</param>
     /// <param name="logger">Logger for diagnostic information.</param>
     /// <exception cref="InvalidOperationException">Thrown when resource extension registration fails.</exception>
-    public void SetupResourceExtensions(ResourceBuilder builder,
-        ILogger logger)
+    public void AddResourceDetectors(ResourceBuilder builder,
+        SimpleOpenTelemetryBuilderOptions options,
+        ILogger? logger = null)
     {
-        // TODO chad fix
-        _configuration.GetSection(_exportersTopLevelConfigSectionName).GetChildren();
-        
-        var resources = new string[]{"azure"};
+        var extensions = options.ResourceDetectors;
 
-        ConfigureResourceExtensions(builder, resources,logger);
-    }
-
-    private void ConfigureResourceExtensions(ResourceBuilder builder,
-        IList<string> extensions,
-        ILogger logger)
-    {
-        // Determine the valid extensions for the given builder type
-        var validResourceExtensions = _resourceExtensions.Cast<object>()
-            .Select(e => e.ToString())
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-        for (var i = 0; i < extensions.Count; i++)
+        if (extensions is not null && !extensions.Any())
         {
-            var item = extensions[i];
+            // Determine the valid extensions for the given builder type
+            var validResourceExtensions = _resourceExtensions.Cast<object>()
+                .Select(e => e.ToString())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-           if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+            for (var i = 0; i < extensions.Count(); i++)
             {
-                var matchedResourceExtension = Enum.Parse(typeof(ResourceExtensionEnum), item, ignoreCase: true);
+                var item = extensions[i];
 
-                if (!_descriptors.TryGetValue((ResourceExtensionEnum)matchedResourceExtension , out var descriptor))
-                    throw new InvalidOperationException(
-                        $"Critical: {typeof(ResourceExtensionEnum).Name} type not found: {matchedResourceExtension} to initialise exporter");
+            if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var matchedResourceExtension = Enum.Parse(typeof(ResourceExtensionEnum), item, ignoreCase: true);
 
+                    if (!_descriptors.TryGetValue((ResourceExtensionEnum)matchedResourceExtension , out var descriptor))
+                        throw new InvalidOperationException(
+                            $"Critical: {typeof(ResourceExtensionEnum).Name} type not found: {matchedResourceExtension} to initialise exporter");
 
-                AddResourceExtension(builder, descriptor, logger);
-            }
-            else 
-            {
-                // Throw an exception on an unknown exporter type
-                throw new InvalidOperationException($"Unsupported Resource Extension type: {item}. Please check your SimpleOpenTelemetry Configuration.");
+                    AddResourceDetectorExtension(builder, descriptor, logger);
+                }
+                else 
+                {
+                    // Throw an exception on an unknown exporter type
+                    throw new InvalidOperationException($"Unsupported Resource Extension type: {item}. Please check your SimpleOpenTelemetry Configuration.");
+                }
             }
         }
     }
-    
 
-    private void AddResourceExtension(
+    private void AddResourceDetectorExtension(
     ResourceBuilder builder,
     ResourceExtensionDescriptor descriptor,
     ILogger? logger = null)
     {
        
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
-
-        TryInvokeExtension(builder, assembly, descriptor, logger);
-    }
-
-
-    private void TryInvokeExtension(
-        ResourceBuilder builder,
-        Assembly assembly,
-        ResourceExtensionDescriptor descriptor,
-        ILogger? logger)
-    {
         var (assemblyName, typeName, methodName) = descriptor;
         var builderType = typeof(ResourceBuilder);
         var builderTypeName = builderType.GetType().Name;

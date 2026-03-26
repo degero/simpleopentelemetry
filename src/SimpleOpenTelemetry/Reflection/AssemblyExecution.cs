@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 /// <summary>
 /// Provides utilities for dynamically loading assemblies and invoking extension methods via reflection.
 /// </summary>
-public class AssemblyExecution
+internal class AssemblyExecution
 {
     private Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
 
@@ -20,7 +20,7 @@ public class AssemblyExecution
     /// <param name="logger">Logger for diagnostic information.</param>
     /// <returns>The loaded assembly.</returns>
     /// <exception cref="Exception">Thrown when assembly cannot be loaded.</exception>
-    public Assembly GetAssembly(string assemblyName, ILogger logger)
+    public Assembly GetAssembly(string assemblyName, ILogger? logger)
     {
         if (_loadedAssemblies.Keys.Contains(assemblyName))
         {

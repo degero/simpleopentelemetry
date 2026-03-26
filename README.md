@@ -13,7 +13,7 @@ SimpleOpenTelemetry provides a straightforward way to add distributed tracing to
 
 ## Features
 
-- Sets OTEL_RESOURCE_ATTRIBUTES 'service.version' from app assembly version if one is not provided in env var / config
+- Sets OTEL_RESOURCE_ATTRIBUTES 'service.version' from builtin app assembly version resource detector. Will be overriden by env var / config json if set there.
 
 ---
 

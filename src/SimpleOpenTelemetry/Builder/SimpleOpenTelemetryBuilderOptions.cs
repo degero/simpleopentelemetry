@@ -3,7 +3,7 @@ using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
 
-public class SimpleOpenTelemetryExportersOptions
+internal class SimpleOpenTelemetryExportersOptions
 {
     public List<SimpleOpenTelemetryExporterConfig> Tracing { get; set; } = new();
     public List<SimpleOpenTelemetryExporterConfig> Logging { get; set; } = new();
@@ -29,7 +29,7 @@ public enum SimpleOpenTelemetryExporterProtocol
     Http
 }
 
-public class SimpleOpenTelemetryExporterConfig
+internal class SimpleOpenTelemetryExporterConfig
 {
     public SimpleOpenTelemetryExporterType Type { get; set; }
 
@@ -41,7 +41,7 @@ public class SimpleOpenTelemetryExporterConfig
 /// <summary>
 /// Configuration options for SimpleOpenTelemetry Builder
 /// </summary>
-public class SimpleOpenTelemetryBuilderOptions
+internal class SimpleOpenTelemetryBuilderOptions
 {
     /// <summary>
     /// Defines which exporters to use for traces, metrics, and logs.
@@ -75,5 +75,10 @@ public class SimpleOpenTelemetryBuilderOptions
     /// </summary>
     public IConfigurationSection? ExporterOptions { get; set; }
 
-    // TODO chad add option for Prometheus scrape setup
+    /// <summary>
+    /// Register resource detectors set by resource type name eg: aws, azure etc
+    /// 
+    /// </summary>
+    public string[]? ResourceDetectors { get; set; }
+
 }
