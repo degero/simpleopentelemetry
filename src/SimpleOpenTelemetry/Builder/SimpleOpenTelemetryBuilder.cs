@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
+using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Resource;
 using SimpleOpenTelemetry.Utils;
 using System.Reflection;

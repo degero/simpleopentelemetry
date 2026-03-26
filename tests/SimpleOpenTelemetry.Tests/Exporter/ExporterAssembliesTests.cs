@@ -12,12 +12,12 @@ public class ExporterAssembliesTests
             "Assembly.Name",
             "Type.Name",
             "MethodName",
-            "Section:Path");
+            "AssemblyExtensionActionOptionsClassName");
 
         Assert.Equal("Assembly.Name", descriptor.AssemblyName);
         Assert.Equal("Type.Name", descriptor.TypeName);
         Assert.Equal("MethodName", descriptor.MethodName);
-        Assert.Equal("Section:Path", descriptor.ConfigurationSection);
+        Assert.Equal("AssemblyExtensionActionOptionsClassName", descriptor.OptionsClassName);
     }
 
     [Fact]

@@ -143,6 +143,20 @@ Below are the tested Vendor exporters you can add that support all telemetry sig
 
 ---
 
+### Resource Extensions
+
+#### Opentelemetry contrib
+
+> *Azure*
+>
+> Nuget Package:
+> `dotnet add package --prerelease OpenTelemetry.Resources.Azure`
+>
+
+
+
+---
+
 ## Monitoring your apps
 
 ### Distributed tracing

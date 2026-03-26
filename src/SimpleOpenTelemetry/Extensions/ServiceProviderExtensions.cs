@@ -4,15 +4,24 @@ using OpenTelemetry.Trace;
 
 namespace SimpleOpenTelemetry.Extensions;
 
+/// <summary>
+/// Extension methods for validating SimpleOpenTelemetry configuration on IServiceProvider.
+/// </summary>
 public static class ServiceProviderExtensions
 {
     /// <summary>
-    /// If you wish to critically fail the app from starting up 
-    /// when key ResourceAttributes are not set for the app / hosted env
+    /// Validates that all required OpenTelemetry resource attributes are configured.
     /// </summary>
-    /// <param name="servicves"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-	public static void SimpleOpenTelemetryValidate(this IServiceProvider services)
+    /// <remarks>
+    /// Required attributes: service.name, service.version, deployment.environment.name.
+    /// This method will throw an InvalidOperationException if any required attributes are missing or empty.
+    /// Useful for production environments to ensure proper telemetry identification.
+    /// Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables.
+    /// </remarks>
+    /// <param name="services">The service provider instance.</param>
+    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when required resource attributes are missing or empty.</exception>
+    public static void SimpleOpenTelemetryValidate(this IServiceProvider services)
 	{
         var tracerProvider = services.GetRequiredService<TracerProvider>();
         var resource = tracerProvider.GetResource();

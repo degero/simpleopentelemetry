@@ -3,10 +3,23 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
+/// <summary>
+/// Provides utilities for dynamically loading assemblies and invoking extension methods via reflection.
+/// </summary>
 public class AssemblyExecution
 {
     private Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
 
+    /// <summary>
+    /// Gets a cached or newly loaded assembly by name.
+    /// </summary>
+    /// <remarks>
+    /// Caches loaded assemblies to avoid redundant loading. First checks cache, then attempts to load from disk.
+    /// </remarks>
+    /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
+    /// <param name="logger">Logger for diagnostic information.</param>
+    /// <returns>The loaded assembly.</returns>
+    /// <exception cref="Exception">Thrown when assembly cannot be loaded.</exception>
     public Assembly GetAssembly(string assemblyName, ILogger logger)
     {
         if (_loadedAssemblies.Keys.Contains(assemblyName))
@@ -23,6 +36,16 @@ public class AssemblyExecution
         }
     }
 
+    /// <summary>
+    /// Attempts to load an assembly by name from the application's base directory.
+    /// </summary>
+    /// <remarks>
+    /// Checks already-loaded assemblies first, then attempts to load from disk.
+    /// Returns null if the assembly is not found or loading fails.
+    /// </remarks>
+    /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <returns>The loaded assembly, or null if not found or loading failed.</returns>
     public Assembly? TryLoadAssembly(string assemblyName, ILogger? logger)
     {
         // Check if already loaded first
@@ -55,6 +78,13 @@ public class AssemblyExecution
     }
 
 
+    /// <summary>
+    /// Finds a public static method that accepts a builder parameter.
+    /// </summary>
+    /// <param name="type">The type containing the method.</param>
+    /// <param name="builderType">The type of the builder parameter to match.</param>
+    /// <param name="methodName">The name of the method to find.</param>
+    /// <returns>The MethodInfo if found, otherwise null.</returns>
     public MethodInfo? FindParameterlessMethod(
     Type type,
     Type builderType,
@@ -66,6 +96,15 @@ public class AssemblyExecution
         types: new Type[] { builderType },
         modifiers: null);
 
+    /// <summary>
+    /// Invokes a parameterless public static method on the specified type with a builder argument.
+    /// </summary>
+    /// <param name="type">The type containing the method.</param>
+    /// <param name="builderType">The type of the builder parameter.</param>
+    /// <param name="methodName">The name of the method to invoke.</param>
+    /// <param name="builder">The builder instance to pass as argument.</param>
+    /// <returns>The method's return value.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the method is not found.</exception>
     public object InvokeParameterless(
     Type type,
     Type builderType,
@@ -84,6 +123,17 @@ public class AssemblyExecution
         return method.Invoke(null, new object[] { builder })!;
     }
 
+    /// <summary>
+    /// Invokes a method with an Action&lt;TOptions&gt; parameter, binding configuration to options.
+    /// </summary>
+    /// <remarks>
+    /// Constructs an Action&lt;TOptions&gt; delegate from the configuration section and passes it
+    /// along with the builder to the target method.
+    /// </remarks>
+    /// <param name="actionMethod">The MethodInfo of the method to invoke.</param>
+    /// <param name="builder">The builder instance to pass as the first argument.</param>
+    /// <param name="section">The configuration section to bind to options.</param>
+    /// <returns>The method's return value.</returns>
     public object InvokeWithAction(
     MethodInfo actionMethod,
     object builder,
@@ -100,6 +150,13 @@ public class AssemblyExecution
         return actionMethod.Invoke(null, args)!;
     }
 
+    /// <summary>
+    /// Finds a public static method that accepts a builder and Action&lt;TOptions&gt; parameter.
+    /// </summary>
+    /// <param name="type">The type containing the method.</param>
+    /// <param name="builderType">The type of the builder parameter to match.</param>
+    /// <param name="methodName">The name of the method to find.</param>
+    /// <returns>The MethodInfo if found, otherwise null.</returns>
     public MethodInfo? FindActionOverload(
         Type type,
         Type builderType,
@@ -114,6 +171,16 @@ public class AssemblyExecution
                 p[1].ParameterType.GetGenericTypeDefinition() == typeof(Action<>));
     }
 
+    /// <summary>
+    /// Builds an Action&lt;TOptions&gt; delegate that configures options from a configuration section.
+    /// </summary>
+    /// <remarks>
+    /// Uses expression trees to create a compiled lambda that efficiently copies configuration values
+    /// to the options instance properties.
+    /// </remarks>
+    /// <param name="optionsType">The type of options to configure (must have parameterless constructor).</param>
+    /// <param name="section">The configuration section containing values to bind.</param>
+    /// <returns>A compiled Action&lt;TOptions&gt; delegate.</returns>
     public object BuildConfigureAction(
     Type optionsType,
     IConfiguration section)

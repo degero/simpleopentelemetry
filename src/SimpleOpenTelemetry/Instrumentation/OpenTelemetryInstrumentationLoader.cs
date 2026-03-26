@@ -7,7 +7,7 @@ using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Instrumenttaion;
 
-namespace SimpleOpenTelemetry.Utils;
+namespace SimpleOpenTelemetry.Exporter;
 
 /// <summary>
 /// Load assembly and invoke tracing/metrics instrumentation method based on the available types
@@ -21,18 +21,45 @@ public class OpenTelemetryInstrumentationLoader
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
+    /// <summary>
+    /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
+    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public OpenTelemetryInstrumentationLoader(IConfiguration configuration)
     {
         _configuration = configuration;
         _assemblyExec = new AssemblyExecution();
     }
 
+    /// <summary>
+    /// Adds a tracing instrumentation to the provided TracerProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads the instrumentation assembly and invokes the appropriate extension method.
+    /// Configuration can be provided via appsettings.json or environment variables.
+    /// </remarks>
+    /// <param name="builder">The TracerProviderBuilder to configure.</param>
+    /// <param name="instrumentation">The instrumentation type to add.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
     public void AddTracingInstrumentation(
     TracerProviderBuilder builder,
     TracingInstrumentationEnum instrumentation,
     ILogger? logger = null)
     => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations, logger);
 
+    /// <summary>
+    /// Adds a metrics instrumentation to the provided MeterProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads the instrumentation assembly and invokes the appropriate extension method.
+    /// Configuration can be provided via appsettings.json or environment variables.
+    /// </remarks>
+    /// <param name="builder">The MeterProviderBuilder to configure.</param>
+    /// <param name="instrumentation">The instrumentation type to add.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
     public void AddMetricsInstrumentation(
         MeterProviderBuilder builder,
         MetricsInstrumentationEnum instrumentation,

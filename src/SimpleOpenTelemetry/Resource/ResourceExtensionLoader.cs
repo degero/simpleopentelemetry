@@ -21,11 +21,16 @@ public class ResourceExtensionLoader
 
     private readonly string _exportersTopLevelConfigSectionName = "Resources";
 
-   // Available 3rd parter extensions
+    // Available 3rd parter extensions
     internal readonly Array _resourceExtensions = Enum.GetValues<ResourceExtensionEnum>();
-  
+
     internal readonly Dictionary<ResourceExtensionEnum, ResourceExtensionDescriptor> _descriptors = ResourceExtensionAssemblies.KnownResourceExtensions;
-    
+
+    /// <summary>
+    /// Initializes a new instance of the ResourceExtensionLoader class.
+    /// </summary>
+    /// <param name="configuration">The application configuration containing resource extension settings.</param>
+    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public ResourceExtensionLoader(IConfiguration configuration)
     {
         // TODO Chad seems wrong Configuration is loaded in as the section for this lib
@@ -33,6 +38,16 @@ public class ResourceExtensionLoader
         _assemblyExec = new AssemblyExecution();
     }
 
+    /// <summary>
+    /// Sets up resource extensions on the provided ResourceBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads and configures resource extensions from registered assemblies.
+    /// Currently supports Azure and other vendor resource detectors.
+    /// </remarks>
+    /// <param name="builder">The ResourceBuilder to configure.</param>
+    /// <param name="logger">Logger for diagnostic information.</param>
+    /// <exception cref="InvalidOperationException">Thrown when resource extension registration fails.</exception>
     public void SetupResourceExtensions(ResourceBuilder builder,
         ILogger logger)
     {

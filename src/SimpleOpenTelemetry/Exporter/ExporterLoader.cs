@@ -9,7 +9,7 @@ using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Exporter;
 
-namespace SimpleOpenTelemetry.Utils;
+namespace SimpleOpenTelemetry.Exporter;
 
 /// <summary>
 /// Load vendor exporter assembly and invoke expoter method based on the available types
@@ -22,11 +22,16 @@ public class ExporterLoader
 
     private readonly string _exportersTopLevelConfigSectionName = "ExporterOptions";
 
-   // Available 3rd parter exporters
+    // Available 3rd parter exporters
     internal readonly Array _traceExporters = Enum.GetValues<TraceExporterEnum>();
     internal readonly Array _metricExporters = Enum.GetValues<MetricExporterEnum>();
     internal readonly Array _logExporters = Enum.GetValues<LogExporterEnum>();
 
+    /// <summary>
+    /// Initializes a new instance of the ExporterLoader class.
+    /// </summary>
+    /// <param name="configuration">The application configuration containing exporter settings.</param>
+    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public ExporterLoader(IConfiguration configuration)
     {
         // TODO seems wrong Configuration is loaded in as the section for this lib
@@ -34,16 +39,52 @@ public class ExporterLoader
         _assemblyExec = new AssemblyExecution();
     }
 
+    /// <summary>
+    /// Configures metric exporters on the provided MeterProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads and configures exporters based on configuration. Exporters are loaded
+    /// using reflection from their respective assemblies and registered with the provided builder.
+    /// </remarks>
+    /// <param name="builder">The MeterProviderBuilder to configure.</param>
+    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Exporters.Metrics, 
-            (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg), 
+        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Exporters.Metrics,
+            (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _metricExporters, ExporterAssemblies.KnownMetricsExporters, logger);
 
+    /// <summary>
+    /// Configures trace exporters on the provided TracerProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads and configures trace exporters based on configuration. Exporters are loaded
+    /// using reflection from their respective assemblies and registered with the provided builder.
+    /// </remarks>
+    /// <param name="builder">The TracerProviderBuilder to configure.</param>
+    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Exporters.Tracing, 
-            (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg), 
+        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Exporters.Tracing,
+            (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _traceExporters, ExporterAssemblies.KnownTraceExporters, logger);
 
+    /// <summary>
+    /// Configures log exporters on the provided LoggerProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads and configures log exporters based on configuration. Exporters are loaded
+    /// using reflection from their respective assemblies and registered with the provided builder.
+    /// </remarks>
+    /// <param name="builder">The LoggerProviderBuilder to configure.</param>
+    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
         => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Exporters.Logging,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg), 
