@@ -13,7 +13,7 @@ public enum ResourceExtensionEnum
 }
 
 /// <summary>
-///
+/// A list of known opentelemetry-dotnet-contrib and vendor resourcebuilder extensions
 /// </summary>
 public static class ResourceExtensionAssemblies
 {

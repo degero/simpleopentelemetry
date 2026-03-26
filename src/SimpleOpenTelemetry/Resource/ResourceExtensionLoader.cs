@@ -11,7 +11,7 @@ using SimpleOpenTelemetry.Configuration;
 namespace SimpleOpenTelemetry.Resource;
 
 /// <summary>
-/// Load vendor / contrib assembly and invoke expoter method based on the available types
+/// Load vendor / contrib assembly and invoke resourcebuilder extension method based on the available types
 /// linked to [Log/Trace/Metric]ResourceExtensionEnum
 /// </summary>
 public class ResourceExtensionLoader
