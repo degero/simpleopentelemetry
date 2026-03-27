@@ -1,6 +1,6 @@
 ﻿using SimpleOpenTelemetry.Instrumentation;
 
-namespace SimpleOpenTelemetry.Instrumenttaion;
+namespace SimpleOpenTelemetry.Instrumentation;
 
 internal record InstrumentationExtensionDescriptor(
      string AssemblyName,

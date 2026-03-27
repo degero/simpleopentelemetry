@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Instrumentation;
-using SimpleOpenTelemetry.Instrumenttaion;
 
 namespace SimpleOpenTelemetry.Exporter;
 
@@ -15,7 +14,7 @@ namespace SimpleOpenTelemetry.Exporter;
 ///         OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions.AddAspNetCoreInstrumentation()
 ///     in the seperate nupkg OpenTelemetry.Instrumentation.AspNetCore
 /// </summary>
-internal class OpenTelemetryInstrumentationLoader
+internal class InstrumentationLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
@@ -25,7 +24,7 @@ internal class OpenTelemetryInstrumentationLoader
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public OpenTelemetryInstrumentationLoader(IConfiguration configuration)
+    public InstrumentationLoader(IConfiguration configuration)
     {
         _configuration = configuration;
         _assemblyExec = new AssemblyExecution();

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Instrumentation;
-using SimpleOpenTelemetry.Instrumenttaion;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 

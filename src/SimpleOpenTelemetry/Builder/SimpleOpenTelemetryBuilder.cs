@@ -31,7 +31,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     private ILogger _logger;
 
     // TODO Chad extract interface for testing / Change name
-    private readonly OpenTelemetryInstrumentationLoader _openTelemetryInstrumentationLoader;
+    private readonly InstrumentationLoader _openTelemetryInstrumentationLoader;
     private readonly ExporterLoader _exporterLoader;
 
     private readonly ResourceDetectorLoader _resourceDetectorLoader;
