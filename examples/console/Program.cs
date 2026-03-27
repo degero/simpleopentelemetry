@@ -14,6 +14,9 @@ Console.WriteLine("╚═══════════════════�
 Console.WriteLine($"[Configuration] Initialising .Net Generic Host and loading configurations");
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
+// OPTIONAL: clear loggers for the OpenTelemetry loggers to be the only ones
+builder.Logging.ClearProviders();
+
 // Get exporter type from configuration
 var serviceName = SimpleOpenTelemetry.Utils.SettingsHelper.OtelServiceName(builder.Configuration);
 

@@ -128,7 +128,8 @@ Below are the tested Vendor exporters you can add that support all telemetry sig
 > 
 > Signals supported: all  
 > 
-> Options: mandatory (if not defined in ExporterOptions::Azure) [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)   
+> Options: mandatory (if not defined in ExporterOptions::Azure) 
+> You can set sampling options (it has builtin sampler setup, different to OTEL_TRACES_SAMPLER_* settings), livemetrics and more in the options. [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)   
 > 
 >
 > Nuget Package:
@@ -143,17 +144,37 @@ Below are the tested Vendor exporters you can add that support all telemetry sig
 
 ---
 
-### Resource Extensions
+### Resource Detectors
 
 #### Opentelemetry contrib
 
 > *Azure*
 >
+> Documentation: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
+> 
 > Nuget Package:
 > `dotnet add package --prerelease OpenTelemetry.Resources.Azure`
 >
+> SimpleOpenTelemtry::ResourceDetectors[] json:  
+> 
+>  ```json
+>  "azure"
+>  ```
+>
 
 
+> *AWS*
+>
+> Documentation: [AWS Resource Detectors](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/README.md)
+>
+> Nuget Package:
+> `dotnet add package OpenTelemetry.Resources.AWS`
+> SimpleOpenTelemtry::ResourceDetectors[] json:  
+> 
+>  ```json
+>  "aws"
+>  ```
+>
 
 ---
 

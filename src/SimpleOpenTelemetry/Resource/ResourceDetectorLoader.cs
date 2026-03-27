@@ -47,7 +47,7 @@ internal class ResourceDetectorLoader
     {
         var extensions = options.ResourceDetectors;
 
-        if (extensions is not null && !extensions.Any())
+        if (extensions is not null && extensions.Any())
         {
             // Determine the valid extensions for the given builder type
             var validResourceExtensions = _resourceExtensions.Cast<object>()
@@ -58,7 +58,7 @@ internal class ResourceDetectorLoader
             {
                 var item = extensions[i];
 
-            if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
                 {
                     var matchedResourceExtension = Enum.Parse(typeof(ResourceExtensionEnum), item, ignoreCase: true);
 
@@ -95,9 +95,9 @@ internal class ResourceDetectorLoader
 
             descriptor.MethodNames.ToList().ForEach(methodName =>
             {
-                var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, methodName);
+                var parameterlessMethod = _assemblyExec.FindParameterlessMethodWithAllDefaultValues(type, builderType, methodName);
 
-                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
+                _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
 
                 logger?.LogInformation("Successfully registered {TBuilder} Resource Extension: {Method}", builderTypeName, methodName);
             });
@@ -105,7 +105,7 @@ internal class ResourceDetectorLoader
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel Resource Extension via {typeName}.{methodName}", ex);
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel Resource Detector Extension via {typeName}.{methodName}", ex);
         }
     }
 

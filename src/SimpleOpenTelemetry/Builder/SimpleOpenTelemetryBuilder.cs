@@ -208,6 +208,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             if (_options.Exporters is not null)
                 _exporterLoader.ConfigureExporters(tracing, _options, _logger);
 
+
         });
     }
 

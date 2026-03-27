@@ -20,10 +20,9 @@ public static class LoggingBuilderExtensions
     /// <exception cref="ArgumentNullException">Thrown when logging is null.</exception>
     public static ILoggingBuilder AddSimpleOpenTelemetry(this ILoggingBuilder logging)
     {
-        // Setup otel logging
-        logging.ClearProviders();
+        // TODO chad according to here this is not needed but may want to configure via options, verify it
+        https://opentelemetry.io/docs/languages/dotnet/logs/getting-started-aspnetcore/
 
-        // TODO chad move to simple open tel config ?
         logging.AddOpenTelemetry(logging =>
         {
             logging.IncludeFormattedMessage = true;

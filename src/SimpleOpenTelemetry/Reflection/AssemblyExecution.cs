@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
@@ -77,7 +78,6 @@ internal class AssemblyExecution
         }
     }
 
-
     /// <summary>
     /// Finds a public static method that accepts a builder parameter.
     /// </summary>
@@ -97,6 +97,53 @@ internal class AssemblyExecution
         modifiers: null);
 
     /// <summary>
+    /// Finds a public static method that accepts just builder parameter.
+    /// or with all defaulting successive overloads
+    /// </summary>
+    /// <param name="type">The type containing the method.</param>
+    /// <param name="builderType">The type of the builder parameter to match.</param>
+    /// <param name="methodName">The name of the method to find.</param>
+    /// <returns>The MethodInfo if found, otherwise null.</returns>
+    public MethodInfo FindParameterlessMethodWithAllDefaultValues(
+        Type type,
+        Type builderType,
+        string methodName)
+    {
+        var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Static);
+        var matchingMethod = methods.FirstOrDefault(m =>
+            m.Name == methodName &&
+            m.GetParameters() is { Length: >= 1 } p &&
+            p[0].ParameterType == builderType &&
+            p.Skip(1).All(param => param.HasDefaultValue))
+            ?? throw new InvalidOperationException(
+                   $"No parameterless '{methodName}' method accepting {builderType.Name} found on {type.FullName}.");
+        
+        return matchingMethod;
+    }
+
+    /// <summary>
+    /// Invokes an extension method on the specified target object and sets all defaulted parameters.
+    /// as null.
+    /// </summary>
+    /// <param name="method">Method to invoke</param>
+    /// <param name="targetType">The type of instance to pass as argument.</param>
+    /// <param name="target">The instance to pass as argument.</param>
+    public object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target)
+    {
+        var paramsToInvoke = new List<object>(){ target };
+        var remainingParams = method.GetParameters().Skip(1).ToList();
+
+        // If this method cant accept all defaulted remaining parameters throw error
+        if (remainingParams.Any(r => !r.HasDefaultValue))
+            throw new InvalidOperationException(
+                   $"No parameterless '{method.Name}' method accepting {targetType.Name} found on {method.GetType().Name}.");
+
+        remainingParams.ForEach(p => paramsToInvoke.Add(null));
+
+        return method.Invoke(null, paramsToInvoke.ToArray())!;
+    }
+
+    /// <summary>
     /// Invokes a parameterless public static method on the specified type with a builder argument.
     /// </summary>
     /// <param name="type">The type containing the method.</param>
@@ -111,6 +158,7 @@ internal class AssemblyExecution
     string methodName,
     object builder)
     {
+        // TODO Chad refac this may not be needed
         var method = type.GetMethod(
             methodName,
             BindingFlags.Public | BindingFlags.Static,

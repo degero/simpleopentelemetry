@@ -5,6 +5,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// OPTIONAL: clear loggers for 
+builder.Logging.ClearProviders();
+
 // Register OpenTelemetry using SimpleOpenTelemetry
 builder.AddSimpleOpenTelemetry();
 

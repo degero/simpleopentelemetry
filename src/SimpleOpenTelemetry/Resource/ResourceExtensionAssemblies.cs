@@ -9,7 +9,8 @@ internal record ResourceExtensionDescriptor(
 public enum ResourceExtensionEnum
 {
     /* otel-dotnet-contrib */
-    Azure
+    Azure,
+    AWS
 }
 
 /// <summary>
@@ -26,6 +27,11 @@ internal static class ResourceExtensionAssemblies
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",
                 new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"}),
+             
+            [ResourceExtensionEnum.AWS] = new(
+                "OpenTelemetry.Resources.AWS",
+                "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
+                new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"}),
         };
 
 }
