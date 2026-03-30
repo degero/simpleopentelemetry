@@ -23,7 +23,7 @@ internal static class SamplerAssemblies
        
         KnownSamplers = new()
         {
-            /* Contrib detectors */
+            /* Contrib samplers */
             [SamplerEnum.AWS] = new(
                 "OpenTelemetry.Sampler.AWS",
                 "OpenTelemetry.Sampler.AWS.AWSXRayRemoteSampler",

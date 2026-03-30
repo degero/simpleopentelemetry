@@ -12,6 +12,7 @@ using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Extensions;
+using SimpleOpenTelemetry.Propagator;
 using SimpleOpenTelemetry.Resource;
 using SimpleOpenTelemetry.Sampler;
 
@@ -39,6 +40,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly SamplerLoader _samplerLoader;
 
+    private readonly PropagatorLoader _propagatorLoader;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
@@ -51,6 +54,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _resourceDetectorLoader = new(config);
         _exporterLoader = new(config);
         _samplerLoader = new(config);
+        _propagatorLoader = new(config);
 
         // TODO Chad fix this up to be injected
         _logger = LoggerFactory.Create(builder =>
@@ -89,6 +93,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         ConfigureLogging();
 
+        _propagatorLoader.AddPropagators(_options, _logger);
+
+         // TODO Chad add in validation step here to check for common config issues like missing service.name or mismatched OTLP exporter settings before app starts sending data
         // TODO Chad add in other exporter registrations if possible
 
         return _otelBuilder;
@@ -171,10 +178,18 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _otelBuilder.WithMetrics(metrics =>
         {
+            metrics.SetMaxMetricStreams(2000);
+            
             // add in tracing instrumenation options from config
             _options.MetricsInstrumentations?.ToList().ForEach(r =>
             {
                 _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
+            });
+
+            // add in meters
+            _options.CustomMeters?.ToList().ForEach(r =>
+            {
+                metrics.AddMeter(r);
             });
 
             if (_options.Exporters is not null)

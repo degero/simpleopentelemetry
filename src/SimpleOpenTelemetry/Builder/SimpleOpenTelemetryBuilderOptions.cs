@@ -88,4 +88,5 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// Register a vendor sampler from the availble enum set 
     /// </summary>
     public string? Sampler { get; set; }
+    public string[]? Propagators { get; set; }
 }
