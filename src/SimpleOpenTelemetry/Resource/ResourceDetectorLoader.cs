@@ -2,13 +2,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Configuration;
 
 namespace SimpleOpenTelemetry.Resource;
 
 /// <summary>
 /// Load vendor / contrib assembly and invoke resourcebuilder detector extension method based on the available types
-/// linked to [Log/Trace/Metric]ResourceExtensionEnum
 /// </summary>
 internal class ResourceDetectorLoader
 {

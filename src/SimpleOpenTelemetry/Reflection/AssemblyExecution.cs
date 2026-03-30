@@ -61,19 +61,19 @@ internal class AssemblyExecution
         var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
         if (!File.Exists(path))
         {
-            logger?.LogDebug("Instrumentation assembly not found, skipping: {Assembly}", assemblyName);
+            logger?.LogDebug("Assembly not found, skipping: {Assembly}", assemblyName);
             return null;
         }
 
         try
         {
             var loaded = Assembly.LoadFrom(path);
-            logger?.LogInformation("Loaded instrumentation assembly: {Assembly}", assemblyName);
+            logger?.LogInformation("Loaded assembly: {Assembly}", assemblyName);
             return loaded;
         }
         catch (Exception ex)
         {
-            logger?.LogError(ex, "Failed to load instrumentation assembly: {Assembly}", assemblyName);
+            logger?.LogError(ex, "Failed to load assembly: {Assembly}", assemblyName);
             return null;
         }
     }

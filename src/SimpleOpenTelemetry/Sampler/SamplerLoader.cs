@@ -8,8 +8,7 @@ using SimpleOpenTelemetry.Configuration;
 namespace SimpleOpenTelemetry.Sampler;
 
 /// <summary>
-/// Load vendor / contrib assembly and invoke TracerProviderBuilder detector extension method based on the available types
-/// linked to [Log/Trace/Metric]SamplerEnum
+/// Load vendor / contrib assembly and invoke static / exntion method creating a Builder based on the available types
 /// </summary>
 internal class SamplerLoader
 {
@@ -67,7 +66,7 @@ internal class SamplerLoader
                     throw new InvalidOperationException(
                         $"Critical: {typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialise sampler");
 
-                AddSampler(builder, resource, descriptor, logger);
+                AddSampler(builder, resource, descriptor, (SamplerEnum)matchedSampler, logger);
             }
             else 
             {
@@ -77,9 +76,20 @@ internal class SamplerLoader
         }
     }
 
+    /// <summary>
+    /// This may change as the current only supported vendor sampler (aws xray remote sampler)
+    /// comes out of alpha / other vender patterns appear
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="resource"></param>
+    /// <param name="descriptor"></param>
+    /// <param name="logger"></param>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="Exception"></exception>
     private void AddSampler(TracerProviderBuilder builder,
     OpenTelemetry.Resources.Resource  resource,
     SamplerDescriptor descriptor,
+    SamplerEnum samplerEnum,
     ILogger? logger = null)
     {
        
@@ -95,13 +105,15 @@ internal class SamplerLoader
 
             var instance = method.Invoke(null, new object[] { resource });
 
+            // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
+            // This is kept here for now
             var buildMethod = instance.GetType().GetMethod("Build");
 
             var sampler = buildMethod.Invoke(instance, new object[] {}) as OpenTelemetry.Trace.Sampler;
 
             builder.SetSampler(sampler);
 
-            logger?.LogInformation("Successfully registered Sampler : {typeName}", typeName);
+            logger?.LogInformation($"Successfully registered {samplerEnum} Sampler: {typeName}");
 
         }
         catch (Exception ex)
