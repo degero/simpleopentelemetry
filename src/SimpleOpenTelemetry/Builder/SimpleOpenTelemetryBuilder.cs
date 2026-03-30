@@ -13,11 +13,12 @@ using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Resource;
+using SimpleOpenTelemetry.Sampler;
 
 
 /// <summary>
- /// Configure OpenTelemetry settings via IConfiguration and return
-    /// OpenTelemetryBuilder for an other custom fluent operations
+/// Configure OpenTelemetry settings via IConfiguration and return
+/// OpenTelemetryBuilder for an other custom fluent operations
 /// </summary>
 internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
@@ -36,6 +37,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly ResourceDetectorLoader _resourceDetectorLoader;
 
+    private readonly SamplerLoader _samplerLoader;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
@@ -47,6 +50,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _openTelemetryInstrumentationLoader = new(config);
         _resourceDetectorLoader = new(config);
         _exporterLoader = new(config);
+        _samplerLoader = new(config);
 
         // TODO Chad fix this up to be injected
         _logger = LoggerFactory.Create(builder =>
@@ -77,11 +81,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _options = config;
 
-        ConfigureResourceAttributes();
+        var resourceBuilder = ConfigureResourceAttributes();
 
         ConfigureMetrics();
 
-        ConfigureTracing();
+        ConfigureTracing(resourceBuilder);
 
         ConfigureLogging();
 
@@ -90,8 +94,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         return _otelBuilder;
     }
 
-    private void ConfigureResourceAttributes()
-    {
+    private ResourceBuilder? ConfigureResourceAttributes()
+    {   
+        ResourceBuilder? _builder = null;
+
         // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
         _otelBuilder.ConfigureResource(builder => 
         {   
@@ -104,7 +110,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // 3. override with any ENV Vars / json config section definitions
             builder.AddEnvironmentVariableDetector();
 
+            _builder = builder;
+
          });
+
+        return _builder;
     }
 
 
@@ -174,7 +184,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     }
 
 
-    private void ConfigureTracing()
+    private void ConfigureTracing(ResourceBuilder? resourceBuilder)
     {
 
         _otelBuilder.WithTracing(tracing =>
@@ -191,7 +201,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 tracing.AddSource(r);
             });
 
-            // TODO chad add in samplers
+            // add in sampler if set in config
+            _samplerLoader.AddSampler(tracing, resourceBuilder?.Build(), _options, _logger);
 
             // TODO Chad remove
             //tracing.AddSource(serviceName)

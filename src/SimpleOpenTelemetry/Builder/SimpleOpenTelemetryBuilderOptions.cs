@@ -60,6 +60,8 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// </summary>
     public MetricsInstrumentationEnum[]? MetricsInstrumentations { get; set; }
 
+    public IConfigurationSection? TraceInstrumentationConfig { get; set; }
+
     /// <summary>
     /// Namespace names for additional metrics sources.
     /// </summary>
@@ -83,7 +85,7 @@ internal class SimpleOpenTelemetryBuilderOptions
     public IConfigurationSection? ResourceDetectorConfig { get; set; }
 
     /// <summary>
-    /// Register samplers from set by an enum names
+    /// Register a vendor sampler from the availble enum set 
     /// </summary>
-    public string[]? Samplers { get; set; }
+    public string? Sampler { get; set; }
 }
