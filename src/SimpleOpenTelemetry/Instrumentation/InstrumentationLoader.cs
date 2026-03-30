@@ -105,7 +105,7 @@ internal class InstrumentationLoader
                 actionMethod is not null &&
                 parameterlessMethod is null)
             {
-                throw new InvalidOperationException(
+                throw new InvalidOperationException( // TODO chad add tests around these scenarios
                     $"Failed registration {builderTypeName} instrumentation: '{methodName}'. " +
                     $"A configuration section '{configurationSection}' is required but not found in config file.");
             }

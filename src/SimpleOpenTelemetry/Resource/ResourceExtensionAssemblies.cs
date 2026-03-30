@@ -3,14 +3,16 @@ namespace SimpleOpenTelemetry.Resource;
 internal record ResourceExtensionDescriptor(
      string AssemblyName,
      string TypeName,
-     string[] MethodNames
+     string[] MethodNames,
+     string? ConfigurationSection
 );
 
 public enum ResourceExtensionEnum
 {
-    /* otel-dotnet-contrib */
+    /* opentelemetry-dotnet-contrib */
     Azure,
     AWS
+    // GCP - Still in Development
 }
 
 /// <summary>
@@ -26,13 +28,20 @@ internal static class ResourceExtensionAssemblies
             [ResourceExtensionEnum.Azure] = new(
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",
-                new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"}),
+                new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"},
+                null),
              
             [ResourceExtensionEnum.AWS] = new(
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
-                new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"}),
+                new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
+                "SimpleOpenTelemetry:ResourceDetectorConfig:AWS")
+        
+            // GCP - Still in Development
+            // [ResourceExtensionEnum.GCP] = new(
+            //     "OpenTelemetry.Resources.Gcp",
+            //     "OpenTelemetry.Resources.GcpResourceBuilderExtensions",
+            //     new string[] {"AddGcpDetector"}),
         };
-
 }
 

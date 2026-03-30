@@ -77,8 +77,13 @@ internal class SimpleOpenTelemetryBuilderOptions
 
     /// <summary>
     /// Register resource detectors set by resource type name eg: aws, azure etc
-    /// 
     /// </summary>
     public string[]? ResourceDetectors { get; set; }
 
+    public IConfigurationSection? ResourceDetectorConfig { get; set; }
+
+    /// <summary>
+    /// Register samplers from set by an enum names
+    /// </summary>
+    public string[]? Samplers { get; set; }
 }

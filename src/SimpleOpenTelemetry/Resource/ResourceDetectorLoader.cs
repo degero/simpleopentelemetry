@@ -27,8 +27,7 @@ internal class ResourceDetectorLoader
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public ResourceDetectorLoader(IConfiguration configuration)
     {
-        // TODO Chad seems wrong Configuration is loaded in as the section for this lib
-        _configuration = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        _configuration = configuration;
         _assemblyExec = new AssemblyExecution();
     }
 
@@ -84,7 +83,7 @@ internal class ResourceDetectorLoader
     {
        
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
-        var (assemblyName, typeName, methodName) = descriptor;
+        var (assemblyName, typeName, methodName, configSection) = descriptor;
         var builderType = typeof(ResourceBuilder);
         var builderTypeName = builderType.GetType().Name;
 
@@ -96,8 +95,14 @@ internal class ResourceDetectorLoader
             descriptor.MethodNames.ToList().ForEach(methodName =>
             {
                 var parameterlessMethod = _assemblyExec.FindParameterlessMethodWithAllDefaultValues(type, builderType, methodName);
+                var actionMethod = _assemblyExec.FindActionOverload(type, builderType, methodName);
 
-                _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
+                var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
+
+                if (section is not null && section.Exists() && actionMethod is not null)
+                    _assemblyExec.InvokeWithAction(actionMethod, builder, section);
+                else
+                    _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
 
                 logger?.LogInformation("Successfully registered {TBuilder} Resource Extension: {Method}", builderTypeName, methodName);
             });

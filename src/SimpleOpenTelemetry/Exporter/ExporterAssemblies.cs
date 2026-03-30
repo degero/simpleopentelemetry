@@ -22,6 +22,7 @@ internal record ExporterExtensionDescriptor(
 /// </summary>
 public enum TraceExporterEnum
 {
+    /* opentelemetry-dotnet-contrib */
     /// <summary>Uses OTLP (OpenTelemetry Protocol) for trace export.</summary>
     Otlp,
 
@@ -29,6 +30,7 @@ public enum TraceExporterEnum
     Console,
 
     /// <summary>Exports traces to Azure Monitor Application Insights.</summary>
+    /* vendor libraries */
     Azure
 }
 
@@ -37,6 +39,7 @@ public enum TraceExporterEnum
 /// </summary>
 public enum MetricExporterEnum
 {
+    /* opentelemetry-dotnet-contrib */
     /// <summary>Uses OTLP (OpenTelemetry Protocol) for metrics export.</summary>
     Otlp,
 
@@ -49,6 +52,7 @@ public enum MetricExporterEnum
     /// <summary>Prometheus metrics exporter integrated with ASP.NET Core.</summary>
     PrometheusAspNetCore,
 
+    /* vendor libraries */
     /// <summary>Exports metrics to Azure Monitor Application Insights.</summary>
     Azure
 }
@@ -58,6 +62,7 @@ public enum MetricExporterEnum
 /// </summary>
 public enum LogExporterEnum
 {
+    /* opentelemetry-dotnet-contrib */
     /// <summary>Uses OTLP (OpenTelemetry Protocol) for log export.</summary>
     Otlp,
 
@@ -65,6 +70,7 @@ public enum LogExporterEnum
     Console,
 
     /// <summary>Exports logs to Azure Monitor Application Insights.</summary>
+    /* vendor libraries */
     Azure
 }
 
@@ -76,7 +82,7 @@ internal static class ExporterAssemblies
     public static readonly Dictionary<TraceExporterEnum, ExporterExtensionDescriptor>
         KnownTraceExporters = new()
         {
-            /* Otel SDK exporters */
+            /* opentelemetry-dotnet-contrib */
             [TraceExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Trace.ConsoleExporterHelperExtensions",
@@ -95,7 +101,7 @@ internal static class ExporterAssemblies
     public static readonly Dictionary<MetricExporterEnum, ExporterExtensionDescriptor>
         KnownMetricsExporters = new()
         {
-            /* Otel SDK exporters */
+            /* opentelemetry-dotnet-contrib */
             [MetricExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
@@ -114,7 +120,7 @@ internal static class ExporterAssemblies
                 "AddPrometheusExporter",
                 "PrometheusAspNetCoreOptions"),
 
-            /* Vendor exporters */
+            /* Vendor libraries */
             [MetricExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
@@ -133,7 +139,7 @@ internal static class ExporterAssemblies
                 "AddConsoleExporter",
                 null), 
 
-            /* Vendor exporters */
+            /* Vendor libraries */
             [LogExporterEnum.Azure] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
