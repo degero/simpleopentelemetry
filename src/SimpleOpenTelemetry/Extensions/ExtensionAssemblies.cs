@@ -20,8 +20,8 @@ internal static class ExtensionAssemblies
         {
             [TraceExtensionsEnum.AWSXRayTraceId] = new(
                 "OpenTelemetry.Extensions.AWS",
-                "OpenTelemetry.Extensions.AWS.Trace",
-                "AddAWSXRayTraceId",
+                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
+                "AddXRayTraceId",
                 null),
         };
 
