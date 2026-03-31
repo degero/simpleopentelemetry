@@ -62,8 +62,10 @@ public class PropagatorLoaderTests
         }
     }
 
-    [Fact]
-    public void AddPropagators_WithSingleStringValue_SetsSinglePropagator()
+    [Theory]
+    [InlineData(PropagatorEnum.TraceContext, typeof(TraceContextPropagator) )]
+    [InlineData(PropagatorEnum.Baggage, typeof(BaggagePropagator) )]
+    public void AddPropagators_WithSingleStringValue_SetsSinglePropagator(PropagatorEnum propagatorEnum, Type t)
     {
         var original = Propagators.DefaultTextMapPropagator;
 
@@ -72,12 +74,37 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { nameof(PropagatorEnum.TraceContext) }
+                Propagators = new[] { propagatorEnum.ToString() }
             };
 
             sut.AddPropagators(options, _logger.Object);
 
-            Assert.IsType<TraceContextPropagator>(Propagators.DefaultTextMapPropagator);
+            Assert.IsType(t, Propagators.DefaultTextMapPropagator);
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(original);
+        }
+    }
+
+    [Theory]
+    [InlineData(PropagatorEnum.B3, "OpenTelemetry.Extensions.Propagators.B3Propagator")]
+    [InlineData(PropagatorEnum.AWS, "OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator")]
+    public void AddPropagators_WithNupkgPropagator_SetsSingleNupkgPropagator(PropagatorEnum propagator, string className)
+    {
+        var original = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            var sut = new PropagatorLoader(_configuration);
+            var options = new SimpleOpenTelemetryBuilderOptions
+            {
+                Propagators = new[] { propagator.ToString() }
+            };
+
+            sut.AddPropagators(options, _logger.Object);
+
+            Assert.Equal(className, Propagators.DefaultTextMapPropagator.GetType().FullName);
         }
         finally
         {
@@ -106,6 +133,34 @@ public class PropagatorLoaderTests
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
             Assert.IsType<BaggagePropagator>(innerPropagators[1]);
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(original);
+        }
+    }
+
+    [Fact]
+    public void AddPropagators_WithAwsAndOtherPropagators_SetsCompositeWithAWS()
+    {
+        var original = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            var sut = new PropagatorLoader(_configuration);
+            var options = new SimpleOpenTelemetryBuilderOptions
+            {
+                Propagators = new[] { nameof(PropagatorEnum.AWS), nameof(PropagatorEnum.TraceContext) }
+            };
+
+            sut.AddPropagators(options, _logger.Object);
+
+            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var innerPropagators = GetCompositePropagators(composite).ToList();
+
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.Equal("OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator", innerPropagators[0].GetType().FullName);
+            Assert.IsType<TraceContextPropagator>(innerPropagators[1]);
         }
         finally
         {
