@@ -39,7 +39,7 @@ internal static class PropagatorAssemblies
 
             [PropagatorEnum.Baggage] = new(
                 "OpenTelemetry.Api",
-                "OpenTelemetry.Context.Propagation.NoopTextMapPropagator"),
+                "OpenTelemetry.Context.Propagation.BaggagePropagator"),
 
             [PropagatorEnum.CompositeTextMap] = new(
                 "OpenTelemetry.Api",

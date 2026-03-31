@@ -44,8 +44,18 @@ public class PropagatorLoader
     {
         var propagators = options.Propagators;
 
-        if (propagators is not null && propagators.Any())
+        try
         {
+
+            if (propagators is null || !propagators.Any() ||
+                propagators.Any(p => string.Equals(p, PropagatorEnum.None.ToString(), StringComparison.OrdinalIgnoreCase)))
+            {
+                var noopPropagator = CreatePropagator(_descriptors[PropagatorEnum.None], logger);
+                Sdk.SetDefaultTextMapPropagator(noopPropagator);
+                logger?.LogInformation("Registered NoopTextMapPropagator because SimpleOpenTelemetry::Propagators set as null or included 'none'.");
+                return;
+            }
+
             // Determine the valid propagators for the given builder type
             var validPropagators = _Propagators.Cast<object>()
                 .Select(e => e.ToString())
@@ -55,7 +65,6 @@ public class PropagatorLoader
 
             for (var i = 0; i < propagators.Count(); i++)
             {
-
                 var item = propagators[i];
 
                 if (validPropagators.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
@@ -66,7 +75,7 @@ public class PropagatorLoader
                         throw new InvalidOperationException(
                             $"Critical: {typeof(PropagatorEnum).Name} type not found: {matchedPropagator} to initialise propagator");
 
-                    propagatorsList.Add(CreatePropagator(descriptor, (PropagatorEnum)matchedPropagator, logger));
+                    propagatorsList.Add(CreatePropagator(descriptor, logger));
                 }
                 else 
                 {
@@ -75,12 +84,13 @@ public class PropagatorLoader
                 }
             }
 
-
             // Register propagator
             Sdk.SetDefaultTextMapPropagator(propagatorsList.Count > 1 ? new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0]);
-        
-            logger?.LogInformation($"Successfully registered Propagator(s): {String.Join(", ", propagators)}.");
-
+            logger?.LogInformation($"Successfully registered propagator(s): {string.Join(", ", propagators)}.");
+        }
+        catch (Exception ex)
+        {
+            logger?.LogError(ex, $"Failed to register propagators(s): {string.Join(", ", propagators)}");
         }
     }
 
@@ -94,22 +104,20 @@ public class PropagatorLoader
     /// <exception cref="Exception"></exception>
     private TextMapPropagator CreatePropagator(
     PropagatorDescriptor descriptor,
-    PropagatorEnum propagatorEnum,
     ILogger? logger = null)
     {
        
         var (assemblyName, typeName) = descriptor;
 
-
         try
         {
-            // Dont need to load if OpenTelemetrySDK propagator
+            // Dont need to load using AssemblyExec lib if OpenTelemetrySDK propagator
             var assembly = assemblyName == "OpenTelemetry.Api" ? typeof(OpenTelemetry.Context.RuntimeContext).Assembly : _assemblyExec.GetAssembly(assemblyName, logger);
 
             var type = assembly.GetType(typeName)
                 ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
 
-            var instance = Activator.CreateInstance(type);
+            var instance = Activator.CreateInstance(type, nonPublic: true);
           
             return (TextMapPropagator)instance;
         }
