@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
 
 namespace SimpleOpenTelemetry.Extensions;
 
@@ -17,15 +18,15 @@ public static class HostApplicationBuilderExtensions
     /// <param name="builder">The host application builder instance.</param>
     /// <returns>The host application builder for method chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
-    public static IHostApplicationBuilder AddSimpleOpenTelemetry(
+    public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
         builder.Logging.AddSimpleOpenTelemetry();
 
         // TODO Chad look at way to not pass configuration like AddOpenTelemetry()
-        builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
+        var otelBuilder =builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
 
-        return builder;
+        return otelBuilder;
     }
 
 }
