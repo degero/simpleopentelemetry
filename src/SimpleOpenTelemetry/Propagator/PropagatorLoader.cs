@@ -75,7 +75,6 @@ public class PropagatorLoader
                 }
             }
 
-            // TODO add try catch
 
             // Register propagator
             Sdk.SetDefaultTextMapPropagator(propagatorsList.Count > 1 ? new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0]);

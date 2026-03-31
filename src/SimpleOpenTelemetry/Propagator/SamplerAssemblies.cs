@@ -8,13 +8,17 @@ internal record PropagatorDescriptor(
 public enum PropagatorEnum
 {
     /* opentelemetry-dotnet */
-    B3,
-
+    None,
+    
     Baggage,
 
-    CompositeTextMapPropagator,
+    CompositeTextMap,
 
-    TraceContextPropagator 
+    TraceContext,
+
+    /* opentelemetry-dotnet - OpenTelemetry.Extensions.Propagators.nupkg*/
+    B3,
+
     /* opentelemetry-dotnet-contrib */
 }
 
@@ -28,12 +32,30 @@ internal static class PropagatorAssemblies
         KnownPropagators = new()
         {
             /* opentelemetry-dotnet propagators */
+            [PropagatorEnum.None] = new(
+                "OpenTelemetry.Api",
+                "OpenTelemetry.Context.Propagation.NoopTextMapPropagator"
+            ),
 
             [PropagatorEnum.Baggage] = new(
                 "OpenTelemetry.Api",
-                "OpenTelemetry.Context.Propagation.BaggagePropagator"),
+                "OpenTelemetry.Context.Propagation.NoopTextMapPropagator"),
 
-            
+            [PropagatorEnum.CompositeTextMap] = new(
+                "OpenTelemetry.Api",
+                "OpenTelemetry.Context.Propagation.CompositeTextMapPropagator"),
+
+            [PropagatorEnum.TraceContext] = new(
+                "OpenTelemetry.Api",
+                "OpenTelemetry.Context.Propagation.TraceContextPropagator"),
+
+            /* opentelemetry-dotnet extensions propagators - OpenTelemetry.Extensions.Propagators.nupkg  */
+            [PropagatorEnum.B3] = new(
+                "OpenTelemetry.Extensions.Propagators",
+                "OpenTelemetry.Extensions.Propagators.B3Propagator"
+            )
+
+
         };
 
 }
