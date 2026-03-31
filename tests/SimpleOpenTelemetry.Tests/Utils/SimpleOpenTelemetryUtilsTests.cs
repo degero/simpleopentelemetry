@@ -49,12 +49,8 @@ public class SimpleOpenTelemetryUtilsTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
-                    "service.version=1.2.3,deployment.environment.name=dev",
-
-                ["SimpleOpenTelemetry:TracingInstrumentations:0"] =
-                    nameof(TracingInstrumentationEnum.AspNetCore)
+                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] =
+                    nameof(TraceInstrumentationEnum.AspNetCore)
             })
             .Build();
 
@@ -70,12 +66,8 @@ public class SimpleOpenTelemetryUtilsTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
-                    "service.version=1.2.3,deployment.environment.name=dev",
-
-                ["SimpleOpenTelemetry:MetricsInstrumentations:0"] =
-                    nameof(MetricsInstrumentationEnum.AspNetCore)
+                ["SimpleOpenTelemetry:Metric:Instrumentations:0"] =
+                    nameof(MetricInstrumentationEnum.AspNetCore)
             })
             .Build();
 
@@ -94,7 +86,7 @@ public class SimpleOpenTelemetryUtilsTests
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
                     "service.version=1.2.3,deployment.environment.name=dev",
-                ["SimpleOpenTelemetry:TracingInstrumentations:0"] = "999"
+                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] = "999"
             })
             .Build();
 
@@ -108,9 +100,9 @@ public class SimpleOpenTelemetryUtilsTests
     public void AddTracingInstrumentation_WrapsTypeLookupErrors()
     {
         var previousDescriptor =
-            InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore];
+            InstrumentationAssemblies.KnownTraceInstrumentations[TraceInstrumentationEnum.AspNetCore];
 
-        InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore] =
+        InstrumentationAssemblies.KnownTraceInstrumentations[TraceInstrumentationEnum.AspNetCore] =
             new InstrumentationExtensionDescriptor(
                 "System.Runtime",
                 "Does.Not.Exist.Type",
@@ -125,8 +117,8 @@ public class SimpleOpenTelemetryUtilsTests
                     [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "test-service",
                     [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
                         "service.version=1.2.3,deployment.environment.name=dev",
-                    ["SimpleOpenTelemetry:TracingInstrumentations:0"] =
-                        nameof(TracingInstrumentationEnum.AspNetCore)
+                    ["SimpleOpenTelemetry:Trace:Instrumentations:0"] =
+                        nameof(TraceInstrumentationEnum.AspNetCore)
                 })
                 .Build();
 
@@ -136,7 +128,7 @@ public class SimpleOpenTelemetryUtilsTests
         }
         finally
         {
-            InstrumentationAssemblies.KnownTraceInstrumentations[TracingInstrumentationEnum.AspNetCore] =
+            InstrumentationAssemblies.KnownTraceInstrumentations[TraceInstrumentationEnum.AspNetCore] =
                 previousDescriptor;
         }
     }

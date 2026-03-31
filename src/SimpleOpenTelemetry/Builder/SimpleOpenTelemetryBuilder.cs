@@ -42,6 +42,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly PropagatorLoader _propagatorLoader;
 
+    private readonly ExtensionLoader _extensionsLoader;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder
     /// </summary>
@@ -55,6 +57,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _exporterLoader = new(config);
         _samplerLoader = new(config);
         _propagatorLoader = new(config);
+        _extensionsLoader = new(config);
 
         // TODO Chad fix this up to be injected
         _logger = LoggerFactory.Create(builder =>
@@ -181,7 +184,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             metrics.SetMaxMetricStreams(2000);
             
             // add in tracing instrumenation options from config
-            _options.MetricsInstrumentations?.ToList().ForEach(r =>
+            _options.Metric.Instrumentations?.ToList().ForEach(r =>
             {
                 _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
             });
@@ -192,8 +195,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 metrics.AddMeter(r);
             });
 
-            if (_options.Exporters is not null)
+            if (_options.Metric.Exporters is not null)
                 _exporterLoader.ConfigureExporters(metrics, _options, _logger);
+
+            _options.Metric.Extensions?.ToList().ForEach(r => _extensionsLoader.AddMetricsExtension(metrics, r, _logger));
 
         });
     }
@@ -205,10 +210,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithTracing(tracing =>
         {
             // add in tracing instrumenation options from config
-            _options.TracingInstrumentations?.ToList().ForEach(r =>
-            {
-                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
-            });
+            _options.Trace.Instrumentations?.ToList().ForEach(r => _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger));
 
             // add trace sources from config
             _options.TraceSources?.ToList().ForEach(r =>
@@ -231,9 +233,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             //    // tracing.RecordException = true;
 
             // Iterate over exporters for this montioring type
-            if (_options.Exporters is not null)
-                _exporterLoader.ConfigureExporters(tracing, _options, _logger);
-
+            _options.Trace.Extensions?.ToList().ForEach(r => _extensionsLoader.AddTraceExtension(tracing, r, _logger));
 
         });
     }

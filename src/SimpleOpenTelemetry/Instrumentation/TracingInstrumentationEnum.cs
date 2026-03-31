@@ -2,7 +2,7 @@
 namespace SimpleOpenTelemetry.Instrumentation;
 
 // TODO Chad check these as some may be missing
-public enum TracingInstrumentationEnum
+public enum TraceInstrumentationEnum
 {
     AspNetCore,
     HttpClient,

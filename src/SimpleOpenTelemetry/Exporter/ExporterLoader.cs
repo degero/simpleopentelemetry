@@ -52,7 +52,7 @@ internal class ExporterLoader
     /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Exporters.Metrics,
+        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Metric.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _metricExporters, ExporterAssemblies.KnownMetricsExporters, logger);
 
@@ -69,7 +69,7 @@ internal class ExporterLoader
     /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Exporters.Tracing,
+        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Trace.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _traceExporters, ExporterAssemblies.KnownTraceExporters, logger);
 
@@ -86,7 +86,7 @@ internal class ExporterLoader
     /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
     public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Exporters.Logging,
+        => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Log.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg), 
             _logExporters, ExporterAssemblies.KnownLogExporters, logger);
 

@@ -1,79 +1,98 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Instrumentation;
 
-namespace SimpleOpenTelemetry.Exporter;
+namespace SimpleOpenTelemetry.Extensions;
 
 /// <summary>
-/// Load assembly and invoke tracing/metrics instrumentation method based on the available types
-/// linked to TraceInstrumentationEnum, MetricsInstrumentationEnum
-/// eg. MetricsInstrumentationEnum.AspNetCore =
+/// Load assembly and invoke tracing/metrics extension method based on the available types
+/// linked to TraceExtensionsEnum, MetricExtensionsEnum
+/// eg. MetricExtensionsEnum.AspNetCore =
 ///         OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions.AddAspNetCoreInstrumentation()
-///     in the seperate nupkg OpenTelemetry.Instrumentation.AspNetCore
+///     in the separate nupkg OpenTelemetry.Instrumentation.AspNetCore
 /// </summary>
-internal class InstrumentationLoader
+internal class ExtensionLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
     /// <summary>
-    /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
+    /// Initializes a new instance of the OpenTelemetryExtensionLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public InstrumentationLoader(IConfiguration configuration)
+    public ExtensionLoader(IConfiguration configuration)
     {
         _configuration = configuration;
         _assemblyExec = new AssemblyExecution();
     }
 
+
     /// <summary>
-    /// Adds a tracing instrumentation to the provided TracerProviderBuilder.
+    /// Adds a log extension to the provided LoggerProviderBuilder.
     /// </summary>
     /// <remarks>
-    /// Dynamically loads the instrumentation assembly and invokes the appropriate extension method.
+    /// Dynamically loads the extension assembly and invokes the appropriate extension method.
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
-    /// <param name="instrumentation">The instrumentation type to add.</param>
+    /// <param name="extension">The trace extension type to add.</param>
     /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
-    public void AddTracingInstrumentation(
-    TracerProviderBuilder builder,
-    TraceInstrumentationEnum instrumentation,
+    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
+    public void AddTraceExtension(
+    LoggerProviderBuilder builder,
+    LogExtensionsEnum extension,
     ILogger? logger = null)
-    => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations, logger);
+    => AddExtension(builder, extension, ExtensionAssemblies.KnownLogExtensions, logger);
 
     /// <summary>
-    /// Adds a metrics instrumentation to the provided MeterProviderBuilder.
+    /// Adds a trace extension to the provided TracerProviderBuilder.
     /// </summary>
     /// <remarks>
-    /// Dynamically loads the instrumentation assembly and invokes the appropriate extension method.
+    /// Dynamically loads the extension assembly and invokes the appropriate extension method.
+    /// Configuration can be provided via appsettings.json or environment variables.
+    /// </remarks>
+    /// <param name="builder">The TracerProviderBuilder to configure.</param>
+    /// <param name="extension">The trace extension type to add.</param>
+    /// <param name="logger">Optional logger for diagnostic information.</param>
+    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
+    public void AddTraceExtension(
+    TracerProviderBuilder builder,
+    TraceExtensionsEnum extension,
+    ILogger? logger = null)
+    => AddExtension(builder, extension, ExtensionAssemblies.KnownTraceExtensions, logger);
+
+    /// <summary>
+    /// Adds a metrics extension to the provided MeterProviderBuilder.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads the extension assembly and invokes the appropriate extension method.
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
-    /// <param name="instrumentation">The instrumentation type to add.</param>
+    /// <param name="extension">The metrics extension type to add.</param>
     /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
-    public void AddMetricsInstrumentation(
+    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
+    public void AddMetricsExtension(
         MeterProviderBuilder builder,
-        MetricInstrumentationEnum instrumentation,
+        MetricExtensionsEnum extension,
         ILogger? logger = null)
-        => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownMetricsInstrumentations, logger);
+        => AddExtension(builder, extension, ExtensionAssemblies.KnownMetricExtensions, logger);
 
-    private void AddInstrumentation<TBuilder, TEnum>(
+    private void AddExtension<TBuilder, TEnum>(
     TBuilder builder,
-    TEnum instrumentation,
-    Dictionary<TEnum, InstrumentationExtensionDescriptor> descriptors,
+    TEnum extension,
+    Dictionary<TEnum, ExtensionDescriptor> descriptors,
     ILogger? logger = null)
     where TEnum : notnull
     {
-        if (!descriptors.TryGetValue(instrumentation, out var descriptor))
+        if (!descriptors.TryGetValue(extension, out var descriptor))
             throw new InvalidOperationException(
-                $"Critical: {typeof(TEnum).Name} type not found: {instrumentation} to initialise instrumentation");
+                $"Critical: {typeof(TEnum).Name} type not found: {extension} to initialise extension");
 
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
 
@@ -84,7 +103,7 @@ internal class InstrumentationLoader
     private void TryInvokeExtension<TBuilder>(
         TBuilder builder,
         Assembly assembly,
-        InstrumentationExtensionDescriptor descriptor,
+        ExtensionDescriptor descriptor,
         ILogger? logger)
     {
         var (assemblyName, typeName, methodName, configurationSection) = descriptor;
@@ -106,7 +125,7 @@ internal class InstrumentationLoader
                 parameterlessMethod is null)
             {
                 throw new InvalidOperationException( // TODO chad add tests around these scenarios
-                    $"Failed registration {builderTypeName} instrumentation: '{methodName}'. " +
+                    $"Failed registration {builderTypeName} extension: '{methodName}'. " +
                     $"A configuration section '{configurationSection}' is required but not found in config file.");
             }
 
@@ -117,12 +136,12 @@ internal class InstrumentationLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            logger?.LogInformation("Successfully registered {TBuilder} instrumentation: {Method}", builderTypeName, methodName);
+            logger?.LogInformation("Successfully registered {TBuilder} extension: {Method}", builderTypeName, methodName);
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel instrumentation via {typeName}.{methodName}", ex);
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel extension via {typeName}.{methodName}", ex);
         }
     }
 

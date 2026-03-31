@@ -1,14 +1,9 @@
 using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
 
-internal class SimpleOpenTelemetryExportersOptions
-{
-    public List<SimpleOpenTelemetryExporterConfig> Tracing { get; set; } = new();
-    public List<SimpleOpenTelemetryExporterConfig> Logging { get; set; } = new();
-    public List<SimpleOpenTelemetryExporterConfig> Metrics { get; set; } = new();
-}
 
 /// <summary>
 /// Builtin supported OpenTelemetry SDK exporters
@@ -37,30 +32,70 @@ internal class SimpleOpenTelemetryExporterConfig
     public IConfigurationSection? Options { get; set; }
 }
 
+internal class SimpleOpenTelemetryMetricOptions
+{
+
+    /// <summary>
+    ///
+    /// </summary>
+    public MetricInstrumentationEnum[]? Instrumentations { get; set; }
+
+    public IConfigurationSection? InstrumentationConfig { get; set; }
+
+
+    /// <summary>
+    /// Defines which exporters to use for metrics.
+    /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
+    /// Or override for specific alternate targets when wanting multiple otlp exports
+    /// </summary>
+    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+
+    public MetricExtensionsEnum[]? Extensions { get; set; }
+
+}
+
+internal class SimpleOpenTelemetryTraceOptions 
+{
+     /// <summary>
+    ///
+    /// </summary>
+    public TraceInstrumentationEnum[]? Instrumentations { get; set; }
+
+    public IConfigurationSection? InstrumentationConfig { get; set; }
+
+    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+
+    public TraceExtensionsEnum[]? Extensions { get; set; }
+
+}
+
+internal class SimpleOpenTelemetryLogOptions 
+{
+    /// <summary>
+    /// Defines which exporters to use for logs.
+    /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
+    /// Or override for specific alternate targets when wanting multiple otlp exports
+    /// </summary>
+    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+
+    public LogExtensionsEnum[]? Extensions { get; set; }
+}
 
 /// <summary>
 /// Configuration options for SimpleOpenTelemetry Builder
 /// </summary>
 internal class SimpleOpenTelemetryBuilderOptions
 {
-    /// <summary>
-    /// Defines which exporters to use for traces, metrics, and logs.
-    /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
-    /// Or override for specific alternate targets when wanting multiple otlp exports
-    /// </summary>
-    public SimpleOpenTelemetryExportersOptions? Exporters { get; set; } = new();
+    public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
+
+    public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
+    
+    public SimpleOpenTelemetryLogOptions Log { get; set; } = new();
 
     /// <summary>
-    ///
+    /// Options for Vendor distro exporters
     /// </summary>
-    public TracingInstrumentationEnum[]? TracingInstrumentations { get; set; }
-
-    /// <summary>
-    ///
-    /// </summary>
-    public MetricsInstrumentationEnum[]? MetricsInstrumentations { get; set; }
-
-    public IConfigurationSection? TraceInstrumentationConfig { get; set; }
+    public IConfigurationSection? ExporterOptions { get; set; }
 
     /// <summary>
     /// Namespace names for additional metrics sources.
@@ -71,11 +106,6 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// Namespace names for additional trace sources. Wildcards accepted, eg Azure.*
     /// </summary>
     public string[]? TraceSources { get; set; }
-
-    /// <summary>
-    /// Options for Vendor distro exporters
-    /// </summary>
-    public IConfigurationSection? ExporterOptions { get; set; }
 
     /// <summary>
     /// Register resource detectors set by resource type name eg: aws, azure etc

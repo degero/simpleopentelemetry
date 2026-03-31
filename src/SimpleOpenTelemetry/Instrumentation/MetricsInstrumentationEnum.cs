@@ -1,7 +1,7 @@
 ﻿namespace SimpleOpenTelemetry.Instrumentation;
 
 // TODO Chad check these as some may be missing
-public enum MetricsInstrumentationEnum
+public enum MetricInstrumentationEnum
 {
     /* opentelemetry-dotnet-contrib */
     AspNetCore,
