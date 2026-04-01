@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Configuration;
 
 /// <summary>
 /// Extension methods for adding OpenTelemetry to service collection
@@ -25,7 +26,14 @@ public static class ServiceCollectionExtensions
         if (services == null)
             throw new ArgumentNullException(nameof(services));
 
+        if (configuration == null)
+            throw new ArgumentNullException(nameof(configuration));
+
         var otelBuilder = services.AddOpenTelemetry();
+
+        var section = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        if (!section.Exists())
+            return otelBuilder;
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
         return builder.Configure();

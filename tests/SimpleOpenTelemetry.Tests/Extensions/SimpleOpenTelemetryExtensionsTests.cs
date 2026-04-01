@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
@@ -21,19 +22,27 @@ public class SimpleOpenTelemetryExtensionsTests
     [Fact]
     public void AddSimpleOpenTelemetry_ThrowsOnNullServices()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = "svc",
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] =
-                    "service.version=1.0.0,deployment.environment.name=dev"
-            })
-            .Build();
+        var config = new ConfigurationBuilder().Build();
 
         IServiceCollection? services = null;
 
         Assert.Throws<System.ArgumentNullException>(() =>
             ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config));
+    }
+
+    [Fact]
+    public void AddSimpleOpenTelemetry_DoesNotConfigureBuilderWhenSimpleOpenTelemetrySectionIsMissing()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>())
+            .Build();
+
+        var services = new ServiceCollection();
+        services.AddSimpleOpenTelemetry(config);
+
+        using var provider = services.BuildServiceProvider();
+
+        Assert.Null(provider.GetService<TracerProvider>());
     }
 
     [Fact]

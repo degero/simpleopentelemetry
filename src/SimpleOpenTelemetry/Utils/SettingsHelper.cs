@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.Configuration;
 
 namespace SimpleOpenTelemetry.Utils;
 
@@ -7,6 +8,14 @@ namespace SimpleOpenTelemetry.Utils;
 /// </summary>
 public static class SettingsHelper
 {
+
+    public static bool HasSimpleOpenTelemetrySection(IConfiguration configuration, string sectionName)
+    {
+        var simpleOtelSection = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        return simpleOtelSection.GetSection(sectionName).Exists();
+    }
+
+
     // TODO Chad get calling assembly name
     /// <summary>
     /// Get env var OTEL_SERVICE_NAME or fallback to calling assembly if no setting

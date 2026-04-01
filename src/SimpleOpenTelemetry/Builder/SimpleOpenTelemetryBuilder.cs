@@ -15,6 +15,7 @@ using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Propagator;
 using SimpleOpenTelemetry.Resource;
 using SimpleOpenTelemetry.Sampler;
+using SimpleOpenTelemetry.Utils;
 
 
 /// <summary>
@@ -127,6 +128,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         return _builder;
     }
 
+    
 
 
     // TODO Chad just use extension method to validate after all builders are done
@@ -179,6 +181,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureMetrics()
     {
+        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Metric)))
+            return;
+
         _otelBuilder.WithMetrics(metrics =>
         {
             metrics.SetMaxMetricStreams(2000);
@@ -206,6 +211,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureTracing(ResourceBuilder? resourceBuilder)
     {
+        var shouldConfigureTracing = SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Trace));
+
+        if (!shouldConfigureTracing)
+            return;
 
         _otelBuilder.WithTracing(tracing =>
         {
@@ -240,11 +249,13 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureLogging()
     {
+        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Log)))
+            return;
+
         _otelBuilder.WithLogging(logging =>
         {
             // Iterate over exporters for this montioring type and add them
             _exporterLoader.ConfigureExporters(logging, _options, _logger);
-
         });
     }
 
