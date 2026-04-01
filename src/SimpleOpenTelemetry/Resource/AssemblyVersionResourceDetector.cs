@@ -14,11 +14,7 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
     /// <returns></returns>
     public Resource Detect()
     {
-        // TODO chad remove
-        // // Only set verion from assemly if not set in service.version attribute
-        // if (!SettingsHelper.OtelResourceAttributes(_configuration).ToLower()
-        //     .Contains(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion))
-        // {
+       
         try 
         {
             // TODO Chad test on a dotnet build -p:Version=X
