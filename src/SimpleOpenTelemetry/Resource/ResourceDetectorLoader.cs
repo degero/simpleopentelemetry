@@ -13,15 +13,15 @@ internal class ResourceDetectorLoader
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
-    // Available 3rd parter extensions
-    internal readonly Array _resourceExtensions = Enum.GetValues<ResourceExtensionEnum>();
+    // Available 3rd parter detectors
+    internal readonly Array _resourceExtensions = Enum.GetValues<ResourceDetectorEnum>();
 
-    internal readonly Dictionary<ResourceExtensionEnum, ResourceExtensionDescriptor> _descriptors = ResourceExtensionAssemblies.KnownResourceExtensions;
+    internal readonly Dictionary<ResourceDetectorEnum, ResourceDetectorDescriptor> _descriptors = ResourceDetectorAssemblies.KnownResourceDetectors;
 
     /// <summary>
     /// Initializes a new instance of the ResourceExtensionLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration containing resource extension settings.</param>
+    /// <param name="configuration">The application configuration containing resource detector settings.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public ResourceDetectorLoader(IConfiguration configuration)
     {
@@ -30,53 +30,53 @@ internal class ResourceDetectorLoader
     }
 
     /// <summary>
-    /// Sets up resource detectors using extension method invocations on the provided ResourceBuilder.
+    /// Sets up resource detectors using detector method invocations on the provided ResourceBuilder.
     /// </summary>
     /// <remarks>
-    /// Dynamically loads and configures resource extensions from registered assemblies.
+    /// Dynamically loads and configures resource detectors from registered assemblies.
     /// </remarks>
     /// <param name="builder">The ResourceBuilder to configure.</param>
     /// <param name="logger">Logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when resource extension registration fails.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when resource detector registration fails.</exception>
     public void AddResourceDetectors(ResourceBuilder builder,
         SimpleOpenTelemetryBuilderOptions options,
         ILogger? logger = null)
     {
-        var extensions = options.ResourceDetectors;
+        var detectors = options.ResourceDetectors;
 
-        if (extensions is not null && extensions.Any())
+        if (detectors is not null && detectors.Any())
         {
-            // Determine the valid extensions for the given builder type
+            // Determine the valid detectors for the given builder type
             var validResourceExtensions = _resourceExtensions.Cast<object>()
                 .Select(e => e.ToString())
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            for (var i = 0; i < extensions.Count(); i++)
+            for (var i = 0; i < detectors.Count(); i++)
             {
-                var item = extensions[i];
+                var item = detectors[i];
 
                 if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
                 {
-                    var matchedResourceExtension = Enum.Parse(typeof(ResourceExtensionEnum), item, ignoreCase: true);
+                    var matchedResourceExtension = Enum.Parse(typeof(ResourceDetectorEnum), item, ignoreCase: true);
 
-                    if (!_descriptors.TryGetValue((ResourceExtensionEnum)matchedResourceExtension , out var descriptor))
+                    if (!_descriptors.TryGetValue((ResourceDetectorEnum)matchedResourceExtension , out var descriptor))
                         throw new InvalidOperationException(
-                            $"Critical: {typeof(ResourceExtensionEnum).Name} type not found: {matchedResourceExtension} to initialise exporter");
+                            $"Critical: {typeof(ResourceDetectorEnum).Name} type not found: {matchedResourceExtension} to initialise exporter");
 
-                    AddResourceDetectorExtension(builder, descriptor, logger);
+                    AddResourceDetector(builder, descriptor, logger);
                 }
                 else 
                 {
                     // Throw an exception on an unknown exporter type
-                    throw new InvalidOperationException($"Unsupported Resource Extension type: {item}. Please check your SimpleOpenTelemetry Configuration.");
+                    throw new InvalidOperationException($"Unsupported Resource Detector type: {item}. Please check your SimpleOpenTelemetry Configuration.");
                 }
             }
         }
     }
 
-    private void AddResourceDetectorExtension(
+    private void AddResourceDetector(
     ResourceBuilder builder,
-    ResourceExtensionDescriptor descriptor,
+    ResourceDetectorDescriptor descriptor,
     ILogger? logger = null)
     {
        
@@ -102,13 +102,13 @@ internal class ResourceDetectorLoader
                 else
                     _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
 
-                logger?.LogInformation("Successfully registered {TBuilder} Resource Extension: {Method}", builderTypeName, methodName);
+                logger?.LogInformation("Successfully registered {TBuilder} Resource Detector: {Method}", builderTypeName, methodName);
             });
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel Resource Detector Extension via {typeName}.{methodName}", ex);
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel Resource Detector via {typeName}.{methodName}", ex);
         }
     }
 

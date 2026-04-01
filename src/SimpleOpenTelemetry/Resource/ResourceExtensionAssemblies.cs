@@ -1,13 +1,13 @@
 namespace SimpleOpenTelemetry.Resource;
 
-internal record ResourceExtensionDescriptor(
+internal record ResourceDetectorDescriptor(
      string AssemblyName,
      string TypeName,
      string[] MethodNames,
      string? ConfigurationSection
 );
 
-public enum ResourceExtensionEnum
+public enum ResourceDetectorEnum
 {
     /* opentelemetry-dotnet-contrib */
     Azure,
@@ -18,20 +18,20 @@ public enum ResourceExtensionEnum
 /// <summary>
 /// A list of known opentelemetry-dotnet-contrib and vendor resourcebuilder extensions
 /// </summary>
-internal static class ResourceExtensionAssemblies
+internal static class ResourceDetectorAssemblies
 {
-    public static readonly Dictionary<ResourceExtensionEnum, ResourceExtensionDescriptor>
+    public static readonly Dictionary<ResourceDetectorEnum, ResourceDetectorDescriptor>
        
-        KnownResourceExtensions = new()
+        KnownResourceDetectors = new()
         {
             /* Contrib detectors */
-            [ResourceExtensionEnum.Azure] = new(
+            [ResourceDetectorEnum.Azure] = new(
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",
                 new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"},
                 null),
              
-            [ResourceExtensionEnum.AWS] = new(
+            [ResourceDetectorEnum.AWS] = new(
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
