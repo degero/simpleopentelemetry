@@ -17,7 +17,7 @@ public class PropagatorLoaderTests
     private readonly Mock<ILogger> _logger = new();
 
     [Fact]
-    public void AddPropagators_WhenOptionsPropagatorsIsNull_SetsNoopTextMapPropagator()
+    public void AddPropagators_WhenOptionsPropagatorsIsNull_SetsDefaultCompositeTextMapPropagator()
     {
         var original = Propagators.DefaultTextMapPropagator;
 
@@ -31,7 +31,40 @@ public class PropagatorLoaderTests
 
             sut.AddPropagators(options, _logger.Object);
 
-            Assert.Equal("OpenTelemetry.Context.Propagation.NoopTextMapPropagator", Propagators.DefaultTextMapPropagator.GetType().FullName);
+            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var innerPropagators = GetCompositePropagators(composite).ToList();
+
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
+            Assert.IsType<BaggagePropagator>(innerPropagators[1]);
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(original);
+        }
+    }
+
+    [Fact]
+    public void AddPropagators_WhenOptionsPropagatorsIsEmpty_SetsDefaultCompositeTextMapPropagator()
+    {
+        var original = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            var sut = new PropagatorLoader(_configuration);
+            var options = new SimpleOpenTelemetryBuilderOptions
+            {
+                Propagators = Array.Empty<string>()
+            };
+
+            sut.AddPropagators(options, _logger.Object);
+
+            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var innerPropagators = GetCompositePropagators(composite).ToList();
+
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
+            Assert.IsType<BaggagePropagator>(innerPropagators[1]);
         }
         finally
         {

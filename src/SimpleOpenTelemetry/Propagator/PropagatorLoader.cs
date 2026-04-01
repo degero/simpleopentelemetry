@@ -47,12 +47,19 @@ public class PropagatorLoader
         try
         {
 
-            if (propagators is null || !propagators.Any() ||
-                propagators.Any(p => string.Equals(p, PropagatorEnum.None.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (propagators is null || !propagators.Any())
+            {
+                var defaultPropagator = CreateDefaultPropagator();
+                Sdk.SetDefaultTextMapPropagator(defaultPropagator);
+                logger?.LogInformation("Registered default CompositeTextMapPropagator because SimpleOpenTelemetry::Propagators was null or empty.");
+                return;
+            }
+
+            if (propagators.Any(p => string.Equals(p, PropagatorEnum.None.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 var noopPropagator = CreatePropagator(_descriptors[PropagatorEnum.None], logger);
                 Sdk.SetDefaultTextMapPropagator(noopPropagator);
-                logger?.LogInformation("Registered NoopTextMapPropagator because SimpleOpenTelemetry::Propagators set as null or included 'none'.");
+                logger?.LogInformation("Registered NoopTextMapPropagator because SimpleOpenTelemetry::Propagators included 'none'.");
                 return;
             }
 
@@ -125,5 +132,14 @@ public class PropagatorLoader
         {
             throw new Exception($"SimpleOpenTelemetry Failed to register otel propagator {typeName}", ex);
         }
+    }
+
+    private static TextMapPropagator CreateDefaultPropagator()
+    {
+        return new CompositeTextMapPropagator(new TextMapPropagator[]
+        {
+            new TraceContextPropagator(),
+            new BaggagePropagator(),
+        });
     }
 }
