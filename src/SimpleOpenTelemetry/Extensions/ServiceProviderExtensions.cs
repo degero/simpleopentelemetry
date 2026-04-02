@@ -27,7 +27,7 @@ public static class ServiceProviderExtensions
     /// <param name="services">The service provider instance.</param>
     /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown when OpenTelemetry is not configured or required resource attributes are missing or empty.</exception>
-    public static void SimpleOpenTelemetryValidate(this IServiceProvider services)
+    public static void SimpleOpenTelemetryValidate(this IServiceProvider services) // TODO add option to log warning with Ilogger instead of throwing
     {
         ArgumentNullException.ThrowIfNull(services);
 

@@ -10,9 +10,20 @@ internal record ResourceDetectorDescriptor(
 public enum ResourceDetectorEnum
 {
     /* opentelemetry-dotnet-contrib */
+    Host, 
+
+    Container,
+
+    OS,
+
+    Process,
+
+    ProcessRuntime,
+
+    /* opentelemetry-dotnet-contrib platform specific */
     Azure,
     AWS
-    // GCP - Still in Development
+    // GCP - Still in Development state
 }
 
 /// <summary>
@@ -24,7 +35,39 @@ internal static class ResourceDetectorAssemblies
        
         KnownResourceDetectors = new()
         {
-            /* Contrib detectors */
+            /* opentelemetry-dotnet-contrib */
+            [ResourceDetectorEnum.Host] = new(
+                "OpenTelemetry.Resources.Host",
+                "OpenTelemetry.Resources.HostResourceBuilderExtensions",
+                new string[] {"AddHostDetector"},
+                null),
+
+            [ResourceDetectorEnum.Container] = new(
+                "OpenTelemetry.Resources.Container",
+                "OpenTelemetry.Resources.ContainerResourceBuilderExtensions",
+                new string[] {"AddContainerDetector"},
+                null),
+
+            [ResourceDetectorEnum.OS] = new(
+                "OpenTelemetry.Resources.OperatingSystem",
+                "OpenTelemetry.Resources.OperatingSystemResourceBuilderExtensions",
+                new string[] {"AddOperatingSystemDetector"},
+                null),
+
+            [ResourceDetectorEnum.Process] = new(
+                "OpenTelemetry.Resources.Process",
+                "OpenTelemetry.Resources.ProcessResourceBuilderExtensions",
+                new string[] {"AddProcessDetector"},
+                null),
+
+            [ResourceDetectorEnum.ProcessRuntime] = new(
+                "OpenTelemetry.Resources.ProcessRuntime",
+                "OpenTelemetry.Resources.ProcessRuntimeResourceBuilderExtensions",
+                new string[] {"AddProcessRuntimeDetector"},
+                null),
+                
+
+            /* opentelemetry-dotnet-contrib platform specific */
             [ResourceDetectorEnum.Azure] = new(
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",

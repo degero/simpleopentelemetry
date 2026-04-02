@@ -205,6 +205,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             _options.Metric.Extensions?.ToList().ForEach(r => _extensionsLoader.AddMetricsExtension(metrics, r, _logger));
 
+
         });
     }
 
@@ -243,6 +244,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // Iterate over exporters for this montioring type
             _options.Trace.Extensions?.ToList().ForEach(r => _extensionsLoader.AddTraceExtension(tracing, r, _logger));
+
+            _options.Trace.ActivityProcessors?.ToList().ForEach(r => tracing.AddProcessor())
+
 
         });
     }
