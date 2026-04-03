@@ -58,7 +58,6 @@ internal class SimpleOpenTelemetryMetricOptions
 internal class SimpleOpenTelemetryMeterProviderSettings
 {
     public int? MetricLimit { get; set; }
-    public int? CardinalityLimit { get; set; }
 }
 
 internal class SimpleOpenTelemetryTraceOptions 
@@ -80,7 +79,7 @@ internal class SimpleOpenTelemetryTraceOptions
 
 internal class SimpleOpenTelemetryTraceProviderSettings
 {
-    public bool SetErrorStatusOnException { get; set; }
+    public bool? SetErrorStatusOnException { get; set; }
 }
 
 internal class SimpleOpenTelemetryLogOptions 

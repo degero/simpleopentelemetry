@@ -187,9 +187,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _otelBuilder.WithMetrics(metrics =>
         {
-            metrics.SetMaxMetricStreams(2000);
-            
-            // add in tracing instrumenation options from config
+            // Apply metric provider settings
+            if (_options.Metric.Settings?.MetricLimit != null)
+                metrics.SetMaxMetricStreams(_options.Metric.Settings.MetricLimit.Value);
+
+            // add in tracing instrumentation options from config
             _options.Metric.Instrumentations?.ToList().ForEach(r =>
             {
                 _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
@@ -241,6 +243,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             //    // TODO Chad check and any other tracing settings
             //    // tracing.RecordException = true;
+
+            if (_options.Trace.Settings.SetErrorStatusOnException.HasValue)
+                tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);
 
             // Iterate over exporters for this montioring type
             _options.Trace.Extensions?.ToList().ForEach(r => _extensionsLoader.AddTraceExtension(tracing, r, _logger));
