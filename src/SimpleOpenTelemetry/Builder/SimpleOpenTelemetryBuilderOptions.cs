@@ -28,7 +28,6 @@ internal class SimpleOpenTelemetryExporterConfig
 {
     public SimpleOpenTelemetryExporterType Type { get; set; }
 
-
     public IConfigurationSection? Options { get; set; }
 }
 
@@ -52,6 +51,14 @@ internal class SimpleOpenTelemetryMetricOptions
 
     public MetricExtensionsEnum[]? Extensions { get; set; }
 
+    public SimpleOpenTelemetryMeterProviderSettings? Settings { get; set; }
+
+}
+
+internal class SimpleOpenTelemetryMeterProviderSettings
+{
+    public int? MetricLimit { get; set; }
+    public int? CardinalityLimit { get; set; }
 }
 
 internal class SimpleOpenTelemetryTraceOptions 
@@ -67,6 +74,13 @@ internal class SimpleOpenTelemetryTraceOptions
 
     public TraceExtensionsEnum[]? Extensions { get; set; }
 
+    public SimpleOpenTelemetryTraceProviderSettings? Settings { get; set; }
+
+}
+
+internal class SimpleOpenTelemetryTraceProviderSettings
+{
+    public bool SetErrorStatusOnException { get; set; }
 }
 
 internal class SimpleOpenTelemetryLogOptions 

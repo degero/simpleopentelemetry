@@ -25,16 +25,20 @@ using SimpleOpenTelemetry.Utils;
 internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
     private SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
+
     private IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
 
     private readonly TracerProviderBuilder _tracerProviderBuilder;
+
     private readonly IOpenTelemetryBuilder _otelBuilder;
+
     private readonly IConfiguration _configuration;
 
     private ILogger _logger;
 
     // TODO Chad extract interface for testing / Change name
     private readonly InstrumentationLoader _openTelemetryInstrumentationLoader;
+
     private readonly ExporterLoader _exporterLoader;
 
     private readonly ResourceDetectorLoader _resourceDetectorLoader;
@@ -98,9 +102,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         ConfigureLogging();
 
         _propagatorLoader.AddPropagators(_options, _logger);
-
-         // TODO Chad add in validation step here to check for common config issues like missing service.name or mismatched OTLP exporter settings before app starts sending data
-        // TODO Chad add in other exporter registrations if possible
 
         return _otelBuilder;
     }
@@ -205,7 +206,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             _options.Metric.Extensions?.ToList().ForEach(r => _extensionsLoader.AddMetricsExtension(metrics, r, _logger));
 
-
         });
     }
 
@@ -244,10 +244,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // Iterate over exporters for this montioring type
             _options.Trace.Extensions?.ToList().ForEach(r => _extensionsLoader.AddTraceExtension(tracing, r, _logger));
-
-            _options.Trace.ActivityProcessors?.ToList().ForEach(r => tracing.AddProcessor())
-
-
         });
     }
 
