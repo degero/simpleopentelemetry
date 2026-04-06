@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Extensions;
+using System.IO;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.Builder;
@@ -13,7 +15,7 @@ namespace SimpleOpenTelemetryTests.Builder;
 public class SimpleOpenTelemetryBuilderTests
 {
     [Fact]
-    public void Configure_DoesNotSetupTracing_WhenTraceConfigSectionIsMissing()
+    public void Configure_ThrowsWhenSimpleOpenTelemetryConfigSectionIsMissing()
     {
         // Arrange: Empty configuration with no SimpleOpenTelemetry section
         var config = new ConfigurationBuilder()
@@ -21,17 +23,13 @@ public class SimpleOpenTelemetryBuilderTests
 
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddConfiguration(config);
-        builder.AddSimpleOpenTelemetry();
 
-        using var host = builder.Build();
-
-        // Assert: TracerProvider should not be registered when no Trace config exists
-        var tracerProvider = host.Services.GetService<TracerProvider>();
-        Assert.Null(tracerProvider);
+        var exception = Assert.Throws<Exception>(() => builder.AddSimpleOpenTelemetry());
+        Assert.Contains("No configuration section 'SimpleOpenTelemetry'", exception.Message);
     }
 
     [Fact]
-    public void Configure_DoesNotSetupMetrics_WhenMetricConfigSectionIsMissing()
+    public void Configure_ThrowsWhenSimpleOpenTelemetryConfigSectionIsMissing_ForMetrics()
     {
         // Arrange: Empty configuration with no SimpleOpenTelemetry section
         var config = new ConfigurationBuilder()
@@ -39,17 +37,13 @@ public class SimpleOpenTelemetryBuilderTests
 
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddConfiguration(config);
-        builder.AddSimpleOpenTelemetry();
 
-        using var host = builder.Build();
-
-        // Assert: MeterProvider should not be registered when no Metric config exists
-        var meterProvider = host.Services.GetService<MeterProvider>();
-        Assert.Null(meterProvider);
+        var exception = Assert.Throws<Exception>(() => builder.AddSimpleOpenTelemetry());
+        Assert.Contains("No configuration section 'SimpleOpenTelemetry'", exception.Message);
     }
 
     [Fact]
-    public void Configure_DoesNotSetupLogging_WhenLogConfigSectionIsMissing()
+    public void Configure_ThrowsWhenSimpleOpenTelemetryConfigSectionIsMissing_ForLogging()
     {
         // Arrange: Empty configuration with no SimpleOpenTelemetry section
         // Note: HostApplicationBuilder automatically provides LoggerProvider via AddLogging
@@ -58,16 +52,62 @@ public class SimpleOpenTelemetryBuilderTests
 
         var builder = Host.CreateApplicationBuilder();
         builder.Configuration.AddConfiguration(config);
+
+        var exception = Assert.Throws<Exception>(() => builder.AddSimpleOpenTelemetry());
+        Assert.Contains("No configuration section 'SimpleOpenTelemetry'", exception.Message);
+    }
+
+    [Fact]
+    public void Configure_SetsUpTracing_WhenTraceExportersAreConfigured()
+    {
+        // Arrange: Configuration with trace exporters (using OTLP which is built-in)
+        var jsonConfig = @"
+        {
+          ""SimpleOpenTelemetry"": {
+            ""Trace"": {
+              ""Exporters"": [
+                { ""type"": ""otlp"" }
+              ]
+            }
+          }
+        }";
+
+        var config = new ConfigurationBuilder()
+            .AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonConfig)))
+            .Build();
+
+        var builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddConfiguration(config);
         builder.AddSimpleOpenTelemetry();
 
         using var host = builder.Build();
 
-        // Assert: LoggerProvider is created but with no OpenTelemetry processors configured
-        // (Since SimpleOpenTelemetry Log config is missing)
-        var loggerProvider = host.Services.GetService<LoggerProvider>();
-
-        // LoggerProvider exists from Host.AddLogging(), but OTel logging processors not added
-        Assert.Null(loggerProvider);
+        // Assert: TracerProvider should be registered when Trace exporters are configured
+        var tracerProvider = host.Services.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
     }
 
+  [Theory]
+  [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true, ""IncludeScopes"": true, ""ParseStateValues"": true }", true, true, true)]
+  [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true }", true, false, false)]
+  [InlineData(@"""Exporters"": []", false, false, false)]
+  public void Configure_SetsUpLoggingOptions_WhenAreConfigured(string jsonSeg, bool formatMsg, bool inclScope, bool parseState)
+  {
+      var jsonConfig = $@"{{ ""SimpleOpenTelemetry"": {{ ""Log"": {{ {jsonSeg} }} }} }}";
+
+        var config = new ConfigurationBuilder()
+            .AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonConfig)))
+            .Build();
+
+        var builder = Host.CreateApplicationBuilder();
+        builder.Configuration.AddConfiguration(config);
+        builder.AddSimpleOpenTelemetry();
+
+        using var host = builder.Build();
+
+        var options = host.Services.GetRequiredService<IOptions<OpenTelemetryLoggerOptions>>().Value;
+        Assert.Equal(formatMsg, options.IncludeFormattedMessage);
+        Assert.Equal(inclScope, options.IncludeScopes);
+        Assert.Equal(parseState, options.ParseStateValues);
+    }
 }

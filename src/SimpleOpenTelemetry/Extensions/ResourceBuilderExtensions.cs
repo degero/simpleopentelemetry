@@ -1,4 +1,5 @@
 using OpenTelemetry.Resources;
+using SimpleOpenTelemetry.Resource;
 
 namespace SimpleOpenTelemetry.Extensions;
 

@@ -2,6 +2,9 @@
 using System.Reflection;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Utils;
+using OtelResource = OpenTelemetry.Resources.Resource;
+
+namespace SimpleOpenTelemetry.Resource;
 
 internal class AssemblyVersionResourceDetector : IResourceDetector
 {
@@ -12,7 +15,7 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
     /// Currently there is nothing in opentelemetry-dotnet-contrib to do this
     /// </summary>
     /// <returns></returns>
-    public Resource Detect()
+    public OtelResource Detect()
     {
        
         try 
@@ -23,13 +26,13 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
                 .InformationalVersion?.Split('+')[0];
 
             if (!string.IsNullOrWhiteSpace(version))
-                return new Resource(new List<KeyValuePair<string, object>>() { new (OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version) });
+                return new OtelResource(new List<KeyValuePair<string, object>>() { new (OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version) });
             else 
-                return Resource.Empty;
+                return OtelResource.Empty;
         }
         catch
         {}
 
-        return Resource.Empty;
+        return OtelResource.Empty;
     }
 }

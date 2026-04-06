@@ -92,6 +92,17 @@ internal class SimpleOpenTelemetryLogOptions
     public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
 
     public LogExtensionsEnum[]? Extensions { get; set; }
+
+    public SimpleOpenTelemetryLogProviderSettings? Settings { get;set; }
+}
+
+internal class SimpleOpenTelemetryLogProviderSettings
+{
+    public bool? IncludeFormattedMessage { get; set; }
+
+    public bool? IncludeScopes { get; set; }
+    
+    public bool? ParseStateValues { get; set; }
 }
 
 /// <summary>
@@ -99,6 +110,10 @@ internal class SimpleOpenTelemetryLogOptions
 /// </summary>
 internal class SimpleOpenTelemetryBuilderOptions
 {
+    public const string TraceSectionName = "Trace";
+    public const string LogSectionName = "Log";
+    public const string MetricSectionName = "Metric";
+
     public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
 
     public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
