@@ -69,8 +69,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         {
             builder.AddFilter("Microsoft", LogLevel.Warning)
                .AddFilter("System", LogLevel.Warning)
-               .AddFilter("SampleApp.Program", LogLevel.Debug)
-               .AddConsole();
+               .AddFilter("SampleApp.Program", LogLevel.Debug);
         }).CreateLogger<SimpleOpenTelemetryBuilder>();
     }
 
