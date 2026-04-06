@@ -8,10 +8,10 @@
 
     <!-- NuGet Package Properties -->
     <PackageId>SimpleOpenTelemetry</PackageId>
-    <Version>0.0.1</Version>
+    <Version>0.0.1-alpha.1</Version>
     <Authors>Chad Paynter</Authors>
     <Company></Company>
-    <Description>Simplified OpenTelemetry integration for .NET applications. Provides a fluent builder API that abstracts the complexity of OpenTelemetry configuration, making it easy to set up distributed tracing, instrumentation, and exporters. Supports multiple exporters (OTLP, Azure Monitor, New Relic) and automatic instrumentation for common libraries.</Description>
+    <Description>A lightweight, low-friction .NET library providing a fast and simple way to add OpenTelemetry to .NET applications via IConfiguration. Example configurations can be dropped in, giving low hassle set up of distributed tracing, instrumentation, exporters, and more.</Description>
     <PackageTags>opentelemetry;telemetry;monitoring;traces;observability</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/degero/SimpleOpenTelemetry</RepositoryUrl>

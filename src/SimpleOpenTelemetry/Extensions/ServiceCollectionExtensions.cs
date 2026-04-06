@@ -29,11 +29,12 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             throw new ArgumentNullException(nameof(configuration));
 
-        var otelBuilder = services.AddOpenTelemetry();
-
         var section = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        
         if (!section.Exists())
-            return otelBuilder;
+            throw new Exception($"No configuration section '{SimpleOpenTelemetryConfiguration.SectionName}'. This is required for SimpleOpenTelemetry");
+
+        var otelBuilder = services.AddOpenTelemetry();
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
         return builder.Configure();

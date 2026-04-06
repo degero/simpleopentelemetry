@@ -12,8 +12,6 @@ public enum PropagatorEnum
     
     Baggage,
 
-    CompositeTextMap,
-
     TraceContext,
 
     /* opentelemetry-dotnet - OpenTelemetry.Extensions.Propagators.nupkg*/
@@ -41,10 +39,6 @@ internal static class PropagatorAssemblies
             [PropagatorEnum.Baggage] = new(
                 "OpenTelemetry.Api",
                 "OpenTelemetry.Context.Propagation.BaggagePropagator"),
-
-            [PropagatorEnum.CompositeTextMap] = new(
-                "OpenTelemetry.Api",
-                "OpenTelemetry.Context.Propagation.CompositeTextMapPropagator"),
 
             [PropagatorEnum.TraceContext] = new(
                 "OpenTelemetry.Api",
