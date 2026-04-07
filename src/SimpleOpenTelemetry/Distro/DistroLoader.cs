@@ -1,0 +1,104 @@
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using OpenTelemetry;
+using SimpleOpenTelemetry.Builder;
+
+namespace SimpleOpenTelemetry.Distro;
+
+/// <summary>
+/// Load distro based on the available types linked to DistroEnum
+/// </summary>
+internal class DistroLoader
+{
+    private readonly IConfiguration _configuration;
+    private readonly AssemblyExecution _assemblyExec;
+    private readonly Array _distros = Enum.GetValues<DistroEnum>();
+
+    private readonly Dictionary<DistroEnum, DistroDescriptor> _descriptors = DistroAssemblies.KnownDistros;
+
+    /// <summary>
+    /// Initializes a new instance of the DistroLoader class.
+    /// </summary>
+    /// <param name="configuration">The application configuration.</param>
+    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
+    public DistroLoader(IConfiguration configuration)
+    {
+        _configuration = configuration;
+        _assemblyExec = new AssemblyExecution();
+    }
+
+    public bool LoadDistro(IOpenTelemetryBuilder builder,
+        SimpleOpenTelemetryBuilderOptions options,
+        ILogger? logger = null)
+    {
+        var distro = options.Distro;
+
+        if (!string.IsNullOrWhiteSpace(distro))
+        {
+            var validDistros = _distros.Cast<object>()
+                .Select(e => e.ToString())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            if (validDistros.Cast<object>().Any(e => string.Equals(e.ToString(), distro, StringComparison.OrdinalIgnoreCase)))
+            {
+                var matchedDistro = Enum.Parse(typeof(DistroEnum), distro, ignoreCase: true);
+
+                if (!_descriptors.TryGetValue((DistroEnum)matchedDistro , out var descriptor))
+                    throw new InvalidOperationException(
+                        $"Critical: {typeof(DistroEnum).Name} type not found: {matchedDistro} to initialise distro");
+                
+                TryInvokeExtension(builder as OpenTelemetryBuilder, descriptor, logger);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void TryInvokeExtension(
+        OpenTelemetryBuilder builder,
+        DistroDescriptor descriptor,
+        ILogger? logger)
+    {
+
+        var (assemblyName, typeName, methodName, configurationSection) = descriptor;
+        var assembly = _assemblyExec.GetAssembly(assemblyName, logger);
+
+        try
+        {
+            var builderType = typeof(OpenTelemetryBuilder);
+            var builderTypeName = builder.GetType().Name;
+
+            var type = assembly.GetType(typeName)
+                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+
+            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
+            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
+
+            // attempt Action<TOptions> path only when section exists in config
+            if (descriptor.ConfigurationSection is not null &&
+                actionMethod is not null &&
+                parameterlessMethod is null)
+            {
+                throw new InvalidOperationException( // TODO chad add tests around these scenarios
+                    $"Failed registration {builderTypeName} distro: '{methodName}'. " +
+                    $"A configuration section '{configurationSection}' is required but not found in config file.");
+            }
+
+            var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
+
+            if (section is not null && section.Exists())
+                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
+            else
+                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
+
+            logger?.LogInformation("Successfully registered {TBuilder} distro: {Method}", builderTypeName, methodName);
+
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"SimpleOpenTelemetry Failed to register otel distro via {typeName}.{methodName}", ex);
+        }
+    }
+
+}

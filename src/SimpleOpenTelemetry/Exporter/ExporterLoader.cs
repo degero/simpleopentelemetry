@@ -156,7 +156,6 @@ internal class ExporterLoader
                 // TODO: fix to use a flag if this vendor lib has options, refac and clean all this crap codegen up
                 var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(descriptor, item) : null;
 
-
                 AddExporter(builder, descriptor, config, logger);
             }
             else 

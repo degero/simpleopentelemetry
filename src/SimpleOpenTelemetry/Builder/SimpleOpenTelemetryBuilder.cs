@@ -10,6 +10,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
+using SimpleOpenTelemetry.Distro;
 using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Propagator;
@@ -49,6 +50,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly ExtensionLoader _extensionsLoader;
 
+    private readonly DistroLoader _distroLoader;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder and load in configuration
     /// </summary>
@@ -63,6 +66,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _samplerLoader = new(config);
         _propagatorLoader = new(config);
         _extensionsLoader = new(config);
+        _distroLoader = new(config);
 
         // Load in configuration from file
         var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
@@ -80,7 +84,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         {
             builder.AddFilter("Microsoft", LogLevel.Warning)
                .AddFilter("System", LogLevel.Warning)
-               .AddFilter("SampleApp.Program", LogLevel.Debug);
+               .AddFilter("SampleApp.Program", LogLevel.Debug)
+               .AddConsole();
         }).CreateLogger<SimpleOpenTelemetryBuilder>();
     }
 
@@ -98,6 +103,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         var resourceBuilder = ConfigureResourceAttributes();
 
+        // Check and load distro, this will skip any other configuration
+        if (_distroLoader.LoadDistro(_otelBuilder, _options, _logger))
+            return _otelBuilder;
+
         ConfigureMetrics();
 
         ConfigureTracing(resourceBuilder);
@@ -107,6 +116,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _propagatorLoader.AddPropagators(_options, _logger);
 
         return _otelBuilder;
+    }
+
+    private bool LoadDistro()
+    {
+        throw new NotImplementedException();
     }
 
     private ResourceBuilder? ConfigureResourceAttributes()
@@ -153,10 +167,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             });
 
             // add in meters
-            _options.CustomMeters?.ToList().ForEach(r =>
-            {
-                metrics.AddMeter(r);
-            });
+            _options.CustomMeters?.ToList().ForEach(r => metrics.AddMeter(r));
 
             if (_options.Metric.Exporters is not null)
                 _exporterLoader.ConfigureExporters(metrics, _options, _logger);
@@ -180,7 +191,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);
 
             // add in tracing instrumenation options from config
-            _options.Trace.Instrumentations?.ToList().ForEach(r => _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger));
+            _options.Trace.Instrumentations?.ToList().ForEach(r => {
+                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
+            });
 
             // add trace sources from config
             _options.TraceSources?.ToList().ForEach(r => tracing.AddSource(r));
@@ -209,6 +222,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             }, 
             options =>
             {
+                
                 if (_options.Log.Settings?.IncludeFormattedMessage is not null)
                     options.IncludeFormattedMessage = _options.Log.Settings.IncludeFormattedMessage.Value;
                 if (_options.Log.Settings?.IncludeScopes is not null)

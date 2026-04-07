@@ -114,6 +114,8 @@ internal class SimpleOpenTelemetryBuilderOptions
     public const string LogSectionName = "Log";
     public const string MetricSectionName = "Metric";
 
+    public string? Distro { get; set; }
+
     public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
 
     public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
