@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using SimpleOpenTelemetry.Examples.AspNetCore.Data;
 using SimpleOpenTelemetry.Examples.AspNetCore.Models;
 
 namespace SimpleOpenTelemetry.Examples.AspNetCore.Controllers;
@@ -10,13 +11,18 @@ public class HomeController : Controller
 
     private readonly ActivitySource _activitySource;
 
-    public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+    private readonly AppDbContext _context;
+
+
+    public HomeController(ILogger<HomeController> logger, IConfiguration configuration, AppDbContext context)
     {
         _logger = logger;
 
         // activity source name has to match the registere OTEL_SERVICE_NAME setting 
         // this could be set to anything so long as the config setting TraceSources matches
         _activitySource = new ActivitySource(Utils.SettingsHelper.OtelServiceName(configuration));
+
+        _context = context;
     }
 
 
@@ -36,10 +42,20 @@ public class HomeController : Controller
         {
             activity!.SetTag("custom.tag", "hello");
             activity.SetStatus(ActivityStatusCode.Ok);
-            var activityEvent = new ActivityEvent("ProductsRetrieved",
-               tags: new ActivityTagsCollection { new("products.count", 1) });
+            var activityEvent = new ActivityEvent("Work");
             activity.AddEvent(activityEvent);
         }
+
+        // 3. Use EF traces with the EFCore + SqlClient instrumentations
+        using (var efActivity = _activitySource.StartActivity("EFCoreGetProducts"))
+        {
+            efActivity.SetStatus(ActivityStatusCode.Ok);
+            var products = _context.Products.ToList();
+            var activityEvent = new ActivityEvent("ProductsRetrieved",
+               tags: new ActivityTagsCollection { new("products.count", products.Count()) });
+            efActivity.AddEvent(activityEvent);
+        }
+        
         return View();
     }
 

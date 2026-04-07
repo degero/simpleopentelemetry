@@ -34,43 +34,16 @@ internal static class InstrumentationAssemblies
                 null),
             [TraceInstrumentationEnum.EFCore] = new(
                 "OpenTelemetry.Instrumentation.EntityFrameworkCore",
-                "OpenTelemetry.Trace.EntityFrameworkInstrumentationTracerProviderBuilderExtensions",
+                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
                 "AddEntityFrameworkCoreInstrumentation",
                 null),
 
-            // gRPC – Grpc.Net.Client (modern)
-            [TraceInstrumentationEnum.GrpcNetClient] = new(
-                "OpenTelemetry.Instrumentation.GrpcNetClient",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddGrpcClientInstrumentation",
-                null),
-
-            // gRPC – legacy Grpc.Core
-            [TraceInstrumentationEnum.GrpcCore] = new(
-                "OpenTelemetry.Instrumentation.GrpcCore",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddGrpcCoreInstrumentation",
-                null),
 
             // WCF (client-side; server-side is configured via behavior XML/code)
             [TraceInstrumentationEnum.Wcf] = new(
                 "OpenTelemetry.Instrumentation.Wcf",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
                 "AddWcfInstrumentation",
-                null),
-
-            // Hangfire
-            [TraceInstrumentationEnum.Hangfire] = new(
-                "OpenTelemetry.Instrumentation.Hangfire",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddHangfireInstrumentation",
-                null),
-
-            // Quartz.NET
-            [TraceInstrumentationEnum.Quartz] = new(
-                "OpenTelemetry.Instrumentation.Quartz",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddQuartzInstrumentation",
                 null),
 
             // AWS SDK
@@ -87,15 +60,6 @@ internal static class InstrumentationAssemblies
                 "AddAWSLambdaConfigurations",
                 "SimpleOpenTelemetry:TraceInstrumentationConfig:AWSLambda"),
 
-            // StackExchange.Redis
-            // NOTE: AddRedisInstrumentation() has an overload that takes no
-            // IConnectionMultiplexer and resolves it from IServiceProvider instead,
-            // so it IS usable as a parameterless registration in DI-hosted scenarios.
-            [TraceInstrumentationEnum.StackExchangeRedis] = new(
-                "OpenTelemetry.Instrumentation.StackExchangeRedis",
-                "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddRedisInstrumentation",
-                null),
         };
 
 
@@ -128,13 +92,6 @@ internal static class InstrumentationAssemblies
                 "OpenTelemetry.Instrumentation.Process",
                 "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",
                 "AddProcessInstrumentation",
-                null),
-
-            // Hangfire
-            [MetricInstrumentationEnum.Hangfire] = new(
-                "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",  // namespace
-                "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",
-                "AddHangfireInstrumentation",
                 null),
 
             // AWS

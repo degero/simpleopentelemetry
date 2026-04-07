@@ -8,12 +8,7 @@ public enum TraceInstrumentationEnum
     HttpClient,
     SqlClient,
     EFCore,
-    GrpcNetClient,
-    GrpcCore,
     Wcf,
-    Hangfire,
-    Quartz,
-    StackExchangeRedis,
     AWS,
     AWSLambda
 }

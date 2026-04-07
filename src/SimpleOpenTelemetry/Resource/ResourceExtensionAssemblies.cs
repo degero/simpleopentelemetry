@@ -23,7 +23,7 @@ public enum ResourceDetectorEnum
     /* opentelemetry-dotnet-contrib platform specific */
     Azure,
     AWS
-    // GCP - Still in Development state
+    // GCP - Still in unreleased Development state
 }
 
 /// <summary>
@@ -80,7 +80,8 @@ internal static class ResourceDetectorAssemblies
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
                 "SimpleOpenTelemetry:ResourceDetectorConfig:AWS")
         
-            // GCP - Still in Development
+            // GCP - Still in Development 
+            // TODO add when available
             // [ResourceExtensionEnum.GCP] = new(
             //     "OpenTelemetry.Resources.Gcp",
             //     "OpenTelemetry.Resources.GcpResourceBuilderExtensions",

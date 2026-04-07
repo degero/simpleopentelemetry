@@ -9,6 +9,5 @@ public enum MetricInstrumentationEnum
     SqlClient,
     Runtime,
     Process,
-    Hangfire,
     AWS
 }
