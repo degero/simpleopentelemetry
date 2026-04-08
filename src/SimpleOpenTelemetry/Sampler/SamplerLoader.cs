@@ -7,10 +7,15 @@ using SimpleOpenTelemetry.Configuration;
 
 namespace SimpleOpenTelemetry.Sampler;
 
+internal interface ISamplerLoader
+{
+    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryBuilderOptions options, ILogger? logger = null);
+}
+
 /// <summary>
 /// Load vendor / contrib assembly and invoke static / exntion method creating a Builder based on the available types
 /// </summary>
-internal class SamplerLoader
+internal class SamplerLoader : ISamplerLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
@@ -48,7 +53,7 @@ internal class SamplerLoader
         ILogger? logger = null)
     {
         var entry = options.Sampler;
-        
+
         if (!string.IsNullOrWhiteSpace(entry))
         {
             // Determine the valid extensions for the given builder type
@@ -62,13 +67,13 @@ internal class SamplerLoader
             {
                 var matchedSampler = Enum.Parse(typeof(SamplerEnum), item, ignoreCase: true);
 
-                if (!_descriptors.TryGetValue((SamplerEnum)matchedSampler , out var descriptor))
+                if (!_descriptors.TryGetValue((SamplerEnum)matchedSampler, out var descriptor))
                     throw new InvalidOperationException(
                         $"Critical: {typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialise sampler");
 
                 AddSampler(builder, resource, descriptor, (SamplerEnum)matchedSampler, logger);
             }
-            else 
+            else
             {
                 // Throw an exception on an unknown exporter type
                 throw new InvalidOperationException($"Unsupported Sampler type: {item}. Please check your SimpleOpenTelemetry Configuration.");
@@ -87,12 +92,12 @@ internal class SamplerLoader
     /// <exception cref="InvalidOperationException"></exception>
     /// <exception cref="Exception"></exception>
     private void AddSampler(TracerProviderBuilder builder,
-    OpenTelemetry.Resources.Resource  resource,
+    OpenTelemetry.Resources.Resource resource,
     SamplerDescriptor descriptor,
     SamplerEnum samplerEnum,
     ILogger? logger = null)
     {
-       
+
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
         var (assemblyName, typeName, methodName) = descriptor;
 
@@ -109,7 +114,7 @@ internal class SamplerLoader
             // This is kept here for now
             var buildMethod = instance.GetType().GetMethod("Build");
 
-            var sampler = buildMethod.Invoke(instance, new object[] {}) as OpenTelemetry.Trace.Sampler;
+            var sampler = buildMethod.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
 
             builder.SetSampler(sampler);
 

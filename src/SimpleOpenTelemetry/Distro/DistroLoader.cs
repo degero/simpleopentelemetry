@@ -6,10 +6,15 @@ using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.Distro;
 
+internal interface IDistroLoader
+{
+    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryBuilderOptions options, ILogger? logger = null);
+}
+
 /// <summary>
 /// Load distro based on the available types linked to DistroEnum
 /// </summary>
-internal class DistroLoader
+internal class DistroLoader : IDistroLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
@@ -44,10 +49,10 @@ internal class DistroLoader
             {
                 var matchedDistro = Enum.Parse(typeof(DistroEnum), distro, ignoreCase: true);
 
-                if (!_descriptors.TryGetValue((DistroEnum)matchedDistro , out var descriptor))
+                if (!_descriptors.TryGetValue((DistroEnum)matchedDistro, out var descriptor))
                     throw new InvalidOperationException(
                         $"Critical: {typeof(DistroEnum).Name} type not found: {matchedDistro} to initialise distro");
-                
+
                 TryInvokeExtension(builder as OpenTelemetryBuilder, descriptor, logger);
                 return true;
             }

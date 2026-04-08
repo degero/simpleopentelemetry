@@ -21,11 +21,8 @@ public static class HostApplicationBuilderExtensions
     public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
-        // TODO chad remove this once confirming logging streams coming thru
-        // builder.Logging.AddSimpleOpenTelemetry();
-
         // TODO Chad look at way to not pass configuration like AddOpenTelemetry()
-        var otelBuilder =builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
+        var otelBuilder = builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
 
         return otelBuilder;
     }

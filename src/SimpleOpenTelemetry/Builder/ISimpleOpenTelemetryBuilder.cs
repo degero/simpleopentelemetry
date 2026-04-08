@@ -11,6 +11,5 @@ internal interface ISimpleOpenTelemetryBuilder
     /// Configure OpenTelemetry settings via IConfiguration and return
     /// OpenTelemetryBuilder for an other custom fluent operations
     /// </summary>
-    /// <returns></returns>
-    IOpenTelemetryBuilder Configure();
+    void Configure();
 }

@@ -8,6 +8,13 @@ using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Extensions;
 
+internal interface IExtensionLoader
+{
+    void AddMetricsExtension(MeterProviderBuilder builder, MetricExtensionsEnum extension, ILogger? logger = null);
+    void AddTraceExtension(LoggerProviderBuilder builder, LogExtensionsEnum extension, ILogger? logger = null);
+    void AddTraceExtension(TracerProviderBuilder builder, TraceExtensionsEnum extension, ILogger? logger = null);
+}
+
 /// <summary>
 /// Load assembly and invoke tracing/metrics extension method based on the available types
 /// linked to TraceExtensionsEnum, MetricExtensionsEnum
@@ -15,7 +22,7 @@ namespace SimpleOpenTelemetry.Extensions;
 ///         OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions.AddAspNetCoreInstrumentation()
 ///     in the separate nupkg OpenTelemetry.Instrumentation.AspNetCore
 /// </summary>
-internal class ExtensionLoader
+internal class ExtensionLoader : IExtensionLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;

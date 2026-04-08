@@ -7,6 +7,12 @@ using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Exporter;
 
+internal interface IInstrumentationLoader
+{
+    void AddMetricsInstrumentation(MeterProviderBuilder builder, MetricInstrumentationEnum instrumentation, ILogger? logger = null);
+    void AddTracingInstrumentation(TracerProviderBuilder builder, TraceInstrumentationEnum instrumentation, ILogger? logger = null);
+}
+
 /// <summary>
 /// Load assembly and invoke tracing/metrics instrumentation method based on the available types
 /// linked to TraceInstrumentationEnum, MetricsInstrumentationEnum
@@ -14,7 +20,7 @@ namespace SimpleOpenTelemetry.Exporter;
 ///         OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions.AddAspNetCoreInstrumentation()
 ///     in the seperate nupkg OpenTelemetry.Instrumentation.AspNetCore
 /// </summary>
-internal class InstrumentationLoader
+internal class InstrumentationLoader : IInstrumentationLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;

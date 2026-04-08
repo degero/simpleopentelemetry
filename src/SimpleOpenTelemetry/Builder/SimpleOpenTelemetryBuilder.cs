@@ -27,30 +27,25 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
     private SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
 
-    private IList<OtlpExporterOptions> _exporters = new List<OtlpExporterOptions>();
-
-    private readonly TracerProviderBuilder _tracerProviderBuilder;
-
     private readonly IOpenTelemetryBuilder _otelBuilder;
 
     private readonly IConfiguration _configuration;
 
     private ILogger _logger;
 
-    // TODO Chad extract interface for testing / Change name
-    private readonly InstrumentationLoader _openTelemetryInstrumentationLoader;
+    private readonly IInstrumentationLoader _openTelemetryInstrumentationLoader;
 
-    private readonly ExporterLoader _exporterLoader;
+    private readonly IExporterLoader _exporterLoader;
 
-    private readonly ResourceDetectorLoader _resourceDetectorLoader;
+    private readonly IResourceDetectorLoader _resourceDetectorLoader;
 
-    private readonly SamplerLoader _samplerLoader;
+    private readonly ISamplerLoader _samplerLoader;
 
-    private readonly PropagatorLoader _propagatorLoader;
+    private readonly IPropagatorLoader _propagatorLoader;
 
-    private readonly ExtensionLoader _extensionsLoader;
+    private readonly IExtensionLoader _extensionLoader;
 
-    private readonly DistroLoader _distroLoader;
+    private readonly IDistroLoader _distroLoader;
 
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder and load in configuration
@@ -60,13 +55,13 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _configuration = config;
         _otelBuilder = otelBuilder;
-        _openTelemetryInstrumentationLoader = new(config);
-        _resourceDetectorLoader = new(config);
-        _exporterLoader = new(config);
-        _samplerLoader = new(config);
-        _propagatorLoader = new(config);
-        _extensionsLoader = new(config);
-        _distroLoader = new(config);
+        _openTelemetryInstrumentationLoader = new InstrumentationLoader(config);
+        _resourceDetectorLoader = new ResourceDetectorLoader(config);
+        _exporterLoader = new ExporterLoader(config);
+        _samplerLoader = new SamplerLoader(config);
+        _propagatorLoader = new PropagatorLoader(config);
+        _extensionLoader = new ExtensionLoader(config);
+        _distroLoader = new DistroLoader(config);
 
         // Load in configuration from file
         var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
@@ -79,7 +74,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _options = simpleOpenTelemetryConfig;
 
-        // TODO Chad fix this up to be injected
+        // TODO Chad switch to eventsource
         _logger = LoggerFactory.Create(builder =>
         {
             builder.AddFilter("Microsoft", LogLevel.Warning)
@@ -98,14 +93,13 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// </summary>
     /// <param name="builder">The OpenTelemetry builder</param>
     /// <param name="configuration">builder configuration</param>
-    /// <returns>The builder for chaining</returns>
-    public IOpenTelemetryBuilder Configure()
+    public void Configure()
     {
-        var resourceBuilder = ConfigureResourceAttributes();
-
         // Check and load distro, this will skip any other configuration
         if (_distroLoader.LoadDistro(_otelBuilder, _options, _logger))
-            return _otelBuilder;
+            return;
+
+        var resourceBuilder = ConfigureResourceAttributes();
 
         ConfigureMetrics();
 
@@ -115,12 +109,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _propagatorLoader.AddPropagators(_options, _logger);
 
-        return _otelBuilder;
-    }
-
-    private bool LoadDistro()
-    {
-        throw new NotImplementedException();
     }
 
     private ResourceBuilder? ConfigureResourceAttributes()
@@ -172,7 +160,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             if (_options.Metric.Exporters is not null)
                 _exporterLoader.ConfigureExporters(metrics, _options, _logger);
 
-            _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionsLoader.AddMetricsExtension(metrics, r, _logger));
+            _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddMetricsExtension(metrics, r, _logger));
 
         });
     }
@@ -205,7 +193,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 _exporterLoader.ConfigureExporters(tracing, _options, _logger);
 
             // Iterate over exporters for this montioring type
-            _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionsLoader.AddTraceExtension(tracing, r, _logger));
+            _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddTraceExtension(tracing, r, _logger));
         });
     }
 

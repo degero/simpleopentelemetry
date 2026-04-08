@@ -18,9 +18,7 @@ public class HomeController : Controller
     {
         _logger = logger;
 
-        // activity source name has to match the registere OTEL_SERVICE_NAME setting 
-        // this could be set to anything so long as the config setting TraceSources matches
-        _activitySource = new ActivitySource(Utils.SettingsHelper.OtelServiceName(configuration));
+        _activitySource = new ActivitySource("SimpleOpenTelemetry.Examples.AspNetCore.Controllers.Home");
 
         _context = context;
     }

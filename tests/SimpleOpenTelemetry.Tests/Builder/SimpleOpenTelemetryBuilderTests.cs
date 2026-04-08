@@ -1,13 +1,24 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Moq;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Distro;
+using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Extensions;
+using SimpleOpenTelemetry.Instrumentation;
+using SimpleOpenTelemetry.Propagator;
+using SimpleOpenTelemetry.Resource;
+using SimpleOpenTelemetry.Sampler;
 using System.IO;
+using System.Reflection;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.Builder;
@@ -87,12 +98,12 @@ public class SimpleOpenTelemetryBuilderTests
         Assert.NotNull(tracerProvider);
     }
 
-  [Theory]
-  [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true, ""IncludeScopes"": true, ""ParseStateValues"": true }", true, true, true)]
-  [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true }", true, false, false)]
-  [InlineData(@"""Exporters"": []", false, false, false)]
-  public void Configure_SetsUpLoggingOptions_WhenAreConfigured(string jsonSeg, bool formatMsg, bool inclScope, bool parseState)
-  {
+    [Theory]
+    [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true, ""IncludeScopes"": true, ""ParseStateValues"": true }", true, true, true)]
+    [InlineData(@"""Settings"": { ""IncludeFormattedMessage"": true }", true, false, false)]
+    [InlineData(@"""Exporters"": []", false, false, false)]
+    public void Configure_SetsUpLoggingOptions_WhenAreConfigured(string jsonSeg, bool formatMsg, bool inclScope, bool parseState)
+    {
       var jsonConfig = $@"{{ ""SimpleOpenTelemetry"": {{ ""Log"": {{ {jsonSeg} }} }} }}";
 
         var config = new ConfigurationBuilder()
@@ -109,5 +120,76 @@ public class SimpleOpenTelemetryBuilderTests
         Assert.Equal(formatMsg, options.IncludeFormattedMessage);
         Assert.Equal(inclScope, options.IncludeScopes);
         Assert.Equal(parseState, options.ParseStateValues);
+    }
+
+    [Fact]
+    public void Configure_WithDistroSet_LoadsDistroAndReturnsEarly()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+        var mockOtelBuilder = new Mock<IOpenTelemetryBuilder>();
+        mockOtelBuilder.Setup(b => b.Services).Returns(services);
+
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>
+            {
+                ["SimpleOpenTelemetry:Distro"] = "AzureMonitorAspNetCore"
+            })
+            .Build();
+
+        var builder = new SimpleOpenTelemetryBuilder(mockOtelBuilder.Object, config);
+
+        // Use reflection to mock private fields for testing
+        var distroLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_distroLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockDistroLoader = new Mock<IDistroLoader>();
+        mockDistroLoader.Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>())).Returns(true);
+        distroLoaderField?.SetValue(builder, mockDistroLoader.Object);
+
+        var exporterLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_exporterLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockExporterLoader = new Mock<IExporterLoader>();
+        exporterLoaderField?.SetValue(builder, mockExporterLoader.Object);
+
+        var instrumentationLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_openTelemetryInstrumentationLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockInstrumentationLoader = new Mock<IInstrumentationLoader>();
+        instrumentationLoaderField?.SetValue(builder, mockInstrumentationLoader.Object);
+
+        var resourceDetectorLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_resourceDetectorLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockResourceDetectorLoader = new Mock<IResourceDetectorLoader>();
+        resourceDetectorLoaderField?.SetValue(builder, mockResourceDetectorLoader.Object);
+
+        var samplerLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_samplerLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockSamplerLoader = new Mock<ISamplerLoader>();
+        samplerLoaderField?.SetValue(builder, mockSamplerLoader.Object);
+
+        var propagatorLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_propagatorLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockPropagatorLoader = new Mock<IPropagatorLoader>();
+        propagatorLoaderField?.SetValue(builder, mockPropagatorLoader.Object);
+
+        var extensionsLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_extensionsLoader", BindingFlags.NonPublic | BindingFlags.Instance);
+        var mockExtensionsLoader = new Mock<IExtensionLoader>();
+        extensionsLoaderField?.SetValue(builder, mockExtensionsLoader.Object);
+
+        // Act
+        builder.Configure();
+
+        // Assert
+        mockDistroLoader.Verify(d => d.LoadDistro(mockOtelBuilder.Object, It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Once);
+
+        // Verify resourcebuilder configure callbacks are setup        
+        Assert.False(services.Any(r => r.ServiceType.Name == "IConfigureMeterProviderBuilder"));
+        Assert.False(services.Any(r => r.ServiceType.Name == "IConfigureTracerProviderBuilder"));
+        Assert.False(services.Any(r => r.ServiceType.Name == "IConfigureLoggerProviderBuilder"));
+        
+        // Verify that other loaders' methods are not called (indicating early return)
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>(), It.IsAny<ILogger>()), Times.Never);
+        mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>(), It.IsAny<ILogger>()), Times.Never);
+        mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
+        mockExtensionsLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>(), It.IsAny<ILogger>()), Times.Never);
+        mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>(), It.IsAny<ILogger>()), Times.Never);
     }
 }

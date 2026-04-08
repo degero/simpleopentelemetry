@@ -7,16 +7,21 @@ using SimpleOpenTelemetry.Configuration;
 
 namespace SimpleOpenTelemetry.Propagator;
 
+internal interface IPropagatorLoader 
+{
+     void AddPropagators(SimpleOpenTelemetryBuilderOptions options,
+        ILogger? logger);
+}
 
-public class PropagatorLoader
+internal class PropagatorLoader : IPropagatorLoader
 {
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+        private readonly AssemblyExecution _assemblyExec;
 
     // Available 3rd parter propagators
-    internal readonly Array _Propagators = Enum.GetValues<PropagatorEnum>();
+    private readonly Array _Propagators = Enum.GetValues<PropagatorEnum>();
 
-    internal readonly Dictionary<PropagatorEnum, PropagatorDescriptor> _descriptors = PropagatorAssemblies.KnownPropagators;
+    private readonly Dictionary<PropagatorEnum, PropagatorDescriptor> _descriptors = PropagatorAssemblies.KnownPropagators;
 
     /// <summary>
     /// Initializes a new instance of the PropagatorLoader class.
@@ -38,7 +43,7 @@ public class PropagatorLoader
     /// </remarks>
     /// <param name="logger">Logger for diagnostic information.</param>
     /// <exception cref="InvalidOperationException">Thrown when resource extension registration fails.</exception>
-    internal void AddPropagators(
+    public void AddPropagators(
         SimpleOpenTelemetryBuilderOptions options,
         ILogger? logger = null)
     {

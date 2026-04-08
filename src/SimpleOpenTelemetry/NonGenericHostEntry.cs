@@ -6,7 +6,7 @@ using SimpleOpenTelemetry.Builder;
 namespace SimpleOpenTelemetry;
 
 /// <summary>
-/// OpenTelemetry setup for applications that dont support IHostApplicationBuilder Generic Host
+/// OpenTelemetry setup for applications that don't support IHostApplicationBuilder Generic Host
 /// </summary>
 public static class NonGenericHostEntry
 {

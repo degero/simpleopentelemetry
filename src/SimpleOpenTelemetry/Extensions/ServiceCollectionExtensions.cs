@@ -29,23 +29,24 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             throw new ArgumentNullException(nameof(configuration));
 
-        var section = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        var config = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName).Get<SimpleOpenTelemetryConfiguration>();
         
-        if (!section.Exists())
+        if (config is null)
             throw new Exception($"No configuration section '{SimpleOpenTelemetryConfiguration.SectionName}'. This is required for SimpleOpenTelemetry");
 
-        bool atLeastOneExists = 
-            section.GetSection(SimpleOpenTelemetryBuilderOptions.LogSectionName).Exists() ||
-            section.GetSection(SimpleOpenTelemetryBuilderOptions.MetricSectionName).Exists() ||
-            section.GetSection(SimpleOpenTelemetryBuilderOptions.TraceSectionName).Exists();
-
+        bool atLeastOneExists = config.Log is not null 
+            || config.Metric is not null 
+            || config.Trace is not null;
+            
         if (!atLeastOneExists)
             throw new Exception($"Signal configuration subsections in '{SimpleOpenTelemetryConfiguration.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
 
-        // TODO Chad move elsewhere? 
         var otelBuilder = services.AddOpenTelemetry();
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
-        return builder.Configure();
+
+        builder.Configure();
+
+        return otelBuilder;
     }
 }
