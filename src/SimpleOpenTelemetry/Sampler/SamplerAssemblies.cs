@@ -20,7 +20,6 @@ public enum SamplerEnum
 internal static class SamplerAssemblies
 {
     public static readonly Dictionary<SamplerEnum, SamplerDescriptor>
-       
         KnownSamplers = new()
         {
             /* Contrib samplers */

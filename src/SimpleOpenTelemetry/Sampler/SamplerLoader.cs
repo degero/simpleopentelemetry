@@ -52,7 +52,7 @@ internal class SamplerLoader : ISamplerLoader
         SimpleOpenTelemetryBuilderOptions options,
         ILogger? logger = null)
     {
-        var entry = options.Sampler;
+        var entry = options.Trace?.Sampler;
 
         if (!string.IsNullOrWhiteSpace(entry))
         {

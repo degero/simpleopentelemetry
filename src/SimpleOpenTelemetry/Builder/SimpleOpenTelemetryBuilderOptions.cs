@@ -86,6 +86,11 @@ internal class SimpleOpenTelemetryTraceOptions
 
     public string[]? Propagators { get; set; }
 
+    
+    /// <summary>
+    /// Register a vendor sampler from the availble enum set 
+    /// </summary>
+    public string? Sampler { get; set; }
 }
 
 internal class SimpleOpenTelemetryTraceProviderSettings
@@ -116,6 +121,18 @@ internal class SimpleOpenTelemetryLogProviderSettings
     public bool? ParseStateValues { get; set; }
 }
 
+internal class ResourceOptions
+{
+    
+    /// <summary>
+    /// Register resource detectors set by resource type name eg: aws, azure etc
+    /// </summary>
+    public string[]? Detectors { get; set; }
+
+    public IConfigurationSection? DetectorConfig { get; set; }
+
+}
+
 /// <summary>
 /// Configuration options for SimpleOpenTelemetry Builder
 /// </summary>
@@ -138,16 +155,6 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// </summary>
     public IConfigurationSection? ExporterOptions { get; set; }
 
-   
-    /// <summary>
-    /// Register resource detectors set by resource type name eg: aws, azure etc
-    /// </summary>
-    public string[]? ResourceDetectors { get; set; }
+    public ResourceOptions Resource { get;set; }
 
-    public IConfigurationSection? ResourceDetectorConfig { get; set; }
-
-    /// <summary>
-    /// Register a vendor sampler from the availble enum set 
-    /// </summary>
-    public string? Sampler { get; set; }
 }

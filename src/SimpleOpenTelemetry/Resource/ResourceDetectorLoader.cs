@@ -47,7 +47,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
         SimpleOpenTelemetryBuilderOptions options,
         ILogger? logger = null)
     {
-        var detectors = options.ResourceDetectors;
+        var detectors = options.Resource?.Detectors;
 
         if (detectors is not null && detectors.Any())
         {
