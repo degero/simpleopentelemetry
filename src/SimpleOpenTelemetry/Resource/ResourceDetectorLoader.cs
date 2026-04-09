@@ -5,10 +5,15 @@ using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.Resource;
 
+internal interface IResourceDetectorLoader
+{
+    void AddResourceDetectors(ResourceBuilder builder, SimpleOpenTelemetryBuilderOptions options, ILogger? logger = null);
+}
+
 /// <summary>
 /// Load vendor / contrib assembly and invoke resourcebuilder detector extension method based on the available types
 /// </summary>
-internal class ResourceDetectorLoader
+internal class ResourceDetectorLoader : IResourceDetectorLoader
 {
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
@@ -59,13 +64,13 @@ internal class ResourceDetectorLoader
                 {
                     var matchedResourceExtension = Enum.Parse(typeof(ResourceDetectorEnum), item, ignoreCase: true);
 
-                    if (!_descriptors.TryGetValue((ResourceDetectorEnum)matchedResourceExtension , out var descriptor))
+                    if (!_descriptors.TryGetValue((ResourceDetectorEnum)matchedResourceExtension, out var descriptor))
                         throw new InvalidOperationException(
                             $"Critical: {typeof(ResourceDetectorEnum).Name} type not found: {matchedResourceExtension} to initialise exporter");
 
                     AddResourceDetector(builder, descriptor, logger);
                 }
-                else 
+                else
                 {
                     // Throw an exception on an unknown exporter type
                     throw new InvalidOperationException($"Unsupported Resource Detector type: {item}. Please check your SimpleOpenTelemetry Configuration.");
@@ -79,7 +84,7 @@ internal class ResourceDetectorLoader
     ResourceDetectorDescriptor descriptor,
     ILogger? logger = null)
     {
-       
+
         var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
         var (assemblyName, typeName, methodName, configSection) = descriptor;
         var builderType = typeof(ResourceBuilder);

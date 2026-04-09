@@ -155,7 +155,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             });
 
             // add in meters
-            _options.CustomMeters?.ToList().ForEach(r => metrics.AddMeter(r));
+            _options.Metric.CustomMeters?.ToList().ForEach(r => metrics.AddMeter(r));
 
             if (_options.Metric.Exporters is not null)
                 _exporterLoader.ConfigureExporters(metrics, _options, _logger);
@@ -184,7 +184,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             });
 
             // add trace sources from config
-            _options.TraceSources?.ToList().ForEach(r => tracing.AddSource(r));
+            _options.Trace.Sources?.ToList().ForEach(r => tracing.AddSource(r));
 
             // add in sampler if set in config
             _samplerLoader.AddSampler(tracing, resourceBuilder?.Build(), _options, _logger);

@@ -47,7 +47,7 @@ internal class PropagatorLoader : IPropagatorLoader
         SimpleOpenTelemetryBuilderOptions options,
         ILogger? logger = null)
     {
-        var propagators = options.Propagators;
+        var propagators = options.Trace.Propagators;
 
         try
         {

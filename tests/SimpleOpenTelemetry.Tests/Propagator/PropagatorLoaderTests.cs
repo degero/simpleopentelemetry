@@ -26,7 +26,9 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = null
+                Trace = new() {
+                    Propagators = null
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -54,7 +56,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = Array.Empty<string>()
+                Trace = new() 
+                {
+                    Propagators = Array.Empty<string>()
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -82,7 +87,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { "None" }
+                Trace = new() 
+                {
+                    Propagators = ["None"]
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -107,7 +115,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { propagatorEnum.ToString() }
+                Trace = new() 
+                {
+                    Propagators = [ propagatorEnum.ToString() ]
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -132,7 +143,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { propagator.ToString() }
+                Trace = new() 
+                {
+                    Propagators = [ propagator.ToString() ]
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -155,7 +169,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { nameof(PropagatorEnum.TraceContext), nameof(PropagatorEnum.Baggage) }
+                Trace = new() 
+                {
+                    Propagators = [  nameof(PropagatorEnum.TraceContext), nameof(PropagatorEnum.Baggage) ]
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -183,7 +200,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = new[] { nameof(PropagatorEnum.AWS), nameof(PropagatorEnum.TraceContext) }
+                Trace = new() 
+                {
+                    Propagators = [ nameof(PropagatorEnum.AWS), nameof(PropagatorEnum.TraceContext) ]
+                }
             };
 
             sut.AddPropagators(options, _logger.Object);
@@ -211,7 +231,10 @@ public class PropagatorLoaderTests
             var sut = new PropagatorLoader(_configuration);
             var options = new SimpleOpenTelemetryBuilderOptions
             {
-                Propagators = Enum.GetNames<PropagatorEnum>()
+                Trace = new() 
+                {
+                    Propagators = Enum.GetNames<PropagatorEnum>()
+                }
             };
 
             var exception = Record.Exception(() => sut.AddPropagators(options, _logger.Object));

@@ -4,7 +4,6 @@ using SimpleOpenTelemetry.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
 
-
 /// <summary>
 /// Builtin supported OpenTelemetry SDK exporters
 /// </summary>
@@ -41,7 +40,6 @@ internal class SimpleOpenTelemetryMetricOptions
 
     public IConfigurationSection? InstrumentationConfig { get; set; }
 
-
     /// <summary>
     /// Defines which exporters to use for metrics.
     /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
@@ -52,12 +50,18 @@ internal class SimpleOpenTelemetryMetricOptions
     public MetricExtensionsEnum[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryMeterProviderSettings? Settings { get; set; }
+    
+    /// <summary>
+    /// Namespace names for additional metrics sources.
+    /// </summary>
+    public string[]? CustomMeters { get; set; }
 
 }
 
 internal class SimpleOpenTelemetryMeterProviderSettings
 {
     public int? MetricLimit { get; set; }
+    
 }
 
 internal class SimpleOpenTelemetryTraceOptions 
@@ -74,6 +78,13 @@ internal class SimpleOpenTelemetryTraceOptions
     public TraceExtensionsEnum[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryTraceProviderSettings? Settings { get; set; }
+
+    /// <summary>
+    /// Namespace names for additional trace sources. Wildcards accepted, eg Azure.*
+    /// </summary>
+    public string[]? Sources { get; set; }
+
+    public string[]? Propagators { get; set; }
 
 }
 
@@ -127,16 +138,7 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// </summary>
     public IConfigurationSection? ExporterOptions { get; set; }
 
-    /// <summary>
-    /// Namespace names for additional metrics sources.
-    /// </summary>
-    public string[]? CustomMeters { get; set; }
-
-    /// <summary>
-    /// Namespace names for additional trace sources. Wildcards accepted, eg Azure.*
-    /// </summary>
-    public string[]? TraceSources { get; set; }
-
+   
     /// <summary>
     /// Register resource detectors set by resource type name eg: aws, azure etc
     /// </summary>
@@ -148,5 +150,4 @@ internal class SimpleOpenTelemetryBuilderOptions
     /// Register a vendor sampler from the availble enum set 
     /// </summary>
     public string? Sampler { get; set; }
-    public string[]? Propagators { get; set; }
 }
