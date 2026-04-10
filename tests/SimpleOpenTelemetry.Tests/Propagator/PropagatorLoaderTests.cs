@@ -23,7 +23,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() {
@@ -31,7 +31,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
             var innerPropagators = GetCompositePropagators(composite).ToList();
@@ -53,7 +53,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -62,7 +62,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
             var innerPropagators = GetCompositePropagators(composite).ToList();
@@ -84,7 +84,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -93,7 +93,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             Assert.Equal("OpenTelemetry.Context.Propagation.NoopTextMapPropagator", Propagators.DefaultTextMapPropagator.GetType().FullName);
         }
@@ -112,7 +112,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -121,7 +121,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             Assert.IsType(t, Propagators.DefaultTextMapPropagator);
         }
@@ -140,7 +140,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -149,7 +149,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             Assert.Equal(className, Propagators.DefaultTextMapPropagator.GetType().FullName);
         }
@@ -166,7 +166,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -175,7 +175,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
             var innerPropagators = GetCompositePropagators(composite).ToList();
@@ -191,13 +191,13 @@ public class PropagatorLoaderTests
     }
 
     [Fact]
-    public void AddPropagators_WithAwsAndOtherPropagators_SetsCompositeWithAWS()
+    public void AddPropagators_WithAWSAndOtherPropagators_SetsCompositeWithAWS()
     {
         var original = Propagators.DefaultTextMapPropagator;
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -206,13 +206,44 @@ public class PropagatorLoaderTests
                 }
             };
 
-            sut.AddPropagators(options, _logger.Object);
+            sut.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
             var innerPropagators = GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.Equal("OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator", innerPropagators[0].GetType().FullName);
+            Assert.IsType<TraceContextPropagator>(innerPropagators[1]);
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(original);
+        }
+    }
+
+ [Fact]
+    public void AddPropagators_WithBaggageAndOtherPropagators_SetsCompositeWithBaggage()
+    {
+        var original = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            var sut = new PropagatorLoader();
+            var options = new SimpleOpenTelemetryBuilderOptions
+            {
+                Trace = new() 
+                {
+                    Propagators = [ nameof(PropagatorEnum.Baggage), nameof(PropagatorEnum.TraceContext) ]
+                }
+            };
+
+            sut.AddPropagators(options);
+
+            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var innerPropagators = GetCompositePropagators(composite).ToList();
+
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.IsType<BaggagePropagator>(innerPropagators[0]);
             Assert.IsType<TraceContextPropagator>(innerPropagators[1]);
         }
         finally
@@ -228,7 +259,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader(_configuration);
+            var sut = new PropagatorLoader();
             var options = new SimpleOpenTelemetryBuilderOptions
             {
                 Trace = new() 
@@ -237,7 +268,7 @@ public class PropagatorLoaderTests
                 }
             };
 
-            var exception = Record.Exception(() => sut.AddPropagators(options, _logger.Object));
+            var exception = Record.Exception(() => sut.AddPropagators(options));
 
             Assert.Null(exception);
         }

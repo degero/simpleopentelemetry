@@ -4,12 +4,13 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Sampler;
 
 internal interface ISamplerLoader
 {
-    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryBuilderOptions options, ILogger? logger = null);
+    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryBuilderOptions options);
 }
 
 /// <summary>
@@ -17,6 +18,8 @@ internal interface ISamplerLoader
 /// </summary>
 internal class SamplerLoader : ISamplerLoader
 {
+    private readonly string eventCategory = nameof(SamplerLoader);
+
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
@@ -45,38 +48,43 @@ internal class SamplerLoader : ISamplerLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to register the sampler with.</param>
     /// <param name="resource">The Resource builder resource to configure with.</param>
-    /// <param name="logger">Logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when resource extension registration fails.</exception>
     public void AddSampler(TracerProviderBuilder builder,
         OpenTelemetry.Resources.Resource resource,
-        SimpleOpenTelemetryBuilderOptions options,
-        ILogger? logger = null)
+        SimpleOpenTelemetryBuilderOptions options)
     {
-        var entry = options.Trace?.Sampler;
+        var item = options.Trace?.Sampler;
 
-        if (!string.IsNullOrWhiteSpace(entry))
+        if (!string.IsNullOrWhiteSpace(item))
         {
             // Determine the valid extensions for the given builder type
             var validSamplers = _Samplers.Cast<object>()
                 .Select(e => e.ToString())
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            var item = entry;
-
-            if (validSamplers.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+            try
             {
-                var matchedSampler = Enum.Parse(typeof(SamplerEnum), item, ignoreCase: true);
+                if (validSamplers.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                {
+                    var matchedSampler = (SamplerEnum)Enum.Parse(typeof(SamplerEnum), item, ignoreCase: true);
 
-                if (!_descriptors.TryGetValue((SamplerEnum)matchedSampler, out var descriptor))
-                    throw new InvalidOperationException(
-                        $"Critical: {typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialise sampler");
+                    if (!_descriptors.TryGetValue(matchedSampler, out var descriptor))
+                        throw new InvalidOperationException(
+                            $"{typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialise sampler");
 
-                AddSampler(builder, resource, descriptor, (SamplerEnum)matchedSampler, logger);
+                    AddSampler(builder, resource, descriptor);
+
+                    EventSource.Log.Verbose(eventCategory, $"registered sampler '{matchedSampler}'.");
+
+                }
+                else
+                {
+                    // Throw an exception on an unknown exporter type
+                    EventSource.Log.Error(eventCategory, $"Unsupported otel sampler '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Throw an exception on an unknown exporter type
-                throw new InvalidOperationException($"Unsupported Sampler type: {item}. Please check your SimpleOpenTelemetry Configuration.");
+                EventSource.Log.Error(eventCategory, $"Failed to register sampler '{item}'.", ex.Message);
             }
         }
     }
@@ -88,43 +96,28 @@ internal class SamplerLoader : ISamplerLoader
     /// <param name="builder"></param>
     /// <param name="resource"></param>
     /// <param name="descriptor"></param>
-    /// <param name="logger"></param>
-    /// <exception cref="InvalidOperationException"></exception>
-    /// <exception cref="Exception"></exception>
     private void AddSampler(TracerProviderBuilder builder,
-    OpenTelemetry.Resources.Resource resource,
-    SamplerDescriptor descriptor,
-    SamplerEnum samplerEnum,
-    ILogger? logger = null)
+        OpenTelemetry.Resources.Resource resource,
+        SamplerDescriptor descriptor)
     {
 
-        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
         var (assemblyName, typeName, methodName) = descriptor;
+        var assembly = _assemblyExec.GetAssembly(assemblyName);
+        var type = assembly.GetType(typeName)
+            ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
-        try
-        {
-            var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+        var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
 
-            var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+        var instance = method.Invoke(null, new object[] { resource });
 
-            var instance = method.Invoke(null, new object[] { resource });
+        // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
+        // This is kept here for now
+        var buildMethod = instance.GetType().GetMethod("Build");
 
-            // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
-            // This is kept here for now
-            var buildMethod = instance.GetType().GetMethod("Build");
+        var sampler = buildMethod.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
 
-            var sampler = buildMethod.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
+        builder.SetSampler(sampler);
 
-            builder.SetSampler(sampler);
-
-            logger?.LogInformation($"Successfully registered {samplerEnum} Sampler: {typeName}");
-
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel sampler via Builder {typeName}", ex);
-        }
     }
 
 }

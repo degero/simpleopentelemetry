@@ -1,14 +1,13 @@
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Distro;
 
 internal interface IDistroLoader
 {
-    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryBuilderOptions options, ILogger? logger = null);
+    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryBuilderOptions options);
 }
 
 /// <summary>
@@ -16,6 +15,7 @@ internal interface IDistroLoader
 /// </summary>
 internal class DistroLoader : IDistroLoader
 {
+    private readonly string eventCategory = nameof(DistroLoader);
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
     private readonly Array _distros = Enum.GetValues<DistroEnum>();
@@ -34,8 +34,7 @@ internal class DistroLoader : IDistroLoader
     }
 
     public bool LoadDistro(IOpenTelemetryBuilder builder,
-        SimpleOpenTelemetryBuilderOptions options,
-        ILogger? logger = null)
+        SimpleOpenTelemetryBuilderOptions options)
     {
         var distro = options.Distro;
 
@@ -47,35 +46,40 @@ internal class DistroLoader : IDistroLoader
 
             if (validDistros.Cast<object>().Any(e => string.Equals(e.ToString(), distro, StringComparison.OrdinalIgnoreCase)))
             {
-                var matchedDistro = Enum.Parse(typeof(DistroEnum), distro, ignoreCase: true);
+                var matchedDistro = (DistroEnum) Enum.Parse(typeof(DistroEnum), distro, ignoreCase: true);
 
-                if (!_descriptors.TryGetValue((DistroEnum)matchedDistro, out var descriptor))
-                    throw new InvalidOperationException(
-                        $"Critical: {typeof(DistroEnum).Name} type not found: {matchedDistro} to initialise distro");
-
-                TryInvokeExtension(builder as OpenTelemetryBuilder, descriptor, logger);
-                return true;
+                if (!_descriptors.TryGetValue(matchedDistro, out var descriptor))
+                {
+                    EventSource.Log.Error(eventCategory,
+                        $"{typeof(DistroEnum).Name} type '{matchedDistro}' not found to initialise distro.");
+                    return false;
+                }
+                else
+                {
+                    TryInvokeExtension(matchedDistro, builder as OpenTelemetryBuilder, descriptor);
+                    return true;
+                }
             }
         }
         return false;
     }
 
     private void TryInvokeExtension(
+        DistroEnum distroEnum,
         OpenTelemetryBuilder builder,
-        DistroDescriptor descriptor,
-        ILogger? logger)
+        DistroDescriptor descriptor)
     {
 
         var (assemblyName, typeName, methodName, configurationSection) = descriptor;
-        var assembly = _assemblyExec.GetAssembly(assemblyName, logger);
 
         try
         {
+            var assembly = _assemblyExec.GetAssembly(assemblyName);
             var builderType = typeof(OpenTelemetryBuilder);
             var builderTypeName = builder.GetType().Name;
 
             var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
@@ -97,12 +101,12 @@ internal class DistroLoader : IDistroLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            logger?.LogInformation("Successfully registered {TBuilder} distro: {Method}", builderTypeName, methodName);
+            EventSource.Log.Verbose(eventCategory, $"registered distro '{distroEnum}'.");
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel distro via {typeName}.{methodName}", ex);
+            EventSource.Log.Error(eventCategory, $"Failed to register distro '{distroEnum}' via '{typeName}.{methodName}'.", ex.Message);
         }
     }
 

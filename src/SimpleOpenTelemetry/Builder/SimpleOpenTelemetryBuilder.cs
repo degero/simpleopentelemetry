@@ -31,8 +31,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly IConfiguration _configuration;
 
-    private ILogger _logger;
-
     private readonly IInstrumentationLoader _openTelemetryInstrumentationLoader;
 
     private readonly IExporterLoader _exporterLoader;
@@ -59,7 +57,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _resourceDetectorLoader = new ResourceDetectorLoader(config);
         _exporterLoader = new ExporterLoader(config);
         _samplerLoader = new SamplerLoader(config);
-        _propagatorLoader = new PropagatorLoader(config);
+        _propagatorLoader = new PropagatorLoader();
         _extensionLoader = new ExtensionLoader(config);
         _distroLoader = new DistroLoader(config);
 
@@ -74,14 +72,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _options = simpleOpenTelemetryConfig;
 
-        // TODO Chad switch to eventsource
-        _logger = LoggerFactory.Create(builder =>
-        {
-            builder.AddFilter("Microsoft", LogLevel.Warning)
-               .AddFilter("System", LogLevel.Warning)
-               .AddFilter("SampleApp.Program", LogLevel.Debug)
-               .AddConsole();
-        }).CreateLogger<SimpleOpenTelemetryBuilder>();
     }
 
     /// <summary>
@@ -96,7 +86,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     public void Configure()
     {
         // Check and load distro, this will skip any other configuration
-        if (_distroLoader.LoadDistro(_otelBuilder, _options, _logger))
+        if (_distroLoader.LoadDistro(_otelBuilder, _options))
             return;
 
         var resourceBuilder = ConfigureResourceAttributes();
@@ -107,7 +97,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         ConfigureLogging();
 
-        _propagatorLoader.AddPropagators(_options, _logger);
+        _propagatorLoader.AddPropagators(_options);
 
     }
 
@@ -125,7 +115,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             builder.AddAssemblyVersionResourceDetector();
 
             // 2. Run detectors first
-            _resourceDetectorLoader.AddResourceDetectors(builder, _options, _logger);
+            _resourceDetectorLoader.AddResourceDetectors(builder, _options);
 
             // 3. override with any ENV Vars / json config section definitions
             builder.AddEnvironmentVariableDetector();
@@ -151,16 +141,16 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // add in tracing instrumentation options from config
             _options.Metric.Instrumentations?.ToList().ForEach(r =>
             {
-                _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r, _logger);
+                _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r);
             });
 
             // add in meters
             _options.Metric.CustomMeters?.ToList().ForEach(r => metrics.AddMeter(r));
 
             if (_options.Metric.Exporters is not null)
-                _exporterLoader.ConfigureExporters(metrics, _options, _logger);
+                _exporterLoader.ConfigureExporters(metrics, _options);
 
-            _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddMetricsExtension(metrics, r, _logger));
+            _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddMetricsExtension(metrics, r));
 
         });
     }
@@ -180,20 +170,20 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // add in tracing instrumenation options from config
             _options.Trace.Instrumentations?.ToList().ForEach(r => {
-                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r, _logger);
+                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r);
             });
 
             // add trace sources from config
             _options.Trace.Sources?.ToList().ForEach(r => tracing.AddSource(r));
 
             // add in sampler if set in config
-            _samplerLoader.AddSampler(tracing, resourceBuilder?.Build(), _options, _logger);
+            _samplerLoader.AddSampler(tracing, resourceBuilder?.Build(), _options);
 
             if (_options.Trace.Exporters is not null)
-                _exporterLoader.ConfigureExporters(tracing, _options, _logger);
+                _exporterLoader.ConfigureExporters(tracing, _options);
 
             // Iterate over exporters for this montioring type
-            _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddTraceExtension(tracing, r, _logger));
+            _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddTraceExtension(tracing, r));
         });
     }
 
@@ -206,7 +196,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             logging =>
             {
                 // Iterate over exporters for this montioring type and add them
-                _exporterLoader.ConfigureExporters(logging, _options, _logger);
+                _exporterLoader.ConfigureExporters(logging, _options);
             }, 
             options =>
             {

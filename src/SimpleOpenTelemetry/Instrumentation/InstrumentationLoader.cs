@@ -4,13 +4,15 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Instrumentation;
+using SimpleOpenTelemetry.Utils;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Exporter;
 
 internal interface IInstrumentationLoader
 {
-    void AddMetricsInstrumentation(MeterProviderBuilder builder, MetricInstrumentationEnum instrumentation, ILogger? logger = null);
-    void AddTracingInstrumentation(TracerProviderBuilder builder, TraceInstrumentationEnum instrumentation, ILogger? logger = null);
+    void AddMetricsInstrumentation(MeterProviderBuilder builder, MetricInstrumentationEnum instrumentation);
+    void AddTracingInstrumentation(TracerProviderBuilder builder, TraceInstrumentationEnum instrumentation);
 }
 
 /// <summary>
@@ -22,6 +24,7 @@ internal interface IInstrumentationLoader
 /// </summary>
 internal class InstrumentationLoader : IInstrumentationLoader
 {
+    private readonly string eventCategory = nameof(InstrumentationLoader);
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
@@ -29,7 +32,6 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
-    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public InstrumentationLoader(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -45,13 +47,10 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="instrumentation">The instrumentation type to add.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
     public void AddTracingInstrumentation(
     TracerProviderBuilder builder,
-    TraceInstrumentationEnum instrumentation,
-    ILogger? logger = null)
-    => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations, logger);
+    TraceInstrumentationEnum instrumentation)
+    => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations);
 
     /// <summary>
     /// Adds a metrics instrumentation to the provided MeterProviderBuilder.
@@ -62,46 +61,37 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="instrumentation">The instrumentation type to add.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when instrumentation type is not found or registration fails.</exception>
     public void AddMetricsInstrumentation(
         MeterProviderBuilder builder,
-        MetricInstrumentationEnum instrumentation,
-        ILogger? logger = null)
-        => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownMetricsInstrumentations, logger);
+        MetricInstrumentationEnum instrumentation)
+        => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownMetricsInstrumentations);
 
     private void AddInstrumentation<TBuilder, TEnum>(
     TBuilder builder,
     TEnum instrumentation,
-    Dictionary<TEnum, InstrumentationExtensionDescriptor> descriptors,
-    ILogger? logger = null)
+    Dictionary<TEnum, InstrumentationExtensionDescriptor> descriptors)
     where TEnum : notnull
     {
+        var signal = Util.GetSignalName<TBuilder>();
+
         if (!descriptors.TryGetValue(instrumentation, out var descriptor))
-            throw new InvalidOperationException(
-                $"Critical: {typeof(TEnum).Name} type not found: {instrumentation} to initialise instrumentation");
-
-        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
-
-        TryInvokeExtension<TBuilder>(builder, assembly, descriptor, logger);
-    }
-
-
-    private void TryInvokeExtension<TBuilder>(
-        TBuilder builder,
-        Assembly assembly,
-        InstrumentationExtensionDescriptor descriptor,
-        ILogger? logger)
-    {
-        var (assemblyName, typeName, methodName, configurationSection) = descriptor;
+        {
+            EventSource.Log.Error(eventCategory,
+                $"{typeof(TEnum).Name} type '{instrumentation}' not found to initialise {signal} instrumentation.");
+            return;
+        }
+            
+        var (assemblyName, typeName, methodName, configurationSection) = descriptor!;
 
         try
         {
+            
+            var assembly = _assemblyExec.GetAssembly(assemblyName);
             var builderType = typeof(TBuilder);
             var builderTypeName = builder.GetType().Name;
 
             var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
@@ -123,12 +113,12 @@ internal class InstrumentationLoader : IInstrumentationLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            logger?.LogInformation("Successfully registered {TBuilder} instrumentation: {Method}", builderTypeName, methodName);
+            EventSource.Log.Verbose(eventCategory, $"registered {signal} instrumentation '{instrumentation}'.");
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel instrumentation via {typeName}.{methodName}", ex);
+            EventSource.Log.Error(eventCategory, $"Failed to register {signal} instrumentation '{instrumentation}' via {typeName}.{methodName}.", ex.Message);
         }
     }
 

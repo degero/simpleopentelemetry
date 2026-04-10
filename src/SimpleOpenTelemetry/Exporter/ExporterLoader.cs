@@ -7,15 +7,16 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
-using SimpleOpenTelemetry.Exporter;
+using SimpleOpenTelemetry.Utils;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Exporter;
 
 internal interface IExporterLoader
 {
-    void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger);
-    void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger);
-    void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger);
+    void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
+    void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
+    void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
 }
 
 /// <summary>
@@ -24,6 +25,8 @@ internal interface IExporterLoader
 /// </summary>
 internal class ExporterLoader : IExporterLoader
 {
+    private readonly string eventCategory = nameof(ExporterLoader);
+
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
@@ -55,13 +58,10 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
-    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, MetricExporterEnum.Otlp, config.Metric.Exporters,
+    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+        => ConfigureExporters(builder, config.Metric.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
-            _metricExporters, ExporterAssemblies.KnownMetricsExporters, logger);
+            _metricExporters, ExporterAssemblies.KnownMetricsExporters);
 
     /// <summary>
     /// Configures trace exporters on the provided TracerProviderBuilder.
@@ -72,13 +72,10 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
-    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, TraceExporterEnum.Otlp, config.Trace.Exporters,
+    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+        => ConfigureExporters(builder, config.Trace.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
-            _traceExporters, ExporterAssemblies.KnownTraceExporters, logger);
+            _traceExporters, ExporterAssemblies.KnownTraceExporters);
 
     /// <summary>
     /// Configures log exporters on the provided LoggerProviderBuilder.
@@ -89,16 +86,12 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The LoggerProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="ArgumentNullException">Thrown when builder or config is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when exporter registration fails.</exception>
-    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config, ILogger logger)
-        => ConfigureExporters(builder, LogExporterEnum.Otlp, config.Log.Exporters,
+    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+        => ConfigureExporters(builder, config.Log.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg),
-            _logExporters, ExporterAssemblies.KnownLogExporters, logger);
+            _logExporters, ExporterAssemblies.KnownLogExporters);
 
     private IConfiguration? GetCustomExporterConfig(
-        ExporterExtensionDescriptor descriptor,
         SimpleOpenTelemetryExporterConfig config
     )
     {
@@ -107,8 +100,7 @@ internal class ExporterLoader : IExporterLoader
         if (topConfigSection is not null && topConfigSection!.Exists())
         {
             //  override with the output type options if they exist
-            if (config.Options is not null &&
-                config.Options.Exists())
+            if (config.Options is not null && config.Options.Exists())
             {
 
                 var merged = new ConfigurationBuilder()
@@ -117,31 +109,28 @@ internal class ExporterLoader : IExporterLoader
                     .Build();
 
                 return merged;
-                // return MergeConfigurations(topConfigSection, config.Options);
             }
             else
                 return topConfigSection;
         }
-        else if (config.Options is not null &&
-                config.Options.Exists())
-        {
+        else if (config.Options is not null && config.Options.Exists())
             return config.Options;
-        }
 
         return null;
     }
 
-    private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder, TEnum enumExporter,
+    private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder,
         IList<SimpleOpenTelemetryExporterConfig> exporters,
         Action<string, Action<OtlpExporterOptions>> addOtlp,
         Array validExporterTypes,
-        Dictionary<TEnum, ExporterExtensionDescriptor> descriptors,
-        ILogger logger)
+        Dictionary<TEnum, ExporterExtensionDescriptor> descriptors)
     {
         // Determine the valid exporters for the given builder type
         var validExporters = validExporterTypes.Cast<object>()
             .Select(e => e.ToString())
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        
+        var signal = Util.GetSignalName<TBuilder>();
 
         for (var i = 0; i < exporters.Count; i++)
         {
@@ -154,21 +143,24 @@ internal class ExporterLoader : IExporterLoader
             }
             else if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                var matchedExporter = Enum.Parse(typeof(TEnum), item.Type.ToString(), ignoreCase: true);
+                var matchedExporter = (TEnum)Enum.Parse(typeof(TEnum), item.Type.ToString(), ignoreCase: true);
 
-                if (!descriptors.TryGetValue((TEnum)matchedExporter, out var descriptor))
-                    throw new InvalidOperationException(
-                        $"Critical: {typeof(TEnum).Name} type not found: {matchedExporter} to initialise exporter");
-
-                // TODO: fix to use a flag if this vendor lib has options, refac and clean all this crap codegen up
-                var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(descriptor, item) : null;
-
-                AddExporter(builder, descriptor, config, logger);
+                if (!descriptors.TryGetValue(matchedExporter, out var descriptor))
+                {
+                    EventSource.Log.Error(eventCategory, 
+                        $"{typeof(TEnum).Name} type '{matchedExporter}' not found to initialise {signal} exporter.");
+                }
+                else 
+                {
+                    // TODO: fix to use a flag if this vendor lib has options, refac and clean all this crap codegen up
+                    var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(item) : null;
+                    AddExporter(matchedExporter, builder, descriptor, config, signal);
+                }
             }
             else
             {
                 // Throw an exception on an unknown exporter type
-                throw new InvalidOperationException($"Unsupported exporter type: {item.Type}. Please check your SimpleOpenTelemetry Configuration.");
+                EventSource.Log.Error(eventCategory, $"Unsupported otel {signal} exporter type '{item.Type}'. Please check your SimpleOpenTelemetry configuration.");
             }
         }
     }
@@ -177,48 +169,23 @@ internal class ExporterLoader : IExporterLoader
     private void AddOTLPExporter(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig item, string exporterName)
         => addExporter(exporterName, BuildOtlpConfig(item));
 
-
-    //private void AddTraceExporter(
-    //TracerProviderBuilder builder,
-    //TraceExporterEnum instrumentation,
-    //ILogger? logger = null)
-    //=> AddExporter(builder, instrumentation, ExporterAssemblies.KnownTraceExporters, logger);
-
-    //private void AddMetricExporter(
-    //    MeterProviderBuilder builder,
-    //    MetricExporterEnum instrumentation,
-    //    ILogger? logger = null)
-    //    => AddExporter(builder, instrumentation, ExporterAssemblies.KnownMetricsExporters, logger);
-
-    private void AddExporter<TBuilder>(
-    TBuilder builder,
-    ExporterExtensionDescriptor descriptor,
-    IConfiguration? section,
-    ILogger? logger = null)
-    {
-
-        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
-
-        TryInvokeExtension<TBuilder>(builder, assembly, descriptor, section, logger);
-    }
-
-
-    private void TryInvokeExtension<TBuilder>(
+    private void AddExporter<TBuilder,TEnum>(
+        TEnum exporterEnum,
         TBuilder builder,
-        Assembly assembly,
         ExporterExtensionDescriptor descriptor,
         IConfiguration? section,
-        ILogger? logger)
+        string signal)
     {
         var (assemblyName, typeName, methodName, optionsClassName) = descriptor;
 
         try
         {
+            var assembly = _assemblyExec.GetAssembly(assemblyName);
             var builderType = typeof(TBuilder);
             var builderTypeName = builder.GetType().Name;
 
             var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
@@ -239,12 +206,12 @@ internal class ExporterLoader : IExporterLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            logger?.LogInformation("Successfully registered {TBuilder} exporter: {Method}", builderTypeName, methodName);
+            EventSource.Log.Verbose(eventCategory, $"registered {signal} exporter '{exporterEnum}'.");
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel exporter via {typeName}.{methodName}", ex);
+            EventSource.Log.Error(eventCategory, $"Failed to register {signal} exporter '{exporterEnum}' via '{typeName}.{methodName}'.", ex.Message);
         }
     }
 
@@ -253,12 +220,12 @@ internal class ExporterLoader : IExporterLoader
         // If options are passed, bind to OtlpExporterOptions structure
         if (item.Options is not null)
         {
-            return (Action<OtlpExporterOptions>)(config =>
+            return config =>
             {
                 OtlpExporterOptions options = new();
                 var section = item.Options;
                 section.Bind(options);
-            });
+            };
         }
         else
         {

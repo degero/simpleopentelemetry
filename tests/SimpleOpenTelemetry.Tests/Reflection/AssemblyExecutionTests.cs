@@ -44,9 +44,8 @@ public class AssemblyExecutionTests
     public void TryLoadAssembly_ReturnsExistingLoadedAssembly()
     {
         var sut = new AssemblyExecution();
-        var logger = new Mock<Microsoft.Extensions.Logging.ILogger>();
 
-        var assembly = sut.TryLoadAssembly("System.Runtime", logger.Object);
+        var assembly = sut.TryLoadAssembly("System.Runtime");
 
         Assert.NotNull(assembly);
         Assert.Equal("System.Runtime", assembly!.GetName().Name);
@@ -57,7 +56,7 @@ public class AssemblyExecutionTests
     {
         var sut = new AssemblyExecution();
 
-        var assembly = sut.TryLoadAssembly("Definitely.Not.A.Real.Assembly.For.Tests", logger: null);
+        var assembly = sut.TryLoadAssembly("Definitely.Not.A.Real.Assembly.For.Tests");
 
         Assert.Null(assembly);
     }
@@ -66,10 +65,9 @@ public class AssemblyExecutionTests
     public void GetAssembly_ThrowsWhenAssemblyCannotBeLoaded()
     {
         var sut = new AssemblyExecution();
-        var logger = new Mock<Microsoft.Extensions.Logging.ILogger>();
 
         var ex = Assert.Throws<Exception>(() =>
-            sut.GetAssembly("Definitely.Not.A.Real.Assembly.For.Tests", logger.Object));
+            sut.GetAssembly("Definitely.Not.A.Real.Assembly.For.Tests"));
 
         Assert.Contains("Cannot load assembly", ex.Message);
     }

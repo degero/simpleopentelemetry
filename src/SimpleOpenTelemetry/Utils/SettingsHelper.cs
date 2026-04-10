@@ -15,8 +15,6 @@ public static class SettingsHelper
         return simpleOtelSection.GetSection(sectionName).Exists();
     }
 
-
-    // TODO Chad get calling assembly name
     /// <summary>
     /// Get env var OTEL_SERVICE_NAME or fallback to calling assembly if no setting
     /// </summary>

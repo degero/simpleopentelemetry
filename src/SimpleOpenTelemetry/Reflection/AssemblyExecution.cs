@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 /// <summary>
 /// Provides utilities for dynamically loading assemblies and invoking extension methods via reflection.
@@ -11,6 +12,8 @@ internal class AssemblyExecution
 {
     private Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
 
+    private readonly string eventCategory = nameof(AssemblyExecution);
+
     /// <summary>
     /// Gets a cached or newly loaded assembly by name.
     /// </summary>
@@ -18,10 +21,9 @@ internal class AssemblyExecution
     /// Caches loaded assemblies to avoid redundant loading. First checks cache, then attempts to load from disk.
     /// </remarks>
     /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
-    /// <param name="logger">Logger for diagnostic information.</param>
     /// <returns>The loaded assembly.</returns>
     /// <exception cref="Exception">Thrown when assembly cannot be loaded.</exception>
-    public Assembly GetAssembly(string assemblyName, ILogger? logger)
+    public Assembly GetAssembly(string assemblyName)
     {
         if (_loadedAssemblies.Keys.Contains(assemblyName))
         {
@@ -29,10 +31,11 @@ internal class AssemblyExecution
         }
         else
         {
-            var assembly = TryLoadAssembly(assemblyName, logger);
+            var assembly = TryLoadAssembly(assemblyName);
             if (assembly == null)
-                throw new Exception($"Critical SimpleOpenTelemetry error: Cannot load assembly {assemblyName}. " +
+                throw new Exception($"Cannot load assembly '{assemblyName}'. " +
                     $"Ensure you have added the required nuget package to your project.");
+
             return assembly;
         }
     }
@@ -45,9 +48,8 @@ internal class AssemblyExecution
     /// Returns null if the assembly is not found or loading fails.
     /// </remarks>
     /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
     /// <returns>The loaded assembly, or null if not found or loading failed.</returns>
-    public Assembly? TryLoadAssembly(string assemblyName, ILogger? logger)
+    public Assembly? TryLoadAssembly(string assemblyName)
     {
         // Check if already loaded first
         var existing = AppDomain.CurrentDomain.GetAssemblies()
@@ -61,19 +63,17 @@ internal class AssemblyExecution
         var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
         if (!File.Exists(path))
         {
-            logger?.LogDebug("Assembly not found, skipping: {Assembly}", assemblyName);
             return null;
         }
 
         try
         {
             var loaded = Assembly.LoadFrom(path);
-            logger?.LogInformation("Loaded assembly: {Assembly}", assemblyName);
             return loaded;
         }
         catch (Exception ex)
         {
-            logger?.LogError(ex, "Failed to load assembly: {Assembly}", assemblyName);
+            EventSource.Log.Error( $"Failed to load assembly '{assemblyName}'.", ex.Message);
             return null;
         }
     }

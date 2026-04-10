@@ -1,18 +1,19 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Instrumentation;
+using SimpleOpenTelemetry.Utils;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Extensions;
 
 internal interface IExtensionLoader
 {
-    void AddMetricsExtension(MeterProviderBuilder builder, MetricExtensionsEnum extension, ILogger? logger = null);
-    void AddTraceExtension(LoggerProviderBuilder builder, LogExtensionsEnum extension, ILogger? logger = null);
-    void AddTraceExtension(TracerProviderBuilder builder, TraceExtensionsEnum extension, ILogger? logger = null);
+    void AddMetricsExtension(MeterProviderBuilder builder, MetricExtensionsEnum extension);
+    void AddTraceExtension(LoggerProviderBuilder builder, LogExtensionsEnum extension);
+    void AddTraceExtension(TracerProviderBuilder builder, TraceExtensionsEnum extension);
 }
 
 /// <summary>
@@ -24,6 +25,7 @@ internal interface IExtensionLoader
 /// </summary>
 internal class ExtensionLoader : IExtensionLoader
 {
+    private readonly string eventCategory = nameof(ExtensionLoader);
     private readonly IConfiguration _configuration;
     private readonly AssemblyExecution _assemblyExec;
 
@@ -48,13 +50,10 @@ internal class ExtensionLoader : IExtensionLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="extension">The trace extension type to add.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
     public void AddTraceExtension(
-    LoggerProviderBuilder builder,
-    LogExtensionsEnum extension,
-    ILogger? logger = null)
-    => AddExtension(builder, extension, ExtensionAssemblies.KnownLogExtensions, logger);
+        LoggerProviderBuilder builder,
+        LogExtensionsEnum extension)
+        => AddExtension(builder, extension, ExtensionAssemblies.KnownLogExtensions);
 
     /// <summary>
     /// Adds a trace extension to the provided TracerProviderBuilder.
@@ -65,13 +64,10 @@ internal class ExtensionLoader : IExtensionLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="extension">The trace extension type to add.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
     public void AddTraceExtension(
-    TracerProviderBuilder builder,
-    TraceExtensionsEnum extension,
-    ILogger? logger = null)
-    => AddExtension(builder, extension, ExtensionAssemblies.KnownTraceExtensions, logger);
+        TracerProviderBuilder builder,
+        TraceExtensionsEnum extension)
+        => AddExtension(builder, extension, ExtensionAssemblies.KnownTraceExtensions);
 
     /// <summary>
     /// Adds a metrics extension to the provided MeterProviderBuilder.
@@ -82,46 +78,37 @@ internal class ExtensionLoader : IExtensionLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="extension">The metrics extension type to add.</param>
-    /// <param name="logger">Optional logger for diagnostic information.</param>
-    /// <exception cref="InvalidOperationException">Thrown when extension type is not found or registration fails.</exception>
     public void AddMetricsExtension(
         MeterProviderBuilder builder,
-        MetricExtensionsEnum extension,
-        ILogger? logger = null)
-        => AddExtension(builder, extension, ExtensionAssemblies.KnownMetricExtensions, logger);
+        MetricExtensionsEnum extension)
+        => AddExtension(builder, extension, ExtensionAssemblies.KnownMetricExtensions);
 
     private void AddExtension<TBuilder, TEnum>(
-    TBuilder builder,
-    TEnum extension,
-    Dictionary<TEnum, ExtensionDescriptor> descriptors,
-    ILogger? logger = null)
+        TBuilder builder,
+        TEnum extension,
+        Dictionary<TEnum, ExtensionDescriptor> descriptors)
     where TEnum : notnull
     {
+        var signal = Util.GetSignalName<TBuilder>();
         if (!descriptors.TryGetValue(extension, out var descriptor))
-            throw new InvalidOperationException(
-                $"Critical: {typeof(TEnum).Name} type not found: {extension} to initialise extension");
+        {
+            EventSource.Log.Error(eventCategory, 
+                $"{typeof(TEnum).Name} type '{extension}' not found to initialise {signal} extension." 
+            );
+            return;
+        }
 
-        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName, logger);
-
-        TryInvokeExtension<TBuilder>(builder, assembly, descriptor, logger);
-    }
-
-
-    private void TryInvokeExtension<TBuilder>(
-        TBuilder builder,
-        Assembly assembly,
-        ExtensionDescriptor descriptor,
-        ILogger? logger)
-    {
-        var (assemblyName, typeName, methodName, configurationSection) = descriptor;
-
+        var (assemblyName, typeName, methodName, configurationSection) = descriptor!;
+      
         try
         {
+           
+            var assembly = _assemblyExec.GetAssembly(assemblyName);
             var builderType = typeof(TBuilder);
             var builderTypeName = builder.GetType().Name;
 
             var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Critical error: Type '{typeName}' not found in {assembly.GetName().Name}");
+                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
@@ -143,13 +130,12 @@ internal class ExtensionLoader : IExtensionLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            logger?.LogInformation("Successfully registered {TBuilder} extension: {Method}", builderTypeName, methodName);
+            EventSource.Log.Verbose(eventCategory, $"registered {signal} extension '{extension}'.");
 
         }
         catch (Exception ex)
         {
-            throw new Exception($"SimpleOpenTelemetry Failed to register otel extension via {typeName}.{methodName}", ex);
+            EventSource.Log.Error(eventCategory, $"Failed to register {signal} extension '{extension}' via '{typeName}.{methodName}'.", ex.Message);
         }
     }
-
 }

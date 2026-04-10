@@ -1,6 +1,8 @@
-using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.Diagnostics.Eventing.Reader;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SimpleOpenTelemetry.Diagnostics;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Utils;
@@ -10,6 +12,18 @@ namespace SimpleOpenTelemetryTests.Utils;
 
 public class SimpleOpenTelemetryUtilsTests
 {
+    private readonly TestEventListener _listener;
+
+    public SimpleOpenTelemetryUtilsTests()
+    {
+        _listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose(); // Always dispose — disables the EventSource for this _listener
+    }
+    
     private static IConfiguration BuildConfigWithOtelValues(string otelServiceName, string otelResourceAttributes) =>
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -56,8 +70,11 @@ public class SimpleOpenTelemetryUtilsTests
 
         var services = new ServiceCollection();
 
-        var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("Cannot load assembly", ex.ToString());
+        services.AddSimpleOpenTelemetry(config);
+
+        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+            r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+            r.Payload.Any(r => r.ToString().Contains("Cannot load assembly")));
     }
 
     [Fact]
@@ -73,8 +90,11 @@ public class SimpleOpenTelemetryUtilsTests
 
         var services = new ServiceCollection();
 
-        var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("Cannot load assembly", ex.ToString());
+        services.AddSimpleOpenTelemetry(config);
+
+        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+            r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+            r.Payload.Any(r => r.ToString().Contains("Cannot load assembly")));
     }
 
     [Fact]
@@ -92,8 +112,10 @@ public class SimpleOpenTelemetryUtilsTests
 
         var services = new ServiceCollection();
 
-        var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("type not found", ex.ToString());
+        services.AddSimpleOpenTelemetry(config);
+        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+            r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+            r.Payload.Any(r => r.ToString().Contains("type '999' not found ")));
     }
 
     [Fact]
@@ -123,8 +145,11 @@ public class SimpleOpenTelemetryUtilsTests
                 .Build();
 
             var services = new ServiceCollection();
-            var ex = Assert.ThrowsAny<System.Exception>(() => services.AddSimpleOpenTelemetry(config));
-            Assert.Contains("Failed to register otel instrumentation", ex.ToString());
+             services.AddSimpleOpenTelemetry(config);
+
+            Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+                r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+                r.Payload.Any(r => r.ToString().Contains("Failed to register trace instrumentation")));
         }
         finally
         {

@@ -142,7 +142,7 @@ public class SimpleOpenTelemetryBuilderTests
         // Use reflection to mock private fields for testing
         var distroLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_distroLoader", BindingFlags.NonPublic | BindingFlags.Instance);
         var mockDistroLoader = new Mock<IDistroLoader>();
-        mockDistroLoader.Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>())).Returns(true);
+        mockDistroLoader.Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>())).Returns(true);
         distroLoaderField?.SetValue(builder, mockDistroLoader.Object);
 
         var exporterLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_exporterLoader", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -173,7 +173,7 @@ public class SimpleOpenTelemetryBuilderTests
         builder.Configure();
 
         // Assert
-        mockDistroLoader.Verify(d => d.LoadDistro(mockOtelBuilder.Object, It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Once);
+        mockDistroLoader.Verify(d => d.LoadDistro(mockOtelBuilder.Object, It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Once);
 
         // Verify resourcebuilder configure callbacks are setup        
         Assert.False(services.Any(r => r.ServiceType.Name == "IConfigureMeterProviderBuilder"));
@@ -181,15 +181,15 @@ public class SimpleOpenTelemetryBuilderTests
         Assert.False(services.Any(r => r.ServiceType.Name == "IConfigureLoggerProviderBuilder"));
         
         // Verify that other loaders' methods are not called (indicating early return)
-        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>(), It.IsAny<ILogger>()), Times.Never);
-        mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>(), It.IsAny<ILogger>()), Times.Never);
-        mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryBuilderOptions>(), It.IsAny<ILogger>()), Times.Never);
-        mockExtensionsLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>(), It.IsAny<ILogger>()), Times.Never);
-        mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>(), It.IsAny<ILogger>()), Times.Never);
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>()), Times.Never);
+        mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
+        mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryBuilderOptions>()), Times.Never);
+        mockExtensionsLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>()), Times.Never);
+        mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>()), Times.Never);
     }
 }
