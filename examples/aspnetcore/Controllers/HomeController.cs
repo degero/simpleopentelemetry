@@ -11,16 +11,19 @@ public class HomeController : Controller
 
     private readonly ActivitySource _activitySource;
 
-    private readonly AppDbContext _context;
+    private readonly AppDbContext? _context;
 
+    private readonly IConfiguration _configuration;
 
-    public HomeController(ILogger<HomeController> logger, IConfiguration configuration, AppDbContext context)
+    public HomeController(ILogger<HomeController> logger, IConfiguration configuration, AppDbContext? context = null)
     {
         _logger = logger;
 
         _activitySource = new ActivitySource("SimpleOpenTelemetry.Examples.AspNetCore.Controllers.Home");
 
-        _context = context;
+        _context = context ?? null;
+
+        _configuration = configuration;
     }
 
 
@@ -44,16 +47,18 @@ public class HomeController : Controller
             activity.AddEvent(activityEvent);
         }
 
-        // 3. Use EF traces with the EFCore + SqlClient instrumentations
-        using (var efActivity = _activitySource.StartActivity("EFCoreGetProducts"))
+        // 3. If enabled Use EF traces with the EFCore + SqlClient instrumentations
+        if(_configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
         {
-            efActivity.SetStatus(ActivityStatusCode.Ok);
-            var products = _context.Products.ToList();
-            var activityEvent = new ActivityEvent("ProductsRetrieved",
-               tags: new ActivityTagsCollection { new("products.count", products.Count()) });
-            efActivity.AddEvent(activityEvent);
+            using (var efActivity = _activitySource.StartActivity("EFCoreGetProducts"))
+            {
+                efActivity.SetStatus(ActivityStatusCode.Ok);
+                var products = _context.Products.ToList();
+                var activityEvent = new ActivityEvent("ProductsRetrieved",
+                tags: new ActivityTagsCollection { new("products.count", products.Count()) });
+                efActivity.AddEvent(activityEvent);
+            }
         }
-        
         return View();
     }
 
