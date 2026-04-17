@@ -1,7 +1,7 @@
 using SimpleOpenTelemetry.OtelComponents.Exporter;
 using Xunit;
 
-namespace SimpleOpenTelemetryTests.Exporter;
+namespace SimpleOpenTelemetryTests.OtelComponents.Exporter;
 
 public class ExporterAssembliesTests
 {

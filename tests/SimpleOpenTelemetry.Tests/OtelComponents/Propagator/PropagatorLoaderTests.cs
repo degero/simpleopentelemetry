@@ -8,7 +8,7 @@ using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.OtelComponents.Propagator;
 using Xunit;
 
-namespace SimpleOpenTelemetryTests.Propagator;
+namespace SimpleOpenTelemetryTests.OtelComponents.Propagator;
 
 [Collection("PropagatorLoaderTests")]
 public class PropagatorLoaderTests
