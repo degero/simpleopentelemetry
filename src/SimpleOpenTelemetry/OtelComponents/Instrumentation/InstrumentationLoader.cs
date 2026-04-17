@@ -3,11 +3,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.OtelComponents.Exporter;
+namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 internal interface IInstrumentationLoader
 {

@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.OtelComponents.Extensions;
+namespace SimpleOpenTelemetry.OtelComponents.Extension;
 
 public enum TraceExtensionsEnum
 {

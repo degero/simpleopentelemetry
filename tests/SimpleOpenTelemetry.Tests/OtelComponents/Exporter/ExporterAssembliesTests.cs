@@ -1,4 +1,4 @@
-using SimpleOpenTelemetry.Exporter;
+using SimpleOpenTelemetry.OtelComponents.Exporter;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.Exporter;

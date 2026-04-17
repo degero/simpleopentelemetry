@@ -1,6 +1,4 @@
-﻿using SimpleOpenTelemetry.Instrumentation;
-
-namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
+﻿namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 internal record InstrumentationExtensionDescriptor(
      string AssemblyName,

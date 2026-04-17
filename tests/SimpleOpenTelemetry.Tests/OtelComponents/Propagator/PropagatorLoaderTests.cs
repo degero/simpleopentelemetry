@@ -5,7 +5,7 @@ using Moq;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Propagator;
+using SimpleOpenTelemetry.OtelComponents.Propagator;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.Propagator;

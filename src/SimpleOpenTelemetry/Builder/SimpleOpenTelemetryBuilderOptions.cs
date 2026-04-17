@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
-using SimpleOpenTelemetry.Extensions;
-using SimpleOpenTelemetry.Instrumentation;
+using SimpleOpenTelemetry.OtelComponents.Extension;
+using SimpleOpenTelemetry.OtelComponents.Extensions;
+using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
 

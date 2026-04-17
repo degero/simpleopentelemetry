@@ -4,18 +4,19 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Configuration;
-using SimpleOpenTelemetry.Distro;
-using SimpleOpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Extensions;
-using SimpleOpenTelemetry.Propagator;
-using SimpleOpenTelemetry.Resource;
-using SimpleOpenTelemetry.Sampler;
+using SimpleOpenTelemetry.OtelComponents.Distro;
+using SimpleOpenTelemetry.OtelComponents.Exporter;
+using SimpleOpenTelemetry.OtelComponents.Extensions;
+using SimpleOpenTelemetry.OtelComponents.Instrumentation;
+using SimpleOpenTelemetry.OtelComponents.Propagator;
+using SimpleOpenTelemetry.OtelComponents.Resource;
+using SimpleOpenTelemetry.OtelComponents.Sampler;
 using SimpleOpenTelemetry.Utils;
 
 

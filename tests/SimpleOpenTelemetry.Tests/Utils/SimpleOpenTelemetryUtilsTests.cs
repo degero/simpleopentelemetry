@@ -4,9 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleOpenTelemetry.Diagnostics;
 using SimpleOpenTelemetry.Extensions;
-using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
+using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 namespace SimpleOpenTelemetryTests.Utils;
 

@@ -1,8 +1,6 @@
-using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 /// <summary>

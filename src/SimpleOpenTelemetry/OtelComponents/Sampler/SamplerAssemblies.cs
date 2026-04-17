@@ -6,13 +6,6 @@ internal record SamplerDescriptor(
      string MethodName
 );
 
-public enum SamplerEnum
-{
-    /* opentelemetry-dotnet */
-    
-    /* opentelemetry-dotnet-contrib */
-    AWS
-}
 
 /// <summary>
 /// A list of known opentelemetry-dotnet-contrib and vendor extensions
