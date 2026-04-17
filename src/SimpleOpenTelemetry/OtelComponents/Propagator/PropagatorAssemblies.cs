@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.Propagator;
+namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
 internal record PropagatorDescriptor(
      string AssemblyName,

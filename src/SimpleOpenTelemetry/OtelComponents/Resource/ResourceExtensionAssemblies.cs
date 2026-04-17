@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.Resource;
+namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
 internal record ResourceDetectorDescriptor(
      string AssemblyName,

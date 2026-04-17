@@ -4,7 +4,7 @@ using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Builder;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Resource;
+namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
 internal interface IResourceDetectorLoader
 {

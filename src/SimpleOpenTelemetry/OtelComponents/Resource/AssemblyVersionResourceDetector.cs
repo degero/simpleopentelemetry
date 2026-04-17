@@ -4,7 +4,7 @@ using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Utils;
 using OtelResource = OpenTelemetry.Resources.Resource;
 
-namespace SimpleOpenTelemetry.Resource;
+namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
 internal class AssemblyVersionResourceDetector : IResourceDetector
 {

@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.Sampler;
+namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 
 internal record SamplerDescriptor(
      string AssemblyName,

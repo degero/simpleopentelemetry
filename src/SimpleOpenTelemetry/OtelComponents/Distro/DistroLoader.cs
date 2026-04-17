@@ -3,7 +3,7 @@ using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Distro;
+namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
 internal interface IDistroLoader
 {

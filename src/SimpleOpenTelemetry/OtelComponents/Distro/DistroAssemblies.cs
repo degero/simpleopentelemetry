@@ -1,5 +1,5 @@
 
-namespace SimpleOpenTelemetry.Distro;
+namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
 internal record DistroDescriptor(
      string AssemblyName,

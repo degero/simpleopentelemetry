@@ -6,7 +6,7 @@ using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Propagator;
+namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
 internal interface IPropagatorLoader 
 {

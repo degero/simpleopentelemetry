@@ -6,7 +6,7 @@ using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Configuration;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Sampler;
+namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 
 internal interface ISamplerLoader
 {

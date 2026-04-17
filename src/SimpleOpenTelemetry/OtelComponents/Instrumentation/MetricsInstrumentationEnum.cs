@@ -1,4 +1,4 @@
-﻿namespace SimpleOpenTelemetry.Instrumentation;
+﻿namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 public enum MetricInstrumentationEnum
 {

@@ -7,7 +7,7 @@ using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Extensions;
+namespace SimpleOpenTelemetry.OtelComponents.Extensions;
 
 internal interface IExtensionLoader
 {

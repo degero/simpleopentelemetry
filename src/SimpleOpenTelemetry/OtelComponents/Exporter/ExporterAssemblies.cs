@@ -1,4 +1,4 @@
-namespace SimpleOpenTelemetry.Exporter;
+namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 
 /// <summary>
 /// Describes an exporter extension method found in an external assembly.

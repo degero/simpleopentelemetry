@@ -1,7 +1,7 @@
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Instrumentation;
 
-namespace SimpleOpenTelemetry.Instrumentation;
+namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 internal record ExtensionDescriptor(
      string AssemblyName,

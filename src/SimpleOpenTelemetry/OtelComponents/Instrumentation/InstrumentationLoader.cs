@@ -7,7 +7,7 @@ using SimpleOpenTelemetry.Instrumentation;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
-namespace SimpleOpenTelemetry.Exporter;
+namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 
 internal interface IInstrumentationLoader
 {
