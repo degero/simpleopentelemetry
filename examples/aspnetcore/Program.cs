@@ -2,9 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using OpenTelemetry;
 using OpenTelemetry.Instrumentation.EntityFrameworkCore;
 using SimpleOpenTelemetry.Examples.AspNetCore.Data;
+using SimpleOpenTelemetry.Examples.Shared;
 using SimpleOpenTelemetry.Extensions;
 
-
+// Add Event listeners outputing to console for demo/debug purposes
 using var otelListener = new OtelEventListener();
 using var simpleOtelListener = new SimpleOtelEventListener();
 
@@ -14,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add EFCore if enabled in config
-if(builder.Configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
+if (builder.Configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
 {
     builder.Services.AddDbContext<AppDbContext>(options => {
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -30,8 +31,7 @@ builder.Services.Configure<EntityFrameworkInstrumentationOptions>(options =>
     };
 });
 
-
-// OPTIONAL: clear loggers for
+// OPTIONAL: clear loggers so the OpenTelemetry logger is attached
 builder.Logging.ClearProviders();
 
 // Register OpenTelemetry using SimpleOpenTelemetry

@@ -1,6 +1,6 @@
 using System.Diagnostics.Tracing;
-using OpenTelemetry.Trace;
 
+namespace SimpleOpenTelemetry.Examples.Shared;
 
 public class OtelEventListener : EventListener
 {

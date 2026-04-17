@@ -137,8 +137,8 @@ internal class ExporterLoader : IExporterLoader
 
             if (item.Type == SimpleOpenTelemetryExporterType.Otlp)
             {
-                // Dont use reflection as we have this builtin to OpenTelemetry lib
-                AddOTLPExporter(addOtlp, item, $"OTLPExporter-{i}");
+                // Dont use reflection as we have this built in the OpenTelemetry lib
+                AddOTLPExporter(addOtlp, item, $"OTLPExporter-{signal}-{i}", signal);
             }
             else if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
@@ -165,8 +165,19 @@ internal class ExporterLoader : IExporterLoader
     }
 
 
-    private void AddOTLPExporter(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig item, string exporterName)
-        => addExporter(exporterName, BuildOtlpConfig(item));
+    private void AddOTLPExporter(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig item, string exporterName, string signal)
+    {
+        try 
+        {
+            addExporter(exporterName, BuildOtlpConfig(item));
+            EventSource.Log.Verbose(eventCategory, $"registered {signal} OTLP exporter '{exporterName}'.");
+
+        }
+        catch (Exception ex)
+        {
+            EventSource.Log.Error(eventCategory, $"Failed to register {signal} OTLP exporter via '{exporterName}'.", ex.Message);
+        }
+    }
 
     private void AddExporter<TBuilder,TEnum>(
         TEnum exporterEnum,
