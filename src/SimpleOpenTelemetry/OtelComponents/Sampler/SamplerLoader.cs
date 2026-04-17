@@ -3,14 +3,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Configuration;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 
 internal interface ISamplerLoader
 {
-    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryBuilderOptions options);
+    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryOptions options);
 }
 
 /// <summary>
@@ -36,7 +35,7 @@ internal class SamplerLoader : ISamplerLoader
     public SamplerLoader(IConfiguration configuration)
     {
         // TODO Chad seems wrong Configuration is loaded in as the section for this lib
-        _configuration = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         _assemblyExec = new AssemblyExecution();
     }
 
@@ -50,7 +49,7 @@ internal class SamplerLoader : ISamplerLoader
     /// <param name="resource">The Resource builder resource to configure with.</param>
     public void AddSampler(TracerProviderBuilder builder,
         OpenTelemetry.Resources.Resource resource,
-        SimpleOpenTelemetryBuilderOptions options)
+        SimpleOpenTelemetryOptions options)
     {
         var item = options.Trace?.Sampler;
 

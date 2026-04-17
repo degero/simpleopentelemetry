@@ -3,14 +3,13 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Configuration;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
 internal interface IPropagatorLoader 
 {
-     void AddPropagators(SimpleOpenTelemetryBuilderOptions options);
+     void AddPropagators(SimpleOpenTelemetryOptions options);
 }
 
 internal class PropagatorLoader : IPropagatorLoader
@@ -39,7 +38,7 @@ internal class PropagatorLoader : IPropagatorLoader
     /// Dynamically loads and configures resource propagators from registered assemblies.
     /// </remarks>
     public void AddPropagators(
-        SimpleOpenTelemetryBuilderOptions options)
+        SimpleOpenTelemetryOptions options)
     {
         var propagators = options.Trace?.Propagators;
 

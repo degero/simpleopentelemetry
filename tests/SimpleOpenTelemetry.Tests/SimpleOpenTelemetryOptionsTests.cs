@@ -1,9 +1,9 @@
 using SimpleOpenTelemetry.Builder;
 using Xunit;
 
-namespace SimpleOpenTelemetryTests.Builder;
+namespace SimpleOpenTelemetryTests;
 
-public class SimpleOpenTelemetryBuilderOptionsTests
+public class SimpleOpenTelemetryOptionsTests
 {
     // TODO remove this AI slop
     [Fact]

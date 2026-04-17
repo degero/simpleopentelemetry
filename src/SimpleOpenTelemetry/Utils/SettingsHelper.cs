@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using SimpleOpenTelemetry.Configuration;
+using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.Utils;
 
@@ -11,7 +11,7 @@ public static class SettingsHelper
 
     public static bool HasSimpleOpenTelemetrySection(IConfiguration configuration, string sectionName)
     {
-        var simpleOtelSection = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        var simpleOtelSection = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         return simpleOtelSection.GetSection(sectionName).Exists();
     }
 
@@ -31,26 +31,26 @@ public static class SettingsHelper
     // TODO chad see if these are of any use
 
     ///// <summary>
-    ///// Loads SimpleOpenTelemetryConfiguration from configuration
+    ///// Loads SimpleOpenTelemetryOptions from configuration
     ///// Works with any IConfiguration instance (console, lib, service, web, etc.)
     ///// </summary>
-    //public static SimpleOpenTelemetryConfiguration GetOpenTelemetryOptions(
+    //public static SimpleOpenTelemetryOptions GetOpenTelemetryOptions(
     //    this IConfiguration configuration)
     //{
     //    return configuration
-    //        .GetSection(SimpleOpenTelemetryConfiguration.SectionName)
-    //        .Get<SimpleOpenTelemetryConfiguration>() ?? new SimpleOpenTelemetryConfiguration();
+    //        .GetSection(SimpleOpenTelemetryOptions.SectionName)
+    //        .Get<SimpleOpenTelemetryOptions>() ?? new SimpleOpenTelemetryOptions();
     //}
 
     ///// <summary>
-    ///// Registers SimpleOpenTelemetryConfiguration with DI container (optional, for DI-enabled apps)
+    ///// Registers SimpleOpenTelemetryOptions with DI container (optional, for DI-enabled apps)
     ///// </summary>
     //public static IServiceCollection AddOpenTelemetryOptions(
     //    this IServiceCollection services,
     //    IConfiguration configuration)
     //{
-    //    services.Configure<SimpleOpenTelemetryConfiguration>(
-    //        configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName));
+    //    services.Configure<SimpleOpenTelemetryOptions>(
+    //        configuration.GetSection(SimpleOpenTelemetryOptions.SectionName));
 
     //    return services;
     //}
@@ -58,7 +58,7 @@ public static class SettingsHelper
     ///// <summary>
     ///// Loads and registers options in one call (convenience method for DI-enabled apps)
     ///// </summary>
-    //public static SimpleOpenTelemetryConfiguration LoadOpenTelemetryOptions(
+    //public static SimpleOpenTelemetryOptions LoadOpenTelemetryOptions(
     //    this IServiceCollection services,
     //    IConfiguration configuration)
     //{

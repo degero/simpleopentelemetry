@@ -8,7 +8,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
 internal interface IResourceDetectorLoader
 {
-    void AddResourceDetectors(ResourceBuilder builder, SimpleOpenTelemetryBuilderOptions options);
+    void AddResourceDetectors(ResourceBuilder builder, SimpleOpenTelemetryOptions options);
 }
 
 /// <summary>
@@ -43,7 +43,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     /// </remarks>
     /// <param name="builder">The ResourceBuilder to configure.</param>
     public void AddResourceDetectors(ResourceBuilder builder,
-        SimpleOpenTelemetryBuilderOptions options)
+        SimpleOpenTelemetryOptions options)
     {
         var detectors = options.Resource?.Detectors;
 

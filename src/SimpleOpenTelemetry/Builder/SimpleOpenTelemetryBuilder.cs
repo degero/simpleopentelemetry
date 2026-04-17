@@ -8,7 +8,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
@@ -26,7 +25,7 @@ using SimpleOpenTelemetry.Utils;
 /// </summary>
 internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
-    private SimpleOpenTelemetryBuilderOptions _options = new SimpleOpenTelemetryBuilderOptions();
+    private SimpleOpenTelemetryOptions _options = new SimpleOpenTelemetryOptions();
 
     private readonly IOpenTelemetryBuilder _otelBuilder;
 
@@ -63,8 +62,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _distroLoader = new DistroLoader(config);
 
         // Load in configuration from file
-        var section = _configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
-        var simpleOpenTelemetryConfig = new SimpleOpenTelemetryConfiguration();
+        var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
+        var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
 
         section.Bind(simpleOpenTelemetryConfig);
 
@@ -77,7 +76,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     /// <summary>
     /// Configures the appropriate settings for trace, log and metrics based on 
-    /// SimpleOpenTelemetryConfiguration values.  
+    /// SimpleOpenTelemetryOptions values.  
     /// Also sets up:
     ///  - Propagators, extensions, samplers, resource detectors
     ///  - OpenTelmeetry.Resources.Resource based on configured detectors, internal AssemblyVersionResourceDetector Env var detector
@@ -130,7 +129,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureMetrics()
     {
-        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Metric)))
+        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Metric)))
             return;
 
         _otelBuilder.WithMetrics(metrics =>
@@ -158,7 +157,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureTracing(ResourceBuilder? resourceBuilder)
     {
-        var shouldConfigureTracing = SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Trace));
+        var shouldConfigureTracing = SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace));
 
         if (!shouldConfigureTracing)
             return;
@@ -190,7 +189,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureLogging()
     {
-        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryBuilderOptions.Log)))
+        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Log)))
             return;
 
         _otelBuilder.WithLogging(

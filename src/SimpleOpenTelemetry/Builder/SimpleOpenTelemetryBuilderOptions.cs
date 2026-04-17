@@ -24,6 +24,35 @@ public enum SimpleOpenTelemetryExporterProtocol
     Http
 }
 
+
+/// <summary>
+/// Configuration options for SimpleOpenTelemetry
+/// </summary>
+internal class SimpleOpenTelemetryOptions
+{
+    public const string SectionName = "SimpleOpenTelemetry";
+
+    public const string TraceSectionName = "Trace";
+    public const string LogSectionName = "Log";
+    public const string MetricSectionName = "Metric";
+
+    public string? Distro { get; set; }
+
+    public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
+
+    public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
+
+    public SimpleOpenTelemetryLogOptions Log { get; set; } = new();
+
+    /// <summary>
+    /// Options for Vendor distro exporters
+    /// </summary>
+    public IConfigurationSection? ExporterOptions { get; set; }
+
+    public ResourceOptions Resource { get; set; }
+
+}
+
 internal class SimpleOpenTelemetryExporterConfig
 {
     public SimpleOpenTelemetryExporterType Type { get; set; }
@@ -134,28 +163,3 @@ internal class ResourceOptions
 
 }
 
-/// <summary>
-/// Configuration options for SimpleOpenTelemetry Builder
-/// </summary>
-internal class SimpleOpenTelemetryBuilderOptions
-{
-    public const string TraceSectionName = "Trace";
-    public const string LogSectionName = "Log";
-    public const string MetricSectionName = "Metric";
-
-    public string? Distro { get; set; }
-
-    public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
-
-    public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
-    
-    public SimpleOpenTelemetryLogOptions Log { get; set; } = new();
-
-    /// <summary>
-    /// Options for Vendor distro exporters
-    /// </summary>
-    public IConfigurationSection? ExporterOptions { get; set; }
-
-    public ResourceOptions Resource { get;set; }
-
-}

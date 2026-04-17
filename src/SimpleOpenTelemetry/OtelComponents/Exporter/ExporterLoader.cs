@@ -6,7 +6,6 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Configuration;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -14,9 +13,9 @@ namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 
 internal interface IExporterLoader
 {
-    void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
-    void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
-    void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config);
+    void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config);
+    void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions config);
+    void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions config);
 }
 
 /// <summary>
@@ -45,7 +44,7 @@ internal class ExporterLoader : IExporterLoader
     public ExporterLoader(IConfiguration configuration)
     {
         // TODO seems wrong Configuration is loaded in as the section for this lib
-        _configuration = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName);
+        _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         _assemblyExec = new AssemblyExecution();
     }
 
@@ -58,7 +57,7 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Metric.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _metricExporters, ExporterAssemblies.KnownMetricsExporters);
@@ -72,7 +71,7 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Trace.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             _traceExporters, ExporterAssemblies.KnownTraceExporters);
@@ -86,7 +85,7 @@ internal class ExporterLoader : IExporterLoader
     /// </remarks>
     /// <param name="builder">The LoggerProviderBuilder to configure.</param>
     /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryBuilderOptions config)
+    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Log.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg),
             _logExporters, ExporterAssemblies.KnownLogExporters);

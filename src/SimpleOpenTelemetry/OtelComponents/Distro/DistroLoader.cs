@@ -7,7 +7,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
 internal interface IDistroLoader
 {
-    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryBuilderOptions options);
+    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options);
 }
 
 /// <summary>
@@ -34,7 +34,7 @@ internal class DistroLoader : IDistroLoader
     }
 
     public bool LoadDistro(IOpenTelemetryBuilder builder,
-        SimpleOpenTelemetryBuilderOptions options)
+        SimpleOpenTelemetryOptions options)
     {
         var distro = options.Distro;
 

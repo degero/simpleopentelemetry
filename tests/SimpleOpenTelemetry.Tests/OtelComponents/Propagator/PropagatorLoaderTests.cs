@@ -24,7 +24,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() {
                     Propagators = null
@@ -54,7 +54,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -85,7 +85,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -113,7 +113,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -141,7 +141,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -167,7 +167,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -198,7 +198,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -229,7 +229,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {
@@ -260,7 +260,7 @@ public class PropagatorLoaderTests
         try
         {
             var sut = new PropagatorLoader();
-            var options = new SimpleOpenTelemetryBuilderOptions
+            var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
                 {

@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.Configuration;
 
 /// <summary>
 /// Extension methods for adding OpenTelemetry to service collection
@@ -29,17 +28,17 @@ public static class ServiceCollectionExtensions
         if (configuration == null)
             throw new ArgumentNullException(nameof(configuration));
 
-        var config = configuration.GetSection(SimpleOpenTelemetryConfiguration.SectionName).Get<SimpleOpenTelemetryConfiguration>();
+        var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
         
         if (config is null)
-            throw new Exception($"No configuration section '{SimpleOpenTelemetryConfiguration.SectionName}'. This is required for SimpleOpenTelemetry");
+            throw new Exception($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry");
 
         bool atLeastOneExists = config.Log is not null 
             || config.Metric is not null 
             || config.Trace is not null;
             
         if (!atLeastOneExists)
-            throw new Exception($"Signal configuration subsections in '{SimpleOpenTelemetryConfiguration.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
+            throw new Exception($"Signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
 
         var otelBuilder = services.AddOpenTelemetry();
 
