@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 namespace SimpleOpenTelemetry.Examples.Console;
@@ -9,12 +10,13 @@ public class App : IHostedService
 {
 	private readonly ILogger<App> _logger;
 	private readonly IHostApplicationLifetime _lifetime;
-	private static readonly ActivitySource ActivitySource = new("DemoConsoleApp");
+	private static readonly ActivitySource ActivitySource = new("SimpleOpenTelemetry.Examples.Console.App");
 
 	public App(ILogger<App> logger, IHostApplicationLifetime lifetime)
 	{
 		_logger = logger;
 		_lifetime = lifetime;
+
 	}
 
 	public async Task StartAsync(CancellationToken cancellationToken)
@@ -50,10 +52,12 @@ public class App : IHostedService
 
 	private async Task DoWorkAsync(CancellationToken cancellationToken)
 	{
+        _logger.LogInformation("Test log message from HomeController.Index");
+
+        _logger.LogTrace("Test trace message from HomeController.Index");
+
 		// Demonstrate various operations
-		using var activity = ActivitySource.StartActivity("Demonstrating calls");
 		await DemonstrateHttpCalls();
-		await DemonstrateComplexOperations(_logger);
 
 	}
 
@@ -61,77 +65,44 @@ public class App : IHostedService
 
 	private async Task DemonstrateHttpCalls()
 	{
-		_logger.LogInformation("\n📡 Demonstrating HTTP Client Instrumentation");
-		_logger.LogInformation("   (These calls are automatically traced)\n");
 
-		var httpClient = new HttpClient();
-
-		try
+		using (var activity = ActivitySource.StartActivity("DoSomeWork"))
 		{
-			// Make a sample HTTP request
-			var sw = Stopwatch.StartNew();
-			var response = await httpClient.GetAsync("https://api.github.com/zen");
-			sw.Stop();
+			_logger.LogInformation("\n📡 Demonstrating HTTP Client Instrumentation");
 
-			if (response.IsSuccessStatusCode)
+			activity!.SetTag("custom.tag", "hello");
+			activity.SetStatus(ActivityStatusCode.Ok);
+			var activityEvent = new ActivityEvent("Work");
+			activity.AddEvent(activityEvent);
+
+			var httpClient = new HttpClient();
+
+			try
 			{
-				var content = await response.Content.ReadAsStringAsync();
-				_logger.LogInformation($"   ✓ GET https://api.github.com/zen ({sw.ElapsedMilliseconds}ms)");
-				_logger.LogInformation($"   └─ Response: {content.Substring(0, Math.Min(50, content.Length))}...");
+				// Make a sample HTTP request
+				List<string> urls = ["https://checkip.amazonaws.com", "https://api.github.com/users/torvalds"];
+
+				foreach (var url in urls)
+				{
+					var response = await httpClient.GetAsync(url);
+
+					if (response.IsSuccessStatusCode)
+					{
+						var content = await response.Content.ReadAsStringAsync();
+						_logger.LogInformation($"   ✓ GET {url}");
+						_logger.LogInformation($"   └─ Response: {content.Substring(0, Math.Min(50, content.Length))}...");
+					}
+					else
+					{
+						_logger.LogError("   ⚠ HTTP request failed: {StatusCode} {Content}", (int)response.StatusCode, await response.Content.ReadAsStringAsync());
+					}
+				}
+
 			}
-		}
-		catch (Exception ex)
-		{
-			_logger.LogInformation($"   ⚠ HTTP request failed: {ex.Message}");
-		}
-	}
-
-	private async Task DemonstrateComplexOperations(ILogger logger)
-	{
-		_logger.LogInformation("\n🔧 Demonstrating Complex Operations");
-		_logger.LogInformation("   (With error handling and retries)\n");
-		logger.LogInformation("Demonstrating Complex Operations");
-
-		try
-		{
-			// Simulate business logic with timing
-			_logger.LogInformation("   Step 1: Initializing data processing...");
-			logger.LogInformation("Step 1: Initializing data processing...");
-
-			await Task.Delay(100);
-
-			_logger.LogInformation("   Step 2: Processing batch of 10 items...");
-			logger.LogInformation("Step 2: Processing batch of 10 items...");
-
-			var sw = Stopwatch.StartNew();
-			for (int i = 0; i < 10; i++)
+			catch (Exception ex)
 			{
-				// Simulate processing
-				await Task.Delay(1);
+				_logger.LogError($"   ⚠ HTTP request failed: {ex.Message}");
 			}
-			sw.Stop();
-			_logger.LogInformation($"   ✓ Batch processing completed in {sw.ElapsedMilliseconds}ms");
-			logger.LogInformation("Step 2: Processing batch of 100 items...");
-
-			_logger.LogInformation("   Step 3: Validating results...");
-			logger.LogInformation("Step 3: Validating results...");
-
-			await Task.Delay(50);
-			_logger.LogInformation("   ✓ All validations passed");
-			logger.LogInformation("All validations passed");
-
-			_logger.LogInformation("   Step 4: Finalizing...");
-			logger.LogInformation("Step 4: Finalizing...");
-
-			await Task.Delay(25);
-
-			_logger.LogInformation("   ✓ Operation complete");
-			logger.LogInformation("Operation complete");
-		}
-		catch (Exception ex)
-		{
-			_logger.LogInformation($"   ✗ Operation failed: {ex.Message}");
-			logger.LogError(ex, "Operation failed");
 		}
 	}
 }

@@ -165,7 +165,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithTracing(tracing =>
         {
             // set any options            
-            if (_options.Trace.Settings?.SetErrorStatusOnException.HasValue == true)
+            if (_options.Trace.Settings?.SetErrorStatusOnException.HasValue == true &&
+                    _options.Trace.Settings?.SetErrorStatusOnException.Value == true)
                 tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);
 
             // add in tracing instrumenation options from config
