@@ -228,13 +228,12 @@ internal class ExporterLoader : IExporterLoader
     private Action<OtlpExporterOptions> BuildOtlpConfig(SimpleOpenTelemetryExporterConfig item)
     {
         // If options are passed, bind to OtlpExporterOptions structure
-        if (item.Options is not null)
+        if (item.Options.Exists())
         {
             return config =>
             {
-                OtlpExporterOptions options = new();
                 var section = item.Options;
-                section.Bind(options);
+                section.Bind(config);
             };
         }
         else
