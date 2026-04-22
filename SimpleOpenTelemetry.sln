@@ -14,15 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{95C8B8C9
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Tests", "tests\SimpleOpenTelemetry.Tests\SimpleOpenTelemetry.Tests.csproj", "{CD26694E-037B-40BF-BEAD-6FBED597D245}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{54E7EF43-AEE9-4324-ABB5-CAB6E163B3D6}"
-	ProjectSection(SolutionItems) = preProject
-		scripts\Copy-Nupkgs.ps1 = scripts\Copy-Nupkgs.ps1
-		scripts\copy-nupkgs.sh = scripts\copy-nupkgs.sh
-		scripts\docker-otel-lgtm-server.ps1 = scripts\docker-otel-lgtm-server.ps1
-		scripts\docker-otel-lgtm-server.sh = scripts\docker-otel-lgtm-server.sh
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf", "examples\wpf\Wpf.csproj", "{0A890749-F4EB-2970-04D5-0CCD714EE981}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "examples\shared\Shared.csproj", "{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,10 +38,10 @@ Global
 		{CD26694E-037B-40BF-BEAD-6FBED597D245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD26694E-037B-40BF-BEAD-6FBED597D245}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD26694E-037B-40BF-BEAD-6FBED597D245}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0A890749-F4EB-2970-04D5-0CCD714EE981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -58,7 +50,7 @@ Global
 		{5A7BB03E-560C-0A1A-F54F-F304BF40E039} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 		{5A7BB03E-560C-0A1A-F54F-F304BF40E040} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 		{CD26694E-037B-40BF-BEAD-6FBED597D245} = {95C8B8C9-E3D5-4BFB-8727-702038E77D82}
-		{0A890749-F4EB-2970-04D5-0CCD714EE981} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
+		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C48E00CB-A478-4D8B-BDD2-D3F07611DE84}

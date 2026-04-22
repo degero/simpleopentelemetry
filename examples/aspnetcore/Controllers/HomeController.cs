@@ -29,14 +29,13 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // ## DEMO calls to view in Grafana Loki and Tempo queries
-
-        // 2. LOG → goes to Tempo
-        // Write test to log
+        // 1. DEMO calls to view in Grafana Loki and Tempo queries and Jaeger
         _logger.LogInformation("Test log message from HomeController.Index");
-
-        // Write test to traces
         _logger.LogTrace("Test trace message from HomeController.Index");
+        _logger.LogDebug("Test debug message from HomeController.Index");
+        _logger.LogWarning("Test warning message from HomeController.Index");
+        _logger.LogError("Test error message from HomeController.Index");
+        _logger.LogCritical("Test critical message from HomeController.Index");
 
         // 2. SPAN → goes to Tempo
         using (var activity = _activitySource.StartActivity("DoSomeWork"))
@@ -50,7 +49,7 @@ public class HomeController : Controller
         // 3. If enabled Use EF traces with the EFCore + SqlClient instrumentations
         if(_configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
         {
-            using (var efActivity = _activitySource.StartActivity("EFCoreGetProducts"))
+            using (var efActivity = _activitySource.StartActivity("GetProducts"))
             {
                 efActivity.SetStatus(ActivityStatusCode.Ok);
                 var products = _context.Products.ToList();

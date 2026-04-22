@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 
@@ -22,6 +21,17 @@ public static class NonGenericHostEntry
     {
         return OpenTelemetrySdk.Create(otelBuilder =>
         {
+            // This is needed for the OpenTelemetry SDK to pick up 
+            // configuration from the appsettings.json IConfiguration
+            // setting values in env vars will override these
+            foreach (var kvp in configuration.AsEnumerable()
+                .Where(kvp => kvp.Value is not null &&         // has a value (not a section)
+                        kvp.Key.StartsWith("OTEL_") &&         // ONLY OTEL_ settings
+                        !kvp.Key.Contains(':'))) // top-level only (no nested keys)
+            {
+                Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
+            }
+
             var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
             builder.Configure();
         });

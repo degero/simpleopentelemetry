@@ -13,14 +13,14 @@ namespace SimpleOpenTelemetry.Extensions;
 public static class ServiceProviderExtensions
 {
     /// <summary>
-    /// Validates that all required OpenTelemetry resource attributes are configured.
+    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
+    /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
     /// </summary>
     /// <remarks>
-    /// Required attributes: service.name, service.version, deployment.environment.name.
     /// This method will throw an InvalidOperationException if any required attributes are missing or empty.
-    /// Useful for production environments to ensure proper telemetry identification.
+    /// Useful for to ensure proper telemetry identification of apps/environments.
     /// Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables.
-    /// 
+    /// Required attributes: service.version, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
     /// </remarks>

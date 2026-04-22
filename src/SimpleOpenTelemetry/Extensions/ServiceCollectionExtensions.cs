@@ -11,6 +11,7 @@ using SimpleOpenTelemetry.Builder;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
+    /// TODO Chad check if this can be removed
     /// Runs SimpleOpenTelemetryBuilder to initialise OpenTelemetry and process custom
     /// env var / json config (in section 'SimpleOpenTelemetry') into OpenTelemetry instrumentation
     /// logging and exporting etc setups.
