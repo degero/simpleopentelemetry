@@ -44,6 +44,7 @@ if (config.GetValue<string>("UseGenericHost").ToLower() == "true")
     Console.WriteLine("\n" + new string('─', 60));
 
     // Add hosted service to do trigger some telemetry to be sent
+    builder.Services.AddSingleton<ITestHttpCalls, TestHttpCalls>();
     builder.Services.AddHostedService<App>();
 
     // Additional console output (SimpleOpenTelemetry adds a logger)
@@ -87,7 +88,7 @@ else
         builder.AddOpenTelemetry();
     });
 
-    var sdk = NonGenericHostEntry.AddSimpleOpenTelemetry(config);
+    var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
     
     // Create the typed logger from the loggerfactory created by OpenTelemetry
     ILogger<TestHttpCalls> testCallsLogger = sdk.GetLoggerFactory().CreateLogger<TestHttpCalls>();
