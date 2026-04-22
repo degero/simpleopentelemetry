@@ -105,23 +105,12 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {   
         ResourceBuilder? _builder = null;
 
-        // Run OpenTelemetry Auto detection / configuration (eg from OTEL_* configs)
         _otelBuilder.ConfigureResource(builder => 
         {   
-
-            // TODO Chad do all this from config entries
-
-            // 1. detect the (very important) service.version attribute (it can be overridden by the next steps)
-            builder.AddAssemblyVersionResourceDetector();
-
-            // 2. Run detectors first
+            // Normally users will want to set in "Detectors" config at minium "EnvVar" for opentelemetry to load in
+            // it's OTEL env var settings OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME
             _resourceDetectorLoader.AddResourceDetectors(builder, _options);
-
-            // 3. override with any ENV Vars / json config section definitions
-            builder.AddEnvironmentVariableDetector();
-
             _builder = builder;
-
          });
 
         return _builder;

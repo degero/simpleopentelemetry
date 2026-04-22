@@ -10,7 +10,7 @@ internal static class ResourceBuilderExtensions
     /// </summary>
     /// <param name="builder">The <see cref="ResourceBuilder"/> being configured.</param>
     /// <returns>The instance of <see cref="ResourceBuilder"/> being configured.</returns>
-    public static ResourceBuilder AddAssemblyVersionResourceDetector(this ResourceBuilder builder)
+    public static ResourceBuilder AddAssemblyVersionDetector(this ResourceBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
         return builder.AddDetector(new AssemblyVersionResourceDetector());

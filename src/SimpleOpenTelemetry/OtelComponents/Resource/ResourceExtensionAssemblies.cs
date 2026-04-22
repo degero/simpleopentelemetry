@@ -9,7 +9,12 @@ internal record ResourceDetectorDescriptor(
 
 public enum ResourceDetectorEnum
 {
+    /* SimpleOpenTelemetry built-in */
+    AssemblyVersion,
+
     /* opentelemetry-dotnet-contrib */
+    EnvVar,
+
     Host, 
 
     Container,
@@ -35,7 +40,20 @@ internal static class ResourceDetectorAssemblies
        
         KnownResourceDetectors = new()
         {
+            /* SimpleOpenTelemetry built-in */
+            [ResourceDetectorEnum.AssemblyVersion] = new(
+                "SimpleOpenTelemetry",
+                "SimpleOpenTelemetry.Extensions",
+                new string[] {"AddAssemblyVersionDetector"},
+                null),
+
             /* opentelemetry-dotnet-contrib */
+            [ResourceDetectorEnum.EnvVar] = new(
+                "OpenTelemetry",
+                "OpenTelemetry.Resources.ResourceBuilderExtensions",
+                new string[] {"AddEnvironmentVariableDetector"},
+                null),
+
             [ResourceDetectorEnum.Host] = new(
                 "OpenTelemetry.Resources.Host",
                 "OpenTelemetry.Resources.HostResourceBuilderExtensions",
