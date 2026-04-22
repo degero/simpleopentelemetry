@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests;
 
-public class SimpleOpenTelemetryNonGenericHostEntryTests
+public class StandaloneAppTests
 {
     private static IConfiguration BuildConfigWithOtelValues(string otelServiceName, string otelResourceAttributes) =>
         new ConfigurationBuilder()
@@ -17,7 +16,7 @@ public class SimpleOpenTelemetryNonGenericHostEntryTests
             .Build();
 
     [Fact]
-    public void NonGenericHostEntry_AddSimpleOpenTelemetry_CreatesSdk()
+    public void StandaloneBootstrap_AddSimpleOpenTelemetry_CreatesSdk()
     {
         const string serviceName = "test-service";
         const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
@@ -34,8 +33,8 @@ public class SimpleOpenTelemetryNonGenericHostEntryTests
         {
             var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
 
-            var sdk = SimpleOpenTelemetry.NonGenericHostEntry.AddSimpleOpenTelemetry(config);
-
+            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
+            // TODO fix up this crap gen ai test
             Assert.NotNull(sdk);
         }
     }

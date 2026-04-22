@@ -7,7 +7,7 @@ namespace SimpleOpenTelemetry;
 /// <summary>
 /// OpenTelemetry setup for applications that don't support IHostApplicationBuilder Generic Host
 /// </summary>
-public static class NonGenericHostEntry
+public static class StandaloneApp
 {
     /// <summary>
     /// Runs SimpleOpenTelemetryBuilder to initialise OpenTelemetry and process custom
@@ -15,7 +15,7 @@ public static class NonGenericHostEntry
     /// logging and exporting etc setups.
     /// </summary>
     /// <param name="configuration"></param>
-    /// <returns></returns>
+    /// <returns>OpenTelemetrySdk for any additional code based configuration</returns>
     public static OpenTelemetrySdk AddSimpleOpenTelemetry(
         IConfiguration configuration)
     {
@@ -32,6 +32,7 @@ public static class NonGenericHostEntry
                 Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
             }
 
+            // Initialize a builder and configure as a Generic host app would
             var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
             builder.Configure();
         });
