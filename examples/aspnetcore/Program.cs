@@ -11,7 +11,7 @@ using SimpleOpenTelemetry.Extensions;
 using var otelListener = new OtelEventListener();
 using var simpleOtelListener = new SimpleOtelEventListener();
 
-var builder = WebApplication.CreateBuilder(args).;
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

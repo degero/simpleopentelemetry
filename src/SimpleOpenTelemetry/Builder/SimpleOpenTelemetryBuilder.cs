@@ -54,7 +54,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _configuration = config;
         _otelBuilder = otelBuilder;
         _openTelemetryInstrumentationLoader = new InstrumentationLoader(config);
-        _resourceDetectorLoader = new ResourceDetectorLoader(config);
+        _resourceDetectorLoader = new ResourceDetectorLoader(config, new AssemblyExecution());
         _exporterLoader = new ExporterLoader(config);
         _samplerLoader = new SamplerLoader(config);
         _propagatorLoader = new PropagatorLoader();

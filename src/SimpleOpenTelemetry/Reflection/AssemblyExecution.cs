@@ -3,10 +3,23 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
+internal interface IAssemblyExecution
+{
+    object BuildConfigureAction(Type optionsType, IConfiguration section);
+    MethodInfo? FindActionOverload(Type type, Type builderType, string methodName);
+    MethodInfo? FindParameterlessMethod(Type type, Type builderType, string methodName);
+    MethodInfo FindParameterlessMethodWithAllDefaultValues(Type type, Type builderType, string methodName);
+    Assembly GetAssembly(string assemblyName);
+    object InvokeParameterless(Type type, Type builderType, string methodName, object builder);
+    object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target);
+    object InvokeWithAction(MethodInfo actionMethod, object builder, IConfiguration section);
+    Assembly? TryLoadAssembly(string assemblyName);
+}
+
 /// <summary>
 /// Provides utilities for dynamically loading assemblies and invoking extension methods via reflection.
 /// </summary>
-internal class AssemblyExecution
+internal class AssemblyExecution : IAssemblyExecution
 {
     private Dictionary<string, Assembly> _loadedAssemblies = new Dictionary<string, Assembly>();
 
@@ -71,7 +84,7 @@ internal class AssemblyExecution
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error( $"Failed to load assembly '{assemblyName}'.", ex.Message);
+            EventSource.Log.Error($"Failed to load assembly '{assemblyName}'.", ex.Message);
             return null;
         }
     }
@@ -115,7 +128,7 @@ internal class AssemblyExecution
             p.Skip(1).All(param => param.HasDefaultValue))
             ?? throw new InvalidOperationException(
                    $"No parameterless '{methodName}' method accepting {builderType.Name} found on {type.FullName}.");
-        
+
         return matchingMethod;
     }
 
@@ -128,7 +141,7 @@ internal class AssemblyExecution
     /// <param name="target">The instance to pass as argument.</param>
     public object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target)
     {
-        var paramsToInvoke = new List<object>(){ target };
+        var paramsToInvoke = new List<object>() { target };
         var remainingParams = method.GetParameters().Skip(1).ToList();
 
         // If this method cant accept all defaulted remaining parameters throw error

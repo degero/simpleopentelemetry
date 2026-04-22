@@ -18,7 +18,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
 {
     private readonly string eventCategory = nameof(ResourceDetectorLoader);
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     // Available 3rd parter detectors
     internal readonly Array _resourceExtensions = Enum.GetValues<ResourceDetectorEnum>();
@@ -29,10 +29,10 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     /// Initializes a new instance of the ResourceExtensionLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration containing resource detector settings.</param>
-    public ResourceDetectorLoader(IConfiguration configuration)
+    public ResourceDetectorLoader(IConfiguration configuration, IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration;
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
                     else
                     {
                         // Throw an exception on an unknown exporter type
-                        throw new InvalidOperationException($"Unsupported Resource Detector type: '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                        throw new InvalidOperationException($"Unsupported Resource Detector type '{item}'. Please check your SimpleOpenTelemetry configuration.");
                     }
                 }
                 catch(Exception ex)
@@ -111,11 +111,9 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
                     _assemblyExec.InvokeWithAction(actionMethod, builder, section);
                 else
                     _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
-
-                EventSource.Log.Verbose(eventCategory, $"Added otel resource detector '{resourceDetector}' method '{methodName}'.");
             });
 
-            EventSource.Log.Verbose(eventCategory, $"registered resource detector '{resourceDetector}'.");
+            EventSource.Log.Verbose(eventCategory, $"registered resource detector '{resourceDetector}' methods '{string.Join(',', descriptor.MethodNames)}'.");
 
         }
         catch (Exception ex)

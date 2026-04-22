@@ -14,15 +14,10 @@ public enum ResourceDetectorEnum
 
     /* opentelemetry-dotnet-contrib */
     EnvVar,
-
     Host, 
-
     Container,
-
     OS,
-
     Process,
-
     ProcessRuntime,
 
     /* opentelemetry-dotnet-contrib platform specific */
@@ -43,7 +38,7 @@ internal static class ResourceDetectorAssemblies
             /* SimpleOpenTelemetry built-in */
             [ResourceDetectorEnum.AssemblyVersion] = new(
                 "SimpleOpenTelemetry",
-                "SimpleOpenTelemetry.Extensions",
+                "SimpleOpenTelemetry.Extensions.ResourceBuilderExtensions",
                 new string[] {"AddAssemblyVersionDetector"},
                 null),
 
