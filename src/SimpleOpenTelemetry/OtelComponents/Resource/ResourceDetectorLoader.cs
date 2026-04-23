@@ -113,12 +113,12 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
                     _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
             });
 
-            EventSource.Log.Verbose(eventCategory, $"registered resource detector '{resourceDetector}' methods '{string.Join(',', descriptor.MethodNames)}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered resource detector '{resourceDetector}' with registration methods '{string.Join(',', descriptor.MethodNames)}'.");
 
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register resource Detector '{resourceDetector}' via '{typeName}.{methodName}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register resource detector '{resourceDetector}' via '{typeName}.{methodName}'.", ex.Message);
         }
     }
 

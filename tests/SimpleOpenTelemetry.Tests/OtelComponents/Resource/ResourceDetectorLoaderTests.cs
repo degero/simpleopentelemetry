@@ -91,7 +91,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                                e.EventId == 4 && // Verbose event ID
-                               e.Payload.Any(p => p?.ToString()?.Contains("registered resource detector 'AssemblyVersion'") ?? false));
+                               e.Payload.Any(p => p?.ToString()?.Contains("Registered resource detector 'AssemblyVersion'") ?? false));
 
         Assert.NotNull(successEvent);
     }
@@ -115,7 +115,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                                e.EventId == 4 && // Verbose event ID
-                               e.Payload.Any(p => p?.ToString()?.Contains("registered resource detector 'EnvVar'") ?? false));
+                               e.Payload.Any(p => p?.ToString()?.Contains("Registered resource detector 'EnvVar'") ?? false));
 
         Assert.NotNull(successEvent);
     }
@@ -139,7 +139,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                                e.EventId == 4 &&
-                               e.Payload.Any(p => p?.ToString()?.Contains("registered resource detector 'AssemblyVersion'") ?? false));
+                               e.Payload.Any(p => p?.ToString()?.Contains("Registered resource detector 'AssemblyVersion'") ?? false));
 
         Assert.NotNull(successEvent);
     }
@@ -192,7 +192,7 @@ public class ResourceDetectorLoaderTests : IDisposable
             var registeredEvent = _listener.Events
                 .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                                    e.EventId == 4 &&
-                                   e.Payload.Any(p => p?.ToString()?.Contains($"registered resource detector '{detector}'") ?? false));
+                                   e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
             
             Assert.NotNull(registeredEvent);
         }
@@ -221,7 +221,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         var successEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Verbose &&
                        e.EventId == 4 &&
-                       e.Payload.Any(p => p?.ToString()?.Contains("registered resource detector") ?? false))
+                       e.Payload.Any(p => p?.ToString()?.Contains("Registered resource detector") ?? false))
             .ToList();
 
         Assert.NotEmpty(successEvents);
@@ -234,7 +234,7 @@ public class ResourceDetectorLoaderTests : IDisposable
             {
                 var registeredEvent = _listener.Events
                     .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
-                                       e.Payload.Any(p => p?.ToString()?.Contains($"registered resource detector '{detector}'") ?? false));
+                                       e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
                 
                 Assert.NotNull(registeredEvent);
             }
@@ -243,7 +243,7 @@ public class ResourceDetectorLoaderTests : IDisposable
                 // Verify error event for unavailable detector
                 var errorEvent = _listener.Events
                     .FirstOrDefault(e => e.Level == EventLevel.Error &&
-                                       e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register resource Detector '{detector}'") ?? false));
+                                       e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register resource detector '{detector}'") ?? false));
                 
                 Assert.NotNull(errorEvent);
             }
@@ -271,7 +271,7 @@ public class ResourceDetectorLoaderTests : IDisposable
          var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                                e.EventId == 4 &&
-                               e.Payload.Any(p => p?.ToString()?.Contains($"registered resource detector '{detectorEnumName}' methods '{string.Join(',',descriptor.MethodNames)}'") ?? false));
+                               e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detectorEnumName}' with registration methods '{string.Join(',',descriptor.MethodNames)}'") ?? false));
 
         Assert.NotNull(successEvent);
     }
