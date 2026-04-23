@@ -1,5 +1,7 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using OpenTelemetry;
@@ -16,11 +18,35 @@ public class PropagatorLoaderTests
     private readonly IConfiguration _configuration = new ConfigurationBuilder().Build();
     private readonly Mock<ILogger> _logger = new();
 
-    [Fact]
-    public void AddPropagators_WhenOptionsPropagatorsIsNull_SetsDefaultCompositeTextMapPropagator()
+    public PropagatorLoaderTests()
     {
-        var original = Propagators.DefaultTextMapPropagator;
+        // this initialises the DefaultTextMapPropagator a composite of
+        // 'tracestate','traceparent','baggage'
+        var host = new HostApplicationBuilder();
+        host.Services.AddOpenTelemetry();
+    }
 
+    [Fact]
+    public void AddPropagators_WhenOptionsPropagatorsIsNull_DoesNotSetAPropagator_AndDefaultIsUsed()
+    {
+        // Arrange
+        var original = Propagators.DefaultTextMapPropagator;
+        
+
+        var verify = () => {
+            
+            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var innerPropagators = GetCompositePropagators(composite).ToList();
+
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
+            Assert.IsType<BaggagePropagator>(innerPropagators[1]);
+        };
+
+        // Check this is correct
+        verify();
+
+        // ACT
         try
         {
             var sut = new PropagatorLoader();
@@ -33,12 +59,8 @@ public class PropagatorLoaderTests
 
             sut.AddPropagators(options);
 
-            var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
-
-            Assert.Equal(2, innerPropagators.Count);
-            Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
-            Assert.IsType<BaggagePropagator>(innerPropagators[1]);
+            // Assert
+            verify(); // Check this is still correct
         }
         finally
         {

@@ -20,8 +20,10 @@ Support is available for enabling distros and popular component implementations:
 
 ## Features
 
-- Sets OTEL_RESOURCE_ATTRIBUTES 'service.version' from builtin app assembly version resource detector. Overriden by setting in OTEL_RESOURCE_ATTRIBUTES
-- TODO add the other features like resourcebuilder setup
+- Pluggable components by adding config entry and NuGet package to your app for telemetry features you need. 
+- Example configuration files for common app / platform scenarios [example-configs](./example-configs/)
+- Set telemetry attribute 'service.version' based on app assembly version when using builtin ResourceDetector 'AssemblyVersion' (see [Resource Detectors > Builtin](#builtin)). Overriden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
+- TODO add the other features
 
 ---
 
@@ -31,11 +33,19 @@ Support is available for enabling distros and popular component implementations:
 - Add a "SimpleOpenTelemetry": {} root section to your appsettings.{environment}.json and read the next sections to setup.
 - Add boostrapping code:
   - For Generic Host apps like aspnetcore (or any apps using WebApplicationBuilder/HostApplicationBuilder):
-      - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
-      - Optionally, to validate your settings follow best practices, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`.
-  - For Non-Generic Host apps: 
-    - TODO
+    - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
+    - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`.
+  - For Standalone apps (no Generc host): 
+    - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and   
+    ```csharp
+    using var loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder.AddOpenTelemetry();
+        // You may want to set log levels using builder.AddConfiguration()
+    });
 
+    var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+    ```
 
 ---
 
@@ -87,6 +97,8 @@ If there is one you would like added, feel free to fork and raise a PR, or [rais
 
 #### Configuration file setup
 
+**IMPORTANT**: SimpleOpenTelemetry throws an exception if no configuration is found
+
 To get setarted, add a "SimpleOpenTelemetry" section to the root of your appsettings.json / appsettings.{Environment}.json file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application.  
 
 Similarly for the subsections "Metric/Trace/Log", OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and  subsequent exports etc) when the corresponding section exists. If at least on is not set it will not run AddOpenTelemetry() with your application.
@@ -116,7 +128,9 @@ For a json configuration file, you can start with one of the pre-built ones in [
       "Settings": {}
     },
     "ExporterOptions": {},
-    "ResourceDetectors": [],
+    "Resource": {
+      "Detectors": ["envvar", "assebmlyversion"],
+    },
     "ResourceDetectorConfig": {},
     "Propagators": [],
     "Sampler": ""
@@ -408,9 +422,44 @@ Below are the tested Vendor exporters you can add that support all telemetry sig
 
 ### Resource Detectors
 
-Resource detectors are set under SimpleOpenTelemetry::ResourceDetectors[] string array.
+Resource detectors are set under SimpleOpenTelemetry::Resource:Detectors[] string array.
 
 All the supported resource detectors are listed here [ResourceDetectorEnum](./src/SimpleOpenTelemetry/Resource/ResourceDetectorEnum.cs)
+
+At a minimum, be sure to add the [OpenTelemetry SDK EnvironmentVariables detector](#opentelemetry-sdk) to ensure OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES env var settings are be loaded in.
+
+#### Builtin
+
+> *AssemblyVersion*
+>
+> Stability: Stable
+>
+> Nuget Package: not needed
+>
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
+> 
+>  ```json
+>  "AssemblyVersion"
+>  ```
+>
+
+
+#### OpenTelemetry SDK
+
+> *EnvVar*
+>
+> Stability: Stable
+>
+> Documentation: [OpenTelemetry SDK ResourceBuilderExtensions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/08df7481053204a5ba10c61bb4f1a21d5d3fcefa/src/OpenTelemetry/Resources/ResourceBuilderExtensions.cs#L124)
+>
+> Nuget Package: not needed
+>
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
+> 
+>  ```json
+>  "EnvVar"
+>  ```
+>
 
 #### OpenTelemetry contrib
 
@@ -424,7 +473,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.Host --prerelease`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "host"
@@ -440,7 +489,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.Container --prerelease`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "container"
@@ -456,7 +505,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.OperatingSystem --prerelease`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "os"
@@ -472,7 +521,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.Process --prerelease`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "process"
@@ -488,30 +537,14 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.ProcessRuntime --prerelease`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "processruntime"
 >  ```
 >
 
-> **
->
-> Stability (as of april 2026): Beta
->
-> Documentation: [ README.md]()
->
-> Nuget Package:
-> ``
->
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
-> 
->  ```json
->  ""
->  ```
->
-
-#### OpenTelemetry contrib platform specific
+#### OpenTelemetry contrib - Cloud platform specific
 
 
 > *AWS*
@@ -523,7 +556,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package OpenTelemetry.Resources.AWS`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "aws"
@@ -546,7 +579,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package --prerelease OpenTelemetry.Resources.Azure`
 >
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "azure"
@@ -563,7 +596,7 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > Nuget Package:
 > `dotnet add package --prerelease OpenTelemetry.Resources.Gcp`
 >  
-> SimpleOpenTelemetry::ResourceDetectors[] json:  
+> SimpleOpenTelemetry::Resource:Detectors[] json:  
 > 
 >  ```json
 >  "gcp"
@@ -580,11 +613,18 @@ All the supported resource detectors are listed here [ResourceDetectorEnum](./sr
 > The OpenTelemetry SDK env var OTEL_PROPAGATORS is not supported (as of April 2026) in the dotnet implementation
 
 
-You can add multiple propagators in the SimpleOpenTelemetry::Propagators[] json array. As the library defaults to use a 'CompositeTextMapPropagator' (containing BaggagePropagator and TraceContextPropagator). The equivalant config setting (if you wish to append more) being:
+You can add multiple propagators in the SimpleOpenTelemetry::Propagators[] json array. 
+
+**Default**
+OpenTelemitry initialisation defaults to use a 'CompositeTextMapPropagator' of BaggagePropagator (spec: 'baggage') and TraceContextPropagator (spec:'tracestate','traceparent'). By setting as Propagators as `null` or `[]` this will use the default.
+
+The equivalant config setting (if you wish to append more to the default) being:
 
 ```json
 "Propagators": ["tracecontext", "baggage"]
 ```
+
+**Disable**
 
 If you wish to set as none, explicitly set SimpleOpenTelemetry::Propagators as:
 
@@ -592,10 +632,11 @@ If you wish to set as none, explicitly set SimpleOpenTelemetry::Propagators as:
 { "SimpleOpenTelemetry": { "Propagators": [ 'none' ]] } }
 ```
 
+**Nuget Packages**
 You can make use of OpenTelemetry's builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) without adding nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators`  
 
+**Available Propagators**
 For a full list of all the supported propagators see [PropagatorEnum](./src/SimpleOpenTelemetry/Propagator/PropagatorAssemblies.cs)
-
 
 
 #### OpenTelemetry contrib

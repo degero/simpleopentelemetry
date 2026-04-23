@@ -47,10 +47,7 @@ internal class PropagatorLoader : IPropagatorLoader
 
             if (propagators is null || !propagators.Any())
             {
-                // TODO is this needed
-                var defaultPropagator = CreateDefaultPropagator();
-                Sdk.SetDefaultTextMapPropagator(defaultPropagator);
-                EventSource.Log.Verbose(eventCategory, "registered default propagator CompositeTextMapPropagator as SimpleOpenTelemetry propagators config was null or empty.");
+                // Leave as the default created by the SDK initialisation - CompositeTextMapPropagator: 'tracestate','traceparent','baggage' 
                 return;
             }
 
