@@ -44,7 +44,6 @@ internal class ExporterLoader : IExporterLoader
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
     public ExporterLoader(IConfiguration configuration)
     {
-        // TODO seems wrong Configuration is loaded in as the section for this lib
         _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         _assemblyExec = new AssemblyExecution();
     }
@@ -95,7 +94,7 @@ internal class ExporterLoader : IExporterLoader
         SimpleOpenTelemetryExporterConfig<TEnum> config
     )
     {
-        // try get the top level exporter settings 
+        // try get the top level exporter settings of the exporter name
         var topConfigSection = _configuration.GetSection(_exportersTopLevelConfigSectionName).GetSection(config.Type.ToString());
         if (topConfigSection is not null && topConfigSection!.Exists())
         {
@@ -152,7 +151,6 @@ internal class ExporterLoader : IExporterLoader
                 }
                 else 
                 {
-                    // TODO: fix to use a flag if this vendor lib has options, refac and clean all this crap codegen up
                     var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(item) : null;
                     AddExporter(matchedExporter, builder, descriptor, config, signal);
                 }

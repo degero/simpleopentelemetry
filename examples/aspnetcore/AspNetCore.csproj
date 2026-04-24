@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
-    <ProjectReference Include="..\shared\shared.csproj" />
+    <ProjectReference Include="..\shared\Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

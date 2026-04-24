@@ -1,9 +1,7 @@
 using System.Diagnostics.Tracing;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,44 +16,24 @@ namespace SimpleOpenTelemetryTests.OtelComponents.Exporter;
 
 public class ExporterLoaderTests
 {
-    private readonly IConfiguration _configuration;
-    private readonly ExporterLoader _loader;
-
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
-
-    public ExporterLoaderTests()
-    {
-        _configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection()
-            .Build();
-
-        _loader = new ExporterLoader(_configuration);
-    }
 
     [Fact]
     public void ConfigureExporters_WithOtlpExporter_AppliesDefaultOptionsCorrectly()
     {
         // Arrange
-        var config = new SimpleOpenTelemetryOptions
-        {
-            Trace = new SimpleOpenTelemetryTraceOptions
-            {
-                Exporters = new List<SimpleOpenTelemetryExporterConfig<TraceExporterEnum>>
-                {
-                    new()
-                    {
-                        Type = TraceExporterEnum.Otlp
-                    }
-                }
-            }
-        };
-
         var builder = Host.CreateApplicationBuilder();
+        var (target, config) = InitExporter(new()
+        {
+            { "SimpleOpenTelemetry:Trace:Exporters:0:Type", "Otlp" }
+        });
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithTracing(r =>
         {
-            _loader.ConfigureExporters(r, config);
+            target.ConfigureExporters(r, config);
         });
 
         using var app = builder.Build();
@@ -71,23 +49,21 @@ public class ExporterLoaderTests
     public void ConfigureExporters_WithOtlpExporter_AppliesCustomOptionsCorrectly()
     {
         // Arrange
-        var exporterConfig = new Dictionary<string, string?>
+        var builder = Host.CreateApplicationBuilder();
+        var (target, config) = InitExporter(new()
         {
             { "SimpleOpenTelemetry:Trace:Exporters:0:Type", "Otlp" },
             { "SimpleOpenTelemetry:Trace:Exporters:1:Type", "Otlp" },
             { "SimpleOpenTelemetry:Trace:Exporters:1:Options:Endpoint", "http://localhost:6317/" },
             { "SimpleOpenTelemetry:Trace:Exporters:1:Options:Protocol", "grpc" }
-        };
-
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(exporterConfig).Build();
-        var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
-
-        var builder = Host.CreateApplicationBuilder();
+        });
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithTracing(r =>
         {
-            _loader.ConfigureExporters(r, config!);
+            target.ConfigureExporters(r, config!);
         });
 
         using var app = builder.Build();
@@ -103,7 +79,8 @@ public class ExporterLoaderTests
     public void ConfigureExporters_WithMultipleExporters_RegistersAllExporters_AndIndependentOptions()
     {
         // Arrange
-        var configDict = new Dictionary<string, string?>
+        var builder = Host.CreateApplicationBuilder();
+        var (target, config) = InitExporter(new()
         {
             { "SimpleOpenTelemetry:Trace:Exporters:0:Type", "Otlp" },
             { "SimpleOpenTelemetry:Trace:Exporters:0:Options:Endpoint", "http://localhost:8317" },
@@ -111,20 +88,14 @@ public class ExporterLoaderTests
             { "SimpleOpenTelemetry:Trace:Exporters:1:Type", "Otlp" },
             { "SimpleOpenTelemetry:Trace:Exporters:1:Options:Endpoint", "http://localhost:6317" },
             { "SimpleOpenTelemetry:Trace:Exporters:1:Options:Protocol", "Grpc" }
-        };
-
-        var options = new SimpleOpenTelemetryOptions();
-
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(configDict).Build();
-        var section = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
-        section.Bind(options);
-
-        var builder = Host.CreateApplicationBuilder();
+        });
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithTracing(r =>
         {
-            _loader.ConfigureExporters(r, options);
+            target.ConfigureExporters(r, config);
         });
 
         using var app = builder.Build();
@@ -168,11 +139,14 @@ public class ExporterLoaderTests
         };
 
         var builder = Host.CreateApplicationBuilder();
+        var (target, _) = InitExporter([]);
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithTracing(r =>
         {
-            _loader.ConfigureExporters(r, config);
+            target.ConfigureExporters(r, config);
         });
 
         // Assert
@@ -217,11 +191,14 @@ public class ExporterLoaderTests
         };
 
         var builder = Host.CreateApplicationBuilder();
+        var (target, _) = InitExporter([]);
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithMetrics(m =>
         {
-            _loader.ConfigureExporters(m, config);
+            target.ConfigureExporters(m, config);
         });
 
         // Assert
@@ -265,11 +242,14 @@ public class ExporterLoaderTests
         };
 
         var builder = Host.CreateApplicationBuilder();
+        var (target, _) = InitExporter([]);
 
         // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
         builder.Services.AddOpenTelemetry().WithLogging(l =>
         {
-            _loader.ConfigureExporters(l, config);
+            target.ConfigureExporters(l, config);
         });
 
         // Assert
@@ -286,6 +266,83 @@ public class ExporterLoaderTests
     }
 
 
+    [Theory]
+    [InlineData("""
+    {
+        "SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Log:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Metric:Exporters:0:Type": "Azure"
+    }
+    """, 3, false)]
+    [InlineData("""
+    {
+        "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Log:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Metric:Exporters:0:Type": "Azure"
+    }
+    """, 0, true)]
+    [InlineData("""
+    {
+        "SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure"
+    }
+    """, 1, false)]
+    [InlineData("""
+    {
+        "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
+    }
+    """, 1, false)]
+    [InlineData("""
+    {
+        "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "SimpleOpenTelemetry:Log:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Log:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "SimpleOpenTelemetry:Metric:Exporters:0:Type": "Azure",
+        "SimpleOpenTelemetry:Metric:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
+    }
+    """, 3, false)]
+    public void ConfigureExporters_AzureExporter_SuccessfullyRegisters(string optionsJson, int registerEvents, bool failure)
+    {
+        // Arrange
+        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        var exporterType = LogExporterEnum.Azure;
+        var builder = Host.CreateApplicationBuilder();
+        var (target, config) = InitExporter(JsonSerializer.Deserialize<Dictionary<string, string?>>(optionsJson)!);
+
+        // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
+        builder.Services.AddOpenTelemetry().WithLogging(l => 
+        {
+            target.ConfigureExporters(l, config);
+        }).WithMetrics(l =>
+        {
+            target.ConfigureExporters(l, config);
+        }).WithTracing(l =>
+        {
+            target.ConfigureExporters(l, config);
+        });
+
+        // build app to ensure this loads up
+        var app = builder.Build();
+        
+        // Assert
+        var registeredSuccessEvents = listener.Events
+            .Where(e => e.Level == EventLevel.Verbose &&
+                    e.Payload.Any(p => (p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false) ||
+                    (p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ||
+                    (p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false)));
+
+        var errorEvents = listener.Events
+            .Where(e => e.Level == EventLevel.Error)
+            .ToList();
+
+        Assert.Equal(registerEvents,registeredSuccessEvents.Count());
+        Assert.True(failure ? errorEvents.Count() > 0 : errorEvents.Count() == 0);
+    }
 
     public static IEnumerable<object[]> GetAllKnownTraceExporters()
     {
@@ -309,6 +366,14 @@ public class ExporterLoaderTests
         {
             yield return new object[] { exporter };
         }
+    }
+
+    private (ExporterLoader, SimpleOpenTelemetryOptions) InitExporter(Dictionary<string, string?> exporterConfig)
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(exporterConfig).Build();
+        var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
+        var target = new ExporterLoader(configuration);
+        return (target, config);
     }
 
     private IConfigurationSection? GetExporterConfigurationSection(ExporterExtensionDescriptor descriptor)
