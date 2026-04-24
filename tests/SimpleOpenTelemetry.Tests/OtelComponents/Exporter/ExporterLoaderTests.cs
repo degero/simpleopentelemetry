@@ -113,16 +113,21 @@ public class ExporterLoaderTests
     }
 
     [Theory]
-    [MemberData(nameof(GetAllKnownTraceExporters))]
-    public void ConfigureExporters_WithAllKnownTraceExporters_SuccessfullyRegistered(TraceExporterEnum exporterType)
+    [MemberData(nameof(GetAllKnownTraceExporters), false)]
+    [MemberData(nameof(GetAllKnownTraceExporters), true)]
+    public void ConfigureExporters_WithAllKnownTraceExporters_SuccessfullyRegistered(TraceExporterEnum exporterType,
+        bool createOptionsEntry)
     {
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
 
-        // Skip if otlp as reflection not used
-        IConfigurationSection? exporterConfigSection = string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ?
-            null
-            :  GetExporterConfigurationSection(ExporterAssemblies.KnownTraceExporters[exporterType]);
+         // Add options if testing Skip if otlp as reflection not used
+        var descriptor = ExporterAssemblies.KnownTraceExporters[exporterType];
+        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
+            (descriptor.optionsRequired || createOptionsEntry);
+       
+        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<TraceExporterEnum>
         {
@@ -165,16 +170,21 @@ public class ExporterLoaderTests
     }
 
     [Theory]
-    [MemberData(nameof(GetAllKnownMetricExporters))]
-    public void ConfigureExporters_WithAllKnownMetricExporters_SuccessfullyRegistered(MetricExporterEnum exporterType)
+    [MemberData(nameof(GetAllKnownMetricExporters), false)]
+    [MemberData(nameof(GetAllKnownMetricExporters), true)]
+    public void ConfigureExporters_WithAllKnownMetricExporters_SuccessfullyRegistered(MetricExporterEnum exporterType,
+        bool createOptionsEntry)
     {
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
         
-        // Skip if otlp as reflection not used
-        IConfigurationSection? exporterConfigSection = string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ?
-            null
-            : GetExporterConfigurationSection(ExporterAssemblies.KnownMetricsExporters[exporterType]);
+         // Add options if testing Skip if otlp as reflection not used
+        var descriptor = ExporterAssemblies.KnownMetricsExporters[exporterType];
+        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
+            (descriptor.optionsRequired || createOptionsEntry);
+
+        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<MetricExporterEnum>
         {
@@ -215,17 +225,21 @@ public class ExporterLoaderTests
     }
 
     [Theory]
-    [MemberData(nameof(GetAllKnownLogExporters))]
-    public void ConfigureExporters_WithAllKnownLogExporters_SuccessfullyRegistered(LogExporterEnum exporterType)
+    [MemberData(nameof(GetAllKnownLogExporters), false)]
+    [MemberData(nameof(GetAllKnownLogExporters), true)]
+    public void ConfigureExporters_WithAllKnownLogExporters_SuccessfullyRegistered(LogExporterEnum exporterType,
+        bool createOptionsEntry)
     {
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
         
-        // Skip if otlp as reflection not used
-        IConfigurationSection? exporterConfigSection = string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ?
-            null
-            : GetExporterConfigurationSection(ExporterAssemblies.KnownLogExporters[exporterType]);
+         // Add options if testing Skip if otlp as reflection not used
+        var descriptor = ExporterAssemblies.KnownLogExporters[exporterType];
+        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
+            (descriptor.optionsRequired || createOptionsEntry);
 
+        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
 
         var exporterConfig =  new SimpleOpenTelemetryExporterConfig<LogExporterEnum>
         {
@@ -267,7 +281,7 @@ public class ExporterLoaderTests
 
 
     [Theory]
-    [InlineData("""
+    [InlineData("AllSignals_TopLevelConfig", """
     {
         "SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
         "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
@@ -275,26 +289,26 @@ public class ExporterLoaderTests
         "SimpleOpenTelemetry:Metric:Exporters:0:Type": "Azure"
     }
     """, 3, false)]
-    [InlineData("""
+    [InlineData("AllSignals_NoConfig_ShouldFail", """
     {
         "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
         "SimpleOpenTelemetry:Log:Exporters:0:Type": "Azure",
         "SimpleOpenTelemetry:Metric:Exporters:0:Type": "Azure"
     }
     """, 0, true)]
-    [InlineData("""
+    [InlineData("OnlyTrace_TopLevelConfig", """
     {
         "SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
         "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure"
     }
     """, 1, false)]
-    [InlineData("""
+    [InlineData("OnlyTrace_EntryLevelConfig", """
     {
         "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
         "SimpleOpenTelemetry:Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
     }
     """, 1, false)]
-    [InlineData("""
+    [InlineData("AllSignals_AllEntryLevelOptions", """
     {
         "SimpleOpenTelemetry:Trace:Exporters:0:Type": "Azure",
         "SimpleOpenTelemetry:Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
@@ -304,7 +318,7 @@ public class ExporterLoaderTests
         "SimpleOpenTelemetry:Metric:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
     }
     """, 3, false)]
-    public void ConfigureExporters_AzureExporter_SuccessfullyRegisters(string optionsJson, int registerEvents, bool failure)
+    public void ConfigureExporters_AzureExporter_SuccessfullyRegisters(string testName, string optionsJson, int registerEvents, bool failure)
     {
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
@@ -344,27 +358,27 @@ public class ExporterLoaderTests
         Assert.True(failure ? errorEvents.Count() > 0 : errorEvents.Count() == 0);
     }
 
-    public static IEnumerable<object[]> GetAllKnownTraceExporters()
+    public static IEnumerable<object[]> GetAllKnownTraceExporters(bool createOptions)
     {
         foreach (var exporter in Enum.GetValues<TraceExporterEnum>())
         {
-            yield return new object[] { exporter };
+            yield return new object[] { exporter, createOptions };
         }
     }
 
-    public static IEnumerable<object[]> GetAllKnownMetricExporters()
+    public static IEnumerable<object[]> GetAllKnownMetricExporters(bool createOptions)
     {
         foreach (var exporter in Enum.GetValues<MetricExporterEnum>())
         {
-            yield return new object[] { exporter };
+            yield return new object[] { exporter, createOptions };
         }
     }
 
-    public static IEnumerable<object[]> GetAllKnownLogExporters()
+    public static IEnumerable<object[]> GetAllKnownLogExporters(bool createOptions)
     {
         foreach (var exporter in Enum.GetValues<LogExporterEnum>())
         {
-            yield return new object[] { exporter };
+            yield return new object[] { exporter, createOptions };
         }
     }
 
@@ -378,36 +392,31 @@ public class ExporterLoaderTests
 
     private IConfigurationSection? GetExporterConfigurationSection(ExporterExtensionDescriptor descriptor)
     {
-        // Just generate a section based on the options class structure
-        
+        // Just generate a section based on the options class structure, dont set an values
         IConfigurationSection? optionsConfigSection = null;
 
-        // Add options if mandatory
-        if (descriptor.optionsRequired)
-        {
+        var className = descriptor.OptionsClassName;
+        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName);
+        var classDef = assembly.GetTypes()
+            .FirstOrDefault(t => t.Name == className)!;
 
-            var className = descriptor.OptionsClassName;
-            var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName);
-            var classDef = assembly.GetTypes()
-                .FirstOrDefault(t => t.Name == className)!;
+        var ctor = classDef.GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            types: Type.EmptyTypes,
+            modifiers: null);
+        var instance = ctor!.Invoke(null);
 
-            var ctor = classDef.GetConstructor(
-                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-                binder: null,
-                types: Type.EmptyTypes,
-                modifiers: null);
-            var instance = ctor!.Invoke(null);
+        var inner = JsonSerializer.Serialize(instance, classDef);
+        var wrapped = $"{{\"{classDef.Name}\": {inner}}}";
 
-            var inner = JsonSerializer.Serialize(instance, classDef);
-            var wrapped = $"{{\"{classDef.Name}\": {inner}}}";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(wrapped));
+        IConfiguration classOptionsBuilder = new ConfigurationBuilder()
+            .AddJsonStream(stream)
+            .Build();
 
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(wrapped));
-            IConfiguration classOptionsBuilder = new ConfigurationBuilder()
-                .AddJsonStream(stream)
-                .Build();
-
-            optionsConfigSection = classOptionsBuilder.GetSection(classDef.Name);
-        }
+        optionsConfigSection = classOptionsBuilder.GetSection(classDef.Name);
+        
         return optionsConfigSection;
     }
 }
