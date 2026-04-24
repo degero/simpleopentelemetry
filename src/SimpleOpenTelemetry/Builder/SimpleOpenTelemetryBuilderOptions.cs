@@ -1,22 +1,9 @@
 using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.OtelComponents.Extension;
-using SimpleOpenTelemetry.OtelComponents.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 namespace SimpleOpenTelemetry.Builder;
-
-/// <summary>
-/// Builtin supported OpenTelemetry SDK exporters
-/// </summary>
-public enum SimpleOpenTelemetryExporterType
-{
-    Otlp,
-    Console,
-    PrometheusHttpListener, // TODO Chad change these from here to end  to only lookup in exporter assemblies than both
-    PrometheusAspNetCore,
-    Azure, 
-
-}
 
 public enum SimpleOpenTelemetryExporterProtocol
 {
@@ -53,9 +40,9 @@ internal class SimpleOpenTelemetryOptions
 
 }
 
-internal class SimpleOpenTelemetryExporterConfig
+internal class SimpleOpenTelemetryExporterConfig<TEnum>
 {
-    public SimpleOpenTelemetryExporterType Type { get; set; }
+    public TEnum Type { get; set; }
 
     public IConfigurationSection? Options { get; set; }
 }
@@ -75,7 +62,7 @@ internal class SimpleOpenTelemetryMetricOptions
     /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
     /// Or override for specific alternate targets when wanting multiple otlp exports
     /// </summary>
-    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+    public List<SimpleOpenTelemetryExporterConfig<MetricExporterEnum>>? Exporters { get; set; } = new();
 
     public MetricExtensionsEnum[]? Extensions { get; set; }
 
@@ -103,7 +90,7 @@ internal class SimpleOpenTelemetryTraceOptions
 
     public IConfigurationSection? InstrumentationConfig { get; set; }
 
-    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+    public List<SimpleOpenTelemetryExporterConfig<TraceExporterEnum>>? Exporters { get; set; } = new();
 
     public TraceExtensionsEnum[]? Extensions { get; set; }
 
@@ -135,7 +122,7 @@ internal class SimpleOpenTelemetryLogOptions
     /// If otlp is specified, the standard OpenTelemetry ENV vars or config sections can be used
     /// Or override for specific alternate targets when wanting multiple otlp exports
     /// </summary>
-    public List<SimpleOpenTelemetryExporterConfig>? Exporters { get; set; } = new();
+    public List<SimpleOpenTelemetryExporterConfig<LogExporterEnum>>? Exporters { get; set; } = new();
 
     public LogExtensionsEnum[]? Extensions { get; set; }
 

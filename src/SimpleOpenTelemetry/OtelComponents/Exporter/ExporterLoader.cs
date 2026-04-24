@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -90,8 +91,8 @@ internal class ExporterLoader : IExporterLoader
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg),
             _logExporters, ExporterAssemblies.KnownLogExporters);
 
-    private IConfiguration? GetCustomExporterConfig(
-        SimpleOpenTelemetryExporterConfig config
+    private IConfiguration? GetCustomExporterConfig<TEnum>(
+        SimpleOpenTelemetryExporterConfig<TEnum> config
     )
     {
         // try get the top level exporter settings 
@@ -119,7 +120,7 @@ internal class ExporterLoader : IExporterLoader
     }
 
     private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder,
-        IList<SimpleOpenTelemetryExporterConfig> exporters,
+        IList<SimpleOpenTelemetryExporterConfig<TEnum>> exporters,
         Action<string, Action<OtlpExporterOptions>> addOtlp,
         Array validExporterTypes,
         Dictionary<TEnum, ExporterExtensionDescriptor> descriptors)
@@ -135,16 +136,16 @@ internal class ExporterLoader : IExporterLoader
         {
             var item = exporters[i];
 
-            if (item.Type == SimpleOpenTelemetryExporterType.Otlp)
-            {
-                // Dont use reflection as we have this built in the OpenTelemetry lib
-                AddOTLPExporter(addOtlp, item, $"OTLPExporter-{signal}-{i}", signal);
-            }
-            else if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 var matchedExporter = (TEnum)Enum.Parse(typeof(TEnum), item.Type.ToString(), ignoreCase: true);
 
-                if (!descriptors.TryGetValue(matchedExporter, out var descriptor))
+                if (string.Equals(nameof(TraceExporterEnum.Otlp), matchedExporter.ToString(), StringComparison.OrdinalIgnoreCase))
+                {
+                    // Dont use reflection as we have this built in the OpenTelemetry lib
+                    AddOTLPExporter(addOtlp, item, $"OTLPExporter-{signal}-{i}", signal);
+                }
+                else if (!descriptors.TryGetValue(matchedExporter, out var descriptor))
                 {
                     EventSource.Log.Error(eventCategory, 
                         $"{typeof(TEnum).Name} type '{matchedExporter}' not found to initialise {signal} exporter.");
@@ -165,12 +166,12 @@ internal class ExporterLoader : IExporterLoader
     }
 
 
-    private void AddOTLPExporter(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig item, string exporterName, string signal)
+    private void AddOTLPExporter<TEnum>(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig<TEnum> item, string exporterName, string signal)
     {
         try 
         {
-            addExporter(exporterName, BuildOtlpConfig(item));
-            EventSource.Log.Verbose(eventCategory, $"registered {signal} OTLP exporter '{exporterName}'.");
+            addExporter(exporterName, BuildOtlpConfig(item.Options));
+            EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{TraceExporterEnum.Otlp}' '{exporterName}'.");
 
         }
         catch (Exception ex)
@@ -186,7 +187,7 @@ internal class ExporterLoader : IExporterLoader
         IConfiguration? section,
         string signal)
     {
-        var (assemblyName, typeName, methodName, optionsClassName) = descriptor;
+        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired) = descriptor;
 
         try
         {
@@ -199,7 +200,6 @@ internal class ExporterLoader : IExporterLoader
 
             var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
             var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
-
 
             // attempt Action<TOptions> path only when section exists in config
             if (descriptor.OptionsClassName is not null &&
@@ -216,7 +216,7 @@ internal class ExporterLoader : IExporterLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            EventSource.Log.Verbose(eventCategory, $"registered {signal} exporter '{exporterEnum}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{exporterEnum}'.");
 
         }
         catch (Exception ex)
@@ -225,14 +225,14 @@ internal class ExporterLoader : IExporterLoader
         }
     }
 
-    private Action<OtlpExporterOptions> BuildOtlpConfig(SimpleOpenTelemetryExporterConfig item)
+    private Action<OtlpExporterOptions> BuildOtlpConfig(IConfigurationSection? options)
     {
         // If options are passed, bind to OtlpExporterOptions structure
-        if (item.Options is not null && item.Options.GetChildren().Count() > 0)
+        if (options is not null && options.GetChildren().Count() > 0)
         {
             return config =>
             {
-                var section = item.Options;
+                var section = options;
                 section.Bind(config);
             };
         }

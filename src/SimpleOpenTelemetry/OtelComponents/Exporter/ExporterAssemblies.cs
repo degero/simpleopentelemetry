@@ -10,11 +10,13 @@ namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 /// <param name="TypeName">The full type name of the extension class (e.g., "OpenTelemetry.Trace.ConsoleExporterHelperExtensions").</param>
 /// <param name="MethodName">The name of the public static extension method (e.g., "AddConsoleExporter").</param>
 /// <param name="OptionsClassName">The fully qualified options class name if the method has an Action&lt;TOptions&gt; overload, otherwise null.</param>
+/// <param name="optionsRequired">Indicates if options required.</param>
 internal record ExporterExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
-     string OptionsClassName
+     string? OptionsClassName,
+     bool optionsRequired = false
 );
 
 /// <summary>
@@ -94,7 +96,8 @@ internal static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorTraceExporter",
-                "AzureExporterOptions"),
+                "AzureMonitorExporterOptions",
+                true),
         };
 
 
@@ -125,7 +128,8 @@ internal static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorMetricExporter",
-                "AzureExporterOptions"),
+                "AzureMonitorExporterOptions",
+                true),
 
         };
 
@@ -144,7 +148,8 @@ internal static class ExporterAssemblies
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 "AddAzureMonitorLogExporter",
-                "AzureExporterOptions"),
+                "AzureMonitorExporterOptions",
+                true),
         };
 }
 
