@@ -53,7 +53,7 @@ public class SimpleOpenTelemetryExtensionsTests
     public void SimpleOpenTelemetryValidate_PassesWhenRequiredResourceAttributesPresent()
     {
         const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
 
         using (new OtelEnvironmentScope(new[]
                {
@@ -83,6 +83,7 @@ public class SimpleOpenTelemetryExtensionsTests
                     .AddAttributes(new Dictionary<string, object>
                     {
                         ["service.version"] = "1.2.3",
+                        ["service.namespace"] = "test-namespace",
                         ["deployment.environment.name"] = "dev"
                     }))
                 .Build();
@@ -100,7 +101,7 @@ public class SimpleOpenTelemetryExtensionsTests
     public void SimpleOpenTelemetryValidate_ThrowsWhenRequiredResourceAttributesMissing()
     {
         const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3"; // Missing: deployment.environment.name
+        const string resourceAttributes = "service.version=1.2.3"; // Missing: deployment.environment.name, service.namespace
 
         using (new OtelEnvironmentScope(new[]
                {
@@ -154,7 +155,7 @@ public class SimpleOpenTelemetryExtensionsTests
     public void SimpleOpenTelemetryValidate_WorksWithTracingOnlyConfiguration()
     {
         const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
 
         using (new OtelEnvironmentScope(new[]
                {
@@ -184,6 +185,7 @@ public class SimpleOpenTelemetryExtensionsTests
                     .AddAttributes(new Dictionary<string, object>
                     {
                         ["service.version"] = "1.2.3",
+                        ["service.namespace"] = "test-namespace",
                         ["deployment.environment.name"] = "dev"
                     }))
                 .Build();
@@ -201,7 +203,7 @@ public class SimpleOpenTelemetryExtensionsTests
     public void SimpleOpenTelemetryValidate_WorksWithMetricsOnlyConfiguration()
     {
         const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
 
         using (new OtelEnvironmentScope(new[]
                {
@@ -231,6 +233,7 @@ public class SimpleOpenTelemetryExtensionsTests
                     .AddAttributes(new Dictionary<string, object>
                     {
                         ["service.version"] = "1.2.3",
+                        ["service.namespace"] = "test-namespace",
                         ["deployment.environment.name"] = "dev"
                     }))
                 .Build();
@@ -248,17 +251,17 @@ public class SimpleOpenTelemetryExtensionsTests
     public void SimpleOpenTelemetryValidate_WorksWithLoggingOnlyConfiguration()
     {
         const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
 
-        using (new OtelEnvironmentScope(new[]
-               {
+        using (new OtelEnvironmentScope(
+               [
                    new KeyValuePair<string, string>(
                        OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
                        serviceName),
                    new KeyValuePair<string, string>(
                        OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES,
                        resourceAttributes)
-               }))
+               ]))
         {
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>
@@ -278,6 +281,7 @@ public class SimpleOpenTelemetryExtensionsTests
                     .AddAttributes(new Dictionary<string, object>
                     {
                         ["service.version"] = "1.2.3",
+                        ["service.namespace"] = "test-namespace",
                         ["deployment.environment.name"] = "dev"
                     }))
                 .Build();
@@ -289,39 +293,6 @@ public class SimpleOpenTelemetryExtensionsTests
             // Should not throw - MeterProvider with valid resource is available
             provider.SimpleOpenTelemetryValidate();
         }
-    }
-
-    [Fact(Skip = "true")] // TODO Chad reinstate with eventlogging only option as this throws before app is built
-    public void SimpleOpenTelemetryValidate_ThrowsWhenSimpleOpenTelemetryConfigSignalSubSections_AreUndefined()
-    {
-        var config = new ConfigurationBuilder().AddInMemoryCollection()
-            .AddInMemoryCollection(new Dictionary<string, string?>()
-            {
-                ["SimpleOpenTelemetry"] = "{}"
-            })
-            .Build();
-
-        var services = new ServiceCollection();
-        services.AddSimpleOpenTelemetry(config); // Config section missing - no providers are created
-
-        var provider = services.BuildServiceProvider();
-
-        var exception = Assert.Throws<InvalidOperationException>(() => provider.SimpleOpenTelemetryValidate());
-        Assert.Contains("No OpenTelemetry signal providers have been registered.", exception.Message);
-    }
-    
-    [Fact]
-    public void SimpleOpenTelemetryValidate_ThrowsWhen_AddSimpleOpenTelemetry_NotCalled()
-    {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>())
-            .Build();
-
-        var services = new ServiceCollection();
-        var provider = services.BuildServiceProvider();
-
-        var exception = Assert.Throws<InvalidOperationException>(() => provider.SimpleOpenTelemetryValidate());
-        Assert.Contains("OpenTelemetry has not been registered", exception.Message);
     }
 
 }

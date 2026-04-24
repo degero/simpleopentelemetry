@@ -15,13 +15,15 @@ public static class ServiceProviderExtensions
     /// <summary>
     /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
     /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
+    /// Recommended for non-prod environments as it throws unhandled exceptions (inline with OpenTelemetry's Spec for [error handling](https://opentelemetry.io/docs/specs/otel/error-handling/)) to confirm
+    /// settings.
     /// </summary>
     /// <remarks>
     /// This method will throw an InvalidOperationException if any required attributes are missing or empty.
     /// Useful to ensure proper telemetry identification of apps/environments.
     /// For validation to pass Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
     /// 
-    /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, deployment.environment.name
+    /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
     /// </remarks>
@@ -52,8 +54,7 @@ public static class ServiceProviderExtensions
 
         var attrs = resource.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
 
-        // TODO Chad change to best practice perhaps on prod build? - service.name, service.namespace, service.version, service.instance.id, host.name, host.type, os.name, and os.version
-        var requiredKeys = new[] { "service.name", "service.version", "deployment.environment.name" }; //"service.instance.id","host.name", "host.type", "os.type", "os.version"
+        var requiredKeys = new[] { "service.name", "service.namespace", "service.version", "deployment.environment.name" };
         var missing = requiredKeys.Where(k => !attrs.ContainsKey(k) || string.IsNullOrEmpty(attrs[k]?.ToString())).ToList();
 
         if (missing.Any())

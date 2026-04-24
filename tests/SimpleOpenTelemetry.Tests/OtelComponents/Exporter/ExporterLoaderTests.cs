@@ -14,6 +14,7 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Exporter;
 
+[Collection("ExporterLoaderTests")]
 public class ExporterLoaderTests
 {
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
@@ -121,13 +122,15 @@ public class ExporterLoaderTests
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
 
-         // Add options if testing Skip if otlp as reflection not used
-        var descriptor = ExporterAssemblies.KnownTraceExporters[exporterType];
-        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+        // Add options if testing Skip if otlp as reflection not used
+        var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
+            ExporterAssemblies.KnownTraceExporters[exporterType] : null;
+
+        var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.optionsRequired || createOptionsEntry);
        
-        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
+        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<TraceExporterEnum>
         {
@@ -178,13 +181,15 @@ public class ExporterLoaderTests
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
         
-         // Add options if testing Skip if otlp as reflection not used
-        var descriptor = ExporterAssemblies.KnownMetricsExporters[exporterType];
-        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+        // Add options if testing Skip if otlp as reflection not used
+        var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
+            ExporterAssemblies.KnownMetricsExporters[exporterType] : null;
+
+        var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.optionsRequired || createOptionsEntry);
 
-        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
+        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<MetricExporterEnum>
         {
@@ -233,13 +238,15 @@ public class ExporterLoaderTests
         // Arrange
         using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
         
-         // Add options if testing Skip if otlp as reflection not used
-        var descriptor = ExporterAssemblies.KnownLogExporters[exporterType];
-        var setOptions = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) &&
+        // Add options if testing Skip if otlp as reflection not used
+        var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
+            ExporterAssemblies.KnownLogExporters[exporterType] : null;
+
+        var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.optionsRequired || createOptionsEntry);
 
-        IConfigurationSection? exporterConfigSection = setOptions ? null : GetExporterConfigurationSection(descriptor);
+        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
         var exporterConfig =  new SimpleOpenTelemetryExporterConfig<LogExporterEnum>
         {

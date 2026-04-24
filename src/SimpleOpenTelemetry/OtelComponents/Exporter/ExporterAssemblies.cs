@@ -100,7 +100,7 @@ internal static class ExporterAssemblies
                 true),
         };
 
-
+// TODO rename to Metric
     public static readonly Dictionary<MetricExporterEnum, ExporterExtensionDescriptor>
         KnownMetricsExporters = new()
         {
