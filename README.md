@@ -1,6 +1,6 @@
 # SimpleOpenTelemetry
 
-A lightweight, low-friction .NET library providing a simple, low code option to setup OpenTelemetry on .NET applications via IConfiguration.
+A lightweight, low-friction .NET library providing a simple, low code option to setup code-based OpenTelemetry instrumentation on dotnet applications via IConfiguration.
 
 ---
 
@@ -11,16 +11,16 @@ A lightweight, low-friction .NET library providing a simple, low code option to 
 **License:** MIT
 
 
-SimpleOpenTelemetry handles the boilerplate configuration of manual OpenTelemetry integration, it is not in any way related to autoinstrumentation/zero-code setup and is designed to streamline setup removing any need for code based configuration for most common non-complex configurations. If thare are complex items required for you app, you can add them by code after the SimpleOpenTelemetry configurator runs. 
+SimpleOpenTelemetry handles the boilerplate configuration needed when using manual code-based OpenTelemetry setup, it is not in any way related to [auto-instrumentation/zero-code](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/) and is designed to streamline setup removing need for code based configuration for most common configurations. If you need to add something node provided in SimpleOpenTelemetry, you can access the IOpenTelemetryBuilder to run any of OpenTelemetry's fluent builder methods.
 
-Support is available for enabling distros and popular component implementations: exporters, instrumentations, propagators, resource detectors, extensions and samplers. It focuses on allowing easy setup for AWS, Azure and GCP (limited as of April 2026). By adding the related nupkg to your project and adding configuration components are registered with OpenTelemetry Builder providers using reflection. It is designed to compliment OpenTelemetry's defaults and OTEL_* env var settings.
+Support is available for enabling [Distributions](https://opentelemetry.io/docs/concepts/distributions/) and popular [component](https://opentelemetry.io/docs/concepts/components/) implementations of: exporters, instrumentations, propagators, resource detectors, extensions and samplers. It focuses on allowing easy setup for AWS, Azure and GCP (GCP is quite limited as of April 2026). By adding the component's nupkg to your project and adding the configuration neede, components are registered with OpenTelemetry's builder providers using reflection.
 
 
 ---
 
 ## Features
 
-- Pluggable components by adding config entry and NuGet package to your app for telemetry features you need. 
+- Plugable components by adding config entry and NuGet package to your app for telemetry features you need. 
 - Example configuration files for common app / platform scenarios [example-configs](./example-configs/)
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin ResourceDetector 'AssemblyVersion' (see [Resource Detectors > Builtin](#builtin)). Overriden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
 - TODO add the other features
@@ -367,7 +367,7 @@ SimpleOpenTelemetry::Metric::Exporters[] json:
 
 Signals supported: metrics  
 
-Options: [OpenTelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md) the documentation doesn't seem to mention but you can set anything defined in 'PrometheusAspNetCoreOptions.cs' of this project.
+Options: optional, see [OpenTelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md). The documentation doesn't seem to mention but you can set anything defined in 'PrometheusAspNetCoreOptions.cs' of this project.
 
 Notes: Host prometheus scrape endpoint on aspnetcore WebApplication. Defaults to on http://apphost:port/metrics.  
 
