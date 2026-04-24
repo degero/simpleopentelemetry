@@ -9,22 +9,19 @@ namespace SimpleOpenTelemetry.Extensions;
 public static class HostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds SimpleOpenTelemetry instrumentation and exporters to the host application builder.
+    /// Adds OpenTelemetry to the host application builder with settings from 
+    /// env var / json config (in root section 'SimpleOpenTelemetry')
     /// </summary>
     /// <remarks>
-    /// This method configures logging and services for OpenTelemetry.
+    /// This method configures many components / settings of OpenTelemetry.
     /// Configuration is loaded from the application's configuration (e.g., appsettings.json).
     /// </remarks>
     /// <param name="builder">The host application builder instance.</param>
-    /// <returns>The host application builder for method chaining.</returns>
+    /// <returns cref="IOpenTelemetryBuilder">OpenTelemetry builder that this method creates</returns>
     /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
     public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
-        // TODO Chad look at way to not pass configuration like AddOpenTelemetry()
-        var otelBuilder = builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
-
-        return otelBuilder;
+        return builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
     }
-
 }

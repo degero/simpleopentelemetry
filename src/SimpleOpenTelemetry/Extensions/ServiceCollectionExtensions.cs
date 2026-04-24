@@ -5,21 +5,10 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 
-/// <summary>
-/// Extension methods for adding OpenTelemetry to service collection
-/// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// TODO Chad check if this can be removed
-    /// Runs SimpleOpenTelemetryBuilder to initialise OpenTelemetry and process custom
-    /// env var / json config (in section 'SimpleOpenTelemetry') into OpenTelemetry instrumentation
-    /// logging and exporting etc setups.
-    /// </summary>
-    /// <param name="services">The service collection</param>
-    /// <param name="configuration">The configuration section containing SimpleOpenTelemetry settings</param>
-    /// <returns>The service collection</returns>
-    public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
+    
+    internal static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration)
     {
@@ -44,7 +33,6 @@ public static class ServiceCollectionExtensions
         var otelBuilder = services.AddOpenTelemetry();
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
-
         builder.Configure();
 
         return otelBuilder;

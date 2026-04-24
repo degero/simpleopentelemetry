@@ -8,7 +8,7 @@ using OpenTelemetry.Trace;
 namespace SimpleOpenTelemetry.Extensions;
 
 /// <summary>
-/// Extension methods for validating SimpleOpenTelemetry configuration on IServiceProvider.
+/// Extension methods for validating OpenTelemetry configuration on IServiceProvider.
 /// </summary>
 public static class ServiceProviderExtensions
 {
@@ -18,9 +18,10 @@ public static class ServiceProviderExtensions
     /// </summary>
     /// <remarks>
     /// This method will throw an InvalidOperationException if any required attributes are missing or empty.
-    /// Useful for to ensure proper telemetry identification of apps/environments.
-    /// Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables.
-    /// Required attributes: service.version, deployment.environment.name
+    /// Useful to ensure proper telemetry identification of apps/environments.
+    /// For validation to pass Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
+    /// 
+    /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
     /// </remarks>
