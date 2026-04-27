@@ -19,23 +19,34 @@ internal class SimpleOpenTelemetryOptions
 {
     public const string SectionName = "SimpleOpenTelemetry";
 
-    public const string TraceSectionName = "Trace";
-    public const string LogSectionName = "Log";
-    public const string MetricSectionName = "Metric";
-
+    /// <summary>
+    /// Use a specific distrobution - this bypasses all other settings
+    /// </summary>
     public string? Distro { get; set; }
 
+    /// <summary>
+    /// OpenTelemetry tracing settings
+    /// </summary>
     public SimpleOpenTelemetryTraceOptions Trace { get; set; } = new();
 
+    /// <summary>
+    /// OpenTelemetry metrics settings
+    /// </summary>
     public SimpleOpenTelemetryMetricOptions Metric { get; set; } = new();
 
+    /// <summary>
+    /// OpenTelemetry Log settings
+    /// </summary>
     public SimpleOpenTelemetryLogOptions Log { get; set; } = new();
 
     /// <summary>
-    /// Options for Vendor distro exporters
+    /// Options for 3rd party Vendor exporters
     /// </summary>
     public IConfigurationSection? ExporterOptions { get; set; }
 
+    /// <summary>
+    /// OpenTelemetry resource related settings (detectors etc)
+    /// </summary>
     public ResourceOptions Resource { get; set; }
 
 }
@@ -49,10 +60,6 @@ internal class SimpleOpenTelemetryExporterConfig<TEnum>
 
 internal class SimpleOpenTelemetryMetricOptions
 {
-
-    /// <summary>
-    ///
-    /// </summary>
     public MetricInstrumentationEnum[]? Instrumentations { get; set; }
 
     public IConfigurationSection? InstrumentationConfig { get; set; }
@@ -78,14 +85,10 @@ internal class SimpleOpenTelemetryMetricOptions
 internal class SimpleOpenTelemetryMeterProviderSettings
 {
     public int? MetricLimit { get; set; }
-    
 }
 
 internal class SimpleOpenTelemetryTraceOptions 
 {
-     /// <summary>
-    ///
-    /// </summary>
     public TraceInstrumentationEnum[]? Instrumentations { get; set; }
 
     public IConfigurationSection? InstrumentationConfig { get; set; }

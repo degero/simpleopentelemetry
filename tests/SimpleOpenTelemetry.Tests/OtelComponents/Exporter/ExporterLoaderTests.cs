@@ -10,6 +10,7 @@ using OpenTelemetry.Exporter;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Diagnostics;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
+using SimpleOpenTelemetry.Reflection;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Exporter;
@@ -393,7 +394,7 @@ public class ExporterLoaderTests
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(exporterConfig).Build();
         var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
-        var target = new ExporterLoader(configuration);
+        var target = new ExporterLoader(configuration, _assemblyExec);
         return (target, config);
     }
 

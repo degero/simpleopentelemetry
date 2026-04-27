@@ -1,18 +1,13 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
-internal interface IResourceDetectorLoader
-{
-    void AddResourceDetectors(ResourceBuilder builder, SimpleOpenTelemetryOptions options);
-}
-
 /// <summary>
-/// Load vendor / contrib assembly and invoke resourcebuilder detector extension method based on the available types
+/// Load vendor / otel-contrib assembly and invoke resourcebuilder detector extension method based on the available types
 /// </summary>
 internal class ResourceDetectorLoader : IResourceDetectorLoader
 {
@@ -22,7 +17,6 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
 
     // Available 3rd parter detectors
     internal readonly Array _resourceExtensions = Enum.GetValues<ResourceDetectorEnum>();
-
     internal readonly Dictionary<ResourceDetectorEnum, ResourceDetectorDescriptor> _descriptors = ResourceDetectorAssemblies.KnownResourceDetectors;
 
     /// <summary>

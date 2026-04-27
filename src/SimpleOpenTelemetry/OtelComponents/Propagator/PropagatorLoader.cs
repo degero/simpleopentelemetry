@@ -1,22 +1,16 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Propagator;
-
-internal interface IPropagatorLoader 
-{
-     void AddPropagators(SimpleOpenTelemetryOptions options);
-}
 
 internal class PropagatorLoader : IPropagatorLoader
 {
     private readonly string eventCategory = nameof(PropagatorLoader);
 
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     // Available 3rd parter propagators
     private readonly Array _Propagators = Enum.GetValues<PropagatorEnum>();
@@ -26,9 +20,9 @@ internal class PropagatorLoader : IPropagatorLoader
     /// <summary>
     /// Initializes a new instance of the PropagatorLoader class.
     /// </summary>
-    public PropagatorLoader()
+    public PropagatorLoader(IAssemblyExecution assemblyExecution)
     {
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     /// <summary>
@@ -53,7 +47,7 @@ internal class PropagatorLoader : IPropagatorLoader
 
             if (propagators.Any(p => string.Equals(p, PropagatorEnum.None.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
-                var noopPropagator = CreatePropagator(PropagatorEnum.None, _descriptors[PropagatorEnum.None]);
+                var noopPropagator = CreatePropagator(_descriptors[PropagatorEnum.None]);
                 Sdk.SetDefaultTextMapPropagator(noopPropagator);
                 EventSource.Log.Verbose(eventCategory, "Registered propagator NoopTextMapPropagator as SimpleOpenTelemetry propagators config included 'none'.");
                 return;
@@ -79,7 +73,7 @@ internal class PropagatorLoader : IPropagatorLoader
                             $"{typeof(PropagatorEnum).Name} type '{matchedPropagator}' not found to initialise propagator.");
                     
                     // If any fail the whoe propagator set is aborted
-                    var propagatorInstance = CreatePropagator(matchedPropagator, descriptor);
+                    var propagatorInstance = CreatePropagator(descriptor);
                     
                     if (propagatorInstance is not null)
                         propagatorsList.Add(propagatorInstance);   
@@ -107,7 +101,6 @@ internal class PropagatorLoader : IPropagatorLoader
     /// </summary>
     /// <param name="descriptor"></param>
     private TextMapPropagator? CreatePropagator(
-        PropagatorEnum propagator,
         PropagatorDescriptor descriptor)
     {
        

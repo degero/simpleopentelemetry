@@ -1,18 +1,19 @@
 using System.Diagnostics.Tracing;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Moq;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Diagnostics;
 using SimpleOpenTelemetry.OtelComponents.Resource;
-using SimpleOpenTelemetryTests;
+using SimpleOpenTelemetry.Reflection;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Resource;
 
 public class ResourceDetectorLoaderTests : IDisposable
 {
+    private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
+
     private readonly IConfiguration _configuration;
     private readonly TestEventListener _listener;
 
@@ -80,7 +81,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors(nameof(ResourceDetectorEnum.AssemblyVersion));
         var resourceBuilder = ResourceBuilder.CreateDefault();
         
@@ -104,7 +105,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors(nameof(ResourceDetectorEnum.EnvVar));
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
@@ -128,7 +129,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors(nameof(ResourceDetectorEnum.AssemblyVersion).ToLower()); // lowercase
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
@@ -152,7 +153,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors("NonExistentDetector");
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
@@ -177,7 +178,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors(detector.ToString());
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
@@ -206,7 +207,7 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // Arrange
         
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         
         var allDetectors = Enum.GetValues<ResourceDetectorEnum>();
         var detectorNames = allDetectors.Select(d => d.ToString()).ToArray();
@@ -260,7 +261,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         // Arrange
         var descriptor = ResourceDetectorAssemblies.KnownResourceDetectors[detector];
         // var mockAssemblyExecution = new Mock<IAssemblyExecution>();
-        var loader = new ResourceDetectorLoader(_configuration, new AssemblyExecution());
+        var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var detectorEnumName = detector.ToString();
         var options = BuildOptionsWithDetectors(detectorEnumName);
         var resourceBuilder = ResourceBuilder.CreateDefault();

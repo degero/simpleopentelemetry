@@ -3,7 +3,7 @@ using System.Diagnostics.Tracing;
 namespace SimpleOpenTelemetry.Diagnostics;
 
 /// <summary>
-/// Diagnostics for MyLibrary are emitted via EventSource.
+/// Diagnostics for SimpleOpenTelemetry are emitted via EventSource.
 /// To listen, enable the source named "MyCompany-MyLibrary".
 ///
 /// Event IDs:

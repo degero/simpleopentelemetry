@@ -8,6 +8,7 @@ using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.OtelComponents.Propagator;
+using SimpleOpenTelemetry.Reflection;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Propagator;
@@ -15,8 +16,7 @@ namespace SimpleOpenTelemetryTests.OtelComponents.Propagator;
 [Collection("PropagatorLoaderTests")]
 public class PropagatorLoaderTests
 {
-    private readonly IConfiguration _configuration = new ConfigurationBuilder().Build();
-    private readonly Mock<ILogger> _logger = new();
+    private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
 
     public PropagatorLoaderTests()
     {
@@ -49,7 +49,7 @@ public class PropagatorLoaderTests
         // ACT
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() {
@@ -75,7 +75,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -106,7 +106,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -134,7 +134,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -162,7 +162,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -188,7 +188,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -219,7 +219,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -250,7 +250,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 
@@ -281,7 +281,7 @@ public class PropagatorLoaderTests
 
         try
         {
-            var sut = new PropagatorLoader();
+            var sut = new PropagatorLoader(_assemblyExec);
             var options = new SimpleOpenTelemetryOptions
             {
                 Trace = new() 

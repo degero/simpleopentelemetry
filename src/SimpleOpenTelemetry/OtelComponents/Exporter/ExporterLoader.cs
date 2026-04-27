@@ -1,5 +1,3 @@
-using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
@@ -7,20 +5,14 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 
-internal interface IExporterLoader
-{
-    void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config);
-    void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions config);
-    void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions config);
-}
-
 /// <summary>
-/// Load vendor exporter assembly and invoke expoter method based on the available types
+/// Load otel-contrib and vendor exporter assembly and invoke exporter method based on the available types
 /// linked to [Log/Trace/Metric]ExporterEnum
 /// </summary>
 internal class ExporterLoader : IExporterLoader
@@ -28,7 +20,7 @@ internal class ExporterLoader : IExporterLoader
     private readonly string eventCategory = nameof(ExporterLoader);
 
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     private readonly string _exportersTopLevelConfigSectionName = "ExporterOptions";
 
@@ -42,10 +34,11 @@ internal class ExporterLoader : IExporterLoader
     /// </summary>
     /// <param name="configuration">The application configuration containing exporter settings.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public ExporterLoader(IConfiguration configuration)
+    public ExporterLoader(IConfiguration configuration,
+        IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     /// <summary>

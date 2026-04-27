@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Moq;
+using SimpleOpenTelemetry.Reflection;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests.Reflection;

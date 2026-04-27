@@ -8,7 +8,7 @@ internal record SamplerDescriptor(
 
 
 /// <summary>
-/// A list of known opentelemetry-dotnet-contrib and vendor extensions
+/// A list of known opentelemetry-contrib and vendor samplers
 /// </summary>
 internal static class SamplerAssemblies
 {

@@ -3,17 +3,11 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.OtelComponents.Extension;
+using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Extensions;
-
-internal interface IExtensionLoader
-{
-    void AddMetricsExtension(MeterProviderBuilder builder, MetricExtensionsEnum extension);
-    void AddTraceExtension(LoggerProviderBuilder builder, LogExtensionsEnum extension);
-    void AddTraceExtension(TracerProviderBuilder builder, TraceExtensionsEnum extension);
-}
 
 /// <summary>
 /// Load assembly and invoke tracing/metrics extension method based on the available types
@@ -26,19 +20,19 @@ internal class ExtensionLoader : IExtensionLoader
 {
     private readonly string eventCategory = nameof(ExtensionLoader);
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     /// <summary>
     /// Initializes a new instance of the OpenTelemetryExtensionLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public ExtensionLoader(IConfiguration configuration)
+    public ExtensionLoader(IConfiguration configuration,
+        IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration;
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
-
 
     /// <summary>
     /// Adds a log extension to the provided LoggerProviderBuilder.
@@ -49,7 +43,7 @@ internal class ExtensionLoader : IExtensionLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="extension">The trace extension type to add.</param>
-    public void AddTraceExtension(
+    public void AddLogExtension(
         LoggerProviderBuilder builder,
         LogExtensionsEnum extension)
         => AddExtension(builder, extension, ExtensionAssemblies.KnownLogExtensions);

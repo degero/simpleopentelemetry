@@ -1,5 +1,3 @@
-using SimpleOpenTelemetry.OtelComponents.Extensions;
-
 namespace SimpleOpenTelemetry.OtelComponents.Extension;
 
 internal record ExtensionDescriptor(
@@ -9,9 +7,6 @@ internal record ExtensionDescriptor(
      string? ConfigurationSection
 );
 
-/// <summary>
-/// 
-/// </summary>
 internal static class ExtensionAssemblies
 {
     public static readonly Dictionary<TraceExtensionsEnum, ExtensionDescriptor>
@@ -26,12 +21,8 @@ internal static class ExtensionAssemblies
 
 
     public static readonly Dictionary<MetricExtensionsEnum, ExtensionDescriptor>
-        KnownMetricExtensions = new()
-        {
-        };
+        KnownMetricExtensions = new();
 
     public static readonly Dictionary<LogExtensionsEnum, ExtensionDescriptor>
-        KnownLogExtensions = new()
-        {
-        };
+        KnownLogExtensions = new();
 }

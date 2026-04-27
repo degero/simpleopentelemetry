@@ -5,24 +5,8 @@ internal record PropagatorDescriptor(
      string TypeName
 );
 
-public enum PropagatorEnum
-{
-    /* opentelemetry-dotnet */
-    None,
-    
-    Baggage,
-
-    TraceContext,
-
-    /* opentelemetry-dotnet - OpenTelemetry.Extensions.Propagators.nupkg*/
-    B3,
-
-    /* opentelemetry-dotnet-contrib */
-    AWS,
-}
-
 /// <summary>
-/// A list of known opentelemetry-dotnet-contrib and vendor extensions
+/// A list of known opentelemetry-dotnet-contrib and vendor propagators
 /// </summary>
 internal static class PropagatorAssemblies
 {

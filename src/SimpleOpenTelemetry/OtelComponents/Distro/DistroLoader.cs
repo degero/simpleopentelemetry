@@ -1,14 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Distro;
-
-internal interface IDistroLoader
-{
-    bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options);
-}
 
 /// <summary>
 /// Load distro based on the available types linked to DistroEnum
@@ -17,7 +13,7 @@ internal class DistroLoader : IDistroLoader
 {
     private readonly string eventCategory = nameof(DistroLoader);
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
     private readonly Array _distros = Enum.GetValues<DistroEnum>();
 
     private readonly Dictionary<DistroEnum, DistroDescriptor> _descriptors = DistroAssemblies.KnownDistros;
@@ -27,10 +23,11 @@ internal class DistroLoader : IDistroLoader
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public DistroLoader(IConfiguration configuration)
+    public DistroLoader(IConfiguration configuration,
+        IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration;
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     public bool LoadDistro(IOpenTelemetryBuilder builder,

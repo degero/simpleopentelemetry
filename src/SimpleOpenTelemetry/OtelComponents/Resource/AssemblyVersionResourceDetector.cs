@@ -8,7 +8,6 @@ namespace SimpleOpenTelemetry.OtelComponents.Resource;
 
 internal class AssemblyVersionResourceDetector : IResourceDetector
 {
-    
     /// <summary>
     /// Create an core resource attribute service.version if not defined from Env var / json configuration
     /// This examines the 'built' assembly version that may be set in a CICD pipleine and in msbuild

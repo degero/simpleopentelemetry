@@ -7,7 +7,6 @@ using SimpleOpenTelemetry.Builder;
 
 internal static class ServiceCollectionExtensions
 {
-    
     internal static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration)

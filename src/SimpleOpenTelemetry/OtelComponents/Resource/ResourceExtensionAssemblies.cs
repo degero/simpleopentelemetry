@@ -7,25 +7,6 @@ internal record ResourceDetectorDescriptor(
      string? ConfigurationSection
 );
 
-public enum ResourceDetectorEnum
-{
-    /* SimpleOpenTelemetry built-in */
-    AssemblyVersion,
-
-    /* opentelemetry-dotnet-contrib */
-    EnvVar,
-    Host, 
-    Container,
-    OS,
-    Process,
-    ProcessRuntime,
-
-    /* opentelemetry-dotnet-contrib platform specific */
-    Azure,
-    AWS
-    // GCP - Still in unreleased Development state
-}
-
 /// <summary>
 /// A list of known opentelemetry-dotnet-contrib and vendor resourcebuilder extensions
 /// </summary>

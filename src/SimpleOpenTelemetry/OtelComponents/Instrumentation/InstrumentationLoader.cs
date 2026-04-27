@@ -1,18 +1,11 @@
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
-
-internal interface IInstrumentationLoader
-{
-    void AddMetricsInstrumentation(MeterProviderBuilder builder, MetricInstrumentationEnum instrumentation);
-    void AddTracingInstrumentation(TracerProviderBuilder builder, TraceInstrumentationEnum instrumentation);
-}
 
 /// <summary>
 /// Load assembly and invoke tracing/metrics instrumentation method based on the available types
@@ -25,16 +18,17 @@ internal class InstrumentationLoader : IInstrumentationLoader
 {
     private readonly string eventCategory = nameof(InstrumentationLoader);
     private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     /// <summary>
     /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
-    public InstrumentationLoader(IConfiguration configuration)
+    public InstrumentationLoader(IConfiguration configuration,
+        IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration;
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     /// <summary>
@@ -47,8 +41,8 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="instrumentation">The instrumentation type to add.</param>
     public void AddTracingInstrumentation(
-    TracerProviderBuilder builder,
-    TraceInstrumentationEnum instrumentation)
+        TracerProviderBuilder builder,
+        TraceInstrumentationEnum instrumentation)
     => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations);
 
     /// <summary>
@@ -120,5 +114,4 @@ internal class InstrumentationLoader : IInstrumentationLoader
             EventSource.Log.Error(eventCategory, $"Failed to register {signal} instrumentation '{instrumentation}' via {typeName}.{methodName}.", ex.Message);
         }
     }
-
 }

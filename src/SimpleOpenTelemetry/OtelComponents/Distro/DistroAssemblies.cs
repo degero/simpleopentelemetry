@@ -8,9 +8,6 @@ internal record DistroDescriptor(
      string? ConfigurationSection
 );
 
-/// <summary>
-/// 
-/// </summary>
 internal static class DistroAssemblies
 {
     public static readonly Dictionary<DistroEnum, DistroDescriptor>

@@ -2,13 +2,11 @@ namespace SimpleOpenTelemetry.Builder;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.OtelComponents.Extensions;
@@ -16,6 +14,7 @@ using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 using SimpleOpenTelemetry.OtelComponents.Propagator;
 using SimpleOpenTelemetry.OtelComponents.Resource;
 using SimpleOpenTelemetry.OtelComponents.Sampler;
+using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 
 
@@ -45,6 +44,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly IDistroLoader _distroLoader;
 
+    private readonly IAssemblyExecution _assemblyExecution;
+
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder and load in configuration
     /// </summary>
@@ -53,24 +54,26 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     {
         _configuration = config;
         _otelBuilder = otelBuilder;
-        _openTelemetryInstrumentationLoader = new InstrumentationLoader(config);
-        _resourceDetectorLoader = new ResourceDetectorLoader(config, new AssemblyExecution());
-        _exporterLoader = new ExporterLoader(config);
-        _samplerLoader = new SamplerLoader(config);
-        _propagatorLoader = new PropagatorLoader();
-        _extensionLoader = new ExtensionLoader(config);
-        _distroLoader = new DistroLoader(config);
+        _assemblyExecution = new AssemblyExecution();
 
         // Load in configuration from file
         var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
-
         section.Bind(simpleOpenTelemetryConfig);
 
         if (simpleOpenTelemetryConfig == null)
             throw new ArgumentNullException(nameof(simpleOpenTelemetryConfig));
 
         _options = simpleOpenTelemetryConfig;
+        
+        // TODO Chad remove config dependency
+        _openTelemetryInstrumentationLoader = new InstrumentationLoader(config, _assemblyExecution);
+        _resourceDetectorLoader = new ResourceDetectorLoader(config, _assemblyExecution);
+        _exporterLoader = new ExporterLoader(config, _assemblyExecution);
+        _samplerLoader = new SamplerLoader(_assemblyExecution);
+        _propagatorLoader = new PropagatorLoader(_assemblyExecution);
+        _extensionLoader = new ExtensionLoader(config, _assemblyExecution);
+        _distroLoader = new DistroLoader(config, _assemblyExecution);
 
     }
 
@@ -187,6 +190,9 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             {
                 // Iterate over exporters for this montioring type and add them
                 _exporterLoader.ConfigureExporters(logging, _options);
+                
+                 // Iterate over exporters for this montioring type
+                _options.Log.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddLogExtension(logging, r));
             }, 
             options =>
             {
@@ -198,6 +204,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 if (_options.Log.Settings?.ParseStateValues is not null)
                     options.ParseStateValues = _options.Log.Settings.ParseStateValues.Value;
             }
+           
         );
     }
 }

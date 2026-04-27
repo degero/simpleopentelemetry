@@ -1,16 +1,11 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Sampler;
-
-internal interface ISamplerLoader
-{
-    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryOptions options);
-}
 
 /// <summary>
 /// Load vendor / contrib assembly and invoke static / exntion method creating a Builder based on the available types
@@ -19,24 +14,19 @@ internal class SamplerLoader : ISamplerLoader
 {
     private readonly string eventCategory = nameof(SamplerLoader);
 
-    private readonly IConfiguration _configuration;
-    private readonly AssemblyExecution _assemblyExec;
+    private readonly IAssemblyExecution _assemblyExec;
 
     // Available 3rd parter extensions
     internal readonly Array _Samplers = Enum.GetValues<SamplerEnum>();
-
     internal readonly Dictionary<SamplerEnum, SamplerDescriptor> _descriptors = SamplerAssemblies.KnownSamplers;
 
     /// <summary>
     /// Initializes a new instance of the SamplerLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration containing resource extension settings.</param>
     /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public SamplerLoader(IConfiguration configuration)
+    public SamplerLoader(IAssemblyExecution assemblyExecution)
     {
-        // TODO Chad seems wrong Configuration is loaded in as the section for this lib
-        _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
-        _assemblyExec = new AssemblyExecution();
+        _assemblyExec = assemblyExecution;
     }
 
     /// <summary>
@@ -116,7 +106,5 @@ internal class SamplerLoader : ISamplerLoader
         var sampler = buildMethod.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
 
         builder.SetSampler(sampler);
-
     }
-
 }

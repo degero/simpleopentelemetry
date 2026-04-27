@@ -1,0 +1,18 @@
+
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
+
+namespace SimpleOpenTelemetry.Reflection;
+
+internal interface IAssemblyExecution
+{
+    object BuildConfigureAction(Type optionsType, IConfiguration section);
+    MethodInfo? FindActionOverload(Type type, Type builderType, string methodName);
+    MethodInfo? FindParameterlessMethod(Type type, Type builderType, string methodName);
+    MethodInfo FindParameterlessMethodWithAllDefaultValues(Type type, Type builderType, string methodName);
+    Assembly GetAssembly(string assemblyName);
+    object InvokeParameterless(Type type, Type builderType, string methodName, object builder);
+    object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target);
+    object InvokeWithAction(MethodInfo actionMethod, object builder, IConfiguration section);
+    Assembly? TryLoadAssembly(string assemblyName);
+}

@@ -7,9 +7,6 @@ internal record InstrumentationExtensionDescriptor(
      string? ConfigurationSection
 );
 
-/// <summary>
-/// 
-/// </summary>
 internal static class InstrumentationAssemblies
 {
     public static readonly Dictionary<TraceInstrumentationEnum, InstrumentationExtensionDescriptor>
