@@ -117,13 +117,4 @@ internal class PropagatorLoader : IPropagatorLoader
         return (TextMapPropagator)instance;
     }
 
-    // TODO is this needed?
-    private static TextMapPropagator CreateDefaultPropagator()
-    {
-        return new CompositeTextMapPropagator(new TextMapPropagator[]
-        {
-            new TraceContextPropagator(),
-            new BaggagePropagator(),
-        });
-    }
 }

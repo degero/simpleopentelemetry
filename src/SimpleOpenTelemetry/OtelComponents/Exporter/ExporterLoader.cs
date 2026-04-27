@@ -53,7 +53,7 @@ internal class ExporterLoader : IExporterLoader
     public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Metric.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
-            _metricExporters, ExporterAssemblies.KnownMetricsExporters);
+            _metricExporters, ExporterAssemblies.KnownMetricExporters);
 
     /// <summary>
     /// Configures trace exporters on the provided TracerProviderBuilder.

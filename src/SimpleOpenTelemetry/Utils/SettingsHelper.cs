@@ -27,42 +27,4 @@ public static class SettingsHelper
     private static T GetConfigValue<T>(IConfiguration config, string key) =>
         config.GetValue<T>(key);
     
-
-    // TODO chad see if these are of any use
-
-    ///// <summary>
-    ///// Loads SimpleOpenTelemetryOptions from configuration
-    ///// Works with any IConfiguration instance (console, lib, service, web, etc.)
-    ///// </summary>
-    //public static SimpleOpenTelemetryOptions GetOpenTelemetryOptions(
-    //    this IConfiguration configuration)
-    //{
-    //    return configuration
-    //        .GetSection(SimpleOpenTelemetryOptions.SectionName)
-    //        .Get<SimpleOpenTelemetryOptions>() ?? new SimpleOpenTelemetryOptions();
-    //}
-
-    ///// <summary>
-    ///// Registers SimpleOpenTelemetryOptions with DI container (optional, for DI-enabled apps)
-    ///// </summary>
-    //public static IServiceCollection AddOpenTelemetryOptions(
-    //    this IServiceCollection services,
-    //    IConfiguration configuration)
-    //{
-    //    services.Configure<SimpleOpenTelemetryOptions>(
-    //        configuration.GetSection(SimpleOpenTelemetryOptions.SectionName));
-
-    //    return services;
-    //}
-
-    ///// <summary>
-    ///// Loads and registers options in one call (convenience method for DI-enabled apps)
-    ///// </summary>
-    //public static SimpleOpenTelemetryOptions LoadOpenTelemetryOptions(
-    //    this IServiceCollection services,
-    //    IConfiguration configuration)
-    //{
-    //    services.AddOpenTelemetryOptions(configuration);
-    //    return configuration.GetOpenTelemetryOptions();
-    //}
 }

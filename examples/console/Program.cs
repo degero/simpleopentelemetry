@@ -79,7 +79,6 @@ else
     // Build logger factory with settings from appsettins.Development.json
     // using var loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(config.GetSection("Logging")));
 
-
     // Create a logger factory with OpenTelemetry as it is not auto added as
     // when using Generic Host Opentelemetry registration extensions 
     using var loggerFactory = LoggerFactory.Create(builder =>

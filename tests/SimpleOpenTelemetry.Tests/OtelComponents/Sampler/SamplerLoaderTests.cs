@@ -1,0 +1,106 @@
+using System.Diagnostics.Tracing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Moq;
+using OpenTelemetry.Resources;
+using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Diagnostics;
+using SimpleOpenTelemetry.OtelComponents.Sampler;
+using SimpleOpenTelemetry.Reflection;
+using Xunit;
+
+namespace SimpleOpenTelemetryTests.OtelComponents.Sampler;
+
+public class SamplerLoaderTests
+{
+    private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
+
+    [Theory]
+    [MemberData(nameof(GetKnownSamplers), true)]
+    [MemberData(nameof(GetKnownSamplers), false)]
+    public void AddSampler_WithKnownSampler_LogsSuccessOrFailure(
+        SamplerEnum sampler,
+        string assemblyName,
+        bool packageInstalled)
+    {
+        var mockAssemblyExec = new Mock<IAssemblyExecution>();
+        if (!packageInstalled)
+        {
+            mockAssemblyExec
+                .Setup(r => r.GetAssembly(assemblyName))
+                .Throws(new Exception(
+                    $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
+        }
+
+        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        var sut = new SamplerLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var options = new SimpleOpenTelemetryOptions
+        {
+            Trace = new SimpleOpenTelemetryTraceOptions
+            {
+                Sampler = sampler.ToString()
+            }
+        };
+        var resource = ResourceBuilder.CreateDefault().Build();
+
+        var builder = Host.CreateApplicationBuilder();
+        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        {
+            sut.AddSampler(t, resource, options);
+        });
+
+        var successEvent = listener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Verbose &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"registered sampler '{sampler}'.") ?? false));
+        var errorEvent = listener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register sampler '{sampler}'.") ?? false) &&
+            e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
+
+        if (packageInstalled)
+        {
+            Assert.NotNull(successEvent);
+            Assert.Null(errorEvent);
+        }
+        else
+        {
+            Assert.NotNull(errorEvent);
+            Assert.Null(successEvent);
+        }
+    }
+
+    [Fact]
+    public void AddSampler_WithUnsupportedSampler_LogsUnsupportedSamplerError()
+    {
+        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        var sut = new SamplerLoader(_assemblyExec);
+        var options = new SimpleOpenTelemetryOptions
+        {
+            Trace = new SimpleOpenTelemetryTraceOptions
+            {
+                Sampler = "NoSuchSampler"
+            }
+        };
+        var resource = ResourceBuilder.CreateDefault().Build();
+
+        var builder = Host.CreateApplicationBuilder();
+        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        {
+            sut.AddSampler(t, resource, options);
+        });
+
+        var errorEvent = listener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains("Unsupported otel sampler 'NoSuchSampler'.") ?? false));
+
+        Assert.NotNull(errorEvent);
+    }
+
+    public static IEnumerable<object[]> GetKnownSamplers(bool packageInstalled)
+    {
+        foreach (var entry in SamplerAssemblies.KnownSamplers)
+        {
+            yield return new object[] { entry.Key, entry.Value.AssemblyName, packageInstalled };
+        }
+    }
+}

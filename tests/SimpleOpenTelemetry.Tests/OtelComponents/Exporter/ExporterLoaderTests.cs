@@ -184,7 +184,7 @@ public class ExporterLoaderTests
         
         // Add options if testing Skip if otlp as reflection not used
         var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
-            ExporterAssemblies.KnownMetricsExporters[exporterType] : null;
+            ExporterAssemblies.KnownMetricExporters[exporterType] : null;
 
         var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 

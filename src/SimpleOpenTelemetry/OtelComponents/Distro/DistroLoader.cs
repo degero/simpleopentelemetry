@@ -30,6 +30,12 @@ internal class DistroLoader : IDistroLoader
         _assemblyExec = assemblyExecution;
     }
 
+    /// <summary>
+    /// Loads an opentelemetry distro
+    /// </summary>
+    /// <param name="builder"></param>
+    /// <param name="options"></param>
+    /// <returns>If a distro to load was specified in config</returns>
     public bool LoadDistro(IOpenTelemetryBuilder builder,
         SimpleOpenTelemetryOptions options)
     {
@@ -49,14 +55,18 @@ internal class DistroLoader : IDistroLoader
                 {
                     EventSource.Log.Error(eventCategory,
                         $"{typeof(DistroEnum).Name} type '{matchedDistro}' not found to initialise distro.");
-                    return false;
                 }
                 else
                 {
                     TryInvokeExtension(matchedDistro, builder as OpenTelemetryBuilder, descriptor);
-                    return true;
                 }
             }
+            else
+            {
+                EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry Distro '{distro}'. Please check your SimpleOpenTelemetry configuration.");
+            }
+            return true;
+
         }
         return false;
     }
@@ -98,12 +108,12 @@ internal class DistroLoader : IDistroLoader
             else
                 _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
 
-            EventSource.Log.Verbose(eventCategory, $"registered distro '{distroEnum}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry distro '{distroEnum}'.");
 
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register distro '{distroEnum}' via '{typeName}.{methodName}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry distro '{distroEnum}' via '{typeName}.{methodName}'.", ex.Message);
         }
     }
 

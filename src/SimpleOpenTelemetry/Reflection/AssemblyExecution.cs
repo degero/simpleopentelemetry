@@ -156,7 +156,6 @@ internal class AssemblyExecution : IAssemblyExecution
     string methodName,
     object builder)
     {
-        // TODO Chad refac this may not be needed
         var method = type.GetMethod(
             methodName,
             BindingFlags.Public | BindingFlags.Static,
