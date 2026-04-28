@@ -3,7 +3,7 @@ using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.OtelComponents.Extension;
 using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
-namespace SimpleOpenTelemetry.Builder;
+namespace SimpleOpenTelemetry;
 
 public enum SimpleOpenTelemetryExporterProtocol
 {

@@ -1,37 +1,41 @@
-using System.Diagnostics.Tracing;
-using SimpleOpenTelemetry.Diagnostics;
+using System.Reflection;
+using OpenTelemetry.Context.Propagation;
 
 namespace SimpleOpenTelemetryTests;
-internal sealed class TestEventListener : EventListener
+
+
+public static class TestHelpers
 {
-    private readonly string _eventSourceName;
-    private readonly List<EventWrittenEventArgs> _events = new();
-    private readonly object _lock = new();
-
-    public IReadOnlyList<EventWrittenEventArgs> Events
+    
+    public static IEnumerable<TextMapPropagator> GetCompositePropagators(CompositeTextMapPropagator composite)
     {
-        get { lock (_lock) return _events.ToList(); }
-    }
+        var type = composite.GetType();
+        var fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        foreach (var field in fields)
+        {
+            if (typeof(IEnumerable<TextMapPropagator>).IsAssignableFrom(field.FieldType))
+            {
+                var value = field.GetValue(composite);
+                if (value is IEnumerable<TextMapPropagator> items)
+                {
+                    return items;
+                }
+            }
+        }
 
-    public TestEventListener(
-        string eventSourceName = SimpleOpenTelemetryEventSource.EventSourceName)
-    {
-       _eventSourceName = eventSourceName;
-        // Trigger OnEventSourceCreated for already-existing sources
-        // (EventSource may already exist as a static singleton)
-        foreach (var source in EventSource.GetSources())
-            OnEventSourceCreated(source);
-    }
+        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        foreach (var property in properties)
+        {
+            if (typeof(IEnumerable<TextMapPropagator>).IsAssignableFrom(property.PropertyType))
+            {
+                var value = property.GetValue(composite);
+                if (value is IEnumerable<TextMapPropagator> items)
+                {
+                    return items;
+                }
+            }
+        }
 
-    protected override void OnEventSourceCreated(EventSource eventSource)
-    {
-        if (eventSource.Name == _eventSourceName)
-            EnableEvents(eventSource, EventLevel.Verbose);
-    }
-
-    protected override void OnEventWritten(EventWrittenEventArgs eventData)
-    {
-        lock (_lock)
-            _events.Add(eventData);
+        throw new InvalidOperationException("Unable to inspect CompositeTextMapPropagator internal propagators.");
     }
 }

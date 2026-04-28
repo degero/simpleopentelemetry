@@ -30,7 +30,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private readonly IConfiguration _configuration;
 
-    private readonly IInstrumentationLoader _openTelemetryInstrumentationLoader;
+    private readonly IInstrumentationLoader _instrumentationLoader;
 
     private readonly IExporterLoader _exporterLoader;
 
@@ -67,7 +67,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _options = simpleOpenTelemetryConfig;
         
         // TODO Chad remove config dependency
-        _openTelemetryInstrumentationLoader = new InstrumentationLoader(config, _assemblyExecution);
+        _instrumentationLoader = new InstrumentationLoader(config, _assemblyExecution);
         _resourceDetectorLoader = new ResourceDetectorLoader(config, _assemblyExecution);
         _exporterLoader = new ExporterLoader(config, _assemblyExecution);
         _samplerLoader = new SamplerLoader(_assemblyExecution);
@@ -133,7 +133,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // add in tracing instrumentation options from config
             _options.Metric.Instrumentations?.ToList().ForEach(r =>
             {
-                _openTelemetryInstrumentationLoader.AddMetricsInstrumentation(metrics, r);
+                _instrumentationLoader.AddMetricsInstrumentation(metrics, r);
             });
 
             // add in meters
@@ -163,7 +163,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
             // add in tracing instrumenation options from config
             _options.Trace.Instrumentations?.ToList().ForEach(r => {
-                _openTelemetryInstrumentationLoader.AddTracingInstrumentation(tracing, r);
+                _instrumentationLoader.AddTracingInstrumentation(tracing, r);
             });
 
             // add trace sources from config

@@ -36,7 +36,7 @@ public static class ServiceProviderExtensions
 
         // Check opentelemetry registered
         var hostedServices = services.GetServices<IHostedService>();
-        var telemetryHost = hostedServices.Count() > 0 ? hostedServices.Where(r => r.GetType().Name.Contains("TelemetryHostedService")).First() : null;
+        var telemetryHost = hostedServices.Count() > 0 ? hostedServices.First(r => r.GetType().Name.Contains("TelemetryHostedService")) : null;
         if (telemetryHost is null)
               throw new InvalidOperationException(
                 "OpenTelemetry has not been registered. " +

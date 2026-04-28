@@ -22,6 +22,7 @@ public static class HostApplicationBuilderExtensions
     public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
+        ArgumentNullException.ThrowIfNull(builder);
         return builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
     }
 }

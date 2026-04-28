@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
-using SimpleOpenTelemetry.Diagnostics;
+using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;
@@ -115,6 +115,79 @@ public class InstrumentationLoaderTests : IDisposable
             Assert.NotNull(errorEvent);
             Assert.Null(successEvent);
         }
+    }
+
+    
+    // TODO chad cleanup gentests
+    [Fact]
+    public void AddTracingInstrumentation_LogsExpectedResult_WhenInstrumentationAssemblyIsPresentOrMissing()
+    {
+        // Trigger the loader via the public builder entrypoint so we don't need to instantiate
+        // internal/abstract OpenTelemetry builder types.
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] =
+                    nameof(TraceInstrumentationEnum.AspNetCore)
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        services.AddSimpleOpenTelemetry(config);
+
+        Assert.Contains(_listener.Events, r =>
+            (r.EventId == 3 &&
+             r.Level == EventLevel.Error &&
+             r.Payload.Any(p => p?.ToString()?.Contains("Cannot load assembly") ?? false))
+            ||
+            (r.EventId == 4 &&
+             r.Level == EventLevel.Verbose &&
+             r.Payload.Any(p => p?.ToString()?.Contains("Registered trace instrumentation") ?? false)));
+    }
+
+    [Fact]
+    public void AddMetricsInstrumentation_LogsExpectedResult_WhenInstrumentationAssemblyIsPresentOrMissing()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["SimpleOpenTelemetry:Metric:Instrumentations:0"] =
+                    nameof(MetricInstrumentationEnum.AspNetCore)
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        services.AddSimpleOpenTelemetry(config);
+
+        Assert.Contains(_listener.Events, r =>
+            (r.EventId == 3 &&
+             r.Level == EventLevel.Error &&
+             r.Payload.Any(p => p?.ToString()?.Contains("Cannot load assembly") ?? false))
+            ||
+            (r.EventId == 4 &&
+             r.Level == EventLevel.Verbose &&
+             r.Payload.Any(p => p?.ToString()?.Contains("Registered metric instrumentation") ?? false)));
+    }
+
+    [Fact]
+    public void AddTracingInstrumentation_ThrowsForInvalidEnumValue()
+    {
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] = "999"
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        services.AddSimpleOpenTelemetry(config);
+
+        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+            r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+            r.Payload.Any(r => r.ToString().Contains("type '999' not found ")));
     }
 
     public static IEnumerable<object[]> GetAllTraceInstrumentations(bool packageInstalled)

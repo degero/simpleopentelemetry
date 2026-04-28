@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using OpenTelemetry.Resources;
-using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.OtelComponents.Sampler;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;

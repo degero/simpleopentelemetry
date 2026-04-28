@@ -9,6 +9,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Distro;
@@ -19,7 +20,6 @@ using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 using SimpleOpenTelemetry.OtelComponents.Propagator;
 using SimpleOpenTelemetry.OtelComponents.Resource;
 using SimpleOpenTelemetry.OtelComponents.Sampler;
-using System.IO;
 using System.Reflection;
 using Xunit;
 

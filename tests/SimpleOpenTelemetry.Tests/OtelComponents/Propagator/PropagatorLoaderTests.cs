@@ -1,12 +1,9 @@
-using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Moq;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
-using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.OtelComponents.Propagator;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;
@@ -36,7 +33,7 @@ public class PropagatorLoaderTests
         var verify = () => {
             
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
@@ -87,7 +84,7 @@ public class PropagatorLoaderTests
             target.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
@@ -200,7 +197,7 @@ public class PropagatorLoaderTests
             target.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<TraceContextPropagator>(innerPropagators[0]);
@@ -231,7 +228,7 @@ public class PropagatorLoaderTests
             target.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.Equal("OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator", innerPropagators[0].GetType().FullName);
@@ -262,7 +259,7 @@ public class PropagatorLoaderTests
             target.AddPropagators(options);
 
             var composite = Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var innerPropagators = GetCompositePropagators(composite).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators(composite).ToList();
 
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<BaggagePropagator>(innerPropagators[0]);
@@ -300,35 +297,4 @@ public class PropagatorLoaderTests
         }
     }
 
-    private static IEnumerable<TextMapPropagator> GetCompositePropagators(CompositeTextMapPropagator composite)
-    {
-        var type = composite.GetType();
-        var fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        foreach (var field in fields)
-        {
-            if (typeof(IEnumerable<TextMapPropagator>).IsAssignableFrom(field.FieldType))
-            {
-                var value = field.GetValue(composite);
-                if (value is IEnumerable<TextMapPropagator> items)
-                {
-                    return items;
-                }
-            }
-        }
-
-        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-        foreach (var property in properties)
-        {
-            if (typeof(IEnumerable<TextMapPropagator>).IsAssignableFrom(property.PropertyType))
-            {
-                var value = property.GetValue(composite);
-                if (value is IEnumerable<TextMapPropagator> items)
-                {
-                    return items;
-                }
-            }
-        }
-
-        throw new InvalidOperationException("Unable to inspect CompositeTextMapPropagator internal propagators.");
-    }
 }
