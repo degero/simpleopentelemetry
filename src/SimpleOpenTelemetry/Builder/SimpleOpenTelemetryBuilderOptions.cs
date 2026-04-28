@@ -20,7 +20,7 @@ internal class SimpleOpenTelemetryOptions
     public const string SectionName = "SimpleOpenTelemetry";
 
     /// <summary>
-    /// Use a specific distrobution - this bypasses all other settings
+    /// Use a specific distribution - this bypasses all other settings
     /// </summary>
     public string? Distro { get; set; }
 

@@ -44,9 +44,9 @@ public class AssemblyExecutionTests
     [Fact]
     public void TryLoadAssembly_ReturnsExistingLoadedAssembly()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
 
-        var assembly = sut.TryLoadAssembly("System.Runtime");
+        var assembly = target.TryLoadAssembly("System.Runtime");
 
         Assert.NotNull(assembly);
         Assert.Equal("System.Runtime", assembly!.GetName().Name);
@@ -55,9 +55,9 @@ public class AssemblyExecutionTests
     [Fact]
     public void TryLoadAssembly_ReturnsNullWhenAssemblyFileMissing()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
 
-        var assembly = sut.TryLoadAssembly("Definitely.Not.A.Real.Assembly.For.Tests");
+        var assembly = target.TryLoadAssembly("Definitely.Not.A.Real.Assembly.For.Tests");
 
         Assert.Null(assembly);
     }
@@ -65,10 +65,10 @@ public class AssemblyExecutionTests
     [Fact]
     public void GetAssembly_ThrowsWhenAssemblyCannotBeLoaded()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
 
         var ex = Assert.Throws<Exception>(() =>
-            sut.GetAssembly("Definitely.Not.A.Real.Assembly.For.Tests"));
+            target.GetAssembly("Definitely.Not.A.Real.Assembly.For.Tests"));
 
         Assert.Contains("Cannot load assembly", ex.Message);
     }
@@ -76,8 +76,8 @@ public class AssemblyExecutionTests
     [Fact]
     public void FindParameterlessMethod_ReturnsMatchingMethod()
     {
-        var sut = new AssemblyExecution();
-        var method = sut.FindParameterlessMethod(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
+        var target = new AssemblyExecution();
+        var method = target.FindParameterlessMethod(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
 
         Assert.NotNull(method);
         Assert.Equal("AddFake", method!.Name);
@@ -86,8 +86,8 @@ public class AssemblyExecutionTests
     [Fact]
     public void FindActionOverload_ReturnsMatchingMethod()
     {
-        var sut = new AssemblyExecution();
-        var method = sut.FindActionOverload(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
+        var target = new AssemblyExecution();
+        var method = target.FindActionOverload(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
 
         Assert.NotNull(method);
         Assert.Equal("AddFake", method!.Name);
@@ -97,10 +97,10 @@ public class AssemblyExecutionTests
     [Fact]
     public void InvokeParameterless_InvokesMatchingMethod()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
         var builder = new FakeBuilder();
 
-        var result = sut.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake", builder);
+        var result = target.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake", builder);
 
         Assert.Same(builder, result);
         Assert.True(builder.Called);
@@ -109,11 +109,11 @@ public class AssemblyExecutionTests
     [Fact]
     public void InvokeParameterless_ThrowsWhenMethodNotFound()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
         var builder = new FakeBuilder();
 
         var ex = Assert.Throws<InvalidOperationException>(() =>
-            sut.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "MissingMethod", builder));
+            target.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "MissingMethod", builder));
 
         Assert.Contains("No parameterless 'MissingMethod' method", ex.Message);
     }
@@ -121,7 +121,7 @@ public class AssemblyExecutionTests
     [Fact]
     public void BuildConfigureAction_BindsValuesFromSection()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -131,7 +131,7 @@ public class AssemblyExecutionTests
             .Build();
 
         var section = config.GetSection("Fake");
-        var action = sut.BuildConfigureAction(typeof(FakeOptions), section);
+        var action = target.BuildConfigureAction(typeof(FakeOptions), section);
 
         var opts = new FakeOptions();
         ((Action<FakeOptions>)action)(opts);
@@ -143,9 +143,9 @@ public class AssemblyExecutionTests
     [Fact]
     public void InvokeWithAction_InvokesActionOverloadUsingBoundConfig()
     {
-        var sut = new AssemblyExecution();
+        var target = new AssemblyExecution();
         var builder = new FakeBuilder();
-        var actionMethod = sut.FindActionOverload(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
+        var actionMethod = target.FindActionOverload(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake");
 
         Assert.NotNull(actionMethod);
 
@@ -157,7 +157,7 @@ public class AssemblyExecutionTests
             })
             .Build();
 
-        var result = sut.InvokeWithAction(actionMethod!, builder, config.GetSection("Fake"));
+        var result = target.InvokeWithAction(actionMethod!, builder, config.GetSection("Fake"));
 
         Assert.Same(builder, result);
         Assert.Equal("configured", builder.Value);

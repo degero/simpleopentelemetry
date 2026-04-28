@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -16,8 +17,7 @@ internal class SamplerLoader : ISamplerLoader
 
     private readonly IAssemblyExecution _assemblyExec;
 
-    // Available 3rd parter extensions
-    internal readonly Array _Samplers = Enum.GetValues<SamplerEnum>();
+    // Available 3rd party samplers
     internal readonly Dictionary<SamplerEnum, SamplerDescriptor> _descriptors = SamplerAssemblies.KnownSamplers;
 
     /// <summary>
@@ -45,30 +45,22 @@ internal class SamplerLoader : ISamplerLoader
 
         if (!string.IsNullOrWhiteSpace(item))
         {
-            // Determine the valid extensions for the given builder type
-            var validSamplers = _Samplers.Cast<object>()
-                .Select(e => e.ToString())
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
             try
             {
-                if (validSamplers.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                if (LoaderEnumHelper.TryParseKnown<SamplerEnum>(item, out var matchedSampler))
                 {
-                    var matchedSampler = (SamplerEnum)Enum.Parse(typeof(SamplerEnum), item, ignoreCase: true);
-
                     if (!_descriptors.TryGetValue(matchedSampler, out var descriptor))
                         throw new InvalidOperationException(
-                            $"{typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialise sampler");
+                            $"{typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialize sampler");
 
                     AddSampler(builder, resource, descriptor);
 
-                    EventSource.Log.Verbose(eventCategory, $"registered sampler '{matchedSampler}'.");
+                    EventSource.Log.Verbose(eventCategory, $"Registered sampler '{matchedSampler}'.");
 
                 }
                 else
                 {
-                    // Throw an exception on an unknown exporter type
-                    EventSource.Log.Error(eventCategory, $"Unsupported otel sampler '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                    EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry sampler '{item}'. Please check your SimpleOpenTelemetry configuration.");
                 }
             }
             catch (Exception ex)

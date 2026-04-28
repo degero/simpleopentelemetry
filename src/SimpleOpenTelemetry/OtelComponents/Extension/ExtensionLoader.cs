@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.OtelComponents.Extension;
 using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
@@ -91,39 +92,23 @@ internal class ExtensionLoader : IExtensionLoader
             return;
         }
 
-        var (assemblyName, typeName, methodName, configurationSection) = descriptor!;
+        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired ) = descriptor!;
       
         try
         {
            
-            var assembly = _assemblyExec.GetAssembly(assemblyName);
-            var builderType = typeof(TBuilder);
-            var builderTypeName = builder.GetType().Name;
+            var section = optionsClassName is not null ? _configuration.GetSection(optionsClassName) : null;
+            ReflectiveLoaderExecutor.InvokeBuilderExtension(
+                _assemblyExec,
+                builder,
+                assemblyName,
+                typeName,
+                methodName,
+                section,
+                optionsRequired ? optionsClassName : null,
+                "extension");
 
-            var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
-
-            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
-            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
-
-            // attempt Action<TOptions> path only when section exists in config
-            if (descriptor.ConfigurationSection is not null &&
-                actionMethod is not null &&
-                parameterlessMethod is null)
-            {
-                throw new InvalidOperationException( // TODO chad add tests around these scenarios
-                    $"Failed registration {builderTypeName} extension: '{methodName}'. " +
-                    $"A configuration section '{configurationSection}' is required but not found in config file.");
-            }
-
-            var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
-
-            if (section is not null && section.Exists())
-                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
-            else
-                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
-
-            EventSource.Log.Verbose(eventCategory, $"registered {signal} extension '{extension}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered {signal} extension '{extension}'.");
 
         }
         catch (Exception ex)

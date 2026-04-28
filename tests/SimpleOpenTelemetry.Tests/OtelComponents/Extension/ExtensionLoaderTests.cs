@@ -11,10 +11,21 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Extension;
 
-public class ExtensionLoaderTests
+public class ExtensionLoaderTests: IDisposable
 {
+    private readonly TestEventListener _listener;
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
     private readonly IConfiguration _configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
+
+    public ExtensionLoaderTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
 
     [Theory]
     [MemberData(nameof(GetAllTraceExtensions), true)]
@@ -33,19 +44,19 @@ public class ExtensionLoaderTests
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
-        var sut = new ExtensionLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        
+        var target = new ExtensionLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
 
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddOpenTelemetry().WithTracing(t =>
         {
-            sut.AddTraceExtension(t, extension);
+            target.AddTraceExtension(t, extension);
         });
 
-        var successEvent = listener.Events.FirstOrDefault(e =>
+        var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"registered trace extension '{extension}'") ?? false));
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+            e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace extension '{extension}'") ?? false));
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register trace extension '{extension}'") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
@@ -65,16 +76,16 @@ public class ExtensionLoaderTests
     [Fact]
     public void AddMetricsExtension_WithNoneEnum_LogsMissingDescriptorError()
     {
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
-        var sut = new ExtensionLoader(_configuration, _assemblyExec);
+        
+        var target = new ExtensionLoader(_configuration, _assemblyExec);
 
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddOpenTelemetry().WithMetrics(m =>
         {
-            sut.AddMetricsExtension(m, MetricExtensionsEnum.None);
+            target.AddMetricsExtension(m, MetricExtensionsEnum.None);
         });
 
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("MetricExtensionsEnum type 'None' not found to initialise metric extension.") ?? false));
 
@@ -84,16 +95,16 @@ public class ExtensionLoaderTests
     [Fact]
     public void AddLogExtension_WithNoneEnum_LogsMissingDescriptorError()
     {
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
-        var sut = new ExtensionLoader(_configuration, _assemblyExec);
+        
+        var target = new ExtensionLoader(_configuration, _assemblyExec);
 
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddOpenTelemetry().WithLogging(l =>
         {
-            sut.AddLogExtension(l, LogExtensionsEnum.None);
+            target.AddLogExtension(l, LogExtensionsEnum.None);
         });
 
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("LogExtensionsEnum type 'None' not found to initialise log extension.") ?? false));
 

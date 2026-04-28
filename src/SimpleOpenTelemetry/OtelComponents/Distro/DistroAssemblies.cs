@@ -1,11 +1,13 @@
 
 namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
+// TODO normalise these and update InvokeBuilderExtension()
 internal record DistroDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
-     string? ConfigurationSection
+     string? ConfigurationSection,
+     bool OptionsRequired = false
 );
 
 internal static class DistroAssemblies

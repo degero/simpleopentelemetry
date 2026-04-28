@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -15,8 +16,6 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
 
-    // Available 3rd parter detectors
-    internal readonly Array _resourceExtensions = Enum.GetValues<ResourceDetectorEnum>();
     internal readonly Dictionary<ResourceDetectorEnum, ResourceDetectorDescriptor> _descriptors = ResourceDetectorAssemblies.KnownResourceDetectors;
 
     /// <summary>
@@ -43,36 +42,28 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
 
         if (detectors is not null && detectors.Any())
         {
-            // Determine the valid detectors for the given builder type
-            var validResourceExtensions = _resourceExtensions.Cast<object>()
-                .Select(e => e.ToString())
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
             for (var i = 0; i < detectors.Count(); i++)
             {
                 var item = detectors[i];
 
                 try
                 {
-                    if (validResourceExtensions.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                    if (LoaderEnumHelper.TryParseKnown<ResourceDetectorEnum>(item, out var matchedResourceExtension))
                     {
-                        var matchedResourceExtension = (ResourceDetectorEnum)Enum.Parse(typeof(ResourceDetectorEnum), item, ignoreCase: true);
-
                         if (!_descriptors.TryGetValue(matchedResourceExtension, out var descriptor))
                             throw new InvalidOperationException(
-                                $"{typeof(ResourceDetectorEnum).Name} type '{matchedResourceExtension}' not found to initialise exporter.");
+                                $"{typeof(ResourceDetectorEnum).Name} type '{matchedResourceExtension}' not found to initialise resource detector.");
 
                         AddResourceDetector(matchedResourceExtension, builder, descriptor);
                     }
                     else
                     {
-                        // Throw an exception on an unknown exporter type
                         throw new InvalidOperationException($"Unsupported Resource Detector type '{item}'. Please check your SimpleOpenTelemetry configuration.");
                     }
                 }
                 catch(Exception ex)
                 {
-                    EventSource.Log.Error(eventCategory, "Failed to add otel resource detector '{item}'.", ex.Message);
+                    EventSource.Log.Error(eventCategory, $"Failed to add OpenTelemetry resource detector '{item}'.", ex.Message);
                 }
             }
         }
@@ -84,9 +75,8 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
         ResourceDetectorDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodName, configSection) = descriptor;
+        var (assemblyName, typeName, methodNames, confgurationSection) = descriptor;
         var builderType = typeof(ResourceBuilder);
-        var builderTypeName = builderType.GetType().Name;
 
         try
         {
@@ -94,7 +84,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
             var type = assembly.GetType(typeName)
                 ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
-            descriptor.MethodNames.ToList().ForEach(methodName =>
+            methodNames.ToList().ForEach(methodName =>
             {
                 var parameterlessMethod = _assemblyExec.FindParameterlessMethodWithAllDefaultValues(type, builderType, methodName);
                 var actionMethod = _assemblyExec.FindActionOverload(type, builderType, methodName);
@@ -107,12 +97,12 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
                     _assemblyExec.InvokeParameterlessOrDefaultedParameters(parameterlessMethod, builderType, builder);
             });
 
-            EventSource.Log.Verbose(eventCategory, $"Registered resource detector '{resourceDetector}' with registration methods '{string.Join(',', descriptor.MethodNames)}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered resource detector '{resourceDetector}' with registration methods '{string.Join(',', methodNames)}'.");
 
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register resource detector '{resourceDetector}' via '{typeName}.{methodName}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register resource detector '{resourceDetector}' via '{typeName}.{string.Join(',', methodNames)}'.", ex.Message);
         }
     }
 

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -14,7 +15,6 @@ internal class DistroLoader : IDistroLoader
     private readonly string eventCategory = nameof(DistroLoader);
     private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
-    private readonly Array _distros = Enum.GetValues<DistroEnum>();
 
     private readonly Dictionary<DistroEnum, DistroDescriptor> _descriptors = DistroAssemblies.KnownDistros;
 
@@ -43,14 +43,8 @@ internal class DistroLoader : IDistroLoader
 
         if (!string.IsNullOrWhiteSpace(distro))
         {
-            var validDistros = _distros.Cast<object>()
-                .Select(e => e.ToString())
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-            if (validDistros.Cast<object>().Any(e => string.Equals(e.ToString(), distro, StringComparison.OrdinalIgnoreCase)))
+            if (LoaderEnumHelper.TryParseKnown<DistroEnum>(distro, out var matchedDistro))
             {
-                var matchedDistro = (DistroEnum) Enum.Parse(typeof(DistroEnum), distro, ignoreCase: true);
-
                 if (!_descriptors.TryGetValue(matchedDistro, out var descriptor))
                 {
                     EventSource.Log.Error(eventCategory,
@@ -77,36 +71,23 @@ internal class DistroLoader : IDistroLoader
         DistroDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodName, configurationSection) = descriptor;
+        // TODO cover / test options required scenario
+        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired ) = descriptor;
 
         try
         {
-            var assembly = _assemblyExec.GetAssembly(assemblyName);
-            var builderType = typeof(OpenTelemetryBuilder);
-            var builderTypeName = builder.GetType().Name;
-
-            var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
-
-            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
-            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
-
-            // attempt Action<TOptions> path only when section exists in config
-            if (descriptor.ConfigurationSection is not null &&
-                actionMethod is not null &&
-                parameterlessMethod is null)
-            {
-                throw new InvalidOperationException( // TODO chad add tests around these scenarios
-                    $"Failed registration {builderTypeName} distro: '{methodName}'. " +
-                    $"A configuration section '{configurationSection}' is required but not found in config file.");
-            }
-
-            var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
-
-            if (section is not null && section.Exists())
-                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
-            else
-                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
+            var section = optionsClassName is not null
+                ? _configuration.GetSection(optionsClassName)
+                : null;
+            ReflectiveLoaderExecutor.InvokeBuilderExtension(
+                _assemblyExec,
+                builder,
+                assemblyName,
+                typeName,
+                methodName,
+                section,
+                optionsClassName,
+                "distro");
 
             EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry distro '{distroEnum}'.");
 

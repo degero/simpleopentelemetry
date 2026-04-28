@@ -1,4 +1,5 @@
 using System.Diagnostics.Tracing;
+using SimpleOpenTelemetry.Diagnostics;
 
 namespace SimpleOpenTelemetryTests;
 internal sealed class TestEventListener : EventListener
@@ -12,7 +13,8 @@ internal sealed class TestEventListener : EventListener
         get { lock (_lock) return _events.ToList(); }
     }
 
-    public TestEventListener(string eventSourceName)
+    public TestEventListener(
+        string eventSourceName = SimpleOpenTelemetryEventSource.EventSourceName)
     {
        _eventSourceName = eventSourceName;
         // Trigger OnEventSourceCreated for already-existing sources

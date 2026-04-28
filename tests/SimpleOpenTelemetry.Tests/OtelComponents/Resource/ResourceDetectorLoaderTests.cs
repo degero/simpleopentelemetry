@@ -10,8 +10,9 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Resource;
 
-public class ResourceDetectorLoaderTests
+public class ResourceDetectorLoaderTests : IDisposable
 {
+    private readonly TestEventListener _listener;
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
     private readonly IConfiguration _configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
 
@@ -24,6 +25,16 @@ public class ResourceDetectorLoaderTests
             }
         };
     
+    public ResourceDetectorLoaderTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
+
     [Theory]
     [MemberData(nameof(GetAllResourceDetectors), true)]
     [MemberData(nameof(GetAllResourceDetectors), false)]
@@ -41,17 +52,17 @@ public class ResourceDetectorLoaderTests
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var loader = new ResourceDetectorLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var options = BuildOptionsWithDetectors(detector.ToString());
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
         loader.AddResourceDetectors(resourceBuilder, options);
 
-        var successEvent = listener.Events
+        var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
-        var errorEvent = listener.Events
+        var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register resource detector '{detector}'") ?? false) &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
@@ -71,14 +82,14 @@ public class ResourceDetectorLoaderTests
     [Fact]
     public void AddResourceDetectors_WithUnsupportedDetector_LogsUnsupportedDetectorError()
     {
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors("NonExistentDetector");
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
         loader.AddResourceDetectors(resourceBuilder, options);
 
-        var errorEvent = listener.Events
+        var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Unsupported Resource Detector type 'NonExistentDetector'") ?? false));
 

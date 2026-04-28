@@ -4,7 +4,7 @@ internal record InstrumentationExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
-     string? ConfigurationSection
+     string? ConfigurationSection // changes this to be the options classname
 );
 
 internal static class InstrumentationAssemblies

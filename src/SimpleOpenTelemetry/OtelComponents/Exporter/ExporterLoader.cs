@@ -5,6 +5,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -23,11 +24,6 @@ internal class ExporterLoader : IExporterLoader
     private readonly IAssemblyExecution _assemblyExec;
 
     private readonly string _exportersTopLevelConfigSectionName = "ExporterOptions";
-
-    // Available 3rd parter exporters
-    internal readonly Array _traceExporters = Enum.GetValues<TraceExporterEnum>();
-    internal readonly Array _metricExporters = Enum.GetValues<MetricExporterEnum>();
-    internal readonly Array _logExporters = Enum.GetValues<LogExporterEnum>();
 
     /// <summary>
     /// Initializes a new instance of the ExporterLoader class.
@@ -53,7 +49,7 @@ internal class ExporterLoader : IExporterLoader
     public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Metric.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
-            _metricExporters, ExporterAssemblies.KnownMetricExporters);
+            ExporterAssemblies.KnownMetricExporters);
 
     /// <summary>
     /// Configures trace exporters on the provided TracerProviderBuilder.
@@ -67,7 +63,7 @@ internal class ExporterLoader : IExporterLoader
     public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Trace.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
-            _traceExporters, ExporterAssemblies.KnownTraceExporters);
+            ExporterAssemblies.KnownTraceExporters);
 
     /// <summary>
     /// Configures log exporters on the provided LoggerProviderBuilder.
@@ -81,7 +77,7 @@ internal class ExporterLoader : IExporterLoader
     public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions config)
         => ConfigureExporters(builder, config.Log.Exporters,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg),
-            _logExporters, ExporterAssemblies.KnownLogExporters);
+            ExporterAssemblies.KnownLogExporters);
 
     private IConfiguration? GetCustomExporterConfig<TEnum>(
         SimpleOpenTelemetryExporterConfig<TEnum> config
@@ -114,24 +110,18 @@ internal class ExporterLoader : IExporterLoader
     private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder,
         IList<SimpleOpenTelemetryExporterConfig<TEnum>> exporters,
         Action<string, Action<OtlpExporterOptions>> addOtlp,
-        Array validExporterTypes,
         Dictionary<TEnum, ExporterExtensionDescriptor> descriptors)
+        where TEnum : struct, Enum
     {
-        // Determine the valid exporters for the given builder type
-        var validExporters = validExporterTypes.Cast<object>()
-            .Select(e => e.ToString())
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        
         var signal = Util.GetSignalName<TBuilder>();
 
         for (var i = 0; i < exporters.Count; i++)
         {
             var item = exporters[i];
+            var rawType = item.Type.ToString();
 
-            if (validExporters.Cast<object>().Any(e => string.Equals(e.ToString(), item.Type.ToString(), StringComparison.OrdinalIgnoreCase)))
+            if (LoaderEnumHelper.TryParseKnown<TEnum>(rawType, out var matchedExporter))
             {
-                var matchedExporter = (TEnum)Enum.Parse(typeof(TEnum), item.Type.ToString(), ignoreCase: true);
-
                 if (string.Equals(nameof(TraceExporterEnum.Otlp), matchedExporter.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
                     // Dont use reflection as we have this built in the OpenTelemetry lib
@@ -151,7 +141,7 @@ internal class ExporterLoader : IExporterLoader
             else
             {
                 // Throw an exception on an unknown exporter type
-                EventSource.Log.Error(eventCategory, $"Unsupported otel {signal} exporter type '{item.Type}'. Please check your SimpleOpenTelemetry configuration.");
+                EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry {signal} exporter type '{item.Type}'. Please check your SimpleOpenTelemetry configuration.");
             }
         }
     }
@@ -182,30 +172,15 @@ internal class ExporterLoader : IExporterLoader
 
         try
         {
-            var assembly = _assemblyExec.GetAssembly(assemblyName);
-            var builderType = typeof(TBuilder);
-            var builderTypeName = builder.GetType().Name;
-
-            var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
-
-            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
-            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
-
-            // attempt Action<TOptions> path only when section exists in config
-            if (descriptor.OptionsClassName is not null &&
-                parameterlessMethod is null &&
-                section is null)
-            {
-                throw new InvalidOperationException(
-                    $"Failed registration {builderTypeName} exporter: '{methodName}'. " +
-                    $"A 'options' section '{optionsClassName}' is required but not found in config file.");
-            }
-
-            if (section is not null)
-                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
-            else
-                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
+            ReflectiveLoaderExecutor.InvokeBuilderExtension(
+                _assemblyExec,
+                builder,
+                assemblyName,
+                typeName,
+                methodName,
+                section,
+                optionsClassName,
+                "exporter");
 
             EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{exporterEnum}'.");
 

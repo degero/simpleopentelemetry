@@ -4,7 +4,8 @@ internal record ExtensionDescriptor(
      string AssemblyName,
      string TypeName,
      string MethodName,
-     string? ConfigurationSection
+     string? OptionsClassname,
+     bool OptionsRequired = false
 );
 
 internal static class ExtensionAssemblies

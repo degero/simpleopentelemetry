@@ -5,7 +5,7 @@ internal record ExporterExtensionDescriptor(
      string TypeName,
      string MethodName,
      string? OptionsClassName,
-     bool optionsRequired = false
+     bool OptionsRequired = false
 );
 
 /// <summary>

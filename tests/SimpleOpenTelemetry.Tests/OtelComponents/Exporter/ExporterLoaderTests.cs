@@ -16,9 +16,20 @@ using Xunit;
 namespace SimpleOpenTelemetryTests.OtelComponents.Exporter;
 
 [Collection("ExporterLoaderTests")]
-public class ExporterLoaderTests
+public class ExporterLoaderTests : IDisposable
 {
+    private readonly TestEventListener _listener;
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
+
+    public ExporterLoaderTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
 
     [Fact]
     public void ConfigureExporters_WithOtlpExporter_AppliesDefaultOptionsCorrectly()
@@ -121,7 +132,7 @@ public class ExporterLoaderTests
         bool createOptionsEntry)
     {
         // Arrange
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
 
         // Add options if testing Skip if otlp as reflection not used
         var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
@@ -129,7 +140,7 @@ public class ExporterLoaderTests
 
         var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
-            (descriptor.optionsRequired || createOptionsEntry);
+            (descriptor.OptionsRequired || createOptionsEntry);
        
         IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
@@ -159,11 +170,11 @@ public class ExporterLoaderTests
         });
 
         // Assert
-        var registeredSuccessEvent = listener.Events
+        var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                     e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false));
 
-        var errorEvents = listener.Events
+        var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
             .ToList();
 
@@ -180,7 +191,7 @@ public class ExporterLoaderTests
         bool createOptionsEntry)
     {
         // Arrange
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         
         // Add options if testing Skip if otlp as reflection not used
         var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
@@ -188,7 +199,7 @@ public class ExporterLoaderTests
 
         var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
-            (descriptor.optionsRequired || createOptionsEntry);
+            (descriptor.OptionsRequired || createOptionsEntry);
 
         IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
@@ -218,11 +229,11 @@ public class ExporterLoaderTests
         });
 
         // Assert
-        var registeredSuccessEvent = listener.Events
+        var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                     e.Payload.Any(p => p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false));
 
-        var errorEvents = listener.Events
+        var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
             .ToList();
 
@@ -237,7 +248,7 @@ public class ExporterLoaderTests
         bool createOptionsEntry)
     {
         // Arrange
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         
         // Add options if testing Skip if otlp as reflection not used
         var descriptor = !string.Equals(nameof(TraceExporterEnum.Otlp), exporterType.ToString(), StringComparison.OrdinalIgnoreCase) ? 
@@ -245,7 +256,7 @@ public class ExporterLoaderTests
 
         var setOptions = descriptor is not null &&
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
-            (descriptor.optionsRequired || createOptionsEntry);
+            (descriptor.OptionsRequired || createOptionsEntry);
 
         IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
 
@@ -275,11 +286,11 @@ public class ExporterLoaderTests
         });
 
         // Assert
-        var registeredSuccessEvent = listener.Events
+        var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                     e.Payload.Any(p => p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false));
 
-        var errorEvents = listener.Events
+        var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
             .ToList();
 
@@ -329,7 +340,7 @@ public class ExporterLoaderTests
     public void ConfigureExporters_AzureExporter_SuccessfullyRegisters(string testName, string optionsJson, int registerEvents, bool failure)
     {
         // Arrange
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var exporterType = LogExporterEnum.Azure;
         var builder = Host.CreateApplicationBuilder();
         var (target, config) = InitExporter(JsonSerializer.Deserialize<Dictionary<string, string?>>(optionsJson)!);
@@ -352,13 +363,13 @@ public class ExporterLoaderTests
         var app = builder.Build();
         
         // Assert
-        var registeredSuccessEvents = listener.Events
+        var registeredSuccessEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Verbose &&
                     e.Payload.Any(p => (p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false) ||
                     (p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ||
                     (p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false)));
 
-        var errorEvents = listener.Events
+        var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
             .ToList();
 

@@ -10,11 +10,21 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Instrumentation;
 
-public class InstrumentationLoaderTests
+public class InstrumentationLoaderTests : IDisposable
 {
+    private readonly TestEventListener _listener;
     private readonly AssemblyExecution _assemblyExec = new AssemblyExecution();
     private readonly IConfiguration _configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
 
+    public InstrumentationLoaderTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
     [Theory]
     [MemberData(nameof(GetAllTraceInstrumentations), true)]
     [MemberData(nameof(GetAllTraceInstrumentations), false)]
@@ -32,19 +42,19 @@ public class InstrumentationLoaderTests
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
-        var sut = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        
+        var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
 
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddOpenTelemetry().WithTracing(t =>
         {
-            sut.AddTracingInstrumentation(t, instrumentation);
+            target.AddTracingInstrumentation(t, instrumentation);
         });
 
-        var successEvent = listener.Events.FirstOrDefault(e =>
+        var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"registered trace instrumentation '{instrumentation}'") ?? false));
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+            e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace instrumentation '{instrumentation}'") ?? false));
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register trace instrumentation '{instrumentation}'") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
@@ -78,19 +88,19 @@ public class InstrumentationLoaderTests
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
-        var sut = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        
+        var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
 
         var builder = Host.CreateApplicationBuilder();
         builder.Services.AddOpenTelemetry().WithMetrics(m =>
         {
-            sut.AddMetricsInstrumentation(m, instrumentation);
+            target.AddMetricsInstrumentation(m, instrumentation);
         });
 
-        var successEvent = listener.Events.FirstOrDefault(e =>
+        var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"registered metric instrumentation '{instrumentation}'") ?? false));
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+            e.Payload.Any(p => p?.ToString()?.Contains($"Registered metric instrumentation '{instrumentation}'") ?? false));
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register metric instrumentation '{instrumentation}'") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));

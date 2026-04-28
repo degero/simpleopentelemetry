@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -79,34 +80,18 @@ internal class InstrumentationLoader : IInstrumentationLoader
         try
         {
             
-            var assembly = _assemblyExec.GetAssembly(assemblyName);
-            var builderType = typeof(TBuilder);
-            var builderTypeName = builder.GetType().Name;
+            var section = configurationSection is not null ? _configuration.GetSection(configurationSection) : null;
+            ReflectiveLoaderExecutor.InvokeBuilderExtension(
+                _assemblyExec,
+                builder,
+                assemblyName,
+                typeName,
+                methodName,
+                section,
+                configurationSection,
+                "instrumentation");
 
-            var type = assembly.GetType(typeName)
-                ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
-
-            var parameterlessMethod = _assemblyExec.FindParameterlessMethod(type, builderType, descriptor.MethodName);
-            var actionMethod = _assemblyExec.FindActionOverload(type, builderType, descriptor.MethodName);
-
-            // attempt Action<TOptions> path only when section exists in config
-            if (descriptor.ConfigurationSection is not null &&
-                actionMethod is not null &&
-                parameterlessMethod is null)
-            {
-                throw new InvalidOperationException( // TODO chad add tests around these scenarios
-                    $"Failed registration {builderTypeName} instrumentation: '{methodName}'. " +
-                    $"A configuration section '{configurationSection}' is required but not found in config file.");
-            }
-
-            var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
-
-            if (section is not null && section.Exists())
-                _assemblyExec.InvokeWithAction(actionMethod, builder, section);
-            else
-                _assemblyExec.InvokeParameterless(type, builderType, methodName, builder);
-
-            EventSource.Log.Verbose(eventCategory, $"registered {signal} instrumentation '{instrumentation}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered {signal} instrumentation '{instrumentation}'.");
 
         }
         catch (Exception ex)

@@ -1,6 +1,7 @@
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -11,9 +12,6 @@ internal class PropagatorLoader : IPropagatorLoader
     private readonly string eventCategory = nameof(PropagatorLoader);
 
     private readonly IAssemblyExecution _assemblyExec;
-
-    // Available 3rd parter propagators
-    private readonly Array _Propagators = Enum.GetValues<PropagatorEnum>();
 
     private readonly Dictionary<PropagatorEnum, PropagatorDescriptor> _descriptors = PropagatorAssemblies.KnownPropagators;
 
@@ -53,21 +51,14 @@ internal class PropagatorLoader : IPropagatorLoader
                 return;
             }
 
-            // Determine the valid propagators for the given builder type
-            var validPropagators = _Propagators.Cast<object>()
-                .Select(e => e.ToString())
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
             var propagatorsList = new List<TextMapPropagator>();
 
             for (var i = 0; i < propagators.Count(); i++)
             {
                 var item = propagators[i];
 
-                if (validPropagators.Cast<object>().Any(e => string.Equals(e.ToString(), item, StringComparison.OrdinalIgnoreCase)))
+                if (LoaderEnumHelper.TryParseKnown<PropagatorEnum>(item, out var matchedPropagator))
                 {
-                    var matchedPropagator = (PropagatorEnum)Enum.Parse(typeof(PropagatorEnum), item, ignoreCase: true);
-
                     if (!_descriptors.TryGetValue(matchedPropagator , out var descriptor))
                         throw new InvalidOperationException(
                             $"{typeof(PropagatorEnum).Name} type '{matchedPropagator}' not found to initialise propagator.");
@@ -80,14 +71,13 @@ internal class PropagatorLoader : IPropagatorLoader
                 }
                 else 
                 {
-                    // Throw an exception on an unknown exporter type
-                    throw new InvalidOperationException($"Unsupported otel propagator '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                    throw new InvalidOperationException($"Unsupported OpenTelemetry propagator '{item}'. Please check your SimpleOpenTelemetry configuration.");
                 }
             }
 
             // Register propagator
             Sdk.SetDefaultTextMapPropagator(propagatorsList.Count > 1 ? new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0]);
-            EventSource.Log.Verbose(eventCategory, $"registered propagator(s) '{string.Join(", ", propagators)}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered propagator(s) '{string.Join(", ", propagators)}'.");
         }
         catch (Exception ex)
         {

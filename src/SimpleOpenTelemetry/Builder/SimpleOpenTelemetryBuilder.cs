@@ -121,7 +121,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureMetrics()
     {
-        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Metric)))
+        if (!HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Metric)))
             return;
 
         _otelBuilder.WithMetrics(metrics =>
@@ -149,7 +149,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureTracing(ResourceBuilder? resourceBuilder)
     {
-        var shouldConfigureTracing = SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace));
+        var shouldConfigureTracing = HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace));
 
         if (!shouldConfigureTracing)
             return;
@@ -182,7 +182,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureLogging()
     {
-        if (!SettingsHelper.HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Log)))
+        if (!HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Log)))
             return;
 
         _otelBuilder.WithLogging(
@@ -207,4 +207,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
            
         );
     }
+
+    private bool HasSimpleOpenTelemetrySection(IConfiguration configuration, string sectionName)
+    {
+        var simpleOtelSection = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
+        return simpleOtelSection.GetSection(sectionName).Exists();
+    }
+
 }

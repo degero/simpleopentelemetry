@@ -13,9 +13,21 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Distro;
 
-public class DistroLoaderTests
+public class DistroLoaderTests : IDisposable
 {
-    private AssemblyExecution _assemblyExec = new AssemblyExecution(); 
+    private readonly TestEventListener _listener;
+
+    private readonly AssemblyExecution _assemblyExec = new AssemblyExecution(); 
+
+    public DistroLoaderTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
 
     [Theory]
     [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), "Azure.Monitor.OpenTelemetry.AspNetCore", true)]
@@ -31,9 +43,9 @@ public class DistroLoaderTests
             mockAssemblyExec.Setup(r => r.GetAssembly(assemblyName)).Throws(new Exception($"Cannot load assembly '{assemblyName}'. " +
                     $"Ensure you have added the required nuget package to your project."));
 
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var sut = new DistroLoader(configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var target = new DistroLoader(configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var options = new SimpleOpenTelemetryOptions
         {
             Distro = distroName
@@ -42,15 +54,15 @@ public class DistroLoaderTests
         var hostBuilder = Host.CreateApplicationBuilder();
         var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
 
-        var foundConfig = sut.LoadDistro(otelBuilder, options);
+        var foundConfig = target.LoadDistro(otelBuilder, options);
 
         Assert.True(foundConfig);
 
-        var successEvent = listener.Events.FirstOrDefault(e =>
+        var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry distro '{options.Distro}'") ?? false));
         
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) && 
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry distro '{options.Distro}'") ?? false));
@@ -70,9 +82,9 @@ public class DistroLoaderTests
     [Fact]
     public void LoadDistro_WithUnsupportedDistro_LogsNoRegistrationEvents_AndReturnsTrue()
     {
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var sut = new DistroLoader(configuration, _assemblyExec);
+        var target = new DistroLoader(configuration, _assemblyExec);
         var options = new SimpleOpenTelemetryOptions
         {
             Distro = "NotARealDistro"
@@ -81,15 +93,15 @@ public class DistroLoaderTests
         var hostBuilder = Host.CreateApplicationBuilder();
         var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
 
-        var foundConfig = sut.LoadDistro(otelBuilder, options);
+        var foundConfig = target.LoadDistro(otelBuilder, options);
 
         Assert.True(foundConfig);
 
-        var successEvent = listener.Events.FirstOrDefault(e =>
+        var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry distro '{options.Distro}'") ?? false));
         
-        var errorEvent = listener.Events.FirstOrDefault(e =>
+        var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains( $"Unsupported OpenTelemetry Distro '{options.Distro}'. Please check your SimpleOpenTelemetry configuration.") ?? false));
  
@@ -101,9 +113,9 @@ public class DistroLoaderTests
     [Fact]
     public void LoadDistro_WithNoDistroSetting_ReturnsFalse()
     {
-        using var listener = new TestEventListener(SimpleOpenTelemetryEventSource.EventSourceName);
+        
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var sut = new DistroLoader(configuration, _assemblyExec);
+        var target = new DistroLoader(configuration, _assemblyExec);
         var options = new SimpleOpenTelemetryOptions
         {
         };
@@ -111,7 +123,7 @@ public class DistroLoaderTests
         var hostBuilder = Host.CreateApplicationBuilder();
         var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
 
-        var foundConfig = sut.LoadDistro(otelBuilder, options);
+        var foundConfig = target.LoadDistro(otelBuilder, options);
 
         Assert.False(foundConfig);
     }

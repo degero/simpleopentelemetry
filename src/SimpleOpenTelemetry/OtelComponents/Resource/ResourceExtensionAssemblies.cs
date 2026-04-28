@@ -72,7 +72,7 @@ internal static class ResourceDetectorAssemblies
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
-                "SimpleOpenTelemetry:ResourceDetectorConfig:AWS")
+                "SimpleOpenTelemetry:ResourceDetectorConfig:AWS") // TODO look at if this can be set as classname instead and just use convention for config location
         
             // GCP - Still in Development 
             // TODO add when available
