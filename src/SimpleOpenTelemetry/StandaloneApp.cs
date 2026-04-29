@@ -23,7 +23,8 @@ public static class StandaloneApp
         {
             // This is needed for the OpenTelemetry SDK to pick up 
             // configuration from the appsettings.json IConfiguration
-            // setting values in env vars will override these
+            // setting values in env vars will override these. As it cannot be assumed it has been done
+            // in end user code.
             foreach (var kvp in configuration.AsEnumerable()
                 .Where(kvp => kvp.Value is not null &&         // has a value (not a section)
                         kvp.Key.StartsWith("OTEL_") &&         // ONLY OTEL_ settings

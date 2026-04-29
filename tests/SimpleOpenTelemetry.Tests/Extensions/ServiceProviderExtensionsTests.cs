@@ -1,15 +1,11 @@
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using Amazon.Runtime.Telemetry.Tracing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
-using OpenTelemetry.Exporter;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
@@ -20,19 +16,26 @@ namespace SimpleOpenTelemetryTests.Extensions;
 public class ServiceProviderExtensionsTests
 {
     
+    [Fact]
+    public void SimpleOpenTelemetryValidate_ThrowsWhenServiceProviderIsNull()
+    {
+        // ARRANGE
+        IServiceProvider? services = null;
+        // aCT/ASSERT
+        Assert.Throws<ArgumentNullException>(() =>
+            ServiceProviderExtensions.SimpleOpenTelemetryValidate(services!));
+    }
+
     // TODO Chad change these to not throw
     [Fact]
     public void SimpleOpenTelemetryValidate_ThrowsWhen_AddSimpleOpenTelemetry_NotCalled()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>())
-            .Build();
+        // ARRANGE
+        var services = new ServiceCollection();
+        using var serviceProvider = services.BuildServiceProvider();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Configuration.AddConfiguration(config);
-        var app = builder.Build();
-
-        var exception = Assert.Throws<InvalidOperationException>(app.Services.SimpleOpenTelemetryValidate);
+        // aCT/ASSERT
+        var exception = Assert.Throws<InvalidOperationException>(serviceProvider.SimpleOpenTelemetryValidate);
         Assert.Contains("OpenTelemetry has not been registered", exception.Message);
     }
 
@@ -54,18 +57,19 @@ public class ServiceProviderExtensionsTests
     [Fact]
     public void SimpleOpenTelemetryValidate_ThrowsWhen_AddSimpleOpenTelemetryCalled_ButNoSignalsConfigured()
     {
+        // ARRANGE
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>() {
                 ["SimpleOpenTelemetry:ExporterOptions"] =  "{}"
             })
             .Build();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddSingleton<IHostedService, TelemetryHostedService>();
-        builder.Configuration.AddConfiguration(config);
-        var app = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostedService, TelemetryHostedService>();
+        using var serviceProvider = services.BuildServiceProvider();
 
-        var exception = Assert.Throws<InvalidOperationException>(app.Services.SimpleOpenTelemetryValidate);
+        // aCT/ASSERT
+        var exception = Assert.Throws<InvalidOperationException>(serviceProvider.SimpleOpenTelemetryValidate);
         Assert.Contains("No OpenTelemetry signal providers have been registered.", exception.Message);
     }
 
@@ -80,185 +84,100 @@ public class ServiceProviderExtensionsTests
         bool valid = false
     )
     {
-        Dictionary<string, string?> dict = new() {
-            ["SimpleOpenTelemetry:Trace"] =  "{}"
-        };
-        
+        // ARRANGE
+        var dict = new Dictionary<string, object>();
         if (serviceName is not null)
-            dict.Add(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, serviceName);
+            dict.Add("service.name", serviceName);
         if (resourceAttributes is not null)
-            dict.Add(OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES, resourceAttributes);
-
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(dict)
-            .Build();
+        {
+            resourceAttributes.Split(',').ToList().ForEach(x =>
+            {
+                dict.Add(x.Split('=')[0], x.Split('=')[1]);
+            });
+        }
         
+        var resorceBuilder = ResourceBuilder.CreateDefault()
+            .AddAttributes(dict);
+
+        if (serviceName is not null)
+            resorceBuilder.AddService(serviceName);
+
+        using var meterProvider = Sdk.CreateMeterProviderBuilder()
+            .SetResourceBuilder(resorceBuilder).Build();
+
         // ACT
-        var builder = Host.CreateApplicationBuilder();
-        builder.Configuration.AddConfiguration(config);
-        builder.AddSimpleOpenTelemetry();
-        using var app = builder.Build();
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostedService, TelemetryHostedService>();
+        services.AddSingleton(meterProvider);
+        using var serviceProvider = services.BuildServiceProvider();
         
         // ASSERT
         if (valid)
-           app.Services.SimpleOpenTelemetryValidate();
+           serviceProvider.SimpleOpenTelemetryValidate();
         else
         {
-            var ex = Assert.Throws<InvalidOperationException>(app.Services.SimpleOpenTelemetryValidate);
+            var ex = Assert.Throws<InvalidOperationException>(serviceProvider.SimpleOpenTelemetryValidate);
             Assert.Contains("Missing required OpenTelemetry resource attributes", ex.Message);
         }
     }
 
-    [Fact]
-    public void SimpleOpenTelemetryValidate_ThrowsWhenServiceProviderIsNull()
+    [Theory]
+    [InlineData("metric")]
+    [InlineData("log")]
+    [InlineData("trace")]
+    public void SimpleOpenTelemetryValidate_DoesNotThrow_WhenAllResourceAttributes_And_AtLeastOneSignalProviderExists(
+        string signal
+    )
     {
-        IServiceProvider? services = null;
-
-        Assert.Throws<ArgumentNullException>(() =>
-            ServiceProviderExtensions.SimpleOpenTelemetryValidate(services!));
-    }
-
-    [Fact]
-    public void SimpleOpenTelemetryValidate_WorksWithTracingOnlyConfiguration()
-    {
-        const string serviceName = "test-service";
-        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
-
-        using (new OtelEnvironmentScope(new[]
-               {
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
-                       serviceName),
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES,
-                       resourceAttributes)
-               }))
+        // ARRANGE
+        var serviceName = "test-service";
+        var resourceAttributes = "service.namespace=test-namespace,service.version=1.2.3,deployment.environment.name=dev";
+    
+        var dict = new Dictionary<string, object>();
+        if (serviceName is not null)
+            dict.Add("service.name", serviceName);
+        if (resourceAttributes is not null)
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["SimpleOpenTelemetry:ServiceName"] = serviceName,
-                    ["SimpleOpenTelemetry:ServiceVersion"] = "1.0.0",
-                    ["SimpleOpenTelemetry:Trace:Exporters:0:type"] = "console"
-                })
-                .Build();
-
-            var services = new ServiceCollection();
-            services.AddLogging();
-            // Create a basic TracerProvider with valid resource attributes
-            using var tracerProvider = Sdk.CreateTracerProviderBuilder()
-                .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName)
-                    .AddAttributes(new Dictionary<string, object>
-                    {
-                        ["service.version"] = "1.2.3",
-                        ["service.namespace"] = "test-namespace",
-                        ["deployment.environment.name"] = "dev"
-                    }))
-                .Build();
-            services.AddSingleton(tracerProvider);
-            services.AddSimpleOpenTelemetry(config);
-
-            var provider = services.BuildServiceProvider();
-
-            // Should not throw - TracerProvider with valid resource is available
-            provider.SimpleOpenTelemetryValidate();
+            resourceAttributes.Split(',').ToList().ForEach(x =>
+            {
+                dict.Add(x.Split('=')[0], x.Split('=')[1]);
+            });
         }
-    }
+        var services = new ServiceCollection();
+        services.AddSingleton<IHostedService, TelemetryHostedService>();
 
-    [Fact]
-    public void SimpleOpenTelemetryValidate_WorksWithMetricsOnlyConfiguration()
-    {
-        const string serviceName = "test-service";
-        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
-
-        using (new OtelEnvironmentScope(new[]
-               {
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
-                       serviceName),
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES,
-                       resourceAttributes)
-               }))
+        if (signal == "metric")
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["SimpleOpenTelemetry:ServiceName"] = serviceName,
-                    ["SimpleOpenTelemetry:ServiceVersion"] = "1.0.0",
-                    ["SimpleOpenTelemetry:Metric:Exporters:0:type"] = "console"
-                })
-                .Build();
-
-            var services = new ServiceCollection();
-            services.AddLogging();
-            // Create a basic MeterProvider with valid resource attributes
-            using var meterProvider = Sdk.CreateMeterProviderBuilder()
+            var meterProvider = Sdk.CreateMeterProviderBuilder()
                 .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName)
-                    .AddAttributes(new Dictionary<string, object>
-                    {
-                        ["service.version"] = "1.2.3",
-                        ["service.namespace"] = "test-namespace",
-                        ["deployment.environment.name"] = "dev"
-                    }))
-                .Build();
-            services.AddSingleton(meterProvider);
-            services.AddSimpleOpenTelemetry(config);
-
-            var provider = services.BuildServiceProvider();
-
-            // Should not throw - MeterProvider with valid resource is available
-            provider.SimpleOpenTelemetryValidate();
+                .AddService(serviceName)
+                .AddAttributes(dict)).Build();
+            services.AddSingleton(meterProvider!);
         }
-    }
-
-    [Fact]
-    public void SimpleOpenTelemetryValidate_WorksWithLoggingOnlyConfiguration()
-    {
-        const string serviceName = "test-service";
-        const string resourceAttributes = "service.namespace=test-namespace;service.version=1.2.3,deployment.environment.name=dev";
-
-        using (new OtelEnvironmentScope(
-               [
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
-                       serviceName),
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES,
-                       resourceAttributes)
-               ]))
+        else if (signal == "trace")
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string?>
-                {
-                    ["SimpleOpenTelemetry:ServiceName"] = serviceName,
-                    ["SimpleOpenTelemetry:ServiceVersion"] = "1.0.0",
-                    ["SimpleOpenTelemetry:Log:Exporters:0:type"] = "console"
-                })
-                .Build();
-
-            var services = new ServiceCollection();
-            // Create and register MeterProvider (since LoggerProvider registration is complex)
-            // In real applications, providers are registered when tools themselves are configured
-            using var meterProvider = Sdk.CreateMeterProviderBuilder()
+            var traceProvider = Sdk.CreateMeterProviderBuilder()
                 .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                    .AddService(serviceName)
-                    .AddAttributes(new Dictionary<string, object>
-                    {
-                        ["service.version"] = "1.2.3",
-                        ["service.namespace"] = "test-namespace",
-                        ["deployment.environment.name"] = "dev"
-                    }))
-                .Build();
-            services.AddSingleton(meterProvider);
-            services.AddSimpleOpenTelemetry(config);
-
-            var provider = services.BuildServiceProvider();
-
-            // Should not throw - MeterProvider with valid resource is available
-            provider.SimpleOpenTelemetryValidate();
+                .AddService(serviceName)
+                .AddAttributes(dict)).Build();
+            services.AddSingleton(traceProvider!);
         }
+        else
+        {
+            services.AddLogging(logging =>
+            {
+                logging.AddOpenTelemetry(options =>
+                {
+                    options.SetResourceBuilder(
+                        ResourceBuilder.CreateEmpty()
+                            .AddAttributes(dict));
+                });
+            });
+        }
+        using var serviceProvider = services.BuildServiceProvider();
+        
+        // ACT/ASSERT
+        // Should not throw when TracerProvider/LogProvider/MetricProvider is found 
+        serviceProvider.SimpleOpenTelemetryValidate();
     }
 }

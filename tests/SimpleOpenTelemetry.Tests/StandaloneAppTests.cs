@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Configuration;
+using OpenTelemetry;
+using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 
@@ -6,37 +8,85 @@ namespace SimpleOpenTelemetryTests;
 
 public class StandaloneAppTests
 {
-    private static IConfiguration BuildConfigWithOtelValues(string otelServiceName, string otelResourceAttributes) =>
+
+    private void ClearOTELEnvVars()
+    {
+        Array.ForEach([
+            OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
+            OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES
+        ], key => Environment.SetEnvironmentVariable(key, null));
+    }
+
+    [Fact]
+    public void StandaloneBootstrap_AddSimpleOpenTelemetry_ShouldSet_OTEL_EnvVars_FromConfiguration()
+    {
+        try
+        {
+            // ARRANGE
+            const string serviceName = "test-service";
+            const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
+
+            // ACT
+            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
+
+            // ASSERT
+            Assert.Equal(serviceName, Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME));
+            Assert.Equal(resourceAttributes, Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES));
+        
+        }
+        finally
+        {
+            ClearOTELEnvVars();
+        }
+    }
+
+    [Fact]
+    public void StandaloneBootstrap_AddSimpleOpenTelemetry_ShouldSet_CallOpenTelemetryBuilder_Configure()
+    {
+        // 
+        var originalPropagator = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            // ARRANGE
+            const string serviceName = "test-service";
+            const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
+                ["SimpleOpenTelemetry:Trace:Propagators:0"] = "B3",
+                ["SimpleOpenTelemetry:Trace:Propagators:1"] = "Baggage"
+            });
+
+            // ACT
+            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
+
+            // ASSERT
+            // Assert - not ideal but cant verify by mocked / injected services due to extension method calling 
+            // AddOpenTelemetry extension method and creating a new SimpleOpenTelemetryBuilder
+            var propagator = Propagators.DefaultTextMapPropagator;
+            Assert.IsType<CompositeTextMapPropagator>(propagator);
+            var innerPropagators = TestHelpers.GetCompositePropagators(propagator as CompositeTextMapPropagator).ToList();
+            Assert.Equal(2, innerPropagators.Count);
+            Assert.IsType<OpenTelemetry.Extensions.Propagators.B3Propagator>(innerPropagators[0]);
+            Assert.IsType<BaggagePropagator>(innerPropagators[1]);
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(originalPropagator);
+            ClearOTELEnvVars();
+        }
+    }
+    
+    private IConfiguration BuildConfigWithOtelValues(
+            string otelServiceName, string otelResourceAttributes, 
+            Dictionary<string, string?>? otherValues = null) =>
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = otelServiceName,
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = otelResourceAttributes
             })
+            .AddInMemoryCollection(otherValues ?? new Dictionary<string, string?>())
             .Build();
-
-    [Fact]
-    public void StandaloneBootstrap_AddSimpleOpenTelemetry_CreatesSdk()
-    {
-        const string serviceName = "test-service";
-        const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
-
-        using (new OtelEnvironmentScope(new[]
-               {
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME,
-                       serviceName),
-                   new KeyValuePair<string, string>(
-                       OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES,
-                       resourceAttributes)
-               }))
-        {
-            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
-
-            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
-            // TODO fix up this crap gen ai test
-            Assert.NotNull(sdk);
-        }
-    }
 }
 
