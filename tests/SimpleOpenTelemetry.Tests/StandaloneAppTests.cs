@@ -1,11 +1,13 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests;
 
+[Collection("StandaloneAppTests")]
 public class StandaloneAppTests
 {
 
@@ -83,6 +85,7 @@ public class StandaloneAppTests
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
+                [SimpleOpenTelemetryOptions.SectionName] = "{}",
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = otelServiceName,
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = otelResourceAttributes
             })

@@ -1,12 +1,14 @@
 using System.Reflection;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 
 namespace SimpleOpenTelemetryTests;
 
 
 public static class TestHelpers
 {
-    
+   
     public static IEnumerable<TextMapPropagator> GetCompositePropagators(CompositeTextMapPropagator composite)
     {
         var type = composite.GetType();

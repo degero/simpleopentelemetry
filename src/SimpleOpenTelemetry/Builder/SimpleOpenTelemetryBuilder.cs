@@ -49,20 +49,26 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// <summary>
     /// Initializes a new instance of the SimpleOpenTelemetryBuilder and load in configuration
     /// </summary>
-    internal SimpleOpenTelemetryBuilder(IOpenTelemetryBuilder otelBuilder,
-        IConfiguration config)
+    internal SimpleOpenTelemetryBuilder(
+        IOpenTelemetryBuilder otelBuilder,
+        IConfiguration config) // TODO refac out use of Iconfiguration and inject services
     {
+        ArgumentNullException.ThrowIfNull(config);
+        ArgumentNullException.ThrowIfNull(otelBuilder);
+
         _configuration = config;
         _otelBuilder = otelBuilder;
         _assemblyExecution = new AssemblyExecution();
 
-        // Load in configuration from file
+        // Load in configuration
         var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
+        // validate that this config has simpleopentelemetry section exists() as 
+        // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
+        if (!section.Exists())
+            throw new Exception($"Configuration section '{SimpleOpenTelemetryOptions.SectionName}' not defined");
+
         var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
         section.Bind(simpleOpenTelemetryConfig);
-
-        if (simpleOpenTelemetryConfig == null)
-            throw new ArgumentNullException(nameof(simpleOpenTelemetryConfig));
 
         _options = simpleOpenTelemetryConfig;
         
@@ -94,60 +100,56 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         var resourceBuilder = ConfigureResourceAttributes();
 
-        ConfigureMetrics();
+        ConfigureMetrics(resourceBuilder);
 
         ConfigureTracing(resourceBuilder);
 
-        ConfigureLogging();
-
-        _propagatorLoader.AddPropagators(_options);
+        ConfigureLogging(resourceBuilder);
 
     }
 
-    private ResourceBuilder? ConfigureResourceAttributes()
+    private ResourceBuilder ConfigureResourceAttributes()
     {   
-        ResourceBuilder? _builder = null;
+        var resourceBuilder = ResourceBuilder
+            .CreateDefault();
 
-        _otelBuilder.ConfigureResource(builder => 
-        {   
-            // Normally users will want to set in "Detectors" config at minium "EnvVar" for opentelemetry to load in
-            // it's OTEL env var settings OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME
-            _resourceDetectorLoader.AddResourceDetectors(builder, _options);
-            _builder = builder;
-         });
-
-        return _builder;
+        // Normally users will want to set in "Detectors" config at minium "EnvVar" for opentelemetry to load in
+        // it's OTEL env var settings OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME
+        _resourceDetectorLoader.AddResourceDetectors(resourceBuilder, _options);
+        return resourceBuilder;
     }
 
-    private void ConfigureMetrics()
+    private void ConfigureMetrics(ResourceBuilder resourceBuilder)
     {
         if (!HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Metric)))
             return;
 
         _otelBuilder.WithMetrics(metrics =>
         {
+            metrics.SetResourceBuilder(resourceBuilder);
             // Apply settings
             if (_options.Metric.Settings?.MetricLimit != null)
                 metrics.SetMaxMetricStreams(_options.Metric.Settings.MetricLimit.Value);
 
             // add in tracing instrumentation options from config
-            _options.Metric.Instrumentations?.ToList().ForEach(r =>
-            {
-                _instrumentationLoader.AddMetricsInstrumentation(metrics, r);
-            });
+            // TODO refac to just one call
+            _options.Metric.Instrumentations?.ToList().ForEach(r => 
+                _instrumentationLoader.AddMetricsInstrumentation(metrics, r));
 
             // add in meters
-            _options.Metric.CustomMeters?.ToList().ForEach(r => metrics.AddMeter(r));
+            if (_options.Metric.CustomMeters is not null)
+                metrics.AddMeter(_options.Metric.CustomMeters.ToArray());
 
-            if (_options.Metric.Exporters is not null)
-                _exporterLoader.ConfigureExporters(metrics, _options);
+            // add exporters
+            _exporterLoader.ConfigureExporters(metrics, _options);
 
+            // TODO refac to just one call
             _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddMetricsExtension(metrics, r));
 
         });
     }
 
-    private void ConfigureTracing(ResourceBuilder? resourceBuilder)
+    private void ConfigureTracing(ResourceBuilder resourceBuilder)
     {
         var shouldConfigureTracing = HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace));
 
@@ -156,31 +158,39 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _otelBuilder.WithTracing(tracing =>
         {
-            // set any options            
+            tracing.SetResourceBuilder(resourceBuilder);
+
+            // set any settings            
             if (_options.Trace.Settings?.SetErrorStatusOnException.HasValue == true &&
                     _options.Trace.Settings?.SetErrorStatusOnException.Value == true)
                 tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);
 
             // add in tracing instrumenation options from config
-            _options.Trace.Instrumentations?.ToList().ForEach(r => {
-                _instrumentationLoader.AddTracingInstrumentation(tracing, r);
-            });
+            // TODO refac to just one call
+            _options.Trace.Instrumentations?.ToList().ForEach(r => 
+                _instrumentationLoader.AddTracingInstrumentation(tracing, r));
 
             // add trace sources from config
-            _options.Trace.Sources?.ToList().ForEach(r => tracing.AddSource(r));
+            if (_options.Trace.Sources is not null)
+                tracing.AddSource(_options.Trace.Sources.ToArray());
 
             // add in sampler if set in config
-            _samplerLoader.AddSampler(tracing, resourceBuilder?.Build(), _options);
+            // TODO rename to SetSampler as there is only one
+            _samplerLoader.AddSampler(tracing, resourceBuilder.Build(), _options);
 
-            if (_options.Trace.Exporters is not null)
-                _exporterLoader.ConfigureExporters(tracing, _options);
+            // add exporters
+            _exporterLoader.ConfigureExporters(tracing, _options);
 
             // Iterate over exporters for this montioring type
+            // TODO refac to just one call
             _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddTraceExtension(tracing, r));
         });
+        
+        // Add propagators
+        _propagatorLoader.AddPropagators(_options);
     }
 
-    private void ConfigureLogging()
+    private void ConfigureLogging(ResourceBuilder resourceBuilder)
     {
         if (!HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Log)))
             return;
@@ -188,6 +198,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithLogging(
             logging =>
             {
+                logging.SetResourceBuilder(resourceBuilder);
+
                 // Iterate over exporters for this montioring type and add them
                 _exporterLoader.ConfigureExporters(logging, _options);
                 

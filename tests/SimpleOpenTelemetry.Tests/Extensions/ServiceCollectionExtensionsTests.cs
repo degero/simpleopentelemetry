@@ -8,6 +8,7 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.Extensions;
 
+[Collection("ServiceCollectionExtensionsTests")]
 public class ServiceCollectionExtensionsTests
 {
     [Fact]

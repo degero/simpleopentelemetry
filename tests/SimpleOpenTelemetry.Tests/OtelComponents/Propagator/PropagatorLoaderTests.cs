@@ -28,7 +28,6 @@ public class PropagatorLoaderTests
     {
         // Arrange
         var original = Propagators.DefaultTextMapPropagator;
-        
 
         var verify = () => {
             

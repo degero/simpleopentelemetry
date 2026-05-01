@@ -18,7 +18,7 @@ internal sealed class TestEventListener : EventListener
     public TestEventListener(
         string eventSourceName = SimpleOpenTelemetryEventSource.EventSourceName)
     {
-       _eventSourceName = eventSourceName;
+        _eventSourceName = eventSourceName;
         // Trigger OnEventSourceCreated for already-existing sources
         // (EventSource may already exist as a static singleton)
         foreach (var source in EventSource.GetSources())
@@ -27,8 +27,9 @@ internal sealed class TestEventListener : EventListener
 
     protected override void OnEventSourceCreated(EventSource eventSource)
     {
-        if (eventSource.Name == _eventSourceName)
-            EnableEvents(eventSource, EventLevel.Verbose);
+        if (_eventSourceName is not null && 
+            eventSource.Name.StartsWith(_eventSourceName, StringComparison.OrdinalIgnoreCase))
+            EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
     }
 
     protected override void OnEventWritten(EventWrittenEventArgs eventData)

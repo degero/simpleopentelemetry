@@ -22,7 +22,7 @@ public class HostApplicationBuilderExtensionsTests
             HostApplicationBuilderExtensions.AddSimpleOpenTelemetry(builder!));
     }
 
-      [Fact]
+    [Fact]
     public void AddSimpleOpenTelemetry_Should_Call_ServiceExtensionAddSimpleOpenTelemetry()
     {
         // Arrange
