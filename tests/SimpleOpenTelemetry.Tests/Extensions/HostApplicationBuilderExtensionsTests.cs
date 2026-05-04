@@ -30,7 +30,7 @@ public class HostApplicationBuilderExtensionsTests
 
         var configRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["SimpleOpenTelemetry:Trace"] = "{}",
+                ["SimpleOpenTelemetry:Trace:Settings:SetErrorStatusOnException"] = "true",
             })
             .Build();
             
@@ -44,7 +44,8 @@ public class HostApplicationBuilderExtensionsTests
         // Act
         HostApplicationBuilderExtensions.AddSimpleOpenTelemetry(builder.Object);
 
-        // Assert
-        Assert.Contains(services, sd => sd.ServiceType == typeof(OpenTelemetry.Trace.TracerProvider));
+        // Assert -  not idea but as it is an extension we need to verify an outcome of the underlying service to add tracerprovider
+        // collection extension AddSimpleOpenTelemetry() 
+        Assert.Contains(services, sd => sd.ServiceType.ToString().Contains("TracerProvider"));
     }
 }

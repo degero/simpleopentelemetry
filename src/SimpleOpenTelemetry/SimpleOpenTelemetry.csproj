@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="SimpleOpenTelemetry.Tests" />
+    <InternalsVisibleTo Include="SimpleOpenTelemetry.IntegrationTests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

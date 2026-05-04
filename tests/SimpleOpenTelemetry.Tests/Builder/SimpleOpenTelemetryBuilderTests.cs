@@ -365,7 +365,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>()), Times.Never);
         mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
         mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
-        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
+        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         mockExtensionsLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>()), Times.Never);
         mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>()), Times.Never);
@@ -435,7 +435,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>()), Times.Never);
         mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
         mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
-        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
+        mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         mockExtensionsLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>()), Times.Never);
         mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>()), Times.Never);
@@ -449,7 +449,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         var config = new ConfigurationBuilder().AddInMemoryCollection(
             new Dictionary<string, string?>()
               {
-                [SimpleOpenTelemetryOptions.SectionName] = "{}"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true"
             }
         ).Build();
         var serviceColl = new ServiceCollection();
@@ -466,6 +466,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         // ASSERT
         using var services = serviceColl.BuildServiceProvider();
+        var trace = services.GetService<TracerProvider>(); // need this to trigger the ResourceBuilder invocation
         mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
     }
 
@@ -523,7 +524,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
             mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
             mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Once);
             mockExtensionsLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceExtensionsEnum>()), Times.Once);
-            mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<Resource>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
+            mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
             mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
         }
         if (signal == "log")
@@ -531,69 +532,6 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
             mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
             mockExtensionsLoader.Verify(e => e.AddLogExtension(It.IsAny<LoggerProviderBuilder>(), It.IsAny<LogExtensionsEnum>()), Times.Once);
         }    
-    }
-
-    [Theory]
-    // [InlineData("test-service", null)]
-    // [InlineData("test-service","service.version=1.2.3,deployment.environment.name=dev")]
-    [InlineData("test-service","service.namespace=testapp,service.version=1.2.3,deployment.environment.name=dev", true)]
-    [InlineData(null,"service.namespace=testapp,service.version=1.2.3,deployment.environment.name=dev", true)] 
-    public void Configure_ShouldSetServiceName_And_ResourceAttributes(
-        string serviceName,
-        string resourceAttributes,
-        bool valid = false
-    )
-    {
-        // ARRANGE
-        var config = new ConfigurationBuilder().AddInMemoryCollection(
-            new Dictionary<string, string?>()
-              {
-                [SimpleOpenTelemetryOptions.SectionName] = "{}",
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Resource:Detectors:0"] = "envvar",
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
-                ["SimpleOpenTelemetry:Log:Extensions:0"] = "None",
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = serviceName,
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = resourceAttributes
-            }
-        ).Build();
-        var serviceColl = new ServiceCollection();
-        var otelBuilder = serviceColl.AddOpenTelemetry();
-        
-        var builder = new SimpleOpenTelemetryBuilder(otelBuilder, config);
-
-        var resourceDetectorLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_resourceDetectorLoader", BindingFlags.NonPublic | BindingFlags.Instance);
-        var mockResourceDetectorLoader = new Mock<IResourceDetectorLoader>();
-        resourceDetectorLoaderField?.SetValue(builder, mockResourceDetectorLoader.Object);
-
-        // ACT
-        builder.Configure();
-        using var services = serviceColl.BuildServiceProvider();
-        var traceResource = services.GetService<TracerProvider>().GetResource();
-        var meterResource = services.GetService<MeterProvider>().GetResource();
-        var loggerResource = services.GetService<LoggerProvider>().GetResource();
-
-
-        // ASSERT
-        var expected = resourceAttributes.Split(',').Select(pair => pair.Split('=', 2))
-        .Where(parts => parts.Length == 2)
-        .ToDictionary(
-            parts => parts[0].Trim(),
-            parts => (object)parts[1].Trim());
-        
-        new List<Resource>() {traceResource, meterResource, loggerResource}.ForEach(r =>
-        {
-            var actual = r.Attributes
-                .ToDictionary(kv => kv.Key, kv => kv.Value);
-
-            foreach (var (key, value) in expected)
-            {
-                Assert.True(actual.ContainsKey(key), $"Missing attribute: {key}");
-                Assert.Equal(value.ToString(), actual[key].ToString());
-            }
-        });
-        
-        
     }
 
     [Fact]

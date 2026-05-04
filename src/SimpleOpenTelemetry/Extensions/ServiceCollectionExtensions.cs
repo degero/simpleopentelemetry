@@ -34,7 +34,7 @@ internal static class ServiceCollectionExtensions
         var otelBuilder = services.AddOpenTelemetry();
 
         var builder = new SimpleOpenTelemetryBuilder(otelBuilder, configuration);
-        builder.Configure();
+        builder.Configure(); // Reads configuration and runs OpenTelemetry Fluent API methods
 
         return otelBuilder;
     }

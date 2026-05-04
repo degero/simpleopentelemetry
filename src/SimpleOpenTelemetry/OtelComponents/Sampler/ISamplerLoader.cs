@@ -5,5 +5,5 @@ namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 
 internal interface ISamplerLoader
 {
-    void AddSampler(TracerProviderBuilder builder, OpenTelemetry.Resources.Resource resource, SimpleOpenTelemetryOptions options);
+    void AddSampler(TracerProviderBuilder builder, SimpleOpenTelemetryOptions options);
 }

@@ -15,11 +15,13 @@ internal static class SamplerAssemblies
     public static readonly Dictionary<SamplerEnum, SamplerDescriptor>
         KnownSamplers = new()
         {
-            /* Contrib samplers */
-            [SamplerEnum.AWS] = new(
-                "OpenTelemetry.Sampler.AWS",
-                "OpenTelemetry.Sampler.AWS.AWSXRayRemoteSampler",
-                "Builder")
+            /* Contrib samplers */ 
+            // Disabled until this lib is corrected inline with Otels fluent builder 
+            // (ie not needing a prebuilt resourceprovider)
+            // [SamplerEnum.AWS] = new(
+            //     "OpenTelemetry.Sampler.AWS",
+            //     "OpenTelemetry.Sampler.AWS.AWSXRayRemoteSampler",
+            //     "Builder")
         };
 
 }

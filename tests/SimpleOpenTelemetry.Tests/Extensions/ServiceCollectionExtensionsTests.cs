@@ -69,7 +69,7 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddSimpleOpenTelemetry_CallsAddOpenTelemetry_AndAddSimpleOpenTelemetryBuilder_Configure_When_ConfigurationExists()
+    public void AddSimpleOpenTelemetry_CallsAddOpenTelemetry_And_AddSimpleOpenTelemetryBuilder_Configure_When_ConfigurationExists()
     {
         var originalPropagator = Propagators.DefaultTextMapPropagator;
         try

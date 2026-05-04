@@ -672,7 +672,7 @@ For Azure users, sampling is built into the exporter setup/options.
 
 #### OpenTelemetry contrib
 
-> *AWS X-Ray Remote Sampler*
+> *AWS X-Ray Remote Sampler - Currently unsupported due to irregular registration pattern requireing prebuilt resource* 
 >
 > Stability (as April 2026): Alpha
 >

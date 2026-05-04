@@ -36,9 +36,7 @@ internal class SamplerLoader : ISamplerLoader
     /// Dynamically loads and configures resource extensions from registered assemblies.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to register the sampler with.</param>
-    /// <param name="resource">The Resource builder resource to configure with.</param>
     public void AddSampler(TracerProviderBuilder builder,
-        OpenTelemetry.Resources.Resource resource,
         SimpleOpenTelemetryOptions options)
     {
         var item = options.Trace?.Sampler;
@@ -53,7 +51,7 @@ internal class SamplerLoader : ISamplerLoader
                         throw new InvalidOperationException(
                             $"{typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialize sampler");
 
-                    AddSampler(builder, resource, descriptor);
+                    AddSampler(builder, descriptor);
 
                     EventSource.Log.Verbose(eventCategory, $"Registered sampler '{matchedSampler}'.");
 
@@ -75,10 +73,8 @@ internal class SamplerLoader : ISamplerLoader
     /// comes out of alpha / other vender patterns appear
     /// </summary>
     /// <param name="builder"></param>
-    /// <param name="resource"></param>
     /// <param name="descriptor"></param>
     private void AddSampler(TracerProviderBuilder builder,
-        OpenTelemetry.Resources.Resource resource,
         SamplerDescriptor descriptor)
     {
 
@@ -89,7 +85,7 @@ internal class SamplerLoader : ISamplerLoader
 
         var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
 
-        var instance = method.Invoke(null, new object[] { resource });
+        var instance = method.Invoke(null, new object[] {  });
 
         // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
         // This is kept here for now

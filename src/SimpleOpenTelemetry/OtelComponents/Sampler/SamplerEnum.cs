@@ -2,8 +2,8 @@ namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 
 public enum SamplerEnum
 {
-    /* opentelemetry-dotnet */
+    None,
     
     /* opentelemetry-dotnet-contrib */
-    AWS
+    // AWS
 }
