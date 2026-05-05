@@ -55,8 +55,8 @@ public class StandaloneAppTests
             const string serviceName = "test-service";
             const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
             var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
-                ["SimpleOpenTelemetry:Trace:Propagators:0"] = "B3",
-                ["SimpleOpenTelemetry:Trace:Propagators:1"] = "Baggage"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:0"] = "B3",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:1"] = "Baggage"
             });
 
             // ACT

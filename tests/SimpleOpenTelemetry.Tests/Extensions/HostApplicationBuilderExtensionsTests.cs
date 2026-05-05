@@ -30,7 +30,7 @@ public class HostApplicationBuilderExtensionsTests
 
         var configRoot = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["SimpleOpenTelemetry:Trace:Settings:SetErrorStatusOnException"] = "true",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
             })
             .Build();
             

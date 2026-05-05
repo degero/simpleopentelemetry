@@ -35,6 +35,9 @@ public class ExtensionLoaderTests: IDisposable
         string assemblyName,
         bool packageInstalled)
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -43,16 +46,17 @@ public class ExtensionLoaderTests: IDisposable
                 .Throws(new Exception(
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
-
         
         var target = new ExtensionLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
-
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        var services = new ServiceCollection();
+        
+        // ACT
+        services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddTraceExtension(t, extension);
         });
 
+        // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace extension '{extension}'") ?? false));
@@ -76,15 +80,19 @@ public class ExtensionLoaderTests: IDisposable
     [Fact]
     public void AddMetricsExtension_WithNoneEnum_LogsMissingDescriptorError()
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
         
         var target = new ExtensionLoader(_configuration, _assemblyExec);
+        var services = new ServiceCollection();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithMetrics(m =>
+        // ACT
+        services.AddOpenTelemetry().WithMetrics(m =>
         {
             target.AddMetricsExtension(m, MetricExtensionsEnum.None);
         });
 
+        // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("MetricExtensionsEnum type 'None' not found to initialise metric extension.") ?? false));
@@ -95,15 +103,19 @@ public class ExtensionLoaderTests: IDisposable
     [Fact]
     public void AddLogExtension_WithNoneEnum_LogsMissingDescriptorError()
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
         
         var target = new ExtensionLoader(_configuration, _assemblyExec);
+        var services = new ServiceCollection();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithLogging(l =>
+        // ACT
+        services.AddOpenTelemetry().WithLogging(l =>
         {
             target.AddLogExtension(l, LogExtensionsEnum.None);
         });
 
+        // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("LogExtensionsEnum type 'None' not found to initialise log extension.") ?? false));

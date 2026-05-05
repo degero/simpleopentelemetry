@@ -88,12 +88,12 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         var otelBuilder = servicesCollection.AddOpenTelemetry();
         var configDict = new Dictionary<string, string?>()
             {
-                ["SimpleOpenTelemetry:Trace:Sources:0"] = activitySourceName
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Sources:0"] = activitySourceName
             };
 
         if (setError == "true")
         {
-           configDict.Add("SimpleOpenTelemetry:Trace:Settings:SetErrorStatusOnException", setError);
+           configDict.Add($"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException", setError);
         }
 
         var config = new ConfigurationBuilder()
@@ -144,10 +144,10 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         var otelBuilder = servicesCollection.AddOpenTelemetry();
         var configDict = new Dictionary<string, string?>()
         {
-           ["SimpleOpenTelemetry:Metric:Exporters:0:Type"] = "console"
+           [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Exporters:0:Type"] = "console"
         };
         if (value is not null)
-            configDict.Add($"SimpleOpenTelemetry:Metric:Settings:{setting}",value);
+            configDict.Add($"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:{setting}",value);
 
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(configDict)
@@ -185,13 +185,13 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         var otelBuilder = servicesCollection.AddOpenTelemetry();
         var configDict = new Dictionary<string, string?>()
         {
-           ["SimpleOpenTelemetry:Trace:Exporters:0:Type"] = "console"
+           [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0:Type"] = "console"
         };
         if (isSet)
         {
             var sourceList = sources.Split(',').ToList();
             for (var i=0; i < sourceList.Count; i++)
-                configDict.Add($"SimpleOpenTelemetry:Trace:Sources:{i}", sourceList[i]);
+                configDict.Add($"{SimpleOpenTelemetryOptions.SectionName}:Trace:Sources:{i}", sourceList[i]);
         }
 
         var config = new ConfigurationBuilder()
@@ -243,11 +243,11 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         var configDict = new Dictionary<string, string?>()
         {
-           ["SimpleOpenTelemetry:Metric:Exporters:0:Type"] = "console"
+           [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Exporters:0:Type"] = "console"
         };
 
         if (isSet)
-            configDict.Add("SimpleOpenTelemetry:Metric:CustomMeters:0", "MyTestMeter");
+            configDict.Add($"{SimpleOpenTelemetryOptions.SectionName}:Metric:CustomMeters:0", "MyTestMeter");
 
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(configDict).Build();
@@ -316,7 +316,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["SimpleOpenTelemetry:Distro"] = "AzureMonitorAspNetCore"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Distro"] = "AzureMonitorAspNetCore"
             })
             .Build();
 
@@ -560,24 +560,24 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
             // most values are enums and validated against
             ["trace"] = new ()
             {
-                ["SimpleOpenTelemetry:Trace:Exporters:0:type"] = "console",
-                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] = "HttpClient",
-                ["SimpleOpenTelemetry:Trace:Sources:0"] = "test",
-                ["SimpleOpenTelemetry:Trace:Sampler"] = "test",
-                ["SimpleOpenTelemetry:Trace:Propagators"] = "test",
-                ["SimpleOpenTelemetry:Trace:Extensions:0"] = "AWSXRayTraceId"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0:type"] = "console",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Instrumentations:0"] = "HttpClient",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Sources:0"] = "test",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Sampler"] = "test",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators"] = "test",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Extensions:0"] = "AWSXRayTraceId"
             },
             ["log"] = new ()
             {
-                ["SimpleOpenTelemetry:Log:Exporters:0:type"] = "console",
-                ["SimpleOpenTelemetry:Log:Extensions:0"] = "None"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Exporters:0:type"] = "console",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None"
             },
             ["metric"] = new ()
             {
-                ["SimpleOpenTelemetry:Metric:Exporters:0:type"] = "console",
-                ["SimpleOpenTelemetry:Metric:Instrumentations:0"] = "Runtime",
-                ["SimpleOpenTelemetry:Metric:Extensions:0"] = "None",
-                ["SimpleOpenTelemetry:Metric:CustomMeters:0"] = "test"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Exporters:0:type"] = "console",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Instrumentations:0"] = "Runtime",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Extensions:0"] = "None",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:CustomMeters:0"] = "test"
             },
         };
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
@@ -60,7 +61,7 @@ public class ServiceProviderExtensionsTests
         // ARRANGE
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>() {
-                ["SimpleOpenTelemetry:ExporterOptions"] =  "{}"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:ExporterOptions"] =  "{}"
             })
             .Build();
 

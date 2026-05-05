@@ -58,7 +58,7 @@ public class HostApplicationBuilderExtensionsTests
     }
 
     [Fact]
-    public void AddSimpleOpenTelemetry_Should_SetCorrectResourceDetector_AssemblyVersion_WhenAWSSamplerBuildsResources(
+    public void AddSimpleOpenTelemetry_Should_SetCorrectResourceDetector_AssemblyVersion(
     )
     {
         // Test to make sure AWS needing a prebuilt sampler doesnt mess up resourcedetectors
@@ -67,7 +67,7 @@ public class HostApplicationBuilderExtensionsTests
         var config = BuildConfig(new Dictionary<string, string?>()
                 {
                     [$"{SimpleOpenTelemetryOptions.SectionName}:Resource:Detectors:0"] = "assemblyversion",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Sampler"] = "aws",
+                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
                     [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
                     [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
                 }

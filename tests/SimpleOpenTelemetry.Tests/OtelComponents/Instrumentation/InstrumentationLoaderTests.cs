@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 using SimpleOpenTelemetry.Reflection;
@@ -33,6 +34,9 @@ public class InstrumentationLoaderTests : IDisposable
         string assemblyName,
         bool packageInstalled)
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -44,13 +48,15 @@ public class InstrumentationLoaderTests : IDisposable
 
         
         var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var services = new ServiceCollection();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        // ACT
+        services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddTracingInstrumentation(t, instrumentation);
         });
 
+        // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace instrumentation '{instrumentation}'") ?? false));
@@ -79,6 +85,9 @@ public class InstrumentationLoaderTests : IDisposable
         string assemblyName,
         bool packageInstalled)
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+        
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -88,15 +97,16 @@ public class InstrumentationLoaderTests : IDisposable
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        
         var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
-
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithMetrics(m =>
+        var services = new ServiceCollection();
+        
+        // ACT
+        services.AddOpenTelemetry().WithMetrics(m =>
         {
             target.AddMetricsInstrumentation(m, instrumentation);
         });
 
+        // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered metric instrumentation '{instrumentation}'") ?? false));
@@ -120,17 +130,22 @@ public class InstrumentationLoaderTests : IDisposable
     [Fact]
     public void AddTracingInstrumentation_ThrowsForInvalidEnumValue()
     {
+         // ARRANGE
+        Assert.Empty(_listener.Events);
+        
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                ["SimpleOpenTelemetry:Trace:Instrumentations:0"] = "999"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Instrumentations:0"] = "999"
             })
             .Build();
 
         var services = new ServiceCollection();
 
+        // ACT
         services.AddSimpleOpenTelemetry(config);
 
+        // ASSERT
         Assert.Contains(_listener.Events, r => r.EventId == 3 && 
             r.Level == EventLevel.Error &&
             r.Payload.Any(r => r.ToString().Contains("type '999' not found ")));

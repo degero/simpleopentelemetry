@@ -35,6 +35,7 @@ public class DistroLoaderTests : IDisposable
         bool packageInstalled
     )
     {
+        // ARRANGE
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
             mockAssemblyExec.Setup(r => r.GetAssembly(assemblyName)).Throws(new Exception($"Cannot load assembly '{assemblyName}'. " +
@@ -48,11 +49,13 @@ public class DistroLoaderTests : IDisposable
             Distro = distroName
         };
 
-        var hostBuilder = Host.CreateApplicationBuilder();
-        var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
-
+        var services = new ServiceCollection();
+        var otelBuilder = services.AddOpenTelemetry();
+        
+        // ACT
         var foundConfig = target.LoadDistro(otelBuilder, options);
 
+        // ASSERT
         Assert.True(foundConfig);
 
         var successEvent = _listener.Events.FirstOrDefault(e =>
@@ -79,7 +82,7 @@ public class DistroLoaderTests : IDisposable
     [Fact]
     public void LoadDistro_WithUnsupportedDistro_LogsNoRegistrationEvents_AndReturnsTrue()
     {
-        
+        // ARRANGE
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var target = new DistroLoader(configuration, _assemblyExec);
         var options = new SimpleOpenTelemetryOptions
@@ -87,11 +90,13 @@ public class DistroLoaderTests : IDisposable
             Distro = "NotARealDistro"
         };
 
-        var hostBuilder = Host.CreateApplicationBuilder();
-        var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
+        var services = new ServiceCollection();
+        var otelBuilder = services.AddOpenTelemetry();
 
+        // ACT
         var foundConfig = target.LoadDistro(otelBuilder, options);
 
+        // ASSERT
         Assert.True(foundConfig);
 
         var successEvent = _listener.Events.FirstOrDefault(e =>
@@ -110,18 +115,18 @@ public class DistroLoaderTests : IDisposable
     [Fact]
     public void LoadDistro_WithNoDistroSetting_ReturnsFalse()
     {
-        
+        // ARRANGE
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var target = new DistroLoader(configuration, _assemblyExec);
-        var options = new SimpleOpenTelemetryOptions
-        {
-        };
+        var options = new SimpleOpenTelemetryOptions();
 
-        var hostBuilder = Host.CreateApplicationBuilder();
-        var otelBuilder = hostBuilder.Services.AddOpenTelemetry();
+        var services = new ServiceCollection();
+        var otelBuilder = services.AddOpenTelemetry();
 
+        // ACT
         var foundConfig = target.LoadDistro(otelBuilder, options);
-
+        
+        // ASSERT
         Assert.False(foundConfig);
     }
 }

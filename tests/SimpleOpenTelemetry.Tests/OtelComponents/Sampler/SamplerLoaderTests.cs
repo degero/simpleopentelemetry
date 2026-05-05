@@ -29,11 +29,14 @@ public class SamplerLoaderTests: IDisposable
     public void AddSampler_WithNoneEnum_LogsMissingDescriptorError()
     {
         // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var target = new SamplerLoader(_assemblyExec);
-        var builder = Host.CreateApplicationBuilder();
+        var services = new ServiceCollection();
         var noneSampler = SamplerEnum.None.ToString();
+        
         // ACT
-        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddSampler(t, new SimpleOpenTelemetryOptions{ Trace = new(){ Sampler = noneSampler}});
         });
@@ -54,6 +57,9 @@ public class SamplerLoaderTests: IDisposable
         string assemblyName,
         bool packageInstalled)
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -73,13 +79,15 @@ public class SamplerLoaderTests: IDisposable
             }
         };
         var resource = ResourceBuilder.CreateDefault().Build();
+        var services = new ServiceCollection();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        // ACT
+        services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddSampler(t, options);
         });
 
+        // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered sampler '{sampler}'.") ?? false));
@@ -103,7 +111,9 @@ public class SamplerLoaderTests: IDisposable
     [Fact]
     public void AddSampler_WithUnsupportedSampler_LogsUnsupportedSamplerError()
     {
-        
+         // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var target = new SamplerLoader(_assemblyExec);
         var options = new SimpleOpenTelemetryOptions
         {
@@ -113,13 +123,15 @@ public class SamplerLoaderTests: IDisposable
             }
         };
         var resource = ResourceBuilder.CreateDefault().Build();
+        var services = new ServiceCollection();
 
-        var builder = Host.CreateApplicationBuilder();
-        builder.Services.AddOpenTelemetry().WithTracing(t =>
+        // ACT
+        services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddSampler(t, options);
         });
 
+        // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload.Any(p => p?.ToString()?.Contains("Unsupported OpenTelemetry sampler 'NoSuchSampler'.") ?? false));

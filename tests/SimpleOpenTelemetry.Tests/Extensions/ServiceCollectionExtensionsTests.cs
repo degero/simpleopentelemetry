@@ -57,7 +57,7 @@ public class ServiceCollectionExtensionsTests
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>()
             {
-                ["SimpleOpenTelemetry:ExporterOptions"] = "{}"
+                [$"{SimpleOpenTelemetryOptions.SectionName}:ExporterOptions"] = "{}"
             })
             .Build();
         var services = new ServiceCollection();
@@ -78,8 +78,8 @@ public class ServiceCollectionExtensionsTests
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string?>()
                 {
-                    ["SimpleOpenTelemetry:Trace:Propagators:0"] = "B3",
-                    ["SimpleOpenTelemetry:Trace:Propagators:1"] = "Baggage"
+                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:0"] = "B3",
+                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:1"] = "Baggage"
                 })
                 .Build();
 
