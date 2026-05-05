@@ -42,6 +42,8 @@ public class ResourceDetectorLoaderTests : IDisposable
         string assemblyName,
         bool packageInstalled)
     {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -56,8 +58,10 @@ public class ResourceDetectorLoaderTests : IDisposable
         var options = BuildOptionsWithDetectors(detector.ToString());
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
+        // ACT
         loader.AddResourceDetectors(resourceBuilder, options);
 
+        // ASSERT
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
@@ -81,13 +85,17 @@ public class ResourceDetectorLoaderTests : IDisposable
     [Fact]
     public void AddResourceDetectors_WithUnsupportedDetector_LogsUnsupportedDetectorError()
     {
-        
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var loader = new ResourceDetectorLoader(_configuration, _assemblyExec);
         var options = BuildOptionsWithDetectors("NonExistentDetector");
         var resourceBuilder = ResourceBuilder.CreateDefault();
 
+        // ACT
         loader.AddResourceDetectors(resourceBuilder, options);
 
+        // ASSERT
         var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Unsupported Resource Detector type 'NonExistentDetector'") ?? false));

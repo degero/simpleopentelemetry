@@ -36,6 +36,7 @@ public class ExtensionLoaderTests: IDisposable
         bool packageInstalled)
     {
         // ARRANGE
+        _listener.ClearEvents();
         Assert.Empty(_listener.Events);
 
         var mockAssemblyExec = new Mock<IAssemblyExecution>();

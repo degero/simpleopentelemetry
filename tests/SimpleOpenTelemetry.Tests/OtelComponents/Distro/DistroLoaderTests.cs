@@ -36,6 +36,7 @@ public class DistroLoaderTests : IDisposable
     )
     {
         // ARRANGE
+        Assert.Empty(_listener.Events);
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
             mockAssemblyExec.Setup(r => r.GetAssembly(assemblyName)).Throws(new Exception($"Cannot load assembly '{assemblyName}'. " +
@@ -83,6 +84,7 @@ public class DistroLoaderTests : IDisposable
     public void LoadDistro_WithUnsupportedDistro_LogsNoRegistrationEvents_AndReturnsTrue()
     {
         // ARRANGE
+        Assert.Empty(_listener.Events);
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var target = new DistroLoader(configuration, _assemblyExec);
         var options = new SimpleOpenTelemetryOptions

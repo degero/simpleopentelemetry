@@ -15,6 +15,12 @@ internal sealed class TestEventListener : EventListener
         get { lock (_lock) return _events.ToList(); }
     }
 
+    public void ClearEvents()
+    {
+        lock (_lock);
+        _events.Clear();
+    }
+
     public TestEventListener(
         string eventSourceName = SimpleOpenTelemetryEventSource.EventSourceName)
     {
