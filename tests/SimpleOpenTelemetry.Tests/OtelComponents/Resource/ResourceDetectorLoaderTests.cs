@@ -9,6 +9,10 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Resource;
 
+[CollectionDefinition("ResourceDetectorLoaderTests", DisableParallelization = true)]
+public class ResourceDetectorLoaderTestsCollection {}
+
+[Collection("ResourceDetectorLoaderTests")]
 public class ResourceDetectorLoaderTests : IDisposable
 {
     private readonly TestEventListener _listener;

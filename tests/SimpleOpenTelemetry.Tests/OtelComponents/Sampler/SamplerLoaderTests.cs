@@ -10,6 +10,10 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Sampler;
 
+[CollectionDefinition("SamplerLoaderTests", DisableParallelization = true)]
+public class SamplerLoaderTestsCollection {}
+
+[Collection("SamplerLoaderTests")]
 public class SamplerLoaderTests: IDisposable
 {
     private readonly TestEventListener _listener;

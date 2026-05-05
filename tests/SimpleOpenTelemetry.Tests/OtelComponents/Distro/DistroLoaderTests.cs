@@ -10,6 +10,11 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Distro;
 
+[CollectionDefinition("DistroLoaderTests", DisableParallelization = true)]
+public class DistroLoaderTestsCollection {}
+
+
+[Collection("DistroLoaderTests")]
 public class DistroLoaderTests : IDisposable
 {
     private readonly TestEventListener _listener;

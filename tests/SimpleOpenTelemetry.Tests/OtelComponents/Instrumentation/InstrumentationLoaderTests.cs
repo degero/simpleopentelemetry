@@ -11,6 +11,10 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Instrumentation;
 
+[CollectionDefinition("InstrumentationLoaderTests", DisableParallelization = true)]
+public class InstrumentationLoaderTestsCollection {}
+
+[Collection("InstrumentationLoaderTests")]
 public class InstrumentationLoaderTests : IDisposable
 {
     private readonly TestEventListener _listener;

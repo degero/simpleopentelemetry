@@ -8,9 +8,15 @@ using SimpleOpenTelemetry.OtelComponents.Extension;
 using SimpleOpenTelemetry.OtelComponents.Extensions;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;
+using Xunit.Sdk;
 
 namespace SimpleOpenTelemetryTests.OtelComponents.Extension;
 
+[CollectionDefinition("ExtensionLoaderTests", DisableParallelization = true)]
+public class ExtensionLoaderTestsCollection {}
+
+
+[Collection("ExtensionLoaderTests")]
 public class ExtensionLoaderTests: IDisposable
 {
     private readonly TestEventListener _listener;
