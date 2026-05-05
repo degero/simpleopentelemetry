@@ -22,3 +22,9 @@ jobs:
 
       - name: Test
         run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage/**/coverage.cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
