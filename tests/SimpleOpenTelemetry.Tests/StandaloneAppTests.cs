@@ -19,6 +19,8 @@ public class StandaloneAppTests
         ], key => Environment.SetEnvironmentVariable(key, null));
     }
 
+    // todo add test for config validation
+
     [Fact]
     public void StandaloneBootstrap_AddSimpleOpenTelemetry_ShouldSet_OTEL_EnvVars_FromConfiguration()
     {
@@ -30,7 +32,7 @@ public class StandaloneAppTests
             var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
 
             // ACT
-            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
+            StandaloneApp.AddSimpleOpenTelemetry(config);
 
             // ASSERT
             Assert.Equal(serviceName, Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME));
@@ -85,7 +87,7 @@ public class StandaloneAppTests
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
-                [SimpleOpenTelemetryOptions.SectionName] = "{}",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0"] = "console",
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = otelServiceName,
                 [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = otelResourceAttributes
             })

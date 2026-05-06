@@ -46,14 +46,14 @@ internal static class InstrumentationAssemblies
                 "OpenTelemetry.Instrumentation.AWS",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
                 "AddAWSInstrumentation",
-                "SimpleOpenTelemetry:Trace:InstrumentationConfig:AWS"),
+                "SimpleOpenTelemetry:Trace:InstrumentationConfig:AWS"), // TODO this should change 
             
             // AWS Lambda
             [TraceInstrumentationEnum.AWSLambda] = new(
                 "OpenTelemetry.Instrumentation.AWSLambda",
                 "OpenTelemetry.Instrumentation.AWSLambda.TracerProviderBuilderExtensions",
                 "AddAWSLambdaConfigurations",
-                "SimpleOpenTelemetry:Trace:InstrumentationConfig:AWSLambda"),
+                "SimpleOpenTelemetry:Trace:InstrumentationConfig:AWSLambda"),// TODO this should change 
 
         };
 

@@ -1,6 +1,5 @@
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
-using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -18,6 +17,7 @@ internal class PropagatorLoader : IPropagatorLoader
     /// <summary>
     /// Initializes a new instance of the PropagatorLoader class.
     /// </summary>
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
     public PropagatorLoader(IAssemblyExecution assemblyExecution)
     {
         _assemblyExec = assemblyExecution;

@@ -23,7 +23,7 @@ internal class SamplerLoader : ISamplerLoader
     /// <summary>
     /// Initializes a new instance of the SamplerLoader class.
     /// </summary>
-    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
     public SamplerLoader(IAssemblyExecution assemblyExecution)
     {
         _assemblyExec = assemblyExecution;

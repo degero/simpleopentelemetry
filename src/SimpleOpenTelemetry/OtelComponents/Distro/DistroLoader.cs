@@ -13,7 +13,6 @@ namespace SimpleOpenTelemetry.OtelComponents.Distro;
 internal class DistroLoader : IDistroLoader
 {
     private readonly string eventCategory = nameof(DistroLoader);
-    private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
 
     private readonly Dictionary<DistroEnum, DistroDescriptor> _descriptors = DistroAssemblies.KnownDistros;
@@ -21,12 +20,9 @@ internal class DistroLoader : IDistroLoader
     /// <summary>
     /// Initializes a new instance of the DistroLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public DistroLoader(IConfiguration configuration,
-        IAssemblyExecution assemblyExecution)
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
+    public DistroLoader(IAssemblyExecution assemblyExecution)
     {
-        _configuration = configuration;
         _assemblyExec = assemblyExecution;
     }
 
@@ -71,22 +67,18 @@ internal class DistroLoader : IDistroLoader
         DistroDescriptor descriptor)
     {
 
-        // TODO cover / test options required scenario
-        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired ) = descriptor;
+        var (assemblyName, typeName, methodName ) = descriptor;
 
         try
         {
-            var section = optionsClassName is not null
-                ? _configuration.GetSection(optionsClassName)
-                : null;
             ReflectiveLoaderExecutor.InvokeBuilderExtension(
                 _assemblyExec,
                 builder,
                 assemblyName,
                 typeName,
                 methodName,
-                section,
-                optionsClassName,
+                null,
+                null,
                 "distro");
 
             EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry distro '{distroEnum}'.");

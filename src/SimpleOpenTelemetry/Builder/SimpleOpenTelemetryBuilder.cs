@@ -53,23 +53,47 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// </summary>
     internal SimpleOpenTelemetryBuilder(
         IOpenTelemetryBuilder otelBuilder,
-        IConfiguration config) // TODO refac out use of Iconfiguration and inject services
+        IConfiguration config,
+        IAssemblyExecution assemblyExecution,
+        IInstrumentationLoader instrumentationLoader,
+        IResourceDetectorLoader resourceDetectorLoader,
+        IExporterLoader exporterLoader,
+        ISamplerLoader samplerLoader,
+        IPropagatorLoader propagatorLoader,
+        IExtensionLoader extensionLoader,
+        IDistroLoader distroLoader
+        )
     {
-        ArgumentNullException.ThrowIfNull(config);
-        ArgumentNullException.ThrowIfNull(otelBuilder);
-
         _configuration = config;
         _otelBuilder = otelBuilder;
-        _assemblyExecution = new AssemblyExecution();
-        // TODO Chad remove config dependency
-        _instrumentationLoader = new InstrumentationLoader(config, _assemblyExecution);
-        _resourceDetectorLoader = new ResourceDetectorLoader(config, _assemblyExecution);
-        _exporterLoader = new ExporterLoader(config, _assemblyExecution);
-        _samplerLoader = new SamplerLoader(_assemblyExecution);
-        _propagatorLoader = new PropagatorLoader(_assemblyExecution);
-        _extensionLoader = new ExtensionLoader(config, _assemblyExecution);
-        _distroLoader = new DistroLoader(config, _assemblyExecution);
+        _assemblyExecution = assemblyExecution;
+        _resourceDetectorLoader = resourceDetectorLoader;
+        _exporterLoader = exporterLoader;
+        _instrumentationLoader = instrumentationLoader;
+        _samplerLoader = samplerLoader;
+        _instrumentationLoader = instrumentationLoader;
+        _propagatorLoader = propagatorLoader;
+        _extensionLoader = extensionLoader;
+        _distroLoader = distroLoader;
+    }
 
+    internal static SimpleOpenTelemetryBuilder Create(
+        IOpenTelemetryBuilder otelBuilder,
+        IConfiguration config)
+    {
+        var assemblyExecution = new AssemblyExecution();
+        return new SimpleOpenTelemetryBuilder(
+            otelBuilder,
+            config,
+            assemblyExecution,
+            // TODO remove config dependency somehow
+            new InstrumentationLoader(config, assemblyExecution),
+            new ResourceDetectorLoader(config, assemblyExecution),
+            new ExporterLoader(config, assemblyExecution),
+            new SamplerLoader(assemblyExecution),
+            new PropagatorLoader(assemblyExecution),
+            new ExtensionLoader(assemblyExecution),
+            new DistroLoader(assemblyExecution));
     }
 
     /// <summary>
@@ -81,8 +105,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// </summary>
     public void Configure()
     {
-        if (!ValidateAndLoadOptions())
+        if (!ValidateConfiguration(_configuration))
             return;
+
+        BindConfigurationToSimpleOpenTelemetryOptions();
 
         // Check and load distro, this will skip any other configuration
         if (_distroLoader.LoadDistro(_otelBuilder, _options))
@@ -98,10 +124,15 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     }
 
-    private bool ValidateAndLoadOptions()
+    /// <summary>
+    /// Validate SimpleOpenTelemetry configuration exists with base requirements in the root configuration
+    /// </summary>
+    /// <param name="configuration"></param>
+    /// <returns></returns>
+    public static bool ValidateConfiguration(IConfiguration configuration)
     {
         // Load in configuration
-        var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
+        var section = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
 
         // validate that this config has simpleopentelemetry section exists() as 
         // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
@@ -126,10 +157,16 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 return false;
             }
         }
+        return true;
+        
+    }
+
+    private void BindConfigurationToSimpleOpenTelemetryOptions()
+    {
+        var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
         section.Bind(simpleOpenTelemetryConfig);
         _options = simpleOpenTelemetryConfig;
-        return true;
     }
 
     private void ConfigureResourceAttributes()

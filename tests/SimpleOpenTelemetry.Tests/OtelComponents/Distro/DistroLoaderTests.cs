@@ -49,7 +49,7 @@ public class DistroLoaderTests : IDisposable
 
         
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var target = new DistroLoader(configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var target = new DistroLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var options = new SimpleOpenTelemetryOptions
         {
             Distro = distroName
@@ -91,7 +91,7 @@ public class DistroLoaderTests : IDisposable
         // ARRANGE
         Assert.Empty(_listener.Events);
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var target = new DistroLoader(configuration, _assemblyExec);
+        var target = new DistroLoader(_assemblyExec);
         var options = new SimpleOpenTelemetryOptions
         {
             Distro = "NotARealDistro"
@@ -124,7 +124,7 @@ public class DistroLoaderTests : IDisposable
     {
         // ARRANGE
         var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var target = new DistroLoader(configuration, _assemblyExec);
+        var target = new DistroLoader(_assemblyExec);
         var options = new SimpleOpenTelemetryOptions();
 
         var services = new ServiceCollection();

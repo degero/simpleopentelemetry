@@ -29,7 +29,7 @@ internal class ExporterLoader : IExporterLoader
     /// Initializes a new instance of the ExporterLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration containing exporter settings.</param>
-    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
     public ExporterLoader(IConfiguration configuration,
         IAssemblyExecution assemblyExecution)
     {

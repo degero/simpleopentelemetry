@@ -5,9 +5,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Distro;
 internal record DistroDescriptor(
      string AssemblyName,
      string TypeName,
-     string MethodName,
-     string? ConfigurationSection,
-     bool OptionsRequired = false
+     string MethodName
 );
 
 internal static class DistroAssemblies
@@ -18,7 +16,6 @@ internal static class DistroAssemblies
             [DistroEnum.AzureMonitorAspNetCore] = new(
                 "Azure.Monitor.OpenTelemetry.AspNetCore",
                 "Azure.Monitor.OpenTelemetry.AspNetCore.OpenTelemetryBuilderExtensions",
-                "UseAzureMonitor",
-                null)
+                "UseAzureMonitor")
         };
 }

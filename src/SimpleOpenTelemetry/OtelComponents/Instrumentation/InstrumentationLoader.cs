@@ -25,6 +25,7 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration.</param>
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
     public InstrumentationLoader(IConfiguration configuration,
         IAssemblyExecution assemblyExecution)
     {

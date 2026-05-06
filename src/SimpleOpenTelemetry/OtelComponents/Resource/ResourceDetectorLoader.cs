@@ -22,6 +22,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     /// Initializes a new instance of the ResourceExtensionLoader class.
     /// </summary>
     /// <param name="configuration">The application configuration containing resource detector settings.</param>
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
     public ResourceDetectorLoader(IConfiguration configuration, IAssemblyExecution assemblyExecution)
     {
         _configuration = configuration;

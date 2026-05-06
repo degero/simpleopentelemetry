@@ -20,18 +20,14 @@ namespace SimpleOpenTelemetry.OtelComponents.Extensions;
 internal class ExtensionLoader : IExtensionLoader
 {
     private readonly string eventCategory = nameof(ExtensionLoader);
-    private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
 
     /// <summary>
     /// Initializes a new instance of the OpenTelemetryExtensionLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <exception cref="ArgumentNullException">Thrown when configuration is null.</exception>
-    public ExtensionLoader(IConfiguration configuration,
-        IAssemblyExecution assemblyExecution)
+    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
+    public ExtensionLoader(IAssemblyExecution assemblyExecution)
     {
-        _configuration = configuration;
         _assemblyExec = assemblyExecution;
     }
 
@@ -92,20 +88,19 @@ internal class ExtensionLoader : IExtensionLoader
             return;
         }
 
-        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired ) = descriptor!;
+        var (assemblyName, typeName, methodName ) = descriptor!;
       
         try
         {
            
-            var section = optionsClassName is not null ? _configuration.GetSection(optionsClassName) : null;
             ReflectiveLoaderExecutor.InvokeBuilderExtension(
                 _assemblyExec,
                 builder,
                 assemblyName,
                 typeName,
                 methodName,
-                section,
-                optionsRequired ? optionsClassName : null,
+                null,
+                null,
                 "extension");
 
             EventSource.Log.Verbose(eventCategory, $"Registered {signal} extension '{extension}'.");

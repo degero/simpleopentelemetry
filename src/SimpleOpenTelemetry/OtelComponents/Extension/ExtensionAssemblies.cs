@@ -3,9 +3,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Extension;
 internal record ExtensionDescriptor(
      string AssemblyName,
      string TypeName,
-     string MethodName,
-     string? OptionsClassname,
-     bool OptionsRequired = false
+     string MethodName
 );
 
 internal static class ExtensionAssemblies
@@ -16,8 +14,7 @@ internal static class ExtensionAssemblies
             [TraceExtensionsEnum.AWSXRayTraceId] = new(
                 "OpenTelemetry.Extensions.AWS",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddXRayTraceId",
-                null),
+                "AddXRayTraceId")
         };
 
 

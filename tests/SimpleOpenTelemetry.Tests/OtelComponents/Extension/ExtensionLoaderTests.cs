@@ -54,7 +54,7 @@ public class ExtensionLoaderTests: IDisposable
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
         
-        var target = new ExtensionLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var target = new ExtensionLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var services = new ServiceCollection();
         
         // ACT
@@ -90,7 +90,7 @@ public class ExtensionLoaderTests: IDisposable
         // ARRANGE
         Assert.Empty(_listener.Events);
         
-        var target = new ExtensionLoader(_configuration, _assemblyExec);
+        var target = new ExtensionLoader(_assemblyExec);
         var services = new ServiceCollection();
 
         // ACT
@@ -113,7 +113,7 @@ public class ExtensionLoaderTests: IDisposable
         // ARRANGE
         Assert.Empty(_listener.Events);
         
-        var target = new ExtensionLoader(_configuration, _assemblyExec);
+        var target = new ExtensionLoader(_assemblyExec);
         var services = new ServiceCollection();
 
         // ACT
