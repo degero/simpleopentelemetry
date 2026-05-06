@@ -68,7 +68,7 @@ If you are in TLDR; mode to bother with the next sections, take a look at the [e
 
 ## Diagnostics
 
-SimpleOpenTelemetry follows the same spec guideline as OpenTelemetry in that it 'MUST NOT throw unhandled exceptions at runtime.'  It does not use logging but diagnostics events as OpenTelemetry does. These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples/) folder demonstrate listening to these and outputting to console via code.
+SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/docs/specs/otel/error-handling/) as OpenTelemetry for error handling in that it 'MUST NOT throw unhandled exceptions at runtime.'  It does not use logging but diagnostics events as OpenTelemetry does. These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples/) folder demonstrate listening to this and "OpenTelemetry-" events and outputting to console via code.
 
 ---
 
