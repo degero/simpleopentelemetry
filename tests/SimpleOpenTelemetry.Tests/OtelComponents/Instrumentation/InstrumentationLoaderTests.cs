@@ -132,7 +132,7 @@ public class InstrumentationLoaderTests : IDisposable
     }
 
     [Fact]
-    public void AddTracingInstrumentation_ThrowsForInvalidEnumValue()
+    public void AddTracingInstrumentation_LogsErrorEvent_ForInvalidEnumValue()
     {
          // ARRANGE
         Assert.Empty(_listener.Events);
@@ -146,7 +146,7 @@ public class InstrumentationLoaderTests : IDisposable
 
         var services = new ServiceCollection();
 
-        // ACT
+        // ACT - more of an integration test to allow a non-enum string in
         services.AddSimpleOpenTelemetry(config);
 
         // ASSERT

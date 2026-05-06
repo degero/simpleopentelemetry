@@ -16,6 +16,7 @@ using SimpleOpenTelemetry.OtelComponents.Resource;
 using SimpleOpenTelemetry.OtelComponents.Sampler;
 using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 /// <summary>
 /// Configure OpenTelemetry settings via IConfiguration and return
@@ -23,6 +24,8 @@ using SimpleOpenTelemetry.Utils;
 /// </summary>
 internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 {
+    private static readonly string eventCategory = nameof(SimpleOpenTelemetryBuilder);
+
     private SimpleOpenTelemetryOptions _options = new SimpleOpenTelemetryOptions();
 
     private readonly IOpenTelemetryBuilder _otelBuilder;
@@ -58,19 +61,6 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _configuration = config;
         _otelBuilder = otelBuilder;
         _assemblyExecution = new AssemblyExecution();
-
-        // Load in configuration
-        var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
-        // validate that this config has simpleopentelemetry section exists() as 
-        // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
-        if (!section.Exists())
-            throw new Exception($"Configuration section '{SimpleOpenTelemetryOptions.SectionName}' not defined");
-
-        var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
-        section.Bind(simpleOpenTelemetryConfig);
-
-        _options = simpleOpenTelemetryConfig;
-        
         // TODO Chad remove config dependency
         _instrumentationLoader = new InstrumentationLoader(config, _assemblyExecution);
         _resourceDetectorLoader = new ResourceDetectorLoader(config, _assemblyExecution);
@@ -89,10 +79,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     ///  - Propagators, extensions, samplers, resource detectors
     ///  - OpenTelmeetry.Resources.Resource based on configured detectors, internal AssemblyVersionResourceDetector Env var detector
     /// </summary>
-    /// <param name="builder">The OpenTelemetry builder</param>
-    /// <param name="configuration">builder configuration</param>
     public void Configure()
     {
+        if (!ValidateAndLoadOptions())
+            return;
+
         // Check and load distro, this will skip any other configuration
         if (_distroLoader.LoadDistro(_otelBuilder, _options))
             return;
@@ -105,6 +96,40 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         ConfigureLogging();
 
+    }
+
+    private bool ValidateAndLoadOptions()
+    {
+        // Load in configuration
+        var section = _configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
+
+        // validate that this config has simpleopentelemetry section exists() as 
+        // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
+        if (!section.Exists())
+        {
+            EventSource.Log.Error(eventCategory, $"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry.");
+            return false;
+        }
+
+        // bypass check if distro is used
+        bool specifiedDistro = !string.IsNullOrWhiteSpace(section.GetValue<string?>("Distro"));
+
+        if (!specifiedDistro) // bypass signal settings validation if distro is set
+        {
+            bool atLeastOneExists = section.GetSection("Log").Exists()
+                || section.GetSection("Metric").Exists()
+                || section.GetSection("Trace").Exists();
+                
+            if (!atLeastOneExists)
+            {
+                EventSource.Log.Error(eventCategory, $"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
+                return false;
+            }
+        }
+        var simpleOpenTelemetryConfig = new SimpleOpenTelemetryOptions();
+        section.Bind(simpleOpenTelemetryConfig);
+        _options = simpleOpenTelemetryConfig;
+        return true;
     }
 
     private void ConfigureResourceAttributes()

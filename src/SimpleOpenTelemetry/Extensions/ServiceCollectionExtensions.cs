@@ -4,32 +4,47 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
+    private static readonly string eventCategory = nameof(ServiceCollectionExtensions);
+
+    internal static IOpenTelemetryBuilder? AddSimpleOpenTelemetry(
         this IServiceCollection services,
         IConfiguration configuration)
     {
         if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        {
+            EventSource.Log.Error(eventCategory, $"AddSimpleOpenTelemetry() IServiceCollection services parameter is null.");
+            return null;
+        }
 
         if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
+          {
+            EventSource.Log.Error(eventCategory, $"AddSimpleOpenTelemetry() IConfiguration configuration parameter is null.");
+            return null;
+        }
 
         var configSection = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         var config = configSection.Get<SimpleOpenTelemetryOptions>();
         
         if (config is null)
-            throw new Exception($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry");
+        {
+            EventSource.Log.Error(eventCategory, $"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry");
+            return null;
+        }
 
         bool atLeastOneExists = configSection.GetSection("Log").Exists()
             || configSection.GetSection("Metric").Exists()
             || configSection.GetSection("Trace").Exists();
             
         if (!atLeastOneExists)
-            throw new Exception($"Signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
-
+        {
+            EventSource.Log.Error(eventCategory, $"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
+            return null;
+        }
+        
         // Structured this way for more testability on injecting otelBuilder to SimpleOpenTelemetryBuilder
         var otelBuilder = services.AddOpenTelemetry();
 

@@ -1,3 +1,4 @@
+using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
@@ -11,33 +12,57 @@ namespace SimpleOpenTelemetryTests.Extensions;
 [Collection("ServiceCollectionExtensionsTests")]
 public class ServiceCollectionExtensionsTests
 {
+    private readonly TestEventListener _simpleOpenTelemetryEventListener;
+    
+    public ServiceCollectionExtensionsTests()
+    {
+        _simpleOpenTelemetryEventListener = new();
+    }
+
+    public void Dispose()
+    {
+        _simpleOpenTelemetryEventListener.Dispose();
+    }
+
     [Fact]
-    public void AddSimpleOpenTelemetry_ThrowsOnNullServices()
+    public void AddSimpleOpenTelemetry_LogsCriticalErrorEvent_AndReturns_OnNullServicesParameter()
     {
         // Arrange
         var config = new ConfigurationBuilder().Build();
         IServiceCollection? services = null;
 
-        // Act/Assert
-        Assert.Throws<ArgumentNullException>(() =>
-            ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config));
+        // Act
+        ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config);
+
+        // ASSERT
+        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"IServiceCollection services parameter is null") ?? false));
+
+        Assert.NotNull(failEvent);
     }
     
     [Fact]
-    public void AddSimpleOpenTelemetry_ThrowsOnNullConfiguration()
+    public void AddSimpleOpenTelemetry_LogsCriticalErrorEvent_AndReturns_OnNullConfigurationParameter()
     {
         // Arrange
-        IConfigurationRoot? config = null;
+        IConfiguration? config = null;
         var services = new ServiceCollection();
-        
-        // Act/Assert
-        Assert.Throws<ArgumentNullException>(() =>
-            ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config));
+
+        // Act
+        services.AddSimpleOpenTelemetry(config!);
+
+        // ASSERT
+        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"IConfiguration configuration parameter is null") ?? false));
+
+        Assert.NotNull(failEvent);
     }
 
     // TODO chad below tests these should just log Event not throw
     [Fact]
-    public void AddSimpleOpenTelemetry_ThrowsWhenSimpleOpenTelemetrySectionIsMissing()
+    public void AddSimpleOpenTelemetry_LogsCriticalErrorEvent_AndReturns_SimpleOpenTelemetrySectionIsMissing()
     {
         // Arrange
         var config = new ConfigurationBuilder()
@@ -45,13 +70,19 @@ public class ServiceCollectionExtensionsTests
             .Build();
         var services = new ServiceCollection();
 
-        // Act/Assert
-        var exception = Assert.Throws<Exception>(() => services.AddSimpleOpenTelemetry(config));
-        Assert.Contains("No configuration section 'SimpleOpenTelemetry'", exception.Message);
+        // ACT
+        services.AddSimpleOpenTelemetry(config);
+
+        // ASSERT
+        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section 'SimpleOpenTelemetry'") ?? false));
+
+        Assert.NotNull(failEvent);
     }
 
     [Fact]
-    public void AddSimpleOpenTelemetry_ThrowsWhenSimpleOpenTelemetrySectionIsMissingAtLeastOneSignalConfig()
+    public void AddSimpleOpenTelemetry_LogsCriticalErrorEvent_AndReturns_When_SimpleOpenTelemetrySectionIsMissingAtLeastOneSignalConfig()
     {
         // Arrange
         var config = new ConfigurationBuilder()
@@ -62,10 +93,15 @@ public class ServiceCollectionExtensionsTests
             .Build();
         var services = new ServiceCollection();
 
-        // Act/Assert
-        var exception = Assert.Throws<Exception>(() => services.AddSimpleOpenTelemetry(config));
-        var messageExpected = $"Signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.";
-        Assert.Contains(messageExpected, exception.Message);
+         // ACT
+        services.AddSimpleOpenTelemetry(config);
+
+        // ASSERT
+        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.") ?? false));
+
+        Assert.NotNull(failEvent);
     }
 
     [Fact]

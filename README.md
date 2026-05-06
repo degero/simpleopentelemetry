@@ -23,7 +23,7 @@ Support is available for enabling [Distributions](https://opentelemetry.io/docs/
 - Plugable components by adding config entry and NuGet package to your app for telemetry features you need. 
 - Example configuration files for common app / platform scenarios [example-configs](./example-configs/)
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin ResourceDetector 'AssemblyVersion' (see [Resource Detectors > Builtin](#builtin)). Overriden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
-- TODO add the other features
+- 
 
 ---
 
@@ -34,7 +34,7 @@ Support is available for enabling [Distributions](https://opentelemetry.io/docs/
 - Add boostrapping code:
   - For Generic Host apps like aspnetcore (or any apps using WebApplicationBuilder/HostApplicationBuilder):
     - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
-    - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`.
+    - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
   - For Standalone apps (no Generc host): 
     - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and   
     ```csharp
@@ -64,6 +64,11 @@ If you are in TLDR; mode to bother with the next sections, take a look at the [e
 
 // TODO add information on controlling the life cycle in a non-generic host
 
+---
+
+## Diagnostics
+
+SimpleOpenTelemetry follows the same spec guideline as OpenTelemetry in that it 'MUST NOT throw unhandled exceptions at runtime.'  It does not use logging but diagnostics events as OpenTelemetry does. These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples/) folder demonstrate listening to these and outputting to console via code.
 
 ---
 

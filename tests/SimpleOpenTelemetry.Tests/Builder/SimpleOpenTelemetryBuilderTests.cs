@@ -12,6 +12,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.OtelComponents.Extension;
@@ -24,6 +25,7 @@ using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Diagnostics.Tracing;
 using System.Reflection;
 using Xunit;
 
@@ -33,15 +35,18 @@ namespace SimpleOpenTelemetryTests.Builder;
 public class SimpleOpenTelemetryBuilderTests : IDisposable
 {
     private readonly TestEventListener _openTelemetrySdkEventListener;
+    private readonly TestEventListener _simpleOpenTelemetryEventListener;
     
     public SimpleOpenTelemetryBuilderTests()
     {
         _openTelemetrySdkEventListener = new("OpenTelemetry-");
+        _simpleOpenTelemetryEventListener = new();
     }
 
     public void Dispose()
     {
         _openTelemetrySdkEventListener.Dispose();
+        _simpleOpenTelemetryEventListener.Dispose();
     }
 
     [Fact]
@@ -390,7 +395,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         // Use reflection to mock private fields for testing
         var distroLoaderField = typeof(SimpleOpenTelemetryBuilder).GetField("_distroLoader", BindingFlags.NonPublic | BindingFlags.Instance);
         var mockDistroLoader = new Mock<IDistroLoader>();
-        mockDistroLoader.Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>())).Returns(true);
+        mockDistroLoader.Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>())).Returns(false);
         distroLoaderField?.SetValue(builder, mockDistroLoader.Object);
 
         var assemblyExecutionField = typeof(SimpleOpenTelemetryBuilder).GetField("_assemblyExecution", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -426,7 +431,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         // ASSERT
 
-        mockDistroLoader.Verify(d => d.LoadDistro(otelBuilder, It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
+        mockDistroLoader.Verify(d => d.LoadDistro(otelBuilder, It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         mockAssemblyExecution.Verify(r => r.GetAssembly(It.IsAny<string>()), Times.Never);
 
         mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
@@ -535,18 +540,57 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
     }
 
     [Fact]
-    public void Configure_Will_Terminate_When_Invalid_IConfiguration_Passed()
+    public void Configure_Will_LogErrorEvent_And_Terminate_When_NoSimpleOpenTelemetryConfigSection_Exists()
     {
         // ARRANGE
+        Assert.Empty(_simpleOpenTelemetryEventListener.Events);
         var services = new ServiceCollection();
-        var otelBuilder = services.AddOpenTelemetry();
 
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>())
             .Build();
 
-        var ex = Assert.Throws<Exception>(() => new SimpleOpenTelemetryBuilder(otelBuilder, config));
+        var otelBuilder = services.AddOpenTelemetry();
+        var builder = new SimpleOpenTelemetryBuilder(otelBuilder, config);
 
+        // ACT
+        builder.Configure();
+
+        // ASSERT
+        var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry.") ?? false));
+       
+        Assert.NotNull(events);
+    }
+
+    
+    [Fact]
+    public void Configure_Will_LogErrorEvent_And_Terminate_When_NoSimpleOpenTelemetryConfig_SignalSubSection_Exists()
+    {
+        // ARRANGE
+        Assert.Empty(_simpleOpenTelemetryEventListener.Events);
+        var services = new ServiceCollection();
+
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                [$"{SimpleOpenTelemetryOptions.SectionName}"] = "{}"
+            })
+            .Build();
+
+        var otelBuilder = services.AddOpenTelemetry();
+        var builder = new SimpleOpenTelemetryBuilder(otelBuilder, config);
+
+        // ACT
+        builder.Configure();
+
+        // ASSERT
+        var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Error &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.") ?? false));
+       
+        Assert.NotNull(events);
     }
 
     /// <summary>

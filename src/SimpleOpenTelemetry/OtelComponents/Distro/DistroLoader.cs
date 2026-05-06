@@ -31,7 +31,7 @@ internal class DistroLoader : IDistroLoader
     }
 
     /// <summary>
-    /// Loads an opentelemetry distro
+    /// Loads an opentelemetry distro. Returns false if none set
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="options"></param>

@@ -4,6 +4,7 @@ using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Extensions;
 
@@ -12,44 +13,50 @@ namespace SimpleOpenTelemetry.Extensions;
 /// </summary>
 public static class ServiceProviderExtensions
 {
+    private const string EventCategory = nameof(SimpleOpenTelemetryValidate);
+
     /// <summary>
     /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
     /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
-    /// Recommended for non-prod environments as it throws unhandled exceptions (inline with OpenTelemetry's Spec for [error handling](https://opentelemetry.io/docs/specs/otel/error-handling/)) to confirm
-    /// settings.
+    /// Writes errors via EventSource for any misconfiguration issues found.
     /// </summary>
     /// <remarks>
-    /// This method will throw an InvalidOperationException if any required attributes are missing or empty.
-    /// Useful to ensure proper telemetry identification of apps/environments.
-    /// For validation to pass Set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
+    /// For validation to pass, set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
     /// 
     /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
     /// </remarks>
     /// <param name="services">The service provider instance.</param>
-    /// <exception cref="ArgumentNullException">Thrown when services is null.</exception>
-    /// <exception cref="InvalidOperationException">Thrown when OpenTelemetry is not configured or required resource attributes are missing or empty.</exception>
-    public static void SimpleOpenTelemetryValidate(this IServiceProvider services) // TODO add option to log warning with Ilogger instead of throwing
+    /// <returns>True if valid</returns>
+    public static bool SimpleOpenTelemetryValidate(this IServiceProvider services)
     {
-        ArgumentNullException.ThrowIfNull(services);
+        if (services is null)
+        {
+            EventSource.Log.Error(EventCategory, "services argument is null.");
+            return false;
+        }
 
         // Check opentelemetry registered
         var hostedServices = services.GetServices<IHostedService>();
         var telemetryHost = hostedServices.Count() > 0 ? hostedServices.First(r => r.GetType().Name.Contains("TelemetryHostedService")) : null;
         if (telemetryHost is null)
-              throw new InvalidOperationException(
+        {
+            EventSource.Log.Error(EventCategory,
                 "OpenTelemetry has not been registered. " +
                 "Ensure AddSimpleOpenTelemetry() is called with a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
-      
+            return false;
+        }
+
         // Check at least one signal output by getting resource from available providers (TracerProvider, MeterProvider, or LoggerProvider)
         var resource = GetResourceFromProviders(services);
 
         if (resource == null)
         {
-            throw new InvalidOperationException(
+            EventSource.Log.Error(EventCategory,
                 "No OpenTelemetry signal providers have been registered. " +
                 "Ensure a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
+            return false;
         }
 
         var attrs = resource.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -59,10 +66,12 @@ public static class ServiceProviderExtensions
 
         if (missing.Any())
         {
-            throw new InvalidOperationException(
+            EventSource.Log.Error(EventCategory,
                 $"Missing required OpenTelemetry resource attributes: {string.Join(", ", missing)}. " +
                 "Check OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES env vars / appsettings.json.");
+            return false;
         }
+        return true;
     }
 
     /// <summary>
