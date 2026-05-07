@@ -89,7 +89,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // TODO remove config dependency somehow
             new InstrumentationLoader(config, assemblyExecution),
             new ResourceDetectorLoader(config, assemblyExecution),
-            new ExporterLoader(config, assemblyExecution),
+            new ExporterLoader(assemblyExecution),
             new SamplerLoader(assemblyExecution),
             new PropagatorLoader(assemblyExecution),
             new ExtensionLoader(assemblyExecution),

@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Trace;
 using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.Reflection;
@@ -132,6 +133,49 @@ public class ExporterLoaderTests : IDisposable
     }
 
     [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ConfigureExporters_WithExportersOptions_OverridenBySignalEntry_Options(bool signalOverride)
+    {
+        // Arrange
+        Assert.Empty(_listener.Events);
+
+        var originalEndpoint = "http://localhost:1317/";
+        var endpointOverride = "http://localhost:8317/";
+
+        var dict = new Dictionary<string, string?>()
+        {
+            { $"{SimpleOpenTelemetryOptions.SectionName}:ExporterOptions:Otlp:Endpoint", originalEndpoint },
+            { $"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0:Type", "Otlp" },
+            { $"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0:Options:Protocol", "HttpProtobuf" },
+        };
+        if (signalOverride)
+            dict.Add($"{SimpleOpenTelemetryOptions.SectionName}:Trace:Exporters:0:Options:Endpoint", endpointOverride);
+
+        var (target, config) = InitExporter(dict);
+
+        var services = new ServiceCollection();
+
+        // Act
+        // This is what AddSimpleOpenTelemetry() is doing but 
+        // done manually to isolate closer to the SUT
+        services.AddOpenTelemetry().WithTracing(r =>
+        {
+            target.ConfigureExporters(r, config);
+        });
+        // Assert
+
+        using var sp = services.BuildServiceProvider();
+        sp.GetRequiredService<TracerProvider>();
+
+        var monitor = sp.GetRequiredService<IOptionsMonitor<OtlpExporterOptions>>();
+        var exporterOne = monitor.Get("OTLPExporter-trace-0");
+        Assert.NotNull(exporterOne);
+        Assert.Equal(signalOverride ? endpointOverride : originalEndpoint, exporterOne.Endpoint.ToString());
+        Assert.Equal(OtlpExportProtocol.HttpProtobuf, exporterOne.Protocol);
+    }
+
+    [Theory]
     [MemberData(nameof(GetAllKnownTraceExporters), false)]
     [MemberData(nameof(GetAllKnownTraceExporters), true)]
     public void ConfigureExporters_WithAllKnownTraceExporters_SuccessfullyRegistered(TraceExporterEnum exporterType,
@@ -186,8 +230,6 @@ public class ExporterLoaderTests : IDisposable
 
         Assert.NotNull(registeredSuccessEvent);
         Assert.Empty(errorEvents);
-        
-
     }
 
     [Theory]
@@ -415,7 +457,7 @@ public class ExporterLoaderTests : IDisposable
 
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(prefixedDict).Build();
         var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
-        var target = new ExporterLoader(configuration, _assemblyExec);
+        var target = new ExporterLoader(_assemblyExec);
         return (target, config);
     }
 

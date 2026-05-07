@@ -20,20 +20,14 @@ internal class ExporterLoader : IExporterLoader
 {
     private readonly string eventCategory = nameof(ExporterLoader);
 
-    private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
-
-    private readonly string _exportersTopLevelConfigSectionName = "ExporterOptions";
 
     /// <summary>
     /// Initializes a new instance of the ExporterLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration containing exporter settings.</param>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public ExporterLoader(IConfiguration configuration,
-        IAssemblyExecution assemblyExecution)
+    public ExporterLoader(IAssemblyExecution assemblyExecution)
     {
-        _configuration = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
         _assemblyExec = assemblyExecution;
     }
 
@@ -45,9 +39,9 @@ internal class ExporterLoader : IExporterLoader
     /// using reflection from their respective assemblies and registered with the provided builder.
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
-    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions config)
-        => ConfigureExporters(builder, config.Metric.Exporters,
+    /// <param name="options">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    public void ConfigureExporters(MeterProviderBuilder builder, SimpleOpenTelemetryOptions options)
+        => ConfigureExporters(builder, options,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             ExporterAssemblies.KnownMetricExporters);
 
@@ -59,9 +53,9 @@ internal class ExporterLoader : IExporterLoader
     /// using reflection from their respective assemblies and registered with the provided builder.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
-    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions config)
-        => ConfigureExporters(builder, config.Trace.Exporters,
+    /// <param name="options">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    public void ConfigureExporters(TracerProviderBuilder builder, SimpleOpenTelemetryOptions options)
+        => ConfigureExporters(builder, options,
             (name, cfg) => builder.AddOtlpExporter(name: name, configure: cfg),
             ExporterAssemblies.KnownTraceExporters);
 
@@ -73,27 +67,27 @@ internal class ExporterLoader : IExporterLoader
     /// using reflection from their respective assemblies and registered with the provided builder.
     /// </remarks>
     /// <param name="builder">The LoggerProviderBuilder to configure.</param>
-    /// <param name="config">The SimpleOpenTelemetry configuration containing exporter settings.</param>
-    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions config)
-        => ConfigureExporters(builder, config.Log.Exporters,
+    /// <param name="options">The SimpleOpenTelemetry configuration containing exporter settings.</param>
+    public void ConfigureExporters(LoggerProviderBuilder builder, SimpleOpenTelemetryOptions options)
+        => ConfigureExporters(builder, options,
             (name, cfg) => builder.AddOtlpExporter(name: name, configureExporter: cfg),
             ExporterAssemblies.KnownLogExporters);
 
-    private IConfiguration? GetCustomExporterConfig<TEnum>(
-        SimpleOpenTelemetryExporterConfig<TEnum> config
+    private IConfiguration? GetCustomExporterConfig<TEnum>(SimpleOpenTelemetryOptions config,
+        SimpleOpenTelemetryExporterConfig<TEnum> exporterConfig
     )
     {
         // try get the top level exporter settings of the exporter name
-        var topConfigSection = _configuration.GetSection(_exportersTopLevelConfigSectionName).GetSection(config.Type.ToString());
+        var topConfigSection = config.ExporterOptions?.GetSection(exporterConfig.Type.ToString());
         if (topConfigSection is not null && topConfigSection!.Exists())
         {
             //  override with the output type options if they exist
-            if (config.Options is not null && config.Options.Exists())
+            if (exporterConfig.Options is not null && exporterConfig.Options.Exists())
             {
 
                 var merged = new ConfigurationBuilder()
                     .AddConfiguration(topConfigSection)    // base values
-                    .AddConfiguration(config.Options)  // overrides/adds on top
+                    .AddConfiguration(exporterConfig.Options)  // overrides/adds on top
                     .Build();
 
                 return merged;
@@ -101,20 +95,20 @@ internal class ExporterLoader : IExporterLoader
             else
                 return topConfigSection;
         }
-        else if (config.Options is not null && config.Options.Exists())
-            return config.Options;
+        else if (exporterConfig.Options is not null && exporterConfig.Options.Exists())
+            return exporterConfig.Options;
 
         return null;
     }
 
     private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder,
-        IList<SimpleOpenTelemetryExporterConfig<TEnum>> exporters,
+        SimpleOpenTelemetryOptions options,
         Action<string, Action<OtlpExporterOptions>> addOtlp,
         Dictionary<TEnum, ExporterExtensionDescriptor> descriptors)
         where TEnum : struct, Enum
     {
         var signal = Util.GetSignalName<TBuilder>();
-
+        List<SimpleOpenTelemetryExporterConfig<TEnum>> exporters = GetExportersForBuilder<TEnum>(options);
         for (var i = 0; i < exporters.Count; i++)
         {
             var item = exporters[i];
@@ -124,8 +118,11 @@ internal class ExporterLoader : IExporterLoader
             {
                 if (string.Equals(nameof(TraceExporterEnum.Otlp), matchedExporter.ToString(), StringComparison.OrdinalIgnoreCase))
                 {
+                     // If not set in this configsection, set through either the OpenTelemetry Env vars
+                    // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
+                    var config = GetCustomExporterConfig(options, item);
                     // Dont use reflection as we have this built in the OpenTelemetry lib
-                    AddOTLPExporter(addOtlp, item, $"OTLPExporter-{signal}-{i}", signal);
+                    AddOTLPExporter(addOtlp, config, item, $"OTLPExporter-{signal}-{i}", signal);
                 }
                 else if (!descriptors.TryGetValue(matchedExporter, out var descriptor))
                 {
@@ -134,7 +131,7 @@ internal class ExporterLoader : IExporterLoader
                 }
                 else 
                 {
-                    var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(item) : null;
+                    var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(options, item) : null;
                     AddExporter(matchedExporter, builder, descriptor, config, signal);
                 }
             }
@@ -146,12 +143,31 @@ internal class ExporterLoader : IExporterLoader
         }
     }
 
+    private List<SimpleOpenTelemetryExporterConfig<TEnum>> GetExportersForBuilder<TEnum>(
+        SimpleOpenTelemetryOptions options)
+    {
+        object exporters = typeof(TEnum) switch
+        {
+            var t when t == typeof(MetricExporterEnum) => options.Metric.Exporters,
+            var t when t == typeof(TraceExporterEnum)  => options.Trace.Exporters,
+            _                                          => options.Log.Exporters
+        };
 
-    private void AddOTLPExporter<TEnum>(Action<string, Action<OtlpExporterOptions>> addExporter, SimpleOpenTelemetryExporterConfig<TEnum> item, string exporterName, string signal)
+        return (List<SimpleOpenTelemetryExporterConfig<TEnum>>)exporters;
+    }
+
+    private void AddOTLPExporter<TEnum>(Action<string, Action<OtlpExporterOptions>> addExporter, 
+        IConfiguration? options,
+        SimpleOpenTelemetryExporterConfig<TEnum> item, 
+        string exporterName, 
+        string signal)
     {
         try 
         {
-            addExporter(exporterName, BuildOtlpConfig(item.Options));
+            // If not set in this configsection, set through either the OpenTelemetry Env vars
+            // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
+           
+            addExporter(exporterName, BuildOtlpConfigAction(options));
             EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{TraceExporterEnum.Otlp}' '{exporterName}'.");
 
         }
@@ -191,7 +207,7 @@ internal class ExporterLoader : IExporterLoader
         }
     }
 
-    private Action<OtlpExporterOptions> BuildOtlpConfig(IConfigurationSection? options)
+    private Action<OtlpExporterOptions> BuildOtlpConfigAction(IConfiguration? options)
     {
         // If options are passed, bind to OtlpExporterOptions structure
         if (options is not null && options.GetChildren().Count() > 0)
