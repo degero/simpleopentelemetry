@@ -2,6 +2,8 @@
 
 A lightweight, low-friction .NET library providing a simple, low code option to setup code-based OpenTelemetry instrumentation on dotnet applications via IConfiguration.
 
+- [Test/Coverage Report](https://app.codecov.io/gh/degero/simpleopentelemetry)
+
 ---
 
 ## Overview
