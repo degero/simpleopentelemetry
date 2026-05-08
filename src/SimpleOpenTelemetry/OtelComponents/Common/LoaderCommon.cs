@@ -32,7 +32,6 @@ internal static class ReflectiveLoaderExecutor
     {
         var assembly = assemblyExecution.GetAssembly(assemblyName);
         var builderType = typeof(TBuilder);
-	// TODO chad check this fallback needed
         var builderTypeName = builder?.GetType().Name ?? builderType.Name;
 
         var type = assembly.GetType(typeName)

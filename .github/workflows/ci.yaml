@@ -32,5 +32,4 @@ jobs:
       - name: Upload test results to Codecov
         uses: codecov/test-results-action@v1
         with:
-          files: ./testresults/*.xml
           token: ${{ secrets.CODECOV_TOKEN }}

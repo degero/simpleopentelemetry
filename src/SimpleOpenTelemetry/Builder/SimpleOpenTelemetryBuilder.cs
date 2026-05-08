@@ -209,9 +209,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureTracing()
     {
-        var shouldConfigureTracing = HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace));
-
-        if (!shouldConfigureTracing)
+        if (!HasSimpleOpenTelemetrySection(_configuration, nameof(SimpleOpenTelemetryOptions.Trace)))
             return;
 
         _otelBuilder.WithTracing(tracing =>

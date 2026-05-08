@@ -72,13 +72,13 @@ internal static class ResourceDetectorAssemblies
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
-                "AWSResourceBuilderOptions")
-            // GCP - Still in Development 
-            // TODO add when available
-            // [ResourceExtensionEnum.GCP] = new(
-            //     "OpenTelemetry.Resources.Gcp",
-            //     "OpenTelemetry.Resources.GcpResourceBuilderExtensions",
-            //     new string[] {"AddGcpDetector"}),
+                "AWSResourceBuilderOptions"),
+
+            [ResourceDetectorEnum.GCP] = new(
+                "OpenTelemetry.Resources.Gcp",
+                "OpenTelemetry.Resources.GcpResourceBuilderExtensions",
+                new string[] {"AddGcpDetector"},
+                null),
         };
 }
 

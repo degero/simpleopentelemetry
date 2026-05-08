@@ -15,6 +15,6 @@ public enum ResourceDetectorEnum
 
     /* opentelemetry-dotnet-contrib platform specific */
     Azure,
-    AWS
-    // GCP - Still in unreleased Development state
+    AWS,
+    GCP
 }
