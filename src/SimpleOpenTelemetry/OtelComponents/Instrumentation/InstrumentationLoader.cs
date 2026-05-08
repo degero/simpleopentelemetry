@@ -24,12 +24,9 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// <summary>
     /// Initializes a new instance of the OpenTelemetryInstrumentationLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration.</param>
-    /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public InstrumentationLoader(IConfiguration configuration,
-        IAssemblyExecution assemblyExecution)
+    /// <param name="assemblyExecution">To invoke insturemtation library registration</param>
+    public InstrumentationLoader(IAssemblyExecution assemblyExecution)
     {
-        _configuration = configuration;
         _assemblyExec = assemblyExecution;
     }
 
@@ -41,11 +38,13 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
+    /// <param name="options">SimpleOpenTelemetryOptions to look up an instrumentationconfig</param>
     /// <param name="instrumentation">The instrumentation type to add.</param>
     public void AddTracingInstrumentation(
         TracerProviderBuilder builder,
+        SimpleOpenTelemetryOptions options,
         TraceInstrumentationEnum instrumentation)
-    => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations);
+    => AddInstrumentation(builder, options, instrumentation, InstrumentationAssemblies.KnownTraceInstrumentations);
 
     /// <summary>
     /// Adds a metrics instrumentation to the provided MeterProviderBuilder.
@@ -55,14 +54,17 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
+    /// <param name="options">SimpleOpenTelemetryOptions to look up an instrumentationconfig</param>
     /// <param name="instrumentation">The instrumentation type to add.</param>
     public void AddMetricsInstrumentation(
         MeterProviderBuilder builder,
+        SimpleOpenTelemetryOptions options,
         MetricInstrumentationEnum instrumentation)
-        => AddInstrumentation(builder, instrumentation, InstrumentationAssemblies.KnownMetricsInstrumentations);
+        => AddInstrumentation(builder, options, instrumentation, InstrumentationAssemblies.KnownMetricsInstrumentations);
 
     private void AddInstrumentation<TBuilder, TEnum>(
     TBuilder builder,
+    SimpleOpenTelemetryOptions options,
     TEnum instrumentation,
     Dictionary<TEnum, InstrumentationExtensionDescriptor> descriptors)
     where TEnum : notnull
@@ -76,12 +78,11 @@ internal class InstrumentationLoader : IInstrumentationLoader
             return;
         }
             
-        var (assemblyName, typeName, methodName, configurationSection) = descriptor!;
+        var (assemblyName, typeName, methodName, optionsClassName) = descriptor!;
 
         try
         {
-            
-            var section = configurationSection is not null ? _configuration.GetSection(configurationSection) : null;
+            var section = optionsClassName is not null ? options.Trace?.InstrumentationConfig?.GetSection(instrumentation.ToString()) : null;
             ReflectiveLoaderExecutor.InvokeBuilderExtension(
                 _assemblyExec,
                 builder,
@@ -89,7 +90,7 @@ internal class InstrumentationLoader : IInstrumentationLoader
                 typeName,
                 methodName,
                 section,
-                configurationSection,
+                optionsClassName,
                 "instrumentation");
 
             EventSource.Log.Verbose(eventCategory, $"Registered {signal} instrumentation '{instrumentation}'.");

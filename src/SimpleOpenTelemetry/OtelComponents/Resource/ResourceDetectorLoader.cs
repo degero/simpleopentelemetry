@@ -13,7 +13,6 @@ namespace SimpleOpenTelemetry.OtelComponents.Resource;
 internal class ResourceDetectorLoader : IResourceDetectorLoader
 {
     private readonly string eventCategory = nameof(ResourceDetectorLoader);
-    private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
 
     internal readonly Dictionary<ResourceDetectorEnum, ResourceDetectorDescriptor> _descriptors = ResourceDetectorAssemblies.KnownResourceDetectors;
@@ -21,11 +20,9 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     /// <summary>
     /// Initializes a new instance of the ResourceExtensionLoader class.
     /// </summary>
-    /// <param name="configuration">The application configuration containing resource detector settings.</param>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public ResourceDetectorLoader(IConfiguration configuration, IAssemblyExecution assemblyExecution)
+    public ResourceDetectorLoader(IAssemblyExecution assemblyExecution)
     {
-        _configuration = configuration;
         _assemblyExec = assemblyExecution;
     }
 
@@ -55,7 +52,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
                             throw new InvalidOperationException(
                                 $"{typeof(ResourceDetectorEnum).Name} type '{matchedResourceExtension}' not found to initialise resource detector.");
 
-                        AddResourceDetector(matchedResourceExtension, builder, descriptor);
+                        AddResourceDetector(matchedResourceExtension, builder, options, descriptor);
                     }
                     else
                     {
@@ -73,6 +70,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     private void AddResourceDetector(
         ResourceDetectorEnum resourceDetector,
         ResourceBuilder builder,
+        SimpleOpenTelemetryOptions options,
         ResourceDetectorDescriptor descriptor)
     {
 
@@ -85,12 +83,12 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
             var type = assembly.GetType(typeName)
                 ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
+            var section = descriptor.optionsClassName is not null ? options.Resource?.DetectorConfig?.GetSection(resourceDetector.ToString()) : null;
+
             methodNames.ToList().ForEach(methodName =>
             {
                 var parameterlessMethod = _assemblyExec.FindParameterlessMethodWithAllDefaultValues(type, builderType, methodName);
                 var actionMethod = _assemblyExec.FindActionOverload(type, builderType, methodName);
-
-                var section = descriptor.ConfigurationSection is not null ? _configuration.GetSection(descriptor.ConfigurationSection) : null;
 
                 if (section is not null && section.Exists() && actionMethod is not null)
                     _assemblyExec.InvokeWithAction(actionMethod, builder, section);

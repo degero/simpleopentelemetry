@@ -4,7 +4,7 @@ internal record ResourceDetectorDescriptor(
      string AssemblyName,
      string TypeName,
      string[] MethodNames,
-     string? ConfigurationSection
+     string? optionsClassName
 );
 
 /// <summary>
@@ -72,8 +72,7 @@ internal static class ResourceDetectorAssemblies
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
-                "SimpleOpenTelemetry:ResourceDetectorConfig:AWS") // TODO look at if this can be set as classname instead and just use convention for config location
-        
+                "AWSResourceBuilderOptions")
             // GCP - Still in Development 
             // TODO add when available
             // [ResourceExtensionEnum.GCP] = new(

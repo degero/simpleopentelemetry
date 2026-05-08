@@ -51,13 +51,13 @@ public class InstrumentationLoaderTests : IDisposable
         }
 
         
-        var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var target = new InstrumentationLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var services = new ServiceCollection();
 
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddTracingInstrumentation(t, instrumentation);
+            target.AddTracingInstrumentation(t, new SimpleOpenTelemetryOptions(), instrumentation);
         });
 
         // ASSERT
@@ -101,13 +101,13 @@ public class InstrumentationLoaderTests : IDisposable
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        var target = new InstrumentationLoader(_configuration, packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var target = new InstrumentationLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var services = new ServiceCollection();
-        
+
         // ACT
         services.AddOpenTelemetry().WithMetrics(m =>
         {
-            target.AddMetricsInstrumentation(m, instrumentation);
+            target.AddMetricsInstrumentation(m, new SimpleOpenTelemetryOptions(), instrumentation);
         });
 
         // ASSERT

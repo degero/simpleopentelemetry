@@ -369,8 +369,8 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(),   It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
-        _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(),  It.IsAny<MetricInstrumentationEnum>()), Times.Never);
-        _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
+        _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<MetricInstrumentationEnum>()), Times.Never);
+        _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
         _mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(),           It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
@@ -408,8 +408,8 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(),   It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<LoggerProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
-        _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(),  It.IsAny<MetricInstrumentationEnum>()), Times.Never);
-        _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
+        _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<MetricInstrumentationEnum>()), Times.Never);
+        _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<TraceInstrumentationEnum>()), Times.Never);
         _mockResourceDetectorLoader.Verify(r => r.AddResourceDetectors(It.IsAny<ResourceBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(),           It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
         _mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Never);
@@ -464,13 +464,13 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         if (signal == "metric")
         {
             _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<MeterProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
-            _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricInstrumentationEnum>()), Times.Once);
+            _mockInstrumentationLoader.Verify(i => i.AddMetricsInstrumentation(It.IsAny<MeterProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<MetricInstrumentationEnum>()), Times.Once);
             _mockExtensionLoader.Verify(e => e.AddMetricsExtension(It.IsAny<MeterProviderBuilder>(), It.IsAny<MetricExtensionsEnum>()), Times.Once);
         }
         if (signal == "trace")
         {
             _mockExporterLoader.Verify(e => e.ConfigureExporters(It.IsAny<TracerProviderBuilder>(),  It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
-            _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<TraceInstrumentationEnum>()), Times.Once);
+            _mockInstrumentationLoader.Verify(i => i.AddTracingInstrumentation(It.IsAny<TracerProviderBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>(), It.IsAny<TraceInstrumentationEnum>()), Times.Once);
             _mockExtensionLoader.Verify(e => e.AddTraceExtension(It.IsAny<TracerProviderBuilder>(),  It.IsAny<TraceExtensionsEnum>()), Times.Once);
             _mockSamplerLoader.Verify(s => s.AddSampler(It.IsAny<TracerProviderBuilder>(),           It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
             _mockPropagatorLoader.Verify(p => p.AddPropagators(It.IsAny<SimpleOpenTelemetryOptions>()), Times.Once);
