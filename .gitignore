@@ -53,6 +53,7 @@ ehthumbs.db
 .env
 .env.*
 *.local
+envvars.json
 
 # Package directories
 node_modules/
@@ -90,8 +91,5 @@ NUGET_*
 SAMPLES_*
 
 # TODO Chad remove
-examples/wpf/**/*
-scripts/**/*
-tmp/**/*
-*.md
-src/SimpleOpenTelemetry.*/**/*
+retired/**/*
+spec.md

@@ -42,17 +42,27 @@ docker-compose down
 
 This uses local volumes so for a full data flush delete the volumes in docker.
 
+## Setup the config
+
+For either example, To use config file loading, in the project folder:
+    cp appsettings.Example.json appsettings.Development.json
+OR to Env vars, in this README folder use one of these for the respective app type:
+    cp envvars.Example.aspnetcore.json envvars.json
+    cp envvars.Example.console.json envvars.json
+
+Make adjustments to these files based on the different examples below.
+NOTE: when using the envvars.json, you will need to run .\SetConfigEnvVars.ps1 before launching the app.
 
 ## Using the AspNetCore example
 
 This uses a WebApplicationBuilder generic host setup. 
-To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development and set "UseSqlEfCore": "true" 
+To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development / envvars.json and set "UseSqlEfCore": "true" 
 
 To run:  
 
 ```
 cd ./examples/aspnetcore
-cp appsettings.Example.json appsettings.Development.json
+..setup the config file...
 dotnet run
 ```
 
@@ -65,13 +75,15 @@ Navigate to other links and back to home to trigger log / trace / efcore+sqlclie
 
 ## Using the console example
 
-This uses a non-generic host setup and will run some http calls and traces you can view in your local telemetry servers
+This uses a generic host setup in the default config. to test with a non-generic host setup change the setting 'UseGenericHost' to 'false' in the appsettings.Development.json / envvars.json
+
+This example will run some http calls and traces you can view in your local telemetry servers
 
 To run:  
 
 ```
 cd ./examples/console
-cp appsettings.Example.json appsettings.Development.json
+..setup the config file...
 dotnet run
 ```
 
@@ -83,6 +95,10 @@ It runs the below:
 5. **Tracing**: All operations are automatically traced and exported
 
 Press any key to exit
+
+## Startup time
+
+For either example, a console output stopwatch will show how long it took to run. Just search for "AddSimpleOpenTelemetry() took: X ms".
 
 
 ## Viewing Telemetry

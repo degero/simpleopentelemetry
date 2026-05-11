@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -58,10 +59,13 @@ builder.Services.Configure<SqlClientTraceInstrumentationOptions>(options =>
 // OPTIONAL: clear loggers so the OpenTelemetry logger is attached
 builder.Logging.ClearProviders();
 
-// TODO put trace timer here
+var sw = Stopwatch.StartNew();
 
 // The entry point for SimpleOpenTelemetry lib to setup your OpenTelemetry
 var otelBuilder = builder.AddSimpleOpenTelemetry();
+
+sw.Stop();
+Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
 
 // Need to add in an event source by code if using the Azure monitor distro
 var distro = builder.Configuration.GetValue<string>("SimpleOpenTelemetry:Distro");

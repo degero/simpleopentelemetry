@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Amazon.Runtime.Internal.Util;
 using Microsoft.Extensions.Logging;
 
 namespace SimpleOpenTelemetry.Examples.Console;

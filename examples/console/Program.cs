@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +18,10 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
+// Add Event listeners outputing to console for demo/debug purposes
+using var otelListener = new OtelEventListener();
+using var simpleOtelListener = new SimpleOtelEventListener();
+
 if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
 {
 
@@ -24,9 +29,7 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     Console.WriteLine("║     SimpleOpenTelemetry Console Application Generic Host Sample     ║");
     Console.WriteLine("╚═════════════════════════════════════════════════════════════════════╝");
 
-    // Add Event listeners outputing to console for demo/debug purposes
-    using var otelListener = new OtelEventListener();
-    using var simpleOtelListener = new SimpleOtelEventListener();
+    
 
     // Setup .net Generic host
     Console.WriteLine($"[Configuration] Initialising .Net Generic Host and loading appsettings json configurations");
@@ -37,8 +40,13 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
 
     Console.WriteLine($"[OpenTelemetry] Initialising / Configuring OpenTelemetry with SimpleOpenTelemetry");
 
+    var sw = Stopwatch.StartNew();
+
     // The entry point for SimpleOpenTelemetry to setup your OpenTelemetry
     var otelBuilder = builder.AddSimpleOpenTelemetry();
+
+    sw.Stop();
+    Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
 
     Console.WriteLine($"[OpenTelemetry] SimpleOpenTelemetry configuration complete");
     Console.WriteLine("\n" + new string('─', 60));
@@ -73,7 +81,7 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
 else
 {
     Console.WriteLine("╔═════════════════════════════════════════════════════════════════════════╗");
-    Console.WriteLine("║     SimpleOpenTelemetry Console Application Non-Generic Host Sample     ║");
+    Console.WriteLine("║     SimpleOpenTelemetry Console Application Standalone app Sample       ║");
     Console.WriteLine("╚═════════════════════════════════════════════════════════════════════════╝");
 
     // Build logger factory with settings from appsettins.Development.json
@@ -87,8 +95,12 @@ else
         builder.AddOpenTelemetry();
     });
 
+    var sw = Stopwatch.StartNew();
+
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
     
+    Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
+
     // Create the typed logger from the loggerfactory created by OpenTelemetry
     var sdkLoggerFactory = sdk!.GetLoggerFactory();
     ILogger<TestHttpCalls> testCallsLogger = sdkLoggerFactory?.CreateLogger<TestHttpCalls>() ?? throw new InvalidOperationException("Logger factory is null.");
