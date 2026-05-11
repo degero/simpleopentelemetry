@@ -66,10 +66,12 @@ public class DistroLoaderTests : IDisposable
 
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry distro '{options.Distro}'") ?? false));
         
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) && 
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry distro '{options.Distro}'") ?? false));
 
@@ -108,11 +110,11 @@ public class DistroLoaderTests : IDisposable
 
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry distro '{options.Distro}'") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry distro '{options.Distro}'") ?? false) ?? false));
         
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains( $"Unsupported OpenTelemetry Distro '{options.Distro}'. Please check your SimpleOpenTelemetry configuration.") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains( $"Unsupported OpenTelemetry Distro '{options.Distro}'. Please check your SimpleOpenTelemetry configuration.") ?? false) ?? false));
  
         Assert.Null(successEvent);
         Assert.NotNull(errorEvent);

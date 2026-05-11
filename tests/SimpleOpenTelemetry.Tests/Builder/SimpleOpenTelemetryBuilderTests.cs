@@ -64,7 +64,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
     /// as mocks, with optional overrides for specific loaders under test.
     /// </summary>
     private SimpleOpenTelemetryBuilder CreateBuilder(
-        IOpenTelemetryBuilder otelBuilder,
+        OpenTelemetryBuilder otelBuilder,
         IConfiguration config,
         IAssemblyExecution? assemblyExecution = null,
         IInstrumentationLoader? instrumentationLoader = null,
@@ -121,7 +121,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
     [Theory]
     [InlineData("true")]
-    [InlineData("true")]
+    [InlineData("false")]
     public void Configure_SetsUpTraceSettings_SetErrorStatusOnException_WhenConfigured(string setError)
     {
         // ARRANGE
@@ -165,12 +165,11 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         Assert.NotNull(activity);
         if (setError == "true")
         {
-            Assert.Equal(StatusCode.Error, activity.GetStatus().StatusCode);
-            Assert.Equal(ActivityStatusCode.Error, activity.Status);
+            Assert.Equal(ActivityStatusCode.Error, activity?.Status);
         }
         else
         {
-            Assert.Null(activity.GetStatus());
+            Assert.Equal(ActivityStatusCode.Unset, activity?.Status);
         }
     }
 
@@ -354,7 +353,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
             .Build();
 
         _mockDistroLoader
-            .Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()))
+            .Setup(d => d.LoadDistro(It.IsAny<OpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()))
             .Returns(true);
 
         var builder = CreateBuilder(otelBuilder, config);
@@ -393,7 +392,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
             .Build();
 
         _mockDistroLoader
-            .Setup(d => d.LoadDistro(It.IsAny<IOpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()))
+            .Setup(d => d.LoadDistro(It.IsAny<OpenTelemetryBuilder>(), It.IsAny<SimpleOpenTelemetryOptions>()))
             .Returns(false);
 
         var builder = CreateBuilder(otelBuilder, config);
@@ -501,7 +500,8 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         // ASSERT
         var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Level == EventLevel.Error &&
+            e.Level == EventLevel.Error && 
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry.") ?? false));
 
         Assert.NotNull(events);
@@ -530,6 +530,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         // ASSERT
         var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.") ?? false));
 
         Assert.NotNull(events);

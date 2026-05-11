@@ -30,12 +30,13 @@ internal class SamplerLoader : ISamplerLoader
     }
 
     /// <summary>
-    /// Sets up sampler using a Builder currently only used with AWS Xray remote sampler.
+    /// Adds a sampler to the provided TracerProviderBuilder.
     /// </summary>
     /// <remarks>
-    /// Dynamically loads and configures resource extensions from registered assemblies.
+    /// Dynamically loads and configures samplers from registered assemblies.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to register the sampler with.</param>
+    /// <param name="options">The SimpleOpenTelemetry configuration containing sampler settings.</param>
     public void AddSampler(TracerProviderBuilder builder,
         SimpleOpenTelemetryOptions options)
     {
@@ -85,14 +86,16 @@ internal class SamplerLoader : ISamplerLoader
 
         var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
 
-        var instance = method.Invoke(null, new object[] {  });
+        var instance = method?.Invoke(null, new object[] {  });
 
         // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
         // This is kept here for now
-        var buildMethod = instance.GetType().GetMethod("Build");
+        var buildMethod = instance?.GetType().GetMethod("Build");
 
-        var sampler = buildMethod.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
-
-        builder.SetSampler(sampler);
+        var sampler = buildMethod?.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
+        if (sampler is not null)
+            builder.SetSampler(sampler);
+        else
+            throw new Exception($"Cannot initialise sampler: {descriptor.TypeName}.");
     }
 }

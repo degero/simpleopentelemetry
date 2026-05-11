@@ -1,3 +1,4 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry;
@@ -17,7 +18,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // Add EFCore if enabled in config
-if (builder.Configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
+if (builder.Configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
 {
     builder.Services.AddDbContext<AppDbContext>(options => {
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -57,10 +58,10 @@ builder.Services.Configure<SqlClientTraceInstrumentationOptions>(options =>
 // OPTIONAL: clear loggers so the OpenTelemetry logger is attached
 builder.Logging.ClearProviders();
 
+// TODO put trace timer here
+
 // The entry point for SimpleOpenTelemetry lib to setup your OpenTelemetry
 var otelBuilder = builder.AddSimpleOpenTelemetry();
-
-// TODO put trace timer here
 
 // Need to add in an event source by code if using the Azure monitor distro
 var distro = builder.Configuration.GetValue<string>("SimpleOpenTelemetry:Distro");

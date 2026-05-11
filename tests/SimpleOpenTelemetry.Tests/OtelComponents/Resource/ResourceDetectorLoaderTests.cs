@@ -119,6 +119,7 @@ public class ResourceDetectorLoaderTests : IDisposable
 
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
+                e.Payload != null &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{ResourceDetectorEnum.AWS}'") ?? false));
         Assert.NotNull(successEvent);
     }
@@ -153,9 +154,11 @@ public class ResourceDetectorLoaderTests : IDisposable
         // ASSERT
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
+                e.Payload != null &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
         var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
+                e.Payload != null &&
                 e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register resource detector '{detector}'") ?? false) &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
 
@@ -187,6 +190,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         // ASSERT
         var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
+                e.Payload != null &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Unsupported Resource Detector type 'NonExistentDetector'") ?? false));
 
         Assert.NotNull(errorEvent);

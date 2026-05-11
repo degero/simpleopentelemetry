@@ -46,6 +46,8 @@ internal class PropagatorLoader : IPropagatorLoader
             if (propagators.Any(p => string.Equals(p, PropagatorEnum.None.ToString(), StringComparison.OrdinalIgnoreCase)))
             {
                 var noopPropagator = CreatePropagator(_descriptors[PropagatorEnum.None]);
+                if (noopPropagator is null)
+                    throw new Exception("Cannot create a 'NoopTextMapPropagator'.");
                 Sdk.SetDefaultTextMapPropagator(noopPropagator);
                 EventSource.Log.Verbose(eventCategory, "Registered propagator NoopTextMapPropagator as SimpleOpenTelemetry propagators config included 'none'.");
                 return;
@@ -65,7 +67,6 @@ internal class PropagatorLoader : IPropagatorLoader
                     
                     // If any fail the whoe propagator set is aborted
                     var propagatorInstance = CreatePropagator(descriptor);
-                    
                     if (propagatorInstance is not null)
                         propagatorsList.Add(propagatorInstance);   
                 }
@@ -76,12 +77,13 @@ internal class PropagatorLoader : IPropagatorLoader
             }
 
             // Register propagator
-            Sdk.SetDefaultTextMapPropagator(propagatorsList.Count > 1 ? new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0]);
+            var defaultPropagator = propagatorsList.Count > 1 ? (TextMapPropagator)new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0] ?? throw new InvalidOperationException("No valid propagators configured.");
+            Sdk.SetDefaultTextMapPropagator(defaultPropagator);
             EventSource.Log.Verbose(eventCategory, $"Registered propagator(s) '{string.Join(", ", propagators)}'.");
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register propagators(s) '{string.Join(", ", propagators)}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register propagators(s) '{string.Join(", ", propagators!)}'.", ex.Message);
         }
     }
 
@@ -90,7 +92,7 @@ internal class PropagatorLoader : IPropagatorLoader
     /// comes out of alpha / other vender patterns appear
     /// </summary>
     /// <param name="descriptor"></param>
-    private TextMapPropagator? CreatePropagator(
+    private TextMapPropagator CreatePropagator(
         PropagatorDescriptor descriptor)
     {
        
@@ -102,7 +104,8 @@ internal class PropagatorLoader : IPropagatorLoader
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
-        var instance = Activator.CreateInstance(type, nonPublic: true);
+        var instance = Activator.CreateInstance(type, nonPublic: true)
+            ?? throw new InvalidOperationException($"Failed to create instance of type '{typeName}'");
         
         return (TextMapPropagator)instance;
     }

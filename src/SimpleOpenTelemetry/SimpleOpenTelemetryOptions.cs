@@ -5,9 +5,18 @@ using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 namespace SimpleOpenTelemetry;
 
+/// <summary>
+/// 
+/// </summary>
 public enum SimpleOpenTelemetryExporterProtocol
 {
+    /// <summary>
+    /// gRPC protocol for exporting telemetry.
+    /// </summary>
     Grpc,
+    /// <summary>
+    /// HTTP protocol for exporting telemetry.
+    /// </summary>
     Http
 }
 
@@ -47,13 +56,13 @@ internal class SimpleOpenTelemetryOptions
     /// <summary>
     /// OpenTelemetry resource related settings (detectors etc)
     /// </summary>
-    public ResourceOptions Resource { get; set; }
+    public ResourceOptions? Resource { get; set; }
 
 }
 
 internal class SimpleOpenTelemetryExporterConfig<TEnum>
 {
-    public TEnum Type { get; set; }
+    public TEnum? Type { get; set; }
 
     public IConfigurationSection? Options { get; set; }
 }

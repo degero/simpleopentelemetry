@@ -17,7 +17,7 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-if (config.GetValue<string>("UseGenericHost").ToLower() == "true")
+if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
 {
 
     Console.WriteLine("╔═════════════════════════════════════════════════════════════════════╗");
@@ -90,7 +90,8 @@ else
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
     
     // Create the typed logger from the loggerfactory created by OpenTelemetry
-    ILogger<TestHttpCalls> testCallsLogger = sdk.GetLoggerFactory().CreateLogger<TestHttpCalls>();
+    var sdkLoggerFactory = sdk!.GetLoggerFactory();
+    ILogger<TestHttpCalls> testCallsLogger = sdkLoggerFactory?.CreateLogger<TestHttpCalls>() ?? throw new InvalidOperationException("Logger factory is null.");
    
     // 1. DEMO calls to view in Grafana Loki and Tempo queries and Jaeger
     testCallsLogger.LogInformation("Test log message from Generic Host Console App");

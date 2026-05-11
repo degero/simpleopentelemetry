@@ -79,7 +79,7 @@ public class StandaloneAppTests
         finally
         {
             // Clean up - dispose the SDK to flush any pending telemetry
-            sdk.Dispose();
+            sdk!.Dispose();
 
             // Clean up environment variables set by AddSimpleOpenTelemetry
             Environment.SetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, null);

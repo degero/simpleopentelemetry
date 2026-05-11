@@ -16,13 +16,13 @@ public static class StandaloneApp
     /// </summary>
     /// <param name="configuration"></param>
     /// <returns>OpenTelemetrySdk for any additional code based configuration</returns>
-    public static OpenTelemetrySdk? AddSimpleOpenTelemetry(
+    public static OpenTelemetrySdk AddSimpleOpenTelemetry(
         IConfiguration configuration)
     {
-        // TODO add test for this
-        if (!SimpleOpenTelemetryBuilder.ValidateConfiguration(configuration))
-            return null;
+        ArgumentNullException.ThrowIfNull(configuration);
 
+        // Always return an OpenTelemetrySdk regardless
+        // to not disrupt any custom code dependencies in app
         return OpenTelemetrySdk.Create(otelBuilder =>
         {
             // This is needed for the OpenTelemetry SDK to pick up 
@@ -37,9 +37,13 @@ public static class StandaloneApp
                 Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
             }
 
-            // Initialize a builder and configure as a Generic host app would
-            var builder = SimpleOpenTelemetryBuilder.Create(otelBuilder, configuration);
-            builder.Configure();
+            // Only run SimpleOpenTelemetryBuilder if basic settings set. Error Events logged if not set
+            if (SimpleOpenTelemetryBuilder.ValidateConfiguration(configuration))
+            {
+                // Initialize a builder and configure as a Generic host app would
+                var builder = SimpleOpenTelemetryBuilder.Create(otelBuilder, configuration);
+                builder.Configure();
+            }
         });
     }
 }

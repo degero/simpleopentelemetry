@@ -48,7 +48,7 @@ internal class DistroLoader : IDistroLoader
                 }
                 else
                 {
-                    TryInvokeExtension(matchedDistro, builder as OpenTelemetryBuilder, descriptor);
+                    TryInvokeExtension(matchedDistro, (OpenTelemetryBuilder) builder, descriptor);
                 }
             }
             else

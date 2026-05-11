@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using Amazon.Runtime.Endpoints;
+using Azure.Monitor.OpenTelemetry.Exporter;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -222,7 +223,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
-                    e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false));
+                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ?? false));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
@@ -279,7 +280,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
-                    e.Payload.Any(p => p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false));
+                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false) ?? false));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
@@ -326,6 +327,9 @@ public class ExporterLoaderTests : IDisposable
         var services = new ServiceCollection();
         var (target, _) = InitExporter([]);
 
+        services.AddOpenTelemetry().WithLogging(r => r.AddAzureMonitorLogExporter());
+        
+
         // Act
         // This is what AddSimpleOpenTelemetry() is doing but 
         // done manually to isolate closer to the SUT
@@ -337,6 +341,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
+                    e.Payload != null &&
                     e.Payload.Any(p => p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false));
 
         var errorEvents = _listener.Events
@@ -389,6 +394,7 @@ public class ExporterLoaderTests : IDisposable
     public void ConfigureExporters_AzureExporter_SuccessfullyRegisters(string testName, string optionsJson, int registerEvents, bool failure)
     {
         // Arrange
+        var item = testName;
         Assert.Empty(_listener.Events);
         var exporterType = LogExporterEnum.Azure;
         var services = new ServiceCollection();
@@ -412,6 +418,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Verbose &&
+                    e.Payload != null &&
                     e.Payload.Any(p => (p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false) ||
                     (p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ||
                     (p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false)));
@@ -458,7 +465,7 @@ public class ExporterLoaderTests : IDisposable
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(prefixedDict).Build();
         var config = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName).Get<SimpleOpenTelemetryOptions>();
         var target = new ExporterLoader(_assemblyExec);
-        return (target, config);
+        return (target, config)!;
     }
 
     private IConfigurationSection? GetExporterConfigurationSection(ExporterExtensionDescriptor descriptor)

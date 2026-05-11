@@ -78,7 +78,8 @@ internal class ExporterLoader : IExporterLoader
     )
     {
         // try get the top level exporter settings of the exporter name
-        var topConfigSection = config.ExporterOptions?.GetSection(exporterConfig.Type.ToString());
+        var exporterType = exporterConfig.Type?.ToString();
+        var topConfigSection = config.ExporterOptions?.GetSection(exporterType!);
         if (topConfigSection is not null && topConfigSection!.Exists())
         {
             //  override with the output type options if they exist
@@ -146,14 +147,14 @@ internal class ExporterLoader : IExporterLoader
     private List<SimpleOpenTelemetryExporterConfig<TEnum>> GetExportersForBuilder<TEnum>(
         SimpleOpenTelemetryOptions options)
     {
-        object exporters = typeof(TEnum) switch
+        object? exporters = typeof(TEnum) switch
         {
             var t when t == typeof(MetricExporterEnum) => options.Metric.Exporters,
             var t when t == typeof(TraceExporterEnum)  => options.Trace.Exporters,
             _                                          => options.Log.Exporters
         };
 
-        return (List<SimpleOpenTelemetryExporterConfig<TEnum>>)exporters;
+        return (List<SimpleOpenTelemetryExporterConfig<TEnum>>?)exporters ?? new();
     }
 
     private void AddOTLPExporter<TEnum>(Action<string, Action<OtlpExporterOptions>> addExporter, 
@@ -222,7 +223,7 @@ internal class ExporterLoader : IExporterLoader
         {
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
-            return null;
+            return opts => {};
         }
     }
 }

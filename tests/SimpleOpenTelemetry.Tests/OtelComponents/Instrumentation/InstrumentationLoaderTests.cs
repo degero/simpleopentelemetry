@@ -63,11 +63,11 @@ public class InstrumentationLoaderTests : IDisposable
         // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace instrumentation '{instrumentation}'") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered trace instrumentation '{instrumentation}'") ?? false) ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register trace instrumentation '{instrumentation}'") ?? false) &&
-            e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Failed to register trace instrumentation '{instrumentation}'") ?? false) ?? false) &&
+            (e.Payload?.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) ?? false));
 
         if (packageInstalled)
         {
@@ -113,9 +113,11 @@ public class InstrumentationLoaderTests : IDisposable
         // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered metric instrumentation '{instrumentation}'") ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register metric instrumentation '{instrumentation}'") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
 
@@ -152,7 +154,8 @@ public class InstrumentationLoaderTests : IDisposable
         // ASSERT
         Assert.Contains(_listener.Events, r => r.EventId == 3 && 
             r.Level == EventLevel.Error &&
-            r.Payload.Any(r => r.ToString().Contains("type '999' not found ")));
+            r.Payload is not null &&
+            r.Payload.Any(r => r?.ToString()?.Contains("type '999' not found ") ?? false));
     }
 
     public static IEnumerable<object[]> GetAllTraceInstrumentations(bool packageInstalled)

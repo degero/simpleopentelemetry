@@ -18,7 +18,6 @@ namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 internal class InstrumentationLoader : IInstrumentationLoader
 {
     private readonly string eventCategory = nameof(InstrumentationLoader);
-    private readonly IConfiguration _configuration;
     private readonly IAssemblyExecution _assemblyExec;
 
     /// <summary>
@@ -79,10 +78,11 @@ internal class InstrumentationLoader : IInstrumentationLoader
         }
             
         var (assemblyName, typeName, methodName, optionsClassName) = descriptor!;
-
+        var instrumentationName = instrumentation.ToString();
+        
         try
         {
-            var section = optionsClassName is not null ? options.Trace?.InstrumentationConfig?.GetSection(instrumentation.ToString()) : null;
+            var section = optionsClassName is not null ? options.Trace?.InstrumentationConfig?.GetSection(instrumentationName!) : null;
             ReflectiveLoaderExecutor.InvokeBuilderExtension(
                 _assemblyExec,
                 builder,

@@ -15,7 +15,8 @@ public class HomeController : Controller
 
     private readonly IConfiguration _configuration;
 
-    public HomeController(ILogger<HomeController> logger, IConfiguration configuration, AppDbContext? context = null)
+    public HomeController(ILogger<HomeController> logger, 
+        IConfiguration configuration, AppDbContext? context = null)
     {
         _logger = logger;
 
@@ -47,15 +48,18 @@ public class HomeController : Controller
         }
 
         // 3. If enabled Use EF traces with the EFCore + SqlClient instrumentations
-        if(_configuration.GetValue<string>("UseSqlEfCore").ToLower() == "true")
+        if(_configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
         {
             using (var efActivity = _activitySource.StartActivity("GetProducts"))
             {
-                efActivity.SetStatus(ActivityStatusCode.Ok);
-                var products = _context.Products.ToList();
-                var activityEvent = new ActivityEvent("ProductsRetrieved",
-                tags: new ActivityTagsCollection { new("products.count", products.Count()) });
-                efActivity.AddEvent(activityEvent);
+                efActivity!.SetStatus(ActivityStatusCode.Ok);
+                if (_context is not null)
+                {
+                    var products = _context.Products.ToList();
+                    var activityEvent = new ActivityEvent("ProductsRetrieved",
+                    tags: new ActivityTagsCollection { new("products.count", products.Count()) });
+                    efActivity.AddEvent(activityEvent);
+                }
             }
         }
         return View();

@@ -66,11 +66,11 @@ public class ExtensionLoaderTests: IDisposable
         // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Registered trace extension '{extension}'") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered trace extension '{extension}'") ?? false) ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register trace extension '{extension}'") ?? false) &&
-            e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Failed to register trace extension '{extension}'") ?? false) ?? false) &&
+            (e.Payload?.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) ?? false));
 
         if (packageInstalled)
         {
@@ -102,6 +102,7 @@ public class ExtensionLoaderTests: IDisposable
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains("MetricExtensionsEnum type 'None' not found to initialise metric extension.") ?? false));
 
         Assert.NotNull(errorEvent);
@@ -125,7 +126,7 @@ public class ExtensionLoaderTests: IDisposable
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains("LogExtensionsEnum type 'None' not found to initialise log extension.") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"LogExtensionsEnum type 'None' not found to initialise log extension.") ?? false) ?? false));
 
         Assert.NotNull(errorEvent);
     }

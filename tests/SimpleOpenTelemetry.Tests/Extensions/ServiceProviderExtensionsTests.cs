@@ -55,7 +55,7 @@ public class ServiceProviderExtensionsTests : IDisposable
 
         // ASSERT
         Assert.False(result);
-        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
         Assert.Contains("services argument is null", MessageOf(error));
     }
 
@@ -73,7 +73,7 @@ public class ServiceProviderExtensionsTests : IDisposable
 
         // ASSERT
         Assert.False(result);
-        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
         Assert.Contains("OpenTelemetry has not been registered", MessageOf(error));
     }
 
@@ -99,7 +99,7 @@ public class ServiceProviderExtensionsTests : IDisposable
         // ASSERT
         Assert.False(result);
 
-        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
         Assert.Contains("No OpenTelemetry signal providers have been registered.", MessageOf(error));
     }
 
@@ -145,12 +145,12 @@ public class ServiceProviderExtensionsTests : IDisposable
         if (valid)
         {
             Assert.True(result);
-            Assert.Empty(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+            Assert.DoesNotContain(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
         }
         else
         {
             Assert.False(result);
-            var error = Assert.Single(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+            var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
             Assert.Contains("Missing required OpenTelemetry resource attributes", MessageOf(error));
         }
     }
@@ -206,6 +206,6 @@ public class ServiceProviderExtensionsTests : IDisposable
         
         // ASSERT
         Assert.True(result);
-        Assert.Empty(_simpleOpenTelemetryEventListener.Events.Where(e => e.Level == EventLevel.Error));
+        Assert.DoesNotContain(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
     }
 }

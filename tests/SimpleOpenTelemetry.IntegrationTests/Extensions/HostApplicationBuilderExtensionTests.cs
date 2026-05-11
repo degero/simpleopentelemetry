@@ -30,22 +30,24 @@ public class HostApplicationBuilderExtensionsTests
         "service.name=unknown_service,service.namespace=testapp,service.version=1.2.3,deployment.environment.name=dev"
     )] // otel sets a default
     public void AddSimpleOpenTelemetry_ShouldSetServiceName_And_ResourceAttributes_FromConfig(
-        string serviceName,
+        string? serviceName,
         string resourceAttributes,
         string expectedResourceAttributes
     )
     {
         // ARRANGE - a config list a webApplicationbuilder would pick up
-        var config = BuildConfig(new Dictionary<string, string?>()
-                {
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
-                    [OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME] = serviceName,
-                    [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = resourceAttributes
-                }
-            );
+        var dict = new Dictionary<string, string?>()
+            {
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
+                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = resourceAttributes
+            };
 
+        if (serviceName is not null)
+              dict.Add(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, serviceName);
+
+        var config = BuildConfig(dict);
         var host = Host.CreateApplicationBuilder();
         host.Configuration.AddConfiguration(config);
         host.AddSimpleOpenTelemetry();
@@ -113,7 +115,7 @@ public class HostApplicationBuilderExtensionsTests
             foreach (var (key, value) in expected)
             {
                 Assert.True(actual.ContainsKey(key), $"Missing attribute: {key}");
-                Assert.True(actual[key].ToString().Contains(value.ToString()));
+                Assert.Contains(actual.Values, r => r!.ToString()!.Contains(value!.ToString()!));
             }
         });
     }

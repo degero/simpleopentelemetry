@@ -48,7 +48,7 @@ public class SamplerLoaderTests: IDisposable
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"type not found: {noneSampler} to initialize sampler") ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"type not found: {noneSampler} to initialize sampler") ?? false) ?? false));
 
         Assert.NotNull(errorEvent);
     }
@@ -94,9 +94,11 @@ public class SamplerLoaderTests: IDisposable
         // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered sampler '{sampler}'.") ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register sampler '{sampler}'.") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
 
@@ -138,6 +140,7 @@ public class SamplerLoaderTests: IDisposable
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
+            e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains("Unsupported OpenTelemetry sampler 'NoSuchSampler'.") ?? false));
 
         Assert.NotNull(errorEvent);

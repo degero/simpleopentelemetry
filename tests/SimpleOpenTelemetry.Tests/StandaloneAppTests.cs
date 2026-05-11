@@ -69,7 +69,8 @@ public class StandaloneAppTests
             // AddOpenTelemetry extension method and creating a new SimpleOpenTelemetryBuilder
             var propagator = Propagators.DefaultTextMapPropagator;
             Assert.IsType<CompositeTextMapPropagator>(propagator);
-            var innerPropagators = TestHelpers.GetCompositePropagators(propagator as CompositeTextMapPropagator).ToList();
+            var compositeTextMapPropagator = propagator as CompositeTextMapPropagator;
+            var innerPropagators = compositeTextMapPropagator != null ? TestHelpers.GetCompositePropagators(compositeTextMapPropagator).ToList() : new();
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<OpenTelemetry.Extensions.Propagators.B3Propagator>(innerPropagators[0]);
             Assert.IsType<BaggagePropagator>(innerPropagators[1]);

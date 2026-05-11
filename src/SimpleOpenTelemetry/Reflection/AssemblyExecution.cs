@@ -128,7 +128,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="target">The instance to pass as argument.</param>
     public object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target)
     {
-        var paramsToInvoke = new List<object>() { target };
+        var paramsToInvoke = new List<object?> { target };
         var remainingParams = method.GetParameters().Skip(1).ToList();
 
         // If this method cant accept all defaulted remaining parameters throw error

@@ -144,6 +144,7 @@ public class GenericHostTests : IDisposable
 
         // Add SimpleOpenTelemetry extension method on the host builder before build
         var otelBuilder = builder.AddSimpleOpenTelemetry();
+        Assert.NotNull(otelBuilder);
         otelBuilder.WithLogging(l => l.AddInMemoryExporter(_exportedLogs));
         otelBuilder.WithMetrics(l => l.AddInMemoryExporter(_exportedMetrics));
         otelBuilder.WithTracing(l => l.AddInMemoryExporter(_exportedTraces));
@@ -167,11 +168,11 @@ public class GenericHostTests : IDisposable
     private void VerifyTelemetryExport()
     {
         foreach (var signal in new[] { "trace", "information", "critical", "warning", "debug" })
-            Assert.Contains(_exportedLogs, r => r.FormattedMessage.Contains($"Test {signal} message"));
+            Assert.Contains(_exportedLogs, r => r.FormattedMessage!.Contains($"Test {signal} message"));
 
         Assert.NotEmpty(_exportedMetrics.Where(r => r.Name.StartsWith("process.")).AsEnumerable());
         
-        Assert.Equal(1, _exportedTraces.Count(r => r.TagObjects.Any(r => r.Key == "url.full" && (r.Value.ToString() == "https://api.github.com/zen"))));
+        Assert.Equal(1, _exportedTraces.Count(r => r.TagObjects.Any(t => t.Key == "url.full" && (t.Value?.ToString() == "https://api.github.com/zen"))));
 
     }
 }

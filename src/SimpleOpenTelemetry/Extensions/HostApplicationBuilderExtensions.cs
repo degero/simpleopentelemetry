@@ -17,9 +17,9 @@ public static class HostApplicationBuilderExtensions
     /// Configuration is loaded from the application's configuration (e.g., appsettings.json).
     /// </remarks>
     /// <param name="builder">The host application builder instance.</param>
-    /// <returns cref="IOpenTelemetryBuilder">OpenTelemetry builder that this method creates</returns>
+    /// <returns cref="OpenTelemetryBuilder">OpenTelemetry builder that this method creates</returns>
     /// <exception cref="ArgumentNullException">Thrown when builder is null.</exception>
-    public static IOpenTelemetryBuilder AddSimpleOpenTelemetry(
+    public static OpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);

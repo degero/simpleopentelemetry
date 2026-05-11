@@ -33,6 +33,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
     /// Dynamically loads and configures resource detectors from registered assemblies.
     /// </remarks>
     /// <param name="builder">The ResourceBuilder to configure.</param>
+    /// <param name="options">The SimpleOpenTelemetry configuration containing resource detector settings.</param>
     public void AddResourceDetectors(ResourceBuilder builder,
         SimpleOpenTelemetryOptions options)
     {

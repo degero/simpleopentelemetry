@@ -17,8 +17,10 @@ internal sealed class TestEventListener : EventListener
 
     public void ClearEvents()
     {
-        lock (_lock);
-        _events.Clear();
+        lock (_lock)
+        {
+            _events.Clear();
+        }
     }
 
     public TestEventListener(

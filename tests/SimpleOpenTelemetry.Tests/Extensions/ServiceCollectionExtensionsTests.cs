@@ -10,7 +10,7 @@ using Xunit;
 namespace SimpleOpenTelemetryTests.Extensions;
 
 [Collection("ServiceCollectionExtensionsTests")]
-public class ServiceCollectionExtensionsTests
+public class ServiceCollectionExtensionsTests : IDisposable
 {
     private readonly TestEventListener _simpleOpenTelemetryEventListener;
     
@@ -31,15 +31,8 @@ public class ServiceCollectionExtensionsTests
         var config = new ConfigurationBuilder().Build();
         IServiceCollection? services = null;
 
-        // Act
-        ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config);
-
-        // ASSERT
-        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Payload is not null && e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"IServiceCollection services parameter is null") ?? false));
-
-        Assert.NotNull(failEvent);
+        // ACT ASSERT
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddSimpleOpenTelemetry(services!, config));
     }
     
     [Fact]
@@ -49,15 +42,9 @@ public class ServiceCollectionExtensionsTests
         IConfiguration? config = null;
         var services = new ServiceCollection();
 
-        // Act
-        services.AddSimpleOpenTelemetry(config!);
+        // ACT ASSERT
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddSimpleOpenTelemetry(services, config!));
 
-        // ASSERT
-        var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Payload is not null && e.Level == EventLevel.Error &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"IConfiguration configuration parameter is null") ?? false));
-
-        Assert.NotNull(failEvent);
     }
 
     // TODO chad below tests these should just log Event not throw
@@ -129,7 +116,7 @@ public class ServiceCollectionExtensionsTests
             Assert.Contains(services, sd => sd.ServiceType == typeof(OpenTelemetry.Trace.TracerProvider)); // verify addOpenTelemetry
             var propagator = Propagators.DefaultTextMapPropagator;
             Assert.IsType<CompositeTextMapPropagator>(propagator);
-            var innerPropagators = TestHelpers.GetCompositePropagators(propagator as CompositeTextMapPropagator).ToList();
+            var innerPropagators = TestHelpers.GetCompositePropagators((CompositeTextMapPropagator)propagator!).ToList();
             Assert.Equal(2, innerPropagators.Count);
             Assert.IsType<OpenTelemetry.Extensions.Propagators.B3Propagator>(innerPropagators[0]);
             Assert.IsType<BaggagePropagator>(innerPropagators[1]);
