@@ -1,14 +1,10 @@
-namespace SimpleOpenTelemetry.OtelComponents.Extension;
+using SimpleOpenTelemetry.OtelComponents.Common;
 
-internal record ExtensionDescriptor(
-     string AssemblyName,
-     string TypeName,
-     string MethodName
-);
+namespace SimpleOpenTelemetry.OtelComponents.Extension;
 
 internal static class ExtensionAssemblies
 {
-    public static readonly Dictionary<TraceExtensionsEnum, ExtensionDescriptor>
+    public static readonly Dictionary<TraceExtensionsEnum, AssemblyDescriptor>
         KnownTraceExtensions = new()
         {
             [TraceExtensionsEnum.AWSXRayTraceId] = new(
@@ -18,9 +14,9 @@ internal static class ExtensionAssemblies
         };
 
 
-    public static readonly Dictionary<MetricExtensionsEnum, ExtensionDescriptor>
+    public static readonly Dictionary<MetricExtensionsEnum, AssemblyDescriptor>
         KnownMetricExtensions = new();
 
-    public static readonly Dictionary<LogExtensionsEnum, ExtensionDescriptor>
+    public static readonly Dictionary<LogExtensionsEnum, AssemblyDescriptor>
         KnownLogExtensions = new();
 }

@@ -33,7 +33,7 @@ public class InstrumentationLoaderTests : IDisposable
     [Theory]
     [MemberData(nameof(GetAllTraceInstrumentations), true)]
     [MemberData(nameof(GetAllTraceInstrumentations), false)]
-    public void AddTracingInstrumentation_WithKnownEnum_LogsSuccessOrFailure(
+    public void AddTracingInstrumentations_WithKnownEnum_LogsSuccessOrFailure(
         TraceInstrumentationEnum instrumentation,
         string assemblyName,
         bool packageInstalled)
@@ -57,7 +57,10 @@ public class InstrumentationLoaderTests : IDisposable
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddTracingInstrumentation(t, new SimpleOpenTelemetryOptions(), instrumentation);
+            target.AddTracingInstrumentations(t, new SimpleOpenTelemetryOptions
+            {
+                Trace = new() { Instrumentations = [instrumentation]}
+            });
         });
 
         // ASSERT
@@ -84,7 +87,7 @@ public class InstrumentationLoaderTests : IDisposable
     [Theory]
     [MemberData(nameof(GetAllMetricInstrumentations), true)]
     [MemberData(nameof(GetAllMetricInstrumentations), false)]
-    public void AddMetricsInstrumentation_WithKnownEnum_LogsSuccessOrFailure(
+    public void AddMetricsInstrumentations_WithKnownEnum_LogsSuccessOrFailure(
         MetricInstrumentationEnum instrumentation,
         string assemblyName,
         bool packageInstalled)
@@ -107,7 +110,10 @@ public class InstrumentationLoaderTests : IDisposable
         // ACT
         services.AddOpenTelemetry().WithMetrics(m =>
         {
-            target.AddMetricsInstrumentation(m, new SimpleOpenTelemetryOptions(), instrumentation);
+            target.AddMetricsInstrumentations(m, new SimpleOpenTelemetryOptions
+            {
+                Metric = new() { Instrumentations = [instrumentation]}
+            });
         });
 
         // ASSERT
@@ -134,7 +140,7 @@ public class InstrumentationLoaderTests : IDisposable
     }
 
     [Fact]
-    public void AddTracingInstrumentation_LogsErrorEvent_ForInvalidEnumValue()
+    public void AddTracingInstrumentations_LogsErrorEvent_ForInvalidEnumValue()
     {
          // ARRANGE
         Assert.Empty(_listener.Events);
@@ -143,6 +149,31 @@ public class InstrumentationLoaderTests : IDisposable
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
                 [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Instrumentations:0"] = "999"
+            })
+            .Build();
+
+        var services = new ServiceCollection();
+
+        // ACT - more of an integration test to allow a non-enum string in
+        services.AddSimpleOpenTelemetry(config);
+
+        // ASSERT
+        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
+            r.Level == EventLevel.Error &&
+            r.Payload is not null &&
+            r.Payload.Any(r => r?.ToString()?.Contains("type '999' not found ") ?? false));
+    }
+
+ [Fact]
+    public void AddMetricInstrumentations_LogsErrorEvent_ForInvalidEnumValue()
+    {
+         // ARRANGE
+        Assert.Empty(_listener.Events);
+        
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Instrumentations:0"] = "999"
             })
             .Build();
 

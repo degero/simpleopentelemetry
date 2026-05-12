@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;
@@ -468,7 +469,7 @@ public class ExporterLoaderTests : IDisposable
         return (target, config)!;
     }
 
-    private IConfigurationSection? GetExporterConfigurationSection(ExporterExtensionDescriptor descriptor)
+    private IConfigurationSection? GetExporterConfigurationSection(AssemblyDescriptor descriptor)
     {
         // Just generate a section based on the options class structure, dont set an values
         IConfigurationSection? optionsConfigSection = null;

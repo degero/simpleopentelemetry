@@ -1,45 +1,38 @@
-﻿namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
+﻿using SimpleOpenTelemetry.OtelComponents.Common;
 
-internal record InstrumentationExtensionDescriptor(
-     string AssemblyName,
-     string TypeName,
-     string MethodName,
-     string? OptionsClass
-);
+namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 internal static class InstrumentationAssemblies
 {
-    public static readonly Dictionary<TraceInstrumentationEnum, InstrumentationExtensionDescriptor>
+    public static readonly Dictionary<TraceInstrumentationEnum, AssemblyDescriptor>
         KnownTraceInstrumentations = new()
         {
             [TraceInstrumentationEnum.AspNetCore] = new(
                 "OpenTelemetry.Instrumentation.AspNetCore",
                 "OpenTelemetry.Trace.AspNetCoreInstrumentationTracerProviderBuilderExtensions",
-                "AddAspNetCoreInstrumentation",
-                null),
+                "AddAspNetCoreInstrumentation"),
+
             [TraceInstrumentationEnum.HttpClient] = new(
                 "OpenTelemetry.Instrumentation.Http",
                 "OpenTelemetry.Trace.HttpClientInstrumentationTracerProviderBuilderExtensions",
-                "AddHttpClientInstrumentation",
-                null),
+                "AddHttpClientInstrumentation"),
+
             [TraceInstrumentationEnum.SqlClient] = new(
                 "OpenTelemetry.Instrumentation.SqlClient",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddSqlClientInstrumentation",
-                null),
+                "AddSqlClientInstrumentation"),
+
             [TraceInstrumentationEnum.EFCore] = new(
                 "OpenTelemetry.Instrumentation.EntityFrameworkCore",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddEntityFrameworkCoreInstrumentation",
-                null),
+                "AddEntityFrameworkCoreInstrumentation"),
 
 
             // WCF (client-side; server-side is configured via behavior XML/code)
             [TraceInstrumentationEnum.Wcf] = new(
                 "OpenTelemetry.Instrumentation.Wcf",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                "AddWcfInstrumentation",
-                null),
+                "AddWcfInstrumentation"),
 
             // AWS SDK
             [TraceInstrumentationEnum.AWS] = new(
@@ -58,42 +51,39 @@ internal static class InstrumentationAssemblies
         };
 
 
-    public static readonly Dictionary<MetricInstrumentationEnum, InstrumentationExtensionDescriptor>
+    public static readonly Dictionary<MetricInstrumentationEnum, AssemblyDescriptor>
         KnownMetricsInstrumentations = new()
         {
             [MetricInstrumentationEnum.AspNetCore] = new(
                 "OpenTelemetry.Instrumentation.AspNetCore",
                 "OpenTelemetry.Metrics.AspNetCoreInstrumentationMeterProviderBuilderExtensions",
-                "AddAspNetCoreInstrumentation",
-                null),
+                "AddAspNetCoreInstrumentation"),
+
             [MetricInstrumentationEnum.HttpClient] = new(
                 "OpenTelemetry.Instrumentation.Http",
                 "OpenTelemetry.Metrics.HttpClientInstrumentationMeterProviderBuilderExtensions",
-                "AddHttpClientInstrumentation",
-                null),
+                "AddHttpClientInstrumentation"),
+
             [MetricInstrumentationEnum.SqlClient] = new(
                 "OpenTelemetry.Instrumentation.SqlClient",
                 "OpenTelemetry.Metrics.SqlClientMeterProviderBuilderExtensions",
-                "AddSqlClientInstrumentation",
-                null),
+                "AddSqlClientInstrumentation"),
+
             [MetricInstrumentationEnum.Runtime] = new(
                 "OpenTelemetry.Instrumentation.Runtime",
                 "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",
-                "AddRuntimeInstrumentation",
-                null),
+                "AddRuntimeInstrumentation"),
 
             // Process metrics
             [MetricInstrumentationEnum.Process] = new(
                 "OpenTelemetry.Instrumentation.Process",
                 "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",
-                "AddProcessInstrumentation",
-                null),
+                "AddProcessInstrumentation"),
 
             // AWS
             [MetricInstrumentationEnum.AWS] = new(
                 "OpenTelemetry.Instrumentation.AWS",
                 "OpenTelemetry.Metrics.MeterProviderBuilderExtensions",
-                "AddAWSInstrumentation",
-                null)
+                "AddAWSInstrumentation")
         };
 }

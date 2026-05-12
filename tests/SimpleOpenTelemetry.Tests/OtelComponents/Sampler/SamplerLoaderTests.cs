@@ -42,7 +42,7 @@ public class SamplerLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddSampler(t, new SimpleOpenTelemetryOptions{ Trace = new(){ Sampler = noneSampler}});
+            target.SetSampler(t, new SimpleOpenTelemetryOptions{ Trace = new(){ Sampler = noneSampler}});
         });
 
         // ASSERT
@@ -88,7 +88,7 @@ public class SamplerLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddSampler(t, options);
+            target.SetSampler(t, options);
         });
 
         // ASSERT
@@ -134,7 +134,7 @@ public class SamplerLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddSampler(t, options);
+            target.SetSampler(t, options);
         });
 
         // ASSERT

@@ -1,27 +1,20 @@
-namespace SimpleOpenTelemetry.OtelComponents.Exporter;
+using SimpleOpenTelemetry.OtelComponents.Common;
 
-internal record ExporterExtensionDescriptor(
-     string AssemblyName,
-     string TypeName,
-     string MethodName,
-     string? OptionsClassName,
-     bool OptionsRequired = false
-);
+namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 
 /// <summary>
 /// Provides registry of known exporters and their configurations for reflection-based loading.
 /// </summary>
 internal static class ExporterAssemblies
 {
-    public static readonly Dictionary<TraceExporterEnum, ExporterExtensionDescriptor>
+    public static readonly Dictionary<TraceExporterEnum, AssemblyDescriptor>
         KnownTraceExporters = new()
         {
             /* opentelemetry-dotnet-contrib */
             [TraceExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Trace.ConsoleExporterHelperExtensions",
-                "AddConsoleExporter",
-                null),
+                "AddConsoleExporter"),
             
             /* Vendor exporters */
             [TraceExporterEnum.Azure] = new(
@@ -32,15 +25,14 @@ internal static class ExporterAssemblies
                 true),
         };
 
-    public static readonly Dictionary<MetricExporterEnum, ExporterExtensionDescriptor>
+    public static readonly Dictionary<MetricExporterEnum, AssemblyDescriptor>
         KnownMetricExporters = new()
         {
             /* opentelemetry-dotnet-contrib */
             [MetricExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
-                "AddConsoleExporter",
-                null),
+                "AddConsoleExporter"),
 
             [MetricExporterEnum.PrometheusHttpListener] = new(
                 "OpenTelemetry.Exporter.Prometheus.HttpListener",
@@ -64,15 +56,14 @@ internal static class ExporterAssemblies
 
         };
 
-    public static readonly Dictionary<LogExporterEnum, ExporterExtensionDescriptor>
+    public static readonly Dictionary<LogExporterEnum, AssemblyDescriptor>
         KnownLogExporters = new()
         {
             /* Otel SDK exporters */
             [LogExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Logs.ConsoleExporterLoggingExtensions",
-                "AddConsoleExporter",
-                null), 
+                "AddConsoleExporter"), 
 
             /* Vendor libraries */
             [LogExporterEnum.Azure] = new(

@@ -5,6 +5,6 @@ namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 
 internal interface IInstrumentationLoader
 {
-    void AddMetricsInstrumentation(MeterProviderBuilder builder, SimpleOpenTelemetryOptions options, MetricInstrumentationEnum instrumentation);
-    void AddTracingInstrumentation(TracerProviderBuilder builder, SimpleOpenTelemetryOptions options, TraceInstrumentationEnum instrumentation);
+    void AddMetricsInstrumentations(MeterProviderBuilder builder, SimpleOpenTelemetryOptions options);
+    void AddTracingInstrumentations(TracerProviderBuilder builder, SimpleOpenTelemetryOptions options);
 }

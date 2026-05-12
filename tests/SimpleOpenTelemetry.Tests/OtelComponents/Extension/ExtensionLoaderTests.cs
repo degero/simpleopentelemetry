@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
+using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Diagnostics;
 using SimpleOpenTelemetry.OtelComponents.Extension;
 using SimpleOpenTelemetry.OtelComponents.Extensions;
@@ -60,7 +61,10 @@ public class ExtensionLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
-            target.AddTraceExtension(t, extension);
+            target.AddTraceExtensions(t, new SimpleOpenTelemetryTraceOptions
+            {
+                Extensions = [ extension ]
+            });
         });
 
         // ASSERT
@@ -85,7 +89,7 @@ public class ExtensionLoaderTests: IDisposable
     }
 
     [Fact]
-    public void AddMetricsExtension_WithNoneEnum_LogsMissingDescriptorError()
+    public void AddMetricExtension_WithNoneEnum_LogsMissingDescriptorError()
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
@@ -96,7 +100,10 @@ public class ExtensionLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithMetrics(m =>
         {
-            target.AddMetricsExtension(m, MetricExtensionsEnum.None);
+            target.AddMetricExtensions(m, new SimpleOpenTelemetryMetricOptions
+            {
+                Extensions = [ MetricExtensionsEnum.None ]
+            });
         });
 
         // ASSERT
@@ -120,7 +127,10 @@ public class ExtensionLoaderTests: IDisposable
         // ACT
         services.AddOpenTelemetry().WithLogging(l =>
         {
-            target.AddLogExtension(l, LogExtensionsEnum.None);
+            target.AddLogExtensions(l, new SimpleOpenTelemetryLogOptions
+            {
+                Extensions = [ LogExtensionsEnum.None ]
+            });
         });
 
         // ASSERT

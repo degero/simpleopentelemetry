@@ -15,7 +15,7 @@ internal class DistroLoader : IDistroLoader
     private readonly string eventCategory = nameof(DistroLoader);
     private readonly IAssemblyExecution _assemblyExec;
 
-    private readonly Dictionary<DistroEnum, DistroDescriptor> _descriptors = DistroAssemblies.KnownDistros;
+    private readonly Dictionary<DistroEnum, AssemblyDescriptor> _descriptors = DistroAssemblies.KnownDistros;
 
     /// <summary>
     /// Initializes a new instance of the DistroLoader class.
@@ -64,10 +64,10 @@ internal class DistroLoader : IDistroLoader
     private void TryInvokeExtension(
         DistroEnum distroEnum,
         OpenTelemetryBuilder builder,
-        DistroDescriptor descriptor)
+        AssemblyDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodName ) = descriptor;
+        var (assemblyName, typeName, methodName, _, _ ) = descriptor;
 
         try
         {
@@ -76,7 +76,7 @@ internal class DistroLoader : IDistroLoader
                 builder,
                 assemblyName,
                 typeName,
-                methodName,
+                methodName!,
                 null,
                 null,
                 "distro");

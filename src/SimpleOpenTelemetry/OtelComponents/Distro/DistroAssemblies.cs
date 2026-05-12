@@ -1,16 +1,11 @@
 
-namespace SimpleOpenTelemetry.OtelComponents.Distro;
+using SimpleOpenTelemetry.OtelComponents.Common;
 
-// TODO normalise these and update InvokeBuilderExtension()
-internal record DistroDescriptor(
-     string AssemblyName,
-     string TypeName,
-     string MethodName
-);
+namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
 internal static class DistroAssemblies
 {
-    public static readonly Dictionary<DistroEnum, DistroDescriptor>
+    public static readonly Dictionary<DistroEnum, AssemblyDescriptor>
         KnownDistros = new()
         {
             [DistroEnum.AzureMonitorAspNetCore] = new(

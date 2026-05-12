@@ -18,7 +18,7 @@ internal class SamplerLoader : ISamplerLoader
     private readonly IAssemblyExecution _assemblyExec;
 
     // Available 3rd party samplers
-    internal readonly Dictionary<SamplerEnum, SamplerDescriptor> _descriptors = SamplerAssemblies.KnownSamplers;
+    internal readonly Dictionary<SamplerEnum, AssemblyDescriptor> _descriptors = SamplerAssemblies.KnownSamplers;
 
     /// <summary>
     /// Initializes a new instance of the SamplerLoader class.
@@ -37,7 +37,7 @@ internal class SamplerLoader : ISamplerLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to register the sampler with.</param>
     /// <param name="options">The SimpleOpenTelemetry configuration containing sampler settings.</param>
-    public void AddSampler(TracerProviderBuilder builder,
+    public void SetSampler(TracerProviderBuilder builder,
         SimpleOpenTelemetryOptions options)
     {
         var item = options.Trace?.Sampler;
@@ -76,10 +76,10 @@ internal class SamplerLoader : ISamplerLoader
     /// <param name="builder"></param>
     /// <param name="descriptor"></param>
     private void AddSampler(TracerProviderBuilder builder,
-        SamplerDescriptor descriptor)
+        AssemblyDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodName) = descriptor;
+        var (assemblyName, typeName, methodName, _, _) = descriptor;
         var assembly = _assemblyExec.GetAssembly(assemblyName);
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");

@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -39,12 +38,10 @@ internal class ExtensionLoader : IExtensionLoader
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
-    /// <param name="extension">The trace extension type to add.</param>
-    public void AddLogExtension(
-        LoggerProviderBuilder builder,
-        LogExtensionsEnum extension)
-        => AddExtension(builder, extension, ExtensionAssemblies.KnownLogExtensions);
-
+    /// <param name="options">Log provider options</param>
+    public void AddLogExtensions(LoggerProviderBuilder builder, SimpleOpenTelemetryLogOptions options) => 
+        options.Extensions?.ToList()?.ForEach(r => AddExtension(builder, r, ExtensionAssemblies.KnownLogExtensions));
+    
     /// <summary>
     /// Adds a trace extension to the provided TracerProviderBuilder.
     /// </summary>
@@ -53,30 +50,28 @@ internal class ExtensionLoader : IExtensionLoader
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
-    /// <param name="extension">The trace extension type to add.</param>
-    public void AddTraceExtension(
-        TracerProviderBuilder builder,
-        TraceExtensionsEnum extension)
-        => AddExtension(builder, extension, ExtensionAssemblies.KnownTraceExtensions);
+    /// <param name="options">Trace provider options</param>
+    /// void AddMetricsExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options);
+    public void AddTraceExtensions(TracerProviderBuilder builder, SimpleOpenTelemetryTraceOptions options) => 
+        options.Extensions?.ToList()?.ForEach(r => AddExtension(builder, r, ExtensionAssemblies.KnownTraceExtensions));
+
 
     /// <summary>
-    /// Adds a metrics extension to the provided MeterProviderBuilder.
+    /// Adds a metric extension to the provided MeterProviderBuilder.
     /// </summary>
     /// <remarks>
     /// Dynamically loads the extension assembly and invokes the appropriate extension method.
     /// Configuration can be provided via appsettings.json or environment variables.
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
-    /// <param name="extension">The metrics extension type to add.</param>
-    public void AddMetricsExtension(
-        MeterProviderBuilder builder,
-        MetricExtensionsEnum extension)
-        => AddExtension(builder, extension, ExtensionAssemblies.KnownMetricExtensions);
-
+    /// <param name="options">Metric provider options</param>
+    public void AddMetricExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options) => 
+        options.Extensions?.ToList()?.ForEach(r => AddExtension(builder, r, ExtensionAssemblies.KnownMetricExtensions));
+    
     private void AddExtension<TBuilder, TEnum>(
         TBuilder builder,
         TEnum extension,
-        Dictionary<TEnum, ExtensionDescriptor> descriptors)
+        Dictionary<TEnum, AssemblyDescriptor> descriptors)
     where TEnum : notnull
     {
         var signal = Util.GetSignalName<TBuilder>();
@@ -88,7 +83,7 @@ internal class ExtensionLoader : IExtensionLoader
             return;
         }
 
-        var (assemblyName, typeName, methodName ) = descriptor!;
+        var (assemblyName, typeName, methodName, _, _ ) = descriptor!;
       
         try
         {
@@ -98,7 +93,7 @@ internal class ExtensionLoader : IExtensionLoader
                 builder,
                 assemblyName,
                 typeName,
-                methodName,
+                methodName!,
                 null,
                 null,
                 "extension");

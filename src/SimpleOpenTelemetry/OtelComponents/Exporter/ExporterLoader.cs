@@ -105,7 +105,7 @@ internal class ExporterLoader : IExporterLoader
     private void ConfigureExporters<TBuilder, TEnum>(TBuilder builder,
         SimpleOpenTelemetryOptions options,
         Action<string, Action<OtlpExporterOptions>> addOtlp,
-        Dictionary<TEnum, ExporterExtensionDescriptor> descriptors)
+        Dictionary<TEnum, AssemblyDescriptor> descriptors)
         where TEnum : struct, Enum
     {
         var signal = Util.GetSignalName<TBuilder>();
@@ -181,11 +181,11 @@ internal class ExporterLoader : IExporterLoader
     private void AddExporter<TBuilder,TEnum>(
         TEnum exporterEnum,
         TBuilder builder,
-        ExporterExtensionDescriptor descriptor,
+        AssemblyDescriptor descriptor,
         IConfiguration? section,
         string signal)
     {
-        var (assemblyName, typeName, methodName, optionsClassName, optionsRequired) = descriptor;
+        var (assemblyName, typeName, methodName, optionsClassName, _) = descriptor;
 
         try
         {
@@ -194,7 +194,7 @@ internal class ExporterLoader : IExporterLoader
                 builder,
                 assemblyName,
                 typeName,
-                methodName,
+                methodName!,
                 section,
                 optionsClassName,
                 "exporter");

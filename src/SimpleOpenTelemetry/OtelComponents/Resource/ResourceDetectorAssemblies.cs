@@ -4,7 +4,7 @@ internal record ResourceDetectorDescriptor(
      string AssemblyName,
      string TypeName,
      string[] MethodNames,
-     string? optionsClassName
+     string? OptionsClassName = null
 );
 
 /// <summary>
@@ -20,65 +20,56 @@ internal static class ResourceDetectorAssemblies
             [ResourceDetectorEnum.AssemblyVersion] = new(
                 "SimpleOpenTelemetry",
                 "SimpleOpenTelemetry.Extensions.ResourceBuilderExtensions",
-                new string[] {"AddAssemblyVersionDetector"},
-                null),
+                new string[] {"AddAssemblyVersionDetector"}),
 
             /* opentelemetry-dotnet-contrib */
             [ResourceDetectorEnum.EnvVar] = new(
                 "OpenTelemetry",
                 "OpenTelemetry.Resources.ResourceBuilderExtensions",
-                new string[] {"AddEnvironmentVariableDetector"},
-                null),
+                new string[] {"AddEnvironmentVariableDetector"}),
 
             [ResourceDetectorEnum.Host] = new(
                 "OpenTelemetry.Resources.Host",
                 "OpenTelemetry.Resources.HostResourceBuilderExtensions",
-                new string[] {"AddHostDetector"},
-                null),
+                new string[] {"AddHostDetector"}),
 
             [ResourceDetectorEnum.Container] = new(
                 "OpenTelemetry.Resources.Container",
                 "OpenTelemetry.Resources.ContainerResourceBuilderExtensions",
-                new string[] {"AddContainerDetector"},
-                null),
+                new string[] {"AddContainerDetector"}),
 
             [ResourceDetectorEnum.OS] = new(
                 "OpenTelemetry.Resources.OperatingSystem",
                 "OpenTelemetry.Resources.OperatingSystemResourceBuilderExtensions",
-                new string[] {"AddOperatingSystemDetector"},
-                null),
+                new string[] {"AddOperatingSystemDetector"}),
 
             [ResourceDetectorEnum.Process] = new(
                 "OpenTelemetry.Resources.Process",
                 "OpenTelemetry.Resources.ProcessResourceBuilderExtensions",
-                new string[] {"AddProcessDetector"},
-                null),
+                new string[] {"AddProcessDetector"}),
 
             [ResourceDetectorEnum.ProcessRuntime] = new(
                 "OpenTelemetry.Resources.ProcessRuntime",
                 "OpenTelemetry.Resources.ProcessRuntimeResourceBuilderExtensions",
-                new string[] {"AddProcessRuntimeDetector"},
-                null),
+                new string[] {"AddProcessRuntimeDetector"}),
                 
 
             /* opentelemetry-dotnet-contrib platform specific */
             [ResourceDetectorEnum.Azure] = new(
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",
-                new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"},
-                null),
+                new string[] {"AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"}),
              
             [ResourceDetectorEnum.AWS] = new(
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 new string[] {"AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"},
-                "AWSResourceBuilderOptions"),
+                "AWSResourceBuilderOptions"), // TODO test this use
 
             [ResourceDetectorEnum.GCP] = new(
                 "OpenTelemetry.Resources.Gcp",
                 "OpenTelemetry.Resources.GcpResourceBuilderExtensions",
-                new string[] {"AddGcpDetector"},
-                null),
+                new string[] {"AddGcpDetector"}),
         };
 }
 

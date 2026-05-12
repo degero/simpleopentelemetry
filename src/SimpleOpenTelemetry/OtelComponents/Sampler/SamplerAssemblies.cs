@@ -1,18 +1,13 @@
+using SimpleOpenTelemetry.OtelComponents.Common;
+
 namespace SimpleOpenTelemetry.OtelComponents.Sampler;
-
-internal record SamplerDescriptor(
-     string AssemblyName,
-     string TypeName,
-     string MethodName
-);
-
 
 /// <summary>
 /// A list of known opentelemetry-contrib and vendor samplers
 /// </summary>
 internal static class SamplerAssemblies
 {
-    public static readonly Dictionary<SamplerEnum, SamplerDescriptor>
+    public static readonly Dictionary<SamplerEnum, AssemblyDescriptor>
         KnownSamplers = new()
         {
             /* Contrib samplers */ 

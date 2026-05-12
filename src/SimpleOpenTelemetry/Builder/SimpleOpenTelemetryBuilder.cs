@@ -190,9 +190,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 metrics.SetMaxMetricStreams(_options.Metric.Settings.MetricLimit.Value);
 
             // add in tracing instrumentation options from config
-            // TODO refac to just one call
-            _options.Metric.Instrumentations?.ToList().ForEach(r => 
-                _instrumentationLoader.AddMetricsInstrumentation(metrics, _options, r));
+            _instrumentationLoader.AddMetricsInstrumentations(metrics, _options);
 
             // add in meters
             if (_options.Metric.CustomMeters is not null)
@@ -201,8 +199,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // add exporters
             _exporterLoader.ConfigureExporters(metrics, _options);
 
-            // TODO refac to just one call
-            _options.Metric.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddMetricsExtension(metrics, r));
+            // add extensions
+            _extensionLoader.AddMetricExtensions(metrics, _options.Metric);
 
         });
     }
@@ -220,25 +218,21 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);
 
             // add in tracing instrumentation options from config
-            // TODO refac to just one call
-            _options.Trace.Instrumentations?.ToList().ForEach(r => 
-                _instrumentationLoader.AddTracingInstrumentation(tracing, _options, r));
+            _instrumentationLoader.AddTracingInstrumentations(tracing, _options);
 
             // add trace sources from config
             if (_options.Trace.Sources is not null)
                 tracing.AddSource(_options.Trace.Sources.ToArray());
 
             // add in sampler if set in config
-            // TODO rename to SetSampler as there is only one snf only pass resourcebuilder
             // add integration tests to verify this doesnt break resourcebuilder config
-            _samplerLoader.AddSampler(tracing, _options);
+            _samplerLoader.SetSampler(tracing, _options);
 
             // add exporters
             _exporterLoader.ConfigureExporters(tracing, _options);
 
-            // Iterate over exporters for this montioring type
-            // TODO refac to just one call
-            _options.Trace.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddTraceExtension(tracing, r));
+            // add extensions
+            _extensionLoader.AddTraceExtensions(tracing, _options.Trace);
         });
         
         // Add propagators
@@ -256,8 +250,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 // Iterate over exporters for this montioring type and add them
                 _exporterLoader.ConfigureExporters(logging, _options);
                 
-                 // Iterate over exporters for this montioring type
-                _options.Log.Extensions?.ToList()?.ForEach(r => _extensionLoader.AddLogExtension(logging, r));
+                // add extensions
+                _extensionLoader.AddLogExtensions(logging, _options.Log);
             }, 
             options =>
             {

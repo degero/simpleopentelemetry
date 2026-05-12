@@ -38,8 +38,16 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="options">SimpleOpenTelemetryOptions to look up an instrumentationconfig</param>
-    /// <param name="instrumentation">The instrumentation type to add.</param>
-    public void AddTracingInstrumentation(
+    public void AddTracingInstrumentations(
+        TracerProviderBuilder builder,
+        SimpleOpenTelemetryOptions options
+    )
+    {
+        options.Trace.Instrumentations?.ToList().ForEach(r => 
+            AddTracingInstrumentation(builder, options, r));
+    }
+
+    private void AddTracingInstrumentation(
         TracerProviderBuilder builder,
         SimpleOpenTelemetryOptions options,
         TraceInstrumentationEnum instrumentation)
@@ -54,8 +62,16 @@ internal class InstrumentationLoader : IInstrumentationLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="options">SimpleOpenTelemetryOptions to look up an instrumentationconfig</param>
-    /// <param name="instrumentation">The instrumentation type to add.</param>
-    public void AddMetricsInstrumentation(
+    public void AddMetricsInstrumentations(
+        MeterProviderBuilder builder,
+        SimpleOpenTelemetryOptions options
+    )
+    {
+         options.Metric.Instrumentations?.ToList().ForEach(r => 
+            AddMetricsInstrumentation(builder, options, r));
+    }
+
+    private void AddMetricsInstrumentation(
         MeterProviderBuilder builder,
         SimpleOpenTelemetryOptions options,
         MetricInstrumentationEnum instrumentation)
@@ -65,7 +81,7 @@ internal class InstrumentationLoader : IInstrumentationLoader
     TBuilder builder,
     SimpleOpenTelemetryOptions options,
     TEnum instrumentation,
-    Dictionary<TEnum, InstrumentationExtensionDescriptor> descriptors)
+    Dictionary<TEnum, AssemblyDescriptor> descriptors)
     where TEnum : notnull
     {
         var signal = Util.GetSignalName<TBuilder>();
@@ -77,7 +93,7 @@ internal class InstrumentationLoader : IInstrumentationLoader
             return;
         }
             
-        var (assemblyName, typeName, methodName, optionsClassName) = descriptor!;
+        var (assemblyName, typeName, methodName, optionsClassName, _) = descriptor!;
         var instrumentationName = instrumentation.ToString();
         
         try
@@ -88,7 +104,7 @@ internal class InstrumentationLoader : IInstrumentationLoader
                 builder,
                 assemblyName,
                 typeName,
-                methodName,
+                methodName!,
                 section,
                 optionsClassName,
                 "instrumentation");

@@ -75,7 +75,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
         ResourceDetectorDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodNames, confgurationSection) = descriptor;
+        var (assemblyName, typeName, methodNames, _) = descriptor;
         var builderType = typeof(ResourceBuilder);
 
         try
@@ -84,7 +84,7 @@ internal class ResourceDetectorLoader : IResourceDetectorLoader
             var type = assembly.GetType(typeName)
                 ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
-            var section = descriptor.optionsClassName is not null ? options.Resource?.DetectorConfig?.GetSection(resourceDetector.ToString()) : null;
+            var section = descriptor.OptionsClassName is not null ? options.Resource?.DetectorConfig?.GetSection(resourceDetector.ToString()) : null;
 
             methodNames.ToList().ForEach(methodName =>
             {
