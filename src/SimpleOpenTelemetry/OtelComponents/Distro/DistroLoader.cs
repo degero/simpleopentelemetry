@@ -1,7 +1,4 @@
-using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
-using SimpleOpenTelemetry.Builder;
-using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
@@ -10,21 +7,15 @@ namespace SimpleOpenTelemetry.OtelComponents.Distro;
 /// <summary>
 /// Load distro based on the available types linked to DistroEnum
 /// </summary>
-internal class DistroLoader : IDistroLoader
+internal class DistroLoader : LoaderBase, IDistroLoader
 {
-    private readonly string eventCategory = nameof(DistroLoader);
-    private readonly IAssemblyExecution _assemblyExec;
-
-    private readonly Dictionary<DistroEnum, AssemblyDescriptor> _descriptors = DistroAssemblies.KnownDistros;
+    protected override string ComponentKind => "Distro";
 
     /// <summary>
     /// Initializes a new instance of the DistroLoader class.
     /// </summary>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public DistroLoader(IAssemblyExecution assemblyExecution)
-    {
-        _assemblyExec = assemblyExecution;
-    }
+    public DistroLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution) {}
 
     /// <summary>
     /// Loads an opentelemetry distro. Returns false if none set
@@ -32,62 +23,18 @@ internal class DistroLoader : IDistroLoader
     /// <param name="builder"></param>
     /// <param name="options"></param>
     /// <returns>If a distro to load was specified in config</returns>
-    public bool LoadDistro(IOpenTelemetryBuilder builder,
-        SimpleOpenTelemetryOptions options)
+    public bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options)
     {
-        var distro = options.Distro;
-
-        if (!string.IsNullOrWhiteSpace(distro))
+        if (!string.IsNullOrWhiteSpace(options.Distro)) 
         {
-            if (LoaderEnumHelper.TryParseKnown<DistroEnum>(distro, out var matchedDistro))
+            if (builder is not OpenTelemetryBuilder)
             {
-                if (!_descriptors.TryGetValue(matchedDistro, out var descriptor))
-                {
-                    EventSource.Log.Error(eventCategory,
-                        $"{typeof(DistroEnum).Name} type '{matchedDistro}' not found to initialise distro.");
-                }
-                else
-                {
-                    TryInvokeExtension(matchedDistro, (OpenTelemetryBuilder) builder, descriptor);
-                }
+                EventSource.Log.Error(ComponentKind, $"Unsupported OpenTelemetry Distro '{options.Distro}'. This Distro can not be used with OpenTelemetrySDKBuilder.");
+                return true; // found a distro but it cannot be used, this will skip any opentelemetry setup.
             }
-            else
-            {
-                EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry Distro '{distro}'. Please check your SimpleOpenTelemetry configuration.");
-            }
-            return true;
-
+            TryInvokeComponent(options.Distro, (OpenTelemetryBuilder) builder, DistroAssemblies.KnownGenericHostDistros);
+            return true; // return true regardless of distro invocation success as we wish to skip any opentelemetry setup
         }
         return false;
     }
-
-    private void TryInvokeExtension(
-        DistroEnum distroEnum,
-        OpenTelemetryBuilder builder,
-        AssemblyDescriptor descriptor)
-    {
-
-        var (assemblyName, typeName, methodName, _, _ ) = descriptor;
-
-        try
-        {
-            ReflectiveLoaderExecutor.InvokeBuilderExtension(
-                _assemblyExec,
-                builder,
-                assemblyName,
-                typeName,
-                methodName!,
-                null,
-                null,
-                "distro");
-
-            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry distro '{distroEnum}'.");
-
-        }
-        catch (Exception ex)
-        {
-            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry distro '{distroEnum}' via '{typeName}.{methodName}'.", ex.Message);
-        }
-    }
-
 }

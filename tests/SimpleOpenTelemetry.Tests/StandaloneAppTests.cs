@@ -2,14 +2,27 @@ using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using SimpleOpenTelemetry;
+using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.Utils;
 using Xunit;
 
 namespace SimpleOpenTelemetryTests;
 
 [Collection("StandaloneAppTests")]
-public class StandaloneAppTests
+public class StandaloneAppTests : IDisposable
 {
+
+    private readonly TestEventListener _listener;
+
+    public StandaloneAppTests()
+    {
+        _listener = new();
+    }
+
+    public void Dispose()
+    {
+        _listener.Dispose();
+    }
 
     private void ClearOTELEnvVars()
     {
@@ -46,7 +59,7 @@ public class StandaloneAppTests
     }
 
     [Fact]
-    public void StandaloneBootstrap_AddSimpleOpenTelemetry_ShouldSet_CallOpenTelemetryBuilder_Configure()
+    public void StandaloneBootstrap_AddSimpleOpenTelemetry_Should_CallOpenTelemetryBuilder_Configure()
     {
         // 
         var originalPropagator = Propagators.DefaultTextMapPropagator;
@@ -62,7 +75,7 @@ public class StandaloneAppTests
             });
 
             // ACT
-            var sdk = SimpleOpenTelemetry.StandaloneApp.AddSimpleOpenTelemetry(config);
+            var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
 
             // ASSERT
             // Assert - not ideal but cant verify by mocked / injected services due to extension method calling 
@@ -82,6 +95,40 @@ public class StandaloneAppTests
         }
     }
     
+    
+    [Fact]
+    public void StandaloneBootstrap_AddSimpleOpenTelemetry_Should_LogErrorWhen_UsingUnsupportedDistro()
+    {
+        // 
+        var originalPropagator = Propagators.DefaultTextMapPropagator;
+
+        try
+        {
+            // ARRANGE
+            var distroName = DistroEnum.AzureMonitorAspNetCore.ToString();
+            const string serviceName = "test-service";
+            const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Distro"] = distroName,
+            });
+
+            // ACT
+            var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+
+            // ASSERT
+            var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+                r.Payload is not null &&
+                r.Payload.Any(x => x.ToString().Contains($"Unsupported OpenTelemetry Distro '{distroName}'. This Distro can not be used with OpenTelemetrySDKBuilder.")));
+            Assert.NotNull(errorEvent);
+
+        }
+        finally
+        {
+            Sdk.SetDefaultTextMapPropagator(originalPropagator);
+            ClearOTELEnvVars();
+        }
+    }
+
     private IConfiguration BuildConfigWithOtelValues(
             string otelServiceName, string otelResourceAttributes, 
             Dictionary<string, string?>? otherValues = null) =>

@@ -5,8 +5,11 @@ namespace SimpleOpenTelemetry.OtelComponents.Distro;
 
 internal static class DistroAssemblies
 {
+    /// <summary>
+    /// These require a concrete OpenTelemetryBuilder only in a Generic Host Host builder setup (eg AddSimpleOpenTelemetry())
+    /// </summary>
     public static readonly Dictionary<DistroEnum, AssemblyDescriptor>
-        KnownDistros = new()
+        KnownGenericHostDistros = new()
         {
             [DistroEnum.AzureMonitorAspNetCore] = new(
                 "Azure.Monitor.OpenTelemetry.AspNetCore",

@@ -1,3 +1,4 @@
+using System.Reflection.Emit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
@@ -16,20 +17,19 @@ namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 /// Load otel-contrib and vendor exporter assembly and invoke exporter method based on the available types
 /// linked to [Log/Trace/Metric]ExporterEnum
 /// </summary>
-internal class ExporterLoader : IExporterLoader
+internal class ExporterLoader : LoaderBase, IExporterLoader
 {
+    protected override string ComponentKind => "Exporter";
+
     private readonly string eventCategory = nameof(ExporterLoader);
 
-    private readonly IAssemblyExecution _assemblyExec;
 
     /// <summary>
     /// Initializes a new instance of the ExporterLoader class.
     /// </summary>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public ExporterLoader(IAssemblyExecution assemblyExecution)
-    {
-        _assemblyExec = assemblyExecution;
-    }
+    public ExporterLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution)
+    { }
 
     /// <summary>
     /// Configures metric exporters on the provided MeterProviderBuilder.
@@ -110,36 +110,28 @@ internal class ExporterLoader : IExporterLoader
     {
         var signal = Util.GetSignalName<TBuilder>();
         List<SimpleOpenTelemetryExporterConfig<TEnum>> exporters = GetExportersForBuilder<TEnum>(options);
-        for (var i = 0; i < exporters.Count; i++)
+        var otlpExporterIdx = 0;
+        var otlpExporterEnumName = nameof(TraceExporterEnum.Otlp);
+        var otlpExporters = exporters.Where(r => r.Type?.Equals(otlpExporterEnumName, StringComparison.OrdinalIgnoreCase) ?? false).ToList();
+        var otherExporters = exporters.Except(otlpExporters).ToList();
+
+        foreach (var item in otlpExporters)
         {
-            var item = exporters[i];
             var rawType = item.Type.ToString();
 
-            if (LoaderEnumHelper.TryParseKnown<TEnum>(rawType, out var matchedExporter))
+            // If not set in this configsection, set through either the OpenTelemetry Env vars
+            // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
+            var config = GetCustomExporterConfig(options, item);
+            // Dont use reflection as we have this built in the OpenTelemetry lib
+            AddOTLPExporter<TEnum, TBuilder>(addOtlp, config, $"OTLPExporter-{signal}-{otlpExporterIdx++}");
+        }
+
+        foreach (var item in otherExporters)
+        {
+            if (TryGetDescriptor<TEnum, TBuilder>(item.Type, descriptors, out var descriptor))
             {
-                if (string.Equals(nameof(TraceExporterEnum.Otlp), matchedExporter.ToString(), StringComparison.OrdinalIgnoreCase))
-                {
-                     // If not set in this configsection, set through either the OpenTelemetry Env vars
-                    // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
-                    var config = GetCustomExporterConfig(options, item);
-                    // Dont use reflection as we have this built in the OpenTelemetry lib
-                    AddOTLPExporter(addOtlp, config, item, $"OTLPExporter-{signal}-{i}", signal);
-                }
-                else if (!descriptors.TryGetValue(matchedExporter, out var descriptor))
-                {
-                    EventSource.Log.Error(eventCategory, 
-                        $"{typeof(TEnum).Name} type '{matchedExporter}' not found to initialise {signal} exporter.");
-                }
-                else 
-                {
-                    var config = descriptor.OptionsClassName is not null ? GetCustomExporterConfig(options, item) : null;
-                    AddExporter(matchedExporter, builder, descriptor, config, signal);
-                }
-            }
-            else
-            {
-                // Throw an exception on an unknown exporter type
-                EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry {signal} exporter type '{item.Type}'. Please check your SimpleOpenTelemetry configuration.");
+                var config = descriptor!.OptionsClassName is not null ? GetCustomExporterConfig(options, item) : null;
+                TryInvokeDescriptor<TBuilder>(item.Type, builder, descriptor, config);
             }
         }
     }
@@ -157,54 +149,22 @@ internal class ExporterLoader : IExporterLoader
         return (List<SimpleOpenTelemetryExporterConfig<TEnum>>?)exporters ?? new();
     }
 
-    private void AddOTLPExporter<TEnum>(Action<string, Action<OtlpExporterOptions>> addExporter, 
+    private void AddOTLPExporter<TEnum,TBuilder>(Action<string, Action<OtlpExporterOptions>> addExporter, 
         IConfiguration? options,
-        SimpleOpenTelemetryExporterConfig<TEnum> item, 
-        string exporterName, 
-        string signal)
+        string exporterName)
     {
+        var builderName = typeof(TBuilder).Name;
         try 
         {
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
-           
             addExporter(exporterName, BuildOtlpConfigAction(options));
-            EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{TraceExporterEnum.Otlp}' '{exporterName}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName}' with name '{exporterName}'.");
 
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register {signal} OTLP exporter via '{exporterName}'.", ex.Message);
-        }
-    }
-
-    private void AddExporter<TBuilder,TEnum>(
-        TEnum exporterEnum,
-        TBuilder builder,
-        AssemblyDescriptor descriptor,
-        IConfiguration? section,
-        string signal)
-    {
-        var (assemblyName, typeName, methodName, optionsClassName, _) = descriptor;
-
-        try
-        {
-            ReflectiveLoaderExecutor.InvokeBuilderExtension(
-                _assemblyExec,
-                builder,
-                assemblyName,
-                typeName,
-                methodName!,
-                section,
-                optionsClassName,
-                "exporter");
-
-            EventSource.Log.Verbose(eventCategory, $"Registered {signal} exporter '{exporterEnum}'.");
-
-        }
-        catch (Exception ex)
-        {
-            EventSource.Log.Error(eventCategory, $"Failed to register {signal} exporter '{exporterEnum}' via '{typeName}.{methodName}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName} with name '{exporterName}'.", ex.Message);
         }
     }
 

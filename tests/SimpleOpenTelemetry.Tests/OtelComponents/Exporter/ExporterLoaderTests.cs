@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.OtelComponents.Common;
@@ -198,7 +200,7 @@ public class ExporterLoaderTests : IDisposable
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<TraceExporterEnum>
         {
-            Type = exporterType,
+            Type = exporterType.ToString(),
             Options = exporterConfigSection
         };
 
@@ -224,7 +226,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
-                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ?? false));
+                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(TracerProviderBuilder)}'") ?? false) ?? false));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
@@ -255,7 +257,7 @@ public class ExporterLoaderTests : IDisposable
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<MetricExporterEnum>
         {
-            Type = exporterType,
+            Type = exporterType.ToString(),
             Options = exporterConfigSection
         };
 
@@ -281,7 +283,7 @@ public class ExporterLoaderTests : IDisposable
         // Assert
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
-                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false) ?? false));
+                    (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(MeterProviderBuilder)}'") ?? false) ?? false));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
@@ -313,7 +315,7 @@ public class ExporterLoaderTests : IDisposable
 
         var exporterConfig =  new SimpleOpenTelemetryExporterConfig<LogExporterEnum>
         {
-            Type = exporterType,
+            Type = exporterType.ToString(),
             Options = exporterConfigSection
         };
 
@@ -343,7 +345,7 @@ public class ExporterLoaderTests : IDisposable
         var registeredSuccessEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                     e.Payload != null &&
-                    e.Payload.Any(p => p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false));
+                    e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(LoggerProviderBuilder)}'") ?? false));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)
@@ -420,9 +422,9 @@ public class ExporterLoaderTests : IDisposable
         var registeredSuccessEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Verbose &&
                     e.Payload != null &&
-                    e.Payload.Any(p => (p?.ToString()?.Contains($"Registered log exporter '{exporterType}'") ?? false) ||
-                    (p?.ToString()?.Contains($"Registered trace exporter '{exporterType}'") ?? false) ||
-                    (p?.ToString()?.Contains($"Registered metric exporter '{exporterType}'") ?? false)));
+                    e.Payload.Any(p => (p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(LoggerProviderBuilder)}'") ?? false) ||
+                    (p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(TracerProviderBuilder)}'") ?? false) ||
+                    (p?.ToString()?.Contains($"Registered OpenTelemetry Exporter '{exporterType}' for builder '{nameof(MeterProviderBuilder)}'") ?? false)));
 
         var errorEvents = _listener.Events
             .Where(e => e.Level == EventLevel.Error)

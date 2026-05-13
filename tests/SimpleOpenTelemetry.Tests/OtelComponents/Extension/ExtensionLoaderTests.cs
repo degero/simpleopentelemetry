@@ -38,7 +38,7 @@ public class ExtensionLoaderTests: IDisposable
     [MemberData(nameof(GetAllTraceExtensions), true)]
     [MemberData(nameof(GetAllTraceExtensions), false)]
     public void AddTraceExtension_WithKnownTraceExtension_LogsSuccessOrFailure(
-        TraceExtensionsEnum extension,
+        string extension,
         string assemblyName,
         bool packageInstalled)
     {
@@ -70,10 +70,10 @@ public class ExtensionLoaderTests: IDisposable
         // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
-            (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered trace extension '{extension}'") ?? false) ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Extension '{extension}'") ?? false) ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            (e.Payload?.Any(p => p?.ToString()?.Contains($"Failed to register trace extension '{extension}'") ?? false) ?? false) &&
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry Extension '{extension}'") ?? false) ?? false) &&
             (e.Payload?.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) ?? false));
 
         if (packageInstalled)
@@ -102,15 +102,15 @@ public class ExtensionLoaderTests: IDisposable
         {
             target.AddMetricExtensions(m, new SimpleOpenTelemetryMetricOptions
             {
-                Extensions = [ MetricExtensionsEnum.None ]
+                Extensions = [ MetricExtensionsEnum.None.ToString() ]
             });
         });
 
-        // ASSERT
+        // ASSERT 
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains("MetricExtensionsEnum type 'None' not found to initialise metric extension.") ?? false));
+            e.Payload != null && 
+            e.Payload.Any(p => p?.ToString()?.Contains("OpenTelemetry Extension MetricExtensionsEnum type 'None' for builder 'MeterProviderBuilder' not found to initialise.") ?? false));
 
         Assert.NotNull(errorEvent);
     }
@@ -129,14 +129,14 @@ public class ExtensionLoaderTests: IDisposable
         {
             target.AddLogExtensions(l, new SimpleOpenTelemetryLogOptions
             {
-                Extensions = [ LogExtensionsEnum.None ]
+                Extensions = [ LogExtensionsEnum.None.ToString() ]
             });
         });
 
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            (e.Payload?.Any(p => p?.ToString()?.Contains($"LogExtensionsEnum type 'None' not found to initialise log extension.") ?? false) ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains("OpenTelemetry Extension LogExtensionsEnum type 'None' for builder 'LoggerProviderBuilder' not found to initialise.") ?? false) ?? false));
 
         Assert.NotNull(errorEvent);
     }
@@ -145,7 +145,7 @@ public class ExtensionLoaderTests: IDisposable
     {
         foreach (var extension in ExtensionAssemblies.KnownTraceExtensions)
         {
-            yield return new object[] { extension.Key, extension.Value.AssemblyName, packageInstalled };
+            yield return new object[] { extension.Key.ToString(), extension.Value.AssemblyName, packageInstalled };
         }
     }
 }

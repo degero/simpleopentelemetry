@@ -62,7 +62,7 @@ internal class SimpleOpenTelemetryOptions
 
 internal class SimpleOpenTelemetryExporterConfig<TEnum>
 {
-    public TEnum? Type { get; set; }
+    public string? Type { get; set; }
 
     public IConfigurationSection? Options { get; set; }
 }
@@ -80,7 +80,7 @@ internal class SimpleOpenTelemetryMetricOptions
     /// </summary>
     public List<SimpleOpenTelemetryExporterConfig<MetricExporterEnum>>? Exporters { get; set; } = new();
 
-    public MetricExtensionsEnum[]? Extensions { get; set; }
+    public string[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryMeterProviderSettings? Settings { get; set; }
     
@@ -104,7 +104,7 @@ internal class SimpleOpenTelemetryTraceOptions
 
     public List<SimpleOpenTelemetryExporterConfig<TraceExporterEnum>>? Exporters { get; set; } = new();
 
-    public TraceExtensionsEnum[]? Extensions { get; set; }
+    public string[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryTraceProviderSettings? Settings { get; set; }
 
@@ -136,7 +136,7 @@ internal class SimpleOpenTelemetryLogOptions
     /// </summary>
     public List<SimpleOpenTelemetryExporterConfig<LogExporterEnum>>? Exporters { get; set; } = new();
 
-    public LogExtensionsEnum[]? Extensions { get; set; }
+    public string[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryLogProviderSettings? Settings { get;set; }
 }
