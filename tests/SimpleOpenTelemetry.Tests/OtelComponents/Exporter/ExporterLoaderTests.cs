@@ -196,7 +196,7 @@ public class ExporterLoaderTests : IDisposable
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.OptionsRequired || createOptionsEntry);
        
-        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
+        IConfigurationSection? exporterConfigSection = setOptions ? TestHelpers.GetComponentConfigurationSection(_assemblyExec, descriptor!) : null;
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<TraceExporterEnum>
         {
@@ -253,7 +253,8 @@ public class ExporterLoaderTests : IDisposable
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.OptionsRequired || createOptionsEntry);
 
-        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
+        IConfigurationSection? exporterConfigSection = setOptions ? TestHelpers.GetComponentConfigurationSection(
+            _assemblyExec, descriptor!) : null;
 
         var exporterConfig = new SimpleOpenTelemetryExporterConfig<MetricExporterEnum>
         {
@@ -311,7 +312,7 @@ public class ExporterLoaderTests : IDisposable
             !string.IsNullOrWhiteSpace(descriptor.OptionsClassName) && 
             (descriptor.OptionsRequired || createOptionsEntry);
 
-        IConfigurationSection? exporterConfigSection = setOptions ? GetExporterConfigurationSection(descriptor!) : null;
+        IConfigurationSection? exporterConfigSection = setOptions ? TestHelpers.GetComponentConfigurationSection(_assemblyExec, descriptor!) : null;
 
         var exporterConfig =  new SimpleOpenTelemetryExporterConfig<LogExporterEnum>
         {
@@ -471,33 +472,4 @@ public class ExporterLoaderTests : IDisposable
         return (target, config)!;
     }
 
-    private IConfigurationSection? GetExporterConfigurationSection(AssemblyDescriptor descriptor)
-    {
-        // Just generate a section based on the options class structure, dont set an values
-        IConfigurationSection? optionsConfigSection = null;
-
-        var className = descriptor.OptionsClassName;
-        var assembly = _assemblyExec.GetAssembly(descriptor.AssemblyName);
-        var classDef = assembly.GetTypes()
-            .FirstOrDefault(t => t.Name == className)!;
-
-        var ctor = classDef.GetConstructor(
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            binder: null,
-            types: Type.EmptyTypes,
-            modifiers: null);
-        var instance = ctor!.Invoke(null);
-
-        var inner = JsonSerializer.Serialize(instance, classDef);
-        var wrapped = $"{{\"{classDef.Name}\": {inner}}}";
-
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(wrapped));
-        IConfiguration classOptionsBuilder = new ConfigurationBuilder()
-            .AddJsonStream(stream)
-            .Build();
-
-        optionsConfigSection = classOptionsBuilder.GetSection(classDef.Name);
-        
-        return optionsConfigSection;
-    }
 }

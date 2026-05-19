@@ -46,7 +46,7 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
   - For Generic Host apps like aspnetcore (or any apps using WebApplicationBuilder/HostApplicationBuilder):
     - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
     - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
-  - For Standalone apps (no Generc host): 
+  - For Standalone apps (no Generic host): 
     - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and   
     ```csharp
     using var loggerFactory = LoggerFactory.Create(builder =>
@@ -56,6 +56,9 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
     });
 
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+
+    // on shutdown
+    sdk.Dispose();
     ```
 
 ---

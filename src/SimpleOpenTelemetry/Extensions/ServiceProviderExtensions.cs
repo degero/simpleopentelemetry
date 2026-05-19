@@ -4,6 +4,7 @@ using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.Validation;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.Extensions;
@@ -40,38 +41,12 @@ public static class ServiceProviderExtensions
         // Check opentelemetry registered
         var hostedServices = services.GetServices<IHostedService>();
         var telemetryHost = hostedServices.Count() > 0 ? hostedServices.First(r => r.GetType().Name.Contains("TelemetryHostedService")) : null;
-        if (telemetryHost is null)
-        {
-            EventSource.Log.Error(EventCategory,
-                "OpenTelemetry has not been registered. " +
-                "Ensure AddSimpleOpenTelemetry() is called with a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
-            return false;
-        }
 
         // Check at least one signal output by getting resource from available providers (TracerProvider, MeterProvider, or LoggerProvider)
         var resource = GetResourceFromProviders(services);
 
-        if (resource == null)
-        {
-            EventSource.Log.Error(EventCategory,
-                "No OpenTelemetry signal providers have been registered. " +
-                "Ensure a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
-            return false;
-        }
 
-        var attrs = resource.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
-
-        var requiredKeys = new[] { "service.name", "service.namespace", "service.version", "deployment.environment.name" };
-        var missing = requiredKeys.Where(k => !attrs.ContainsKey(k) || string.IsNullOrEmpty(attrs[k]?.ToString())).ToList();
-
-        if (missing.Any())
-        {
-            EventSource.Log.Error(EventCategory,
-                $"Missing required OpenTelemetry resource attributes: {string.Join(", ", missing)}. " +
-                "Check OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES env vars / appsettings.json.");
-            return false;
-        }
-        return true;
+        return SimpleOpenTelemetryValidator.Validate(telemetryHost, resource);
     }
 
     /// <summary>

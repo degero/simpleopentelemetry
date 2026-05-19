@@ -1,15 +1,18 @@
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+using SimpleOpenTelemetry.OtelComponents.Common;
+using SimpleOpenTelemetry.Reflection;
 
 namespace SimpleOpenTelemetryTests;
 
 
-public static class TestHelpers
+internal static class TestHelpers
 {
    
-    public static IEnumerable<TextMapPropagator> GetCompositePropagators(CompositeTextMapPropagator composite)
+    internal static IEnumerable<TextMapPropagator> GetCompositePropagators(CompositeTextMapPropagator composite)
     {
         var type = composite.GetType();
         var fields = type.GetFields(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -39,5 +42,40 @@ public static class TestHelpers
         }
 
         throw new InvalidOperationException("Unable to inspect CompositeTextMapPropagator internal propagators.");
+    }
+
+    
+    internal static IConfigurationSection? GetComponentConfigurationSection(
+        IAssemblyExecution assemblyExec, 
+        AssemblyDescriptor descriptor,
+        string? optionsSectionName = null)
+    {
+        // Just generate a section based on the options class structure, dont set an values
+        IConfigurationSection? optionsConfigSection = null;
+
+        var className = descriptor.OptionsClassName;
+        var assembly = assemblyExec.GetAssembly(descriptor.AssemblyName);
+        var classDef = assembly.GetTypes()
+            .FirstOrDefault(t => t.Name == className)!;
+
+        var ctor = classDef.GetConstructor(
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            binder: null,
+            types: Type.EmptyTypes,
+            modifiers: null);
+        var instance = ctor!.Invoke(null);
+
+        var sectionName = optionsSectionName ?? classDef.Name;
+        var inner = JsonSerializer.Serialize(instance, classDef);
+        var wrapped = $"{{\"{sectionName}\": {inner}}}";
+
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(wrapped));
+        IConfiguration classOptionsBuilder = new ConfigurationBuilder()
+            .AddJsonStream(stream)
+            .Build();
+
+        optionsConfigSection = classOptionsBuilder.GetSection(sectionName);
+        
+        return optionsConfigSection;
     }
 }

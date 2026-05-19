@@ -59,7 +59,7 @@ internal static class ResourceDetectorAssemblies
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",
                 ["AddAWSEBSDetector", "AddAWSEC2Detector", "AddAWSECSDetector", "AddAWSEKSDetector"],
-                "AWSResourceBuilderOptions"), // TODO test this use
+                "AWSResourceBuilderOptions"),
 
             [ResourceDetectorEnum.GCP] = new(
                 "OpenTelemetry.Resources.Gcp",

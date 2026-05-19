@@ -70,6 +70,7 @@ public class ResourceDetectorLoaderTests : IDisposable
                 Detectors = [ResourceDetectorEnum.AWS.ToString()],
             }
         };
+        
         if (setConfig is true)
         {
            options.Resource.DetectorConfig = configSec.GetSection("DetectorConfig");

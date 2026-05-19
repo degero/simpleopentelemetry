@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.Extensions;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.OtelComponents.Instrumentation;
 using SimpleOpenTelemetry.Reflection;
 using Xunit;
@@ -101,21 +102,16 @@ public class InstrumentationLoaderTests : IDisposable
 
         var target = new InstrumentationLoader(assemblyExec.Object);
         var services = new ServiceCollection();
+        var descriptor = InstrumentationAssemblies.KnownTraceInstrumentations[instrumentation];
 
-        var optionsClassConfigSection = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string?>()
-            {
-                [$"InstrumentationConfig:{instrumentation}"] = ""
-            }
-        ).Build().GetSection("InstrumentationConfig");
-
+      
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddTracingInstrumentations(t, new SimpleOpenTelemetryOptions
             {
                 Trace = new() { Instrumentations = [ instrumentation.ToString() ], 
-                    InstrumentationConfig = optionsClassConfigSection
+                    InstrumentationConfig = GetDescriptorOptionsClassConfig(descriptor, instrumentation)
                 }
             });
         });
@@ -263,4 +259,30 @@ public class InstrumentationLoaderTests : IDisposable
         }
     }
 
+    private IConfigurationSection GetDescriptorOptionsClassConfig<TEnum>(AssemblyDescriptor descriptor,
+        TEnum instrumentation)
+    {
+        
+        var optionsClassConfigSection = TestHelpers.GetComponentConfigurationSection(_assemblyExec, 
+            descriptor, instrumentation.ToString());
+
+        var wrappedData = optionsClassConfigSection!
+            .AsEnumerable()
+            .Where(kvp => kvp.Value != null)
+            .ToDictionary(
+                kvp => $"InstrumentationConfig:{kvp.Key}",
+                kvp => kvp.Value
+            );
+
+          // Build the final config with the wrapped section
+        var ConfigurationBuilder = new ConfigurationBuilder()
+            .AddInMemoryCollection(wrappedData)
+            .Build();
+
+        var section = ConfigurationBuilder.GetSection("InstrumentationConfig");
+
+        Assert.True(section.Exists());
+
+        return section;
+    }
 }
