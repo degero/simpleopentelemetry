@@ -135,6 +135,7 @@ For a json configuration file, you can start with one of the pre-built ones in [
     },
     "Metric": {
       "Instrumentations": [],
+      "InstrumentationConfig": {},
       "Exporters": [],
       "Settings": {},
       "CustomMeters": []
@@ -227,6 +228,8 @@ https://opentelemetry.io/ecosystem/distributions/)
 
 
 #### Azure Monitor AspNetCore
+
+**Important** This Distro only supports use with generic host WebApplication (does not support using with StandaloneApp.AddSimpleOpenTelemetry()). If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter).
 
 This sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors and more. If you want more control over your setup you can still use most (not all) features provided in the distr (see the link below) via the other configuration item covered in the following sections. NOTE: Azure RBAC auth is not currently supported.
 
@@ -591,7 +594,7 @@ app.UseOpenTelemetryPrometheusScrapingEndpoint();
 ---
 
 
-#### Azure exporter
+#### Azure Monitor exporter
 
 
 Documentation: [Azure Monitor Exporter client library for .NET README.md](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/README.md) 

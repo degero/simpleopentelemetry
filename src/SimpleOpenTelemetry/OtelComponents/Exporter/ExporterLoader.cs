@@ -128,7 +128,7 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
 
         foreach (var item in otherExporters)
         {
-            if (TryGetDescriptor<TEnum, TBuilder>(item.Type, descriptors, out var descriptor))
+            if (TryGetDescriptor<TEnum, TBuilder>(item.Type, descriptors, out var descriptor, out var matchedEnum))
             {
                 var config = descriptor!.OptionsClassName is not null ? GetCustomExporterConfig(options, item) : null;
                 TryInvokeDescriptor<TBuilder>(item.Type, builder, descriptor, config);

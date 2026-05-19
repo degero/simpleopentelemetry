@@ -20,7 +20,7 @@ internal abstract class LoaderBase
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string?, IConfiguration?>? getConfiguration = null) 
         where TEnum : struct, Enum
     {
         var result = true;
@@ -40,14 +40,14 @@ internal abstract class LoaderBase
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string?, IConfiguration?>? getConfiguration = null) 
         where TEnum : struct, Enum
     {
         if (!string.IsNullOrWhiteSpace(componentName))
         {
-            if (TryGetDescriptor<TEnum, TBuilder>(componentName, descriptors, out var descriptor))
+            if (TryGetDescriptor<TEnum, TBuilder>(componentName, descriptors, out var descriptor, out var matchedEnum))
             {
-                IConfiguration? config = getConfiguration is not null ? getConfiguration(descriptor!, options!) : null;
+                IConfiguration? config = getConfiguration is not null ? getConfiguration(descriptor!, options!, matchedEnum.ToString()) : null;
                 return TryInvokeDescriptor(componentName, builder, descriptor!, config);
             }
         }
@@ -56,12 +56,14 @@ internal abstract class LoaderBase
 
     protected bool TryGetDescriptor<TEnum, TBuilder>(string componentName,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
-        out AssemblyDescriptor? descriptor)
+        out AssemblyDescriptor? descriptor,
+        out TEnum? matchedEnum)
         where TEnum : struct, Enum
     {
         var builderName = typeof(TBuilder).Name;
         if (TryParseKnown<TEnum>(componentName!, out var matchedComponent))
         {
+            matchedEnum = matchedComponent;
             if (!descriptors.TryGetValue(matchedComponent, out descriptor))
             {
                 EventSource.Log.Error(ComponentKind,
@@ -72,6 +74,7 @@ internal abstract class LoaderBase
         }
         else
         {
+            matchedEnum = null;
             EventSource.Log.Error(ComponentKind, $"Unsupported OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'. Please check your SimpleOpenTelemetry configuration.");
             descriptor = null;
             return false;                

@@ -69,7 +69,7 @@ internal class SimpleOpenTelemetryExporterConfig<TEnum>
 
 internal class SimpleOpenTelemetryMetricOptions
 {
-    public MetricInstrumentationEnum[]? Instrumentations { get; set; }
+    public string[]? Instrumentations { get; set; }
 
     public IConfigurationSection? InstrumentationConfig { get; set; }
 
@@ -98,7 +98,7 @@ internal class SimpleOpenTelemetryMeterProviderSettings
 
 internal class SimpleOpenTelemetryTraceOptions 
 {
-    public TraceInstrumentationEnum[]? Instrumentations { get; set; }
+    public string[]? Instrumentations { get; set; }
 
     public IConfigurationSection? InstrumentationConfig { get; set; }
 

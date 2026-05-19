@@ -21,7 +21,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
     /// <returns>The loaded assembly.</returns>
     /// <exception cref="Exception">Thrown when assembly cannot be loaded.</exception>
-    public Assembly GetAssembly(string assemblyName)
+    public virtual Assembly GetAssembly(string assemblyName)
     {
         if (_loadedAssemblies.Keys.Contains(assemblyName))
         {
@@ -47,7 +47,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// </remarks>
     /// <param name="assemblyName">The name of the assembly to load (without .dll extension).</param>
     /// <returns>The loaded assembly, or null if not found or loading failed.</returns>
-    public Assembly? TryLoadAssembly(string assemblyName)
+    public virtual Assembly? TryLoadAssembly(string assemblyName)
     {
         // Check if already loaded first
         var existing = AppDomain.CurrentDomain.GetAssemblies()
@@ -83,7 +83,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builderType">The type of the builder parameter to match.</param>
     /// <param name="methodName">The name of the method to find.</param>
     /// <returns>The MethodInfo if found, otherwise null.</returns>
-    public MethodInfo? FindParameterlessMethod(
+    public virtual MethodInfo? FindParameterlessMethod(
     Type type,
     Type builderType,
     string methodName)
@@ -102,7 +102,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builderType">The type of the builder parameter to match.</param>
     /// <param name="methodName">The name of the method to find.</param>
     /// <returns>The MethodInfo if found, otherwise null.</returns>
-    public MethodInfo FindParameterlessMethodWithAllDefaultValues(
+    public virtual MethodInfo FindParameterlessMethodWithAllDefaultValues(
         Type type,
         Type builderType,
         string methodName)
@@ -126,7 +126,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="method">Method to invoke</param>
     /// <param name="targetType">The type of instance to pass as argument.</param>
     /// <param name="target">The instance to pass as argument.</param>
-    public object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target)
+    public virtual object InvokeParameterlessOrDefaultedParameters(MethodInfo method, Type targetType, object target)
     {
         var paramsToInvoke = new List<object?> { target };
         var remainingParams = method.GetParameters().Skip(1).ToList();
@@ -150,7 +150,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builder">The builder instance to pass as argument.</param>
     /// <returns>The method's return value.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the method is not found.</exception>
-    public object InvokeParameterless(
+    public virtual object InvokeParameterless(
     Type type,
     Type builderType,
     string methodName,
@@ -179,7 +179,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builder">The builder instance to pass as the first argument.</param>
     /// <param name="section">The configuration section to bind to options.</param>
     /// <returns>The method's return value.</returns>
-    public object InvokeWithAction(
+    public virtual object InvokeWithAction(
     MethodInfo actionMethod,
     object builder,
     IConfiguration section)
@@ -202,7 +202,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builderType">The type of the builder parameter to match.</param>
     /// <param name="methodName">The name of the method to find.</param>
     /// <returns>The MethodInfo if found, otherwise null.</returns>
-    public MethodInfo? FindActionOverload(
+    public virtual MethodInfo? FindActionOverload(
         Type type,
         Type builderType,
         string methodName)
@@ -226,7 +226,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="optionsType">The type of options to configure (must have parameterless constructor).</param>
     /// <param name="section">The configuration section containing values to bind.</param>
     /// <returns>A compiled Action&lt;TOptions&gt; delegate.</returns>
-    public object BuildConfigureAction(
+    public virtual object BuildConfigureAction(
     Type optionsType,
     IConfiguration section)
     {
