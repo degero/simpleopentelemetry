@@ -49,35 +49,8 @@ public class ResourceDetectorLoaderTests : IDisposable
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        var mockAssemblyExec = new Mock<IAssemblyExecution>();
-        mockAssemblyExec.Setup(r => r.GetAssembly(It.IsAny<string>()))
-            .Returns((string input) =>
-            {
-                return _assemblyExec.GetAssembly(input);
-            });
-        mockAssemblyExec.Setup(r => r.FindParameterlessMethodWithAllDefaultValues(It.IsAny<Type>(), It.IsAny<Type>(),It.IsAny<string>()))
-            .Returns((Type t1, Type t2, string input) =>
-            {
-                return _assemblyExec.FindParameterlessMethodWithAllDefaultValues(t1, t2, input);
-            });
-        mockAssemblyExec.Setup(r => r.FindActionOverload(It.IsAny<Type>(), It.IsAny<Type>(),It.IsAny<string>()))
-            .Returns((Type t1, Type t2, string input) =>
-            {
-                return _assemblyExec.FindActionOverload(t1, t2, input);
-            });
-        mockAssemblyExec.Setup(r => r.InvokeWithAction(It.IsAny<MethodInfo>(), It.IsAny<object>(),
-             It.IsAny<IConfiguration>())) .Returns((MethodInfo m1, object t2, IConfiguration config) =>
-            {
-                return _assemblyExec.InvokeWithAction(m1, t2, config);
-            }).Verifiable();
-
-         mockAssemblyExec.Setup(r => r.InvokeParameterlessOrDefaultedParameters(
-            It.IsAny<MethodInfo>(), It.IsAny<Type>(), It.IsAny<object>()))
-            .Returns((MethodInfo m1, Type t2,  object target) =>
-            {
-                return _assemblyExec.InvokeParameterlessOrDefaultedParameters(m1, t2, target);
-            }).Verifiable();
-
+        var mockAssemblyExec = new Mock<AssemblyExecution>{ CallBase = true};
+    
         var opt = new AWSResourceBuilderOptions()
         {
             SemanticConventionVersion = SemanticConventionVersion.V1_28_0
@@ -113,14 +86,14 @@ public class ResourceDetectorLoaderTests : IDisposable
         }
         else
         {
-            mockAssemblyExec.Verify(r => r.InvokeParameterlessOrDefaultedParameters(
-                It.IsAny<MethodInfo>(), It.IsAny<Type>(), It.IsAny<object>()), Times.Exactly(4));
+            mockAssemblyExec.Verify(r => r.InvokeParameterless(
+                It.IsAny<MethodInfo>(), It.IsAny<object>()), Times.Exactly(4));
         }
 
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                 e.Payload != null &&
-                e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{ResourceDetectorEnum.AWS}'") ?? false));
+                e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry ResourceDetector '{ResourceDetectorEnum.AWS}'") ?? false));
         Assert.NotNull(successEvent);
     }
 
@@ -155,11 +128,11 @@ public class ResourceDetectorLoaderTests : IDisposable
         var successEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Verbose &&
                 e.Payload != null &&
-                e.Payload.Any(p => p?.ToString()?.Contains($"Registered resource detector '{detector}'") ?? false));
+                e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry ResourceDetector '{detector}'") ?? false));
         var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
                 e.Payload != null &&
-                e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register resource detector '{detector}'") ?? false) &&
+                e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry ResourceDetector '{detector}'") ?? false) &&
                 e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
 
         if (packageInstalled || assemblyName == "SimpleOpenTelemetry")
@@ -191,7 +164,7 @@ public class ResourceDetectorLoaderTests : IDisposable
         var errorEvent = _listener.Events
             .FirstOrDefault(e => e.Level == EventLevel.Error &&
                 e.Payload != null &&
-                e.Payload.Any(p => p?.ToString()?.Contains("Unsupported Resource Detector type 'NonExistentDetector'") ?? false));
+                e.Payload.Any(p => p?.ToString()?.Contains("Unsupported OpenTelemetry ResourceDetector 'NonExistentDetector'") ?? false));
 
         Assert.NotNull(errorEvent);
     }

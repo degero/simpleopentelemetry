@@ -8,7 +8,7 @@ internal abstract class LoaderBase
 {
     protected abstract string ComponentKind { get; }
 
-    private readonly IAssemblyExecution _assemblyExec;
+    protected readonly IAssemblyExecution _assemblyExec;
 
     protected LoaderBase(IAssemblyExecution assemblyExec)
     {
@@ -20,7 +20,7 @@ internal abstract class LoaderBase
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string?, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null) 
         where TEnum : struct, Enum
     {
         var result = true;
@@ -40,7 +40,7 @@ internal abstract class LoaderBase
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string?, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null) 
         where TEnum : struct, Enum
     {
         if (!string.IsNullOrWhiteSpace(componentName))
@@ -87,7 +87,6 @@ internal abstract class LoaderBase
         AssemblyDescriptor descriptor,
         IConfiguration? optionsSection)
     {
-        var (assemblyName, typeName, methodName, optionsClassName, _) = descriptor;
         var builderName = typeof(TBuilder).Name;
         
         try
@@ -95,11 +94,8 @@ internal abstract class LoaderBase
             InvokeBuilderExtension(
                 _assemblyExec,
                 builder,
-                assemblyName,
-                typeName,
-                methodName!,
+                descriptor,
                 optionsSection,
-                optionsClassName,
                 ComponentKind);
 
             EventSource.Log.Verbose(ComponentKind,
@@ -109,7 +105,7 @@ internal abstract class LoaderBase
         catch (Exception ex)
         {
             EventSource.Log.Error(ComponentKind,
-                $"Failed to register OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'  via '{typeName}.{methodName}'.",
+                $"Failed to register OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'.",
                 ex.Message);
             return false;
         }
@@ -118,13 +114,12 @@ internal abstract class LoaderBase
     private void InvokeBuilderExtension<TBuilder>(
         IAssemblyExecution assemblyExecution,
         TBuilder builder,
-        string assemblyName,
-        string typeName,
-        string methodName,
+        AssemblyDescriptor descriptor,
         IConfiguration? optionsSection,
-        string? optionsClassName,
         string componentKind)
     {
+        var (assemblyName, typeName, methodNames, optionsClassName, optionsRequired ) = descriptor;
+
         var assembly = assemblyExecution.GetAssembly(assemblyName);
         var builderType = typeof(TBuilder);
         var builderTypeName = builder?.GetType().Name ?? builderType.Name;
@@ -132,35 +127,39 @@ internal abstract class LoaderBase
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}");
 
-        var parameterlessMethod = assemblyExecution.FindParameterlessMethod(type, builderType, methodName);
-        var actionMethod = assemblyExecution.FindActionOverload(type, builderType, methodName);
-
         var hasOptions = optionsSection is IConfigurationSection sectionCheck
             ? sectionCheck.Exists()
             : optionsSection is not null;
 
-        if (hasOptions)
+        methodNames?.ToList().ForEach(methodName =>
         {
-            if (actionMethod is null)
+            // If options are required an action method must be used.
+            var parameterlessMethod = optionsRequired ? null : assemblyExecution.FindParameterlessMethod(type, builderType, methodName);
+            var actionMethod = assemblyExecution.FindActionOverload(type, builderType, methodName);
+
+            if (hasOptions)
             {
-                throw new InvalidOperationException(
-                    $"No Action<TOptions> overload found for '{methodName}' on '{typeName}'.");
+                if (actionMethod is null)
+                {
+                    throw new InvalidOperationException(
+                        $"No Action<TOptions> overload found for '{methodName}' on '{typeName}'.");
+                }
+
+                assemblyExecution.InvokeWithAction(actionMethod, builder!, optionsSection!);
+                return;
             }
 
-            assemblyExecution.InvokeWithAction(actionMethod, builder!, optionsSection!);
-            return;
-        }
+            if (!string.IsNullOrWhiteSpace(optionsClassName) &&
+                actionMethod is not null &&
+                parameterlessMethod is null)
+            {
+                throw new InvalidOperationException(
+                    $"Failed registration {builderTypeName} {componentKind}: '{methodName}'. " +
+                    $"A configuration section '{optionsClassName}' is required but not found in config file.");
+            }
 
-        if (!string.IsNullOrWhiteSpace(optionsClassName) &&
-            actionMethod is not null &&
-            parameterlessMethod is null)
-        {
-            throw new InvalidOperationException(
-                $"Failed registration {builderTypeName} {componentKind}: '{methodName}'. " +
-                $"A configuration section '{optionsClassName}' is required but not found in config file.");
-        }
-
-        assemblyExecution.InvokeParameterless(type, builderType, methodName, builder!);
+            assemblyExecution.InvokeParameterless(parameterlessMethod!, builder!);
+        });
     }
 
     protected bool TryParseKnown<TEnum>(string? raw, out TEnum value)

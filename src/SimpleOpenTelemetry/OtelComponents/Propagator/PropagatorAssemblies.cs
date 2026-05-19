@@ -1,16 +1,13 @@
-namespace SimpleOpenTelemetry.OtelComponents.Propagator;
+using SimpleOpenTelemetry.OtelComponents.Common;
 
-internal record PropagatorDescriptor(
-     string AssemblyName,
-     string TypeName
-);
+namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
 /// <summary>
 /// A list of known opentelemetry-dotnet-contrib and vendor propagators
 /// </summary>
 internal static class PropagatorAssemblies
 {
-    public static readonly Dictionary<PropagatorEnum, PropagatorDescriptor>
+    public static readonly Dictionary<PropagatorEnum, AssemblyDescriptor>
        
         KnownPropagators = new()
         {

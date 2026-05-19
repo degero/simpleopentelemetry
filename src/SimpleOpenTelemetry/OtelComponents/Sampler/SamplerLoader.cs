@@ -1,7 +1,6 @@
 using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -11,23 +10,20 @@ namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 /// <summary>
 /// Load vendor / contrib assembly and invoke static / exntion method creating a Builder based on the available types
 /// </summary>
-internal class SamplerLoader : ISamplerLoader
+internal class SamplerLoader : LoaderBase, ISamplerLoader
 {
+    protected override string ComponentKind => "Sampler";
+
     private readonly string eventCategory = nameof(SamplerLoader);
-
-    private readonly IAssemblyExecution _assemblyExec;
-
-    // Available 3rd party samplers
-    internal readonly Dictionary<SamplerEnum, AssemblyDescriptor> _descriptors = SamplerAssemblies.KnownSamplers;
 
     /// <summary>
     /// Initializes a new instance of the SamplerLoader class.
     /// </summary>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public SamplerLoader(IAssemblyExecution assemblyExecution)
+    public SamplerLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution)
     {
-        _assemblyExec = assemblyExecution;
     }
+
 
     /// <summary>
     /// Adds a sampler to the provided TracerProviderBuilder.
@@ -46,25 +42,25 @@ internal class SamplerLoader : ISamplerLoader
         {
             try
             {
-                if (LoaderEnumHelper.TryParseKnown<SamplerEnum>(item, out var matchedSampler))
+                if (TryParseKnown<SamplerEnum>(item, out var matchedSampler))
                 {
-                    if (!_descriptors.TryGetValue(matchedSampler, out var descriptor))
+                    if (!SamplerAssemblies.KnownSamplers.TryGetValue(matchedSampler, out var descriptor))
                         throw new InvalidOperationException(
                             $"{typeof(SamplerEnum).Name} type not found: {matchedSampler} to initialize sampler");
 
                     AddSampler(builder, descriptor);
 
-                    EventSource.Log.Verbose(eventCategory, $"Registered sampler '{matchedSampler}'.");
+                    EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry Sampler '{matchedSampler}'.");
 
                 }
                 else
                 {
-                    EventSource.Log.Error(eventCategory, $"Unsupported OpenTelemetry sampler '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                    EventSource.Log.Error(eventCategory, $"OpenTelemetry Sampler {typeof(SamplerEnum).Name} type '{item}' not found to initialise. Please check your SimpleOpenTelemetry configuration.");
                 }
             }
             catch (Exception ex)
             {
-                EventSource.Log.Error(eventCategory, $"Failed to register sampler '{item}'.", ex.Message);
+                EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry Sampler '{item}'.", ex.Message);
             }
         }
     }
@@ -79,20 +75,20 @@ internal class SamplerLoader : ISamplerLoader
         AssemblyDescriptor descriptor)
     {
 
-        var (assemblyName, typeName, methodName, _, _) = descriptor;
+        var (assemblyName, typeName, methodNames, _, _) = descriptor;
         var assembly = _assemblyExec.GetAssembly(assemblyName);
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
-        var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public);
+        var method = type.GetMethod(methodNames[0], BindingFlags.Static | BindingFlags.Public);
 
-        var instance = method?.Invoke(null, new object[] {  });
+        var instance = method?.Invoke(null, []);
 
         // As AWS Xray remote sampler only provides a static method to get a builder and requies a Build()
         // This is kept here for now
         var buildMethod = instance?.GetType().GetMethod("Build");
 
-        var sampler = buildMethod?.Invoke(instance, new object[] { }) as OpenTelemetry.Trace.Sampler;
+        var sampler = buildMethod?.Invoke(instance, []) as OpenTelemetry.Trace.Sampler;
         if (sampler is not null)
             builder.SetSampler(sampler);
         else

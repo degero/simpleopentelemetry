@@ -430,7 +430,7 @@ public class ExporterLoaderTests : IDisposable
             .Where(e => e.Level == EventLevel.Error)
             .ToList();
 
-        Assert.Equal(registerEvents,registeredSuccessEvents.Count());
+        Assert.Equal(registerEvents, registeredSuccessEvents.Count());
         Assert.True(failure ? errorEvents.Count() > 0 : errorEvents.Count() == 0);
     }
 

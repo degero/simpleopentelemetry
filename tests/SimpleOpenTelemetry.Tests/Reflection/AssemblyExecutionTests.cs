@@ -95,27 +95,23 @@ public class AssemblyExecutionTests
     }
 
     [Fact]
-    public void InvokeParameterless_InvokesMatchingMethod()
+    public void InvokeParameterless_InvokesMethodInfo()
     {
         var target = new AssemblyExecution();
         var builder = new FakeBuilder();
+        var builderType = typeof(FakeExtensions);
 
-        var result = target.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "AddFake", builder);
+        var methodInfo = builderType.GetMethod(
+            "AddFake",
+            BindingFlags.Public | BindingFlags.Static,
+            binder: null,
+            types: [typeof(FakeBuilder)],
+            modifiers: null);
+
+        var result = target.InvokeParameterless(methodInfo, builder);
 
         Assert.Same(builder, result);
         Assert.True(builder.Called);
-    }
-
-    [Fact]
-    public void InvokeParameterless_ThrowsWhenMethodNotFound()
-    {
-        var target = new AssemblyExecution();
-        var builder = new FakeBuilder();
-
-        var ex = Assert.Throws<InvalidOperationException>(() =>
-            target.InvokeParameterless(typeof(FakeExtensions), typeof(FakeBuilder), "MissingMethod", builder));
-
-        Assert.Contains("No parameterless 'MissingMethod' method", ex.Message);
     }
 
     [Fact]

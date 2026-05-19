@@ -1,11 +1,9 @@
-using System.Reflection.Emit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Builder;
 using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
 using SimpleOpenTelemetry.Utils;
@@ -22,7 +20,6 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
     protected override string ComponentKind => "Exporter";
 
     private readonly string eventCategory = nameof(ExporterLoader);
-
 
     /// <summary>
     /// Initializes a new instance of the ExporterLoader class.

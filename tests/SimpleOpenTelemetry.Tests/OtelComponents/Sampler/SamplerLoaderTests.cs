@@ -48,12 +48,12 @@ public class SamplerLoaderTests: IDisposable
         // ASSERT
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
-            (e.Payload?.Any(p => p?.ToString()?.Contains($"type not found: {noneSampler} to initialize sampler") ?? false) ?? false));
+            (e.Payload?.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry Sampler '{noneSampler}'.") ?? false) ?? false));
 
         Assert.NotNull(errorEvent);
     }
 
-    [Theory(Skip="true")] // skipped until AWS xrayid sampler follows normal patterns of build time resource dependency resolution
+    [Theory(Skip="true")] // skipped until AWS xrayid OpenTelemetry Sampler follows normal patterns of build time resource dependency resolution
     [MemberData(nameof(GetKnownSamplers), true)]
     [MemberData(nameof(GetKnownSamplers), false)]
     public void AddSampler_WithKnownSampler_LogsSuccessOrFailure(
@@ -95,11 +95,11 @@ public class SamplerLoaderTests: IDisposable
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Registered sampler '{sampler}'.") ?? false));
+            e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Sampler '{sampler}'.") ?? false));
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register sampler '{sampler}'.") ?? false) &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry Sampler '{sampler}'.") ?? false) &&
             e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false));
 
         if (packageInstalled)
@@ -141,7 +141,7 @@ public class SamplerLoaderTests: IDisposable
         var errorEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Error &&
             e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains("Unsupported OpenTelemetry sampler 'NoSuchSampler'.") ?? false));
+            e.Payload.Any(p => p?.ToString()?.Contains($"OpenTelemetry Sampler {typeof(SamplerEnum).Name} type 'NoSuchSampler' not found to initialise. Please check your SimpleOpenTelemetry configuration.") ?? false));
 
         Assert.NotNull(errorEvent);
     }

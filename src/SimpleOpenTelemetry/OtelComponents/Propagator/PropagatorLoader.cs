@@ -6,22 +6,21 @@ using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSour
 
 namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
-internal class PropagatorLoader : IPropagatorLoader
+internal class PropagatorLoader : LoaderBase, IPropagatorLoader
 {
+    protected override string ComponentKind => "Propagator";
     private readonly string eventCategory = nameof(PropagatorLoader);
 
-    private readonly IAssemblyExecution _assemblyExec;
-
-    private readonly Dictionary<PropagatorEnum, PropagatorDescriptor> _descriptors = PropagatorAssemblies.KnownPropagators;
+    private readonly Dictionary<PropagatorEnum, AssemblyDescriptor> _descriptors = PropagatorAssemblies.KnownPropagators;
 
     /// <summary>
     /// Initializes a new instance of the PropagatorLoader class.
     /// </summary>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public PropagatorLoader(IAssemblyExecution assemblyExecution)
+    public PropagatorLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution)
     {
-        _assemblyExec = assemblyExecution;
     }
+
 
     /// <summary>
     /// Sets up propagator using a Builder currently only used with AWS Xray remote propagator.
@@ -49,7 +48,7 @@ internal class PropagatorLoader : IPropagatorLoader
                 if (noopPropagator is null)
                     throw new Exception("Cannot create a 'NoopTextMapPropagator'.");
                 Sdk.SetDefaultTextMapPropagator(noopPropagator);
-                EventSource.Log.Verbose(eventCategory, "Registered propagator NoopTextMapPropagator as SimpleOpenTelemetry propagators config included 'none'.");
+                EventSource.Log.Verbose(eventCategory, "Registered OpenTelemetry Propagator 'NoopTextMapPropagator' as SimpleOpenTelemetry propagators config included 'none'.");
                 return;
             }
 
@@ -59,31 +58,35 @@ internal class PropagatorLoader : IPropagatorLoader
             {
                 var item = propagators[i];
 
-                if (LoaderEnumHelper.TryParseKnown<PropagatorEnum>(item, out var matchedPropagator))
+                if (TryParseKnown<PropagatorEnum>(item, out var matchedPropagator))
                 {
-                    if (!_descriptors.TryGetValue(matchedPropagator , out var descriptor))
-                        throw new InvalidOperationException(
-                            $"{typeof(PropagatorEnum).Name} type '{matchedPropagator}' not found to initialise propagator.");
-                    
-                    // If any fail the whoe propagator set is aborted
-                    var propagatorInstance = CreatePropagator(descriptor);
-                    if (propagatorInstance is not null)
-                        propagatorsList.Add(propagatorInstance);   
+                    if (TryGetDescriptor<PropagatorEnum, TextMapPropagator>(item, 
+                            PropagatorAssemblies.KnownPropagators, 
+                            out var descriptor, 
+                            out var matchedEnum))
+                    {
+                        // If any fail the whoe propagator set is aborted
+                        var propagatorInstance = CreatePropagator(descriptor);
+                        if (propagatorInstance is not null)
+                            propagatorsList.Add(propagatorInstance);   
+                    }
+                    else 
+                        throw new Exception("Could not get descriptor for OpenTelemetry Propagator 'item'");
                 }
                 else 
                 {
-                    throw new InvalidOperationException($"Unsupported OpenTelemetry propagator '{item}'. Please check your SimpleOpenTelemetry configuration.");
+                    throw new InvalidOperationException($"Unsupported OpenTelemetry Propagator '{item}'. Please check your SimpleOpenTelemetry configuration.");
                 }
             }
 
             // Register propagator
             var defaultPropagator = propagatorsList.Count > 1 ? (TextMapPropagator)new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0] ?? throw new InvalidOperationException("No valid propagators configured.");
             Sdk.SetDefaultTextMapPropagator(defaultPropagator);
-            EventSource.Log.Verbose(eventCategory, $"Registered propagator(s) '{string.Join(", ", propagators)}'.");
+            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry Propagator(s) '{string.Join(", ", propagators)}'.");
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register propagators(s) '{string.Join(", ", propagators!)}'.", ex.Message);
+            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry Propagators(s) '{string.Join(", ", propagators!)}'.", ex.Message);
         }
     }
 
@@ -93,10 +96,10 @@ internal class PropagatorLoader : IPropagatorLoader
     /// </summary>
     /// <param name="descriptor"></param>
     private TextMapPropagator CreatePropagator(
-        PropagatorDescriptor descriptor)
+        AssemblyDescriptor descriptor)
     {
        
-        var (assemblyName, typeName) = descriptor;
+        var (assemblyName, typeName, _, _, _) = descriptor;
 
         // Dont need to load using AssemblyExec lib if OpenTelemetrySDK propagator
         var assembly = assemblyName == "OpenTelemetry.Api" ? typeof(OpenTelemetry.Context.RuntimeContext).Assembly : _assemblyExec.GetAssembly(assemblyName);
