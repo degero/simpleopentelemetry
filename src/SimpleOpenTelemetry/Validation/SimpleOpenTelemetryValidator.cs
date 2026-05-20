@@ -7,6 +7,21 @@ public static class SimpleOpenTelemetryValidator
 {
     private const string EventCategory = nameof(SimpleOpenTelemetryValidator);
 
+     /// <summary>
+    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
+    /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
+    /// Writes errors via EventSource for any misconfiguration issues found.
+    /// </summary>
+    /// <remarks>
+    /// For validation to pass, set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
+    /// 
+    /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
+    /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
+    /// At least one of these providers must be registered and contain valid resource attributes.
+    /// </remarks>
+    /// <param name="host"></param>
+    /// <param name="resource"></param>
+    /// <returns></returns>
     public static bool Validate(object? host, Resource? resource)
     {
         if (host is null)
@@ -17,8 +32,7 @@ public static class SimpleOpenTelemetryValidator
             return false;
         }
 
-
-        if (resource == null)
+        if (resource == null || resource.Attributes.Count() == 0)
         {
             EventSource.Log.Error(EventCategory,
                 "No OpenTelemetry signal providers have been registered. " +

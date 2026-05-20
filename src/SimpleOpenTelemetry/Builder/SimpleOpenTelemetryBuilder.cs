@@ -104,7 +104,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// </summary>
     public void Configure()
     {
-        if (!ValidateConfiguration(_configuration))
+        if (!ValidateConfigurationFormat(_configuration))
             return;
 
         BindConfigurationToSimpleOpenTelemetryOptions();
@@ -128,7 +128,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     /// </summary>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static bool ValidateConfiguration(IConfiguration configuration)
+    public static bool ValidateConfigurationFormat(IConfiguration configuration)
     {
         // Load in configuration
         var section = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);

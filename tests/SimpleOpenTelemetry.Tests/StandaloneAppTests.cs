@@ -1,6 +1,10 @@
+using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Configuration;
+using Moq;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using SimpleOpenTelemetry;
 using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.Utils;
@@ -22,6 +26,7 @@ public class StandaloneAppTests : IDisposable
     public void Dispose()
     {
         _listener.Dispose();
+        StandaloneApp.Shutdown();
     }
 
     private void ClearOTELEnvVars()
@@ -32,11 +37,12 @@ public class StandaloneAppTests : IDisposable
         ], key => Environment.SetEnvironmentVariable(key, null));
     }
 
-    // todo add test for config validation
 
     [Fact]
-    public void StandaloneBootstrap_AddSimpleOpenTelemetry_ShouldSet_OTEL_EnvVars_FromConfiguration()
+    public void AddSimpleOpenTelemetry_ShouldSet_OTEL_EnvVars_FromConfiguration()
     {
+        Assert.Empty(_listener.Events);
+
         try
         {
             // ARRANGE
@@ -55,18 +61,20 @@ public class StandaloneAppTests : IDisposable
         finally
         {
             ClearOTELEnvVars();
+            
         }
     }
 
     [Fact]
-    public void StandaloneBootstrap_AddSimpleOpenTelemetry_Should_CallOpenTelemetryBuilder_Configure()
+    public void AddSimpleOpenTelemetry_Should_CallOpenTelemetryBuilder_Configure()
     {
-        // 
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var originalPropagator = Propagators.DefaultTextMapPropagator;
 
         try
         {
-            // ARRANGE
             const string serviceName = "test-service";
             const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
             var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
@@ -75,7 +83,7 @@ public class StandaloneAppTests : IDisposable
             });
 
             // ACT
-            var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+            StandaloneApp.AddSimpleOpenTelemetry(config);
 
             // ASSERT
             // Assert - not ideal but cant verify by mocked / injected services due to extension method calling 
@@ -92,19 +100,21 @@ public class StandaloneAppTests : IDisposable
         {
             Sdk.SetDefaultTextMapPropagator(originalPropagator);
             ClearOTELEnvVars();
+            
         }
     }
     
     
     [Fact]
-    public void StandaloneBootstrap_AddSimpleOpenTelemetry_Should_LogErrorWhen_UsingUnsupportedDistro()
+    public void AddSimpleOpenTelemetry_Should_LogErrorWhen_UsingUnsupportedDistro()
     {
-        // 
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+
         var originalPropagator = Propagators.DefaultTextMapPropagator;
 
         try
         {
-            // ARRANGE
             var distroName = DistroEnum.AzureMonitorAspNetCore.ToString();
             const string serviceName = "test-service";
             const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
@@ -113,7 +123,7 @@ public class StandaloneAppTests : IDisposable
             });
 
             // ACT
-            var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+            StandaloneApp.AddSimpleOpenTelemetry(config);
 
             // ASSERT
             var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
@@ -129,6 +139,127 @@ public class StandaloneAppTests : IDisposable
         }
     }
 
+    [Fact]
+    public void SimpleOpenTelemetryValidate_Should_ReturnTrue_When_SDK_Resource_And_Attributes_Set()
+    {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+        OpenTelemetrySdk? sdk = null;
+
+        try
+        {
+            const string serviceName = "test-service";
+            const string resourceAttributes = "service.namespace=test,service.version=1.2.3,deployment.environment.name=dev";
+
+            var dict = CreateResourceAttributeDict(serviceName, resourceAttributes);
+
+            sdk = OpenTelemetrySdk.Create(x => x.WithLogging(z => z.ConfigureResource(c => c.AddAttributes(dict))));
+
+            // ACT
+            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+
+            // ASSERT
+            Assert.True(result);
+        
+        }
+        finally
+        {
+            ClearOTELEnvVars();
+        }
+    }
+
+    [Fact]
+    public void SimpleOpenTelemetryValidate_Should_ReturnFalse_When_OpenTelemetrySdk_NotRegistered()
+    {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+        
+        // ACT
+        var result = StandaloneApp.SimpleOpenTelemetryValidate(null);
+
+        // ASSERT
+        Assert.False(result);
+        var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
+            r.Payload is not null &&
+            r.Payload.Any(x => x.ToString().Contains($"OpenTelemetry has not been registered")));
+        Assert.NotNull(errorEvent);
+        
+    }
+    
+    [Fact]
+    public void SimpleOpenTelemetryValidate_Should_ReturnFalse_When_NoSignalProvidersRegistered()
+    {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+        OpenTelemetrySdk? sdk = null;
+
+        try
+        {
+            sdk = OpenTelemetrySdk.Create(t => {});
+
+            // ACT
+            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+
+            // ASSERT
+            Assert.False(result);
+            var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == EventLevel.Error &&
+                r.Payload is not null &&
+                r.Payload.Any(x => x.ToString().Contains($"No OpenTelemetry signal providers have been registered.")));
+            Assert.NotNull(errorEvent);
+        
+        }
+        finally
+        {
+            ClearOTELEnvVars();
+            sdk.Dispose();
+        }
+    }
+
+    [Theory]
+    [InlineData("test-service", null)]
+    [InlineData("test-service", "service.version=1.2.3,deployment.environment.name=dev")]
+    [InlineData("test-service", "service.namespace=testapp,service.version=1.2.3,deployment.environment.name=dev", true)]
+    [InlineData(null, "service.namespace=testapp,service.version=1.2.3,deployment.environment.name=dev", true)] // opentelemetry sets a default servicename 'unknown_service'
+    public void SimpleOpenTelemetryValidate_Should_ReturnFalse_When_CoreAttributeNotSet(
+        string? serviceName,
+        string? resourceAttributes,
+        bool valid = false)
+    {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+        
+        var dict = CreateResourceAttributeDict(serviceName, resourceAttributes);
+        
+        OpenTelemetrySdk? sdk = null;
+
+        try
+        {
+            sdk = OpenTelemetrySdk.Create(x => x.WithLogging(z => z.ConfigureResource(c => c.AddAttributes(dict))));
+
+            // ACT
+            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+
+            // ASSERT
+            if (valid)
+            {
+                Assert.True(result);
+                Assert.DoesNotContain(_listener.Events, e => e.Level == EventLevel.Error);
+            }
+            else
+            {
+                Assert.False(result);
+                var error = Assert.Single(_listener.Events, e => e.Level == EventLevel.Error);
+                Assert.Contains("Missing required OpenTelemetry resource attributes", MessageOf(error));
+            }
+        
+        }
+        finally
+        {
+            ClearOTELEnvVars();
+            
+        }
+    }
+
     private IConfiguration BuildConfigWithOtelValues(
             string otelServiceName, string otelResourceAttributes, 
             Dictionary<string, string?>? otherValues = null) =>
@@ -141,5 +272,22 @@ public class StandaloneAppTests : IDisposable
             })
             .AddInMemoryCollection(otherValues ?? new Dictionary<string, string?>())
             .Build();
+
+    private string? MessageOf(EventWrittenEventArgs e) =>
+        e.Payload?.Count > 1 ? e.Payload[1]?.ToString() : null;
+
+    private Dictionary<string, object> CreateResourceAttributeDict(string serviceName, string resourceAttributes)
+    {
+        var dict = new Dictionary<string, object>();
+        if (serviceName is not null)
+            dict.Add("service.name", serviceName);
+        if (resourceAttributes is not null)
+            resourceAttributes.Split(',').ToList().ForEach(x =>
+            {
+                dict.Add(x.Split('=')[0], x.Split('=')[1]);
+            });
+        return dict;
+    }
+
 }
 

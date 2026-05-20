@@ -75,7 +75,8 @@ if (string.Equals(distro, SimpleOpenTelemetry.OtelComponents.Distro.DistroEnum.A
 var app = builder.Build();
 
 // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
-app.Services.SimpleOpenTelemetryValidate();
+var valid = app.Services.SimpleOpenTelemetryValidate();
+Console.WriteLine($"SimpleOpenTelemetryValidate result: {valid}");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

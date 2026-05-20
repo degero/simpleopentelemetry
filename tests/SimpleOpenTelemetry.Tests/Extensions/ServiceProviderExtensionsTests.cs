@@ -39,9 +39,7 @@ public class ServiceProviderExtensionsTests : IDisposable
         public Task StopAsync(CancellationToken cancellationToken) => throw new NotImplementedException();
     }
 
-    private static string? MessageOf(EventWrittenEventArgs e) =>
-        e.Payload?.Count > 1 ? e.Payload[1]?.ToString() : null;
-
+    
     [Fact]
     public void SimpleOpenTelemetryValidate_LogsError_WhenServiceProviderIsNull()
     {
@@ -208,4 +206,8 @@ public class ServiceProviderExtensionsTests : IDisposable
         Assert.True(result);
         Assert.DoesNotContain(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
     }
+
+    private static string? MessageOf(EventWrittenEventArgs e) =>
+        e.Payload?.Count > 1 ? e.Payload[1]?.ToString() : null;
+
 }

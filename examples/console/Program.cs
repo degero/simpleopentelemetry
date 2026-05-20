@@ -65,7 +65,9 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     var app = builder.Build();
 
     // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
-    app.Services.SimpleOpenTelemetryValidate();
+    var valid = app.Services.SimpleOpenTelemetryValidate();
+
+    Console.WriteLine($"\nSimpleOpenTelemetryValidate result: {valid}");
 
     Console.WriteLine("\n[Demo] Starting hosted service to run operations");
 
@@ -100,6 +102,11 @@ else
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
     
     Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
+
+    // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
+    var valid = StandaloneApp.SimpleOpenTelemetryValidate();
+
+    Console.WriteLine($"\nSimpleOpenTelemetryValidate result: {valid}");
 
     // Create the typed logger from the loggerfactory created by OpenTelemetry
     var sdkLoggerFactory = sdk!.GetLoggerFactory();
