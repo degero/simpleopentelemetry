@@ -32,13 +32,13 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     
 
     // Setup .net Generic host
-    Console.WriteLine($"[Configuration] Initialising .Net Generic Host and loading appsettings json configurations");
+    Console.WriteLine($"[Demo] Initialising .Net Generic Host and loading appsettings json configurations");
     HostApplicationBuilder builder = Host.CreateApplicationBuilder();
 
     // OPTIONAL: clear loggers so the OpenTelemetry logger is attached
     builder.Logging.ClearProviders();
 
-    Console.WriteLine($"[OpenTelemetry] Initialising / Configuring OpenTelemetry with SimpleOpenTelemetry");
+    Console.WriteLine($"[Demo] Initialising / Configuring OpenTelemetry with SimpleOpenTelemetry");
 
     var sw = Stopwatch.StartNew();
 
@@ -46,9 +46,9 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     var otelBuilder = builder.AddSimpleOpenTelemetry();
 
     sw.Stop();
-    Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
+    Console.WriteLine($"[Demo] AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
 
-    Console.WriteLine($"[OpenTelemetry] SimpleOpenTelemetry configuration complete");
+    Console.WriteLine($"[Demo] SimpleOpenTelemetry configuration complete");
     Console.WriteLine("\n" + new string('─', 60));
 
     // Add hosted service to do trigger some telemetry to be sent
@@ -67,7 +67,7 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
     var valid = app.Services.SimpleOpenTelemetryValidate();
 
-    Console.WriteLine($"\nSimpleOpenTelemetryValidate result: {valid}");
+    Console.WriteLine($"\n[Demo] SimpleOpenTelemetryValidate result: {valid}");
 
     Console.WriteLine("\n[Demo] Starting hosted service to run operations");
 
@@ -101,12 +101,12 @@ else
 
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
     
-    Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
+    Console.WriteLine($"[Demo] AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
 
     // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
     var valid = StandaloneApp.SimpleOpenTelemetryValidate();
 
-    Console.WriteLine($"\nSimpleOpenTelemetryValidate result: {valid}");
+    Console.WriteLine($"\n[Demo] SimpleOpenTelemetryValidate result: {valid}");
 
     // Create the typed logger from the loggerfactory created by OpenTelemetry
     var sdkLoggerFactory = sdk!.GetLoggerFactory();

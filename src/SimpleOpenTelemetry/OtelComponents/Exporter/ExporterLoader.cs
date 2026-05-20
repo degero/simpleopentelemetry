@@ -156,12 +156,12 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
             addExporter(exporterName, BuildOtlpConfigAction(options));
-            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName}' with name '{exporterName}'.");
+            EventSource.Log.VerboseEvent(eventCategory, $"Registered OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName}' with name '{exporterName}'.");
 
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName} with name '{exporterName}'.", ex.Message);
+            EventSource.Log.ErrorEvent(eventCategory, $"Failed to register OpenTelemetry {ComponentKind} '{TraceExporterEnum.Otlp}' for builder '{builderName} with name '{exporterName}'.", ex);
         }
     }
 

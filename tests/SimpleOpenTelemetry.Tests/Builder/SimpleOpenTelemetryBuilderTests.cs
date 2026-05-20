@@ -482,7 +482,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
     }
 
     [Fact]
-    public void Configure_Will_LogErrorEvent_And_Terminate_When_NoSimpleOpenTelemetryConfigSection_Exists()
+    public void Configure_Will_LogCriticalEvent_And_Terminate_When_NoSimpleOpenTelemetryConfigSection_Exists()
     {
         // ARRANGE
         Assert.Empty(_simpleOpenTelemetryEventListener.Events);
@@ -500,15 +500,15 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         // ASSERT
         var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Level == EventLevel.Error && 
+            e.Level == EventLevel.Critical && 
             e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry.") ?? false));
+            e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section '{SimpleOpenTelemetryOptions.SectionName}' found. This is required for SimpleOpenTelemetry.") ?? false));
 
         Assert.NotNull(events);
     }
 
     [Fact]
-    public void Configure_Will_LogErrorEvent_And_Terminate_When_NoSimpleOpenTelemetryConfig_SignalSubSection_Exists()
+    public void Configure_Will_LogCriticalEvent_And_Terminate_When_NoSimpleOpenTelemetryConfig_SignalSubSection_Exists()
     {
         // ARRANGE
         Assert.Empty(_simpleOpenTelemetryEventListener.Events);
@@ -529,7 +529,7 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
 
         // ASSERT
         var events = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Level == EventLevel.Error &&
+            e.Level == EventLevel.Critical &&
             e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.") ?? false));
 

@@ -18,7 +18,6 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
        
         try 
         {
-            // TODO Chad test on a dotnet build -p:Version=X
             var version = Assembly.GetEntryAssembly()?
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion?.Split('+')[0];

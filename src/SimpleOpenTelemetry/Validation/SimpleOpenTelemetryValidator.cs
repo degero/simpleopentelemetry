@@ -26,7 +26,7 @@ public static class SimpleOpenTelemetryValidator
     {
         if (host is null)
         {
-            EventSource.Log.Error(EventCategory,
+            EventSource.Log.ErrorEvent(EventCategory,
                 "OpenTelemetry has not been registered. " +
                 "Ensure AddSimpleOpenTelemetry() is called with a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
             return false;
@@ -34,7 +34,7 @@ public static class SimpleOpenTelemetryValidator
 
         if (resource == null || resource.Attributes.Count() == 0)
         {
-            EventSource.Log.Error(EventCategory,
+            EventSource.Log.ErrorEvent(EventCategory,
                 "No OpenTelemetry signal providers have been registered. " +
                 "Ensure a valid SimpleOpenTelemetry configuration section containing at least one Trace, Log or Metric subsection.");
             return false;
@@ -47,7 +47,7 @@ public static class SimpleOpenTelemetryValidator
 
         if (missing.Any())
         {
-            EventSource.Log.Error(EventCategory,
+            EventSource.Log.ErrorEvent(EventCategory,
                 $"Missing required OpenTelemetry resource attributes: {string.Join(", ", missing)}. " +
                 "Check OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES env vars / appsettings.json.");
             return false;

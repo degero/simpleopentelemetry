@@ -47,7 +47,6 @@ public class ServiceCollectionExtensionsTests : IDisposable
 
     }
 
-    // TODO chad below tests these should just log Event not throw
     [Fact]
     public void AddSimpleOpenTelemetry_LogsCriticalErrorEvent_AndReturns_SimpleOpenTelemetrySectionIsMissing()
     {
@@ -62,7 +61,7 @@ public class ServiceCollectionExtensionsTests : IDisposable
 
         // ASSERT
         var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload is not null && e.Level == EventLevel.Critical &&
             e.Payload.Any(p => p?.ToString()?.Contains($"No configuration section 'SimpleOpenTelemetry'") ?? false));
 
         Assert.NotNull(failEvent);
@@ -85,7 +84,7 @@ public class ServiceCollectionExtensionsTests : IDisposable
 
         // ASSERT
         var failEvent = _simpleOpenTelemetryEventListener.Events.FirstOrDefault(e =>
-            e.Payload is not null && e.Level == EventLevel.Error &&
+            e.Payload is not null && e.Level == EventLevel.Critical &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.") ?? false));
 
         Assert.NotNull(failEvent);

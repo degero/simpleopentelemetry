@@ -66,7 +66,7 @@ internal abstract class LoaderBase
             matchedEnum = matchedComponent;
             if (!descriptors.TryGetValue(matchedComponent, out descriptor))
             {
-                EventSource.Log.Error(ComponentKind,
+                EventSource.Log.ErrorEvent(ComponentKind,
                     $"OpenTelemetry {ComponentKind} {typeof(TEnum).Name} type '{matchedComponent}' for builder '{builderName}' not found to initialise. Please check your SimpleOpenTelemetry configuration.");
                 return false;                
             }
@@ -75,7 +75,7 @@ internal abstract class LoaderBase
         else
         {
             matchedEnum = null;
-            EventSource.Log.Error(ComponentKind, $"Unsupported OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'. Please check your SimpleOpenTelemetry configuration.");
+            EventSource.Log.ErrorEvent(ComponentKind, $"Unsupported OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'. Please check your SimpleOpenTelemetry configuration.");
             descriptor = null;
             return false;                
         }
@@ -98,15 +98,15 @@ internal abstract class LoaderBase
                 optionsSection,
                 ComponentKind);
 
-            EventSource.Log.Verbose(ComponentKind,
+            EventSource.Log.VerboseEvent(ComponentKind,
                 $"Registered OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'.");
             return true;
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(ComponentKind,
+            EventSource.Log.ErrorEvent(ComponentKind,
                 $"Failed to register OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'.",
-                ex.Message);
+                ex);
             return false;
         }
     }

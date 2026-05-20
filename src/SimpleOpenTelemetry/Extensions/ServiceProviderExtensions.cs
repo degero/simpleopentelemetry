@@ -34,7 +34,7 @@ public static class ServiceProviderExtensions
     {
         if (services is null)
         {
-            EventSource.Log.Error(EventCategory, "services argument is null.");
+            EventSource.Log.CriticalEvent(EventCategory, "services argument is null.");
             return false;
         }
 

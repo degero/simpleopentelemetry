@@ -1,5 +1,4 @@
 using System.Reflection;
-using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
@@ -50,17 +49,17 @@ internal class SamplerLoader : LoaderBase, ISamplerLoader
 
                     AddSampler(builder, descriptor);
 
-                    EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry Sampler '{matchedSampler}'.");
+                    EventSource.Log.VerboseEvent(eventCategory, $"Registered OpenTelemetry Sampler '{matchedSampler}'.");
 
                 }
                 else
                 {
-                    EventSource.Log.Error(eventCategory, $"OpenTelemetry Sampler {typeof(SamplerEnum).Name} type '{item}' not found to initialise. Please check your SimpleOpenTelemetry configuration.");
+                    EventSource.Log.ErrorEvent(eventCategory, $"OpenTelemetry Sampler {typeof(SamplerEnum).Name} type '{item}' not found to initialise. Please check your SimpleOpenTelemetry configuration.");
                 }
             }
             catch (Exception ex)
             {
-                EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry Sampler '{item}'.", ex.Message);
+                EventSource.Log.ErrorEvent(eventCategory, $"Failed to register OpenTelemetry Sampler '{item}'.", ex);
             }
         }
     }

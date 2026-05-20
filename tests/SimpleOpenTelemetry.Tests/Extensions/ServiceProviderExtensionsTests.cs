@@ -41,7 +41,7 @@ public class ServiceProviderExtensionsTests : IDisposable
 
     
     [Fact]
-    public void SimpleOpenTelemetryValidate_LogsError_WhenServiceProviderIsNull()
+    public void SimpleOpenTelemetryValidate_LogsCriticalEvent_WhenServiceProviderIsNull()
     {
         // ARRANGE
         Assert.Empty(_simpleOpenTelemetryEventListener.Events);
@@ -53,7 +53,7 @@ public class ServiceProviderExtensionsTests : IDisposable
 
         // ASSERT
         Assert.False(result);
-        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Error);
+        var error = Assert.Single(_simpleOpenTelemetryEventListener.Events, e => e.Level == EventLevel.Critical);
         Assert.Contains("services argument is null", MessageOf(error));
     }
 

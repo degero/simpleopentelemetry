@@ -202,8 +202,7 @@ public class InstrumentationLoaderTests : IDisposable
         services.AddSimpleOpenTelemetry(config);
 
         // ASSERT
-        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
-            r.Level == EventLevel.Error &&
+        Assert.Contains(_listener.Events, r => r.Level == EventLevel.Error &&
             r.Payload is not null &&
              r.Payload.Any(r => r?.ToString()?
                 .Contains($"Unsupported OpenTelemetry Instrumentation '999' for builder 'TracerProviderBuilder'. Please check your SimpleOpenTelemetry configuration.") ?? false));
@@ -228,8 +227,7 @@ public class InstrumentationLoaderTests : IDisposable
         services.AddSimpleOpenTelemetry(config);
 
         // ASSERT
-        Assert.Contains(_listener.Events, r => r.EventId == 3 && 
-            r.Level == EventLevel.Error &&
+        Assert.Contains(_listener.Events, r => r.Level == EventLevel.Error &&
             r.Payload is not null &&
             r.Payload.Any(r => r?.ToString()?
                 .Contains($"Unsupported OpenTelemetry Instrumentation '999' for builder 'MeterProviderBuilder'. Please check your SimpleOpenTelemetry configuration.") ?? false));

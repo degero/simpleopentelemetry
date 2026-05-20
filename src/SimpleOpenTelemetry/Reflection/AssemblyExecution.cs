@@ -56,7 +56,6 @@ internal class AssemblyExecution : IAssemblyExecution
         if (existing != null)
             return existing;
 
-        // TODO chad test this in win / linux deployments etc
         // Try to load from base directory (i.e. user has the package installed)
         var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
         if (!File.Exists(path))
@@ -71,7 +70,7 @@ internal class AssemblyExecution : IAssemblyExecution
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error($"Failed to load assembly '{assemblyName}'.", ex.Message);
+            EventSource.Log.ErrorEvent($"Failed to load assembly '{assemblyName}'.", ex.Message);
             return null;
         }
     }

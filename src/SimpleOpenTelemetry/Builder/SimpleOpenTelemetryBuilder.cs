@@ -137,7 +137,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
         if (!section.Exists())
         {
-            EventSource.Log.Error(eventCategory, $"No configuration section '{SimpleOpenTelemetryOptions.SectionName}'. This is required for SimpleOpenTelemetry.");
+            EventSource.Log.CriticalEvent(eventCategory, $"No configuration section '{SimpleOpenTelemetryOptions.SectionName}' found. This is required for SimpleOpenTelemetry.");
             return false;
         }
 
@@ -152,7 +152,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 
             if (!atLeastOneExists)
             {
-                EventSource.Log.Error(eventCategory, $"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
+                EventSource.Log.CriticalEvent(eventCategory, $"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
                 return false;
             }
         }

@@ -48,7 +48,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
                 if (noopPropagator is null)
                     throw new Exception("Cannot create a 'NoopTextMapPropagator'.");
                 Sdk.SetDefaultTextMapPropagator(noopPropagator);
-                EventSource.Log.Verbose(eventCategory, "Registered OpenTelemetry Propagator 'NoopTextMapPropagator' as SimpleOpenTelemetry propagators config included 'none'.");
+                EventSource.Log.VerboseEvent(eventCategory, "Registered OpenTelemetry Propagator 'NoopTextMapPropagator' as SimpleOpenTelemetry propagators config included 'none'.");
                 return;
             }
 
@@ -82,11 +82,11 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
             // Register propagator
             var defaultPropagator = propagatorsList.Count > 1 ? (TextMapPropagator)new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0] ?? throw new InvalidOperationException("No valid propagators configured.");
             Sdk.SetDefaultTextMapPropagator(defaultPropagator);
-            EventSource.Log.Verbose(eventCategory, $"Registered OpenTelemetry Propagator(s) '{string.Join(", ", propagators)}'.");
+            EventSource.Log.VerboseEvent(eventCategory, $"Registered OpenTelemetry Propagator(s) '{string.Join(", ", propagators)}'.");
         }
         catch (Exception ex)
         {
-            EventSource.Log.Error(eventCategory, $"Failed to register OpenTelemetry Propagators(s) '{string.Join(", ", propagators!)}'.", ex.Message);
+            EventSource.Log.ErrorEvent(eventCategory, $"Failed to register OpenTelemetry Propagators(s) '{string.Join(", ", propagators!)}'.", ex);
         }
     }
 
