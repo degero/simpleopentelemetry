@@ -536,6 +536,32 @@ public class SimpleOpenTelemetryBuilderTests : IDisposable
         Assert.NotNull(events);
     }
 
+    [Fact]
+    public void Configure_ShouldCall_ExtensionLoader_AddBuilderExtensions_WhenConfig_Has_A_Signal_Setting()
+    {
+        // ARRANGE
+        Assert.Empty(_simpleOpenTelemetryEventListener.Events);
+        var services = new ServiceCollection();
+
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>()
+            {
+                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true"
+            })
+            .Build();
+
+        var otelBuilder = services.AddOpenTelemetry();
+        var builder = CreateBuilder(otelBuilder, config);
+
+        // ACT
+        builder.Configure();
+
+        // ASSERT
+        _mockExtensionLoader.Verify(r => r.AddBuilderExtensions(otelBuilder, 
+            It.IsAny<SimpleOpenTelemetryOptions>()), Times.Exactly(1)
+        );
+    }
+
     /// <summary>
     /// Gets config dictionary with settings to trigger off all Loaders for that signal
     /// </summary>

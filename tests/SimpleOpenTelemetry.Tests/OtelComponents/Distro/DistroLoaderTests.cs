@@ -1,4 +1,6 @@
 using System.Diagnostics.Tracing;
+using System.Reflection;
+using System.Text.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,28 +34,36 @@ public class DistroLoaderTests : IDisposable
     }
 
     [Theory]
-    [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), "Azure.Monitor.OpenTelemetry.AspNetCore", true)]
-    [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), "Azure.Monitor.OpenTelemetry.AspNetCore", false)]
-    public void LoadDistro_WithKnownDistrosInConfiguration_LogsSuccessWhenPackageInstalled_AndReturnsTrue(
+    [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), """
+    {
+        "SimpleOpenTelemetry:DistroOptions:ConnectionString": "InstrumentationKey=asdfasdf;",
+        "SimpleOpenTelemetry:DistroOptions:Credential": "Azure.Identity.DefaultAzureCredential"
+    }
+    """)]
+    public void LoadDistro_WithDistroOptions_LogsSuccess_AndReturnsTrue(
         string distroName,
-        string assemblyName,
-        bool packageInstalled
+        string? optionsJson = null
     )
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        var mockAssemblyExec = new Mock<IAssemblyExecution>();
-        if (!packageInstalled)
-            mockAssemblyExec.Setup(r => r.GetAssembly(assemblyName)).Throws(new Exception($"Cannot load assembly '{assemblyName}'. " +
-                    $"Ensure you have added the required nuget package to your project."));
-
-        
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
-        var target = new DistroLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
+        var mockAssemblyExec = new Mock<AssemblyExecution>{ CallBase = true};
+      
+        var target = new DistroLoader(mockAssemblyExec.Object);
         var options = new SimpleOpenTelemetryOptions
         {
             Distro = distroName
         };
+
+        if (optionsJson is not null)
+        {
+            var distroOptions = new ConfigurationBuilder()
+            .AddInMemoryCollection(JsonSerializer.Deserialize<Dictionary<string, string?>>(optionsJson)!)
+            .Build()
+            .GetSection($"{SimpleOpenTelemetryOptions.SectionName}:DistroOptions");
+
+            options.DistroOptions = distroOptions;
+        }
 
         var services = new ServiceCollection();
         var otelBuilder = services.AddOpenTelemetry();
@@ -64,27 +74,24 @@ public class DistroLoaderTests : IDisposable
         // ASSERT
         Assert.True(foundConfig);
 
+        // Assert action method with options action called
+        mockAssemblyExec.Verify(r => r.InvokeWithAction(It.IsAny<MethodInfo>(), It.IsAny<object>(), 
+            It.IsAny<IConfiguration>()),
+            Times.Exactly(1));
+
+        mockAssemblyExec.Verify(r => r.InvokeParameterless(It.IsAny<MethodInfo>(), It.IsAny<object>()),
+            Times.Exactly(0));
+
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload != null &&
             e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Distro '{options.Distro}'") ?? false));
         
-        var errorEvent = _listener.Events.FirstOrDefault(e =>
-            e.Level == EventLevel.Error &&
-            e.Payload != null &&
-            e.Payload.Any(p => p?.ToString()?.Contains("Ensure you have added the required nuget package to your project.") ?? false) && 
-            e.Payload.Any(p => p?.ToString()?.Contains($"Failed to register OpenTelemetry Distro '{options.Distro}'") ?? false));
+        var errorEvent = _listener.Events.Where(e =>
+            e.Level == EventLevel.Error);
 
-        if (packageInstalled)
-        {
-            Assert.NotNull(successEvent);
-            Assert.Null(errorEvent);
-        }
-        else
-        {
-            Assert.NotNull(errorEvent);
-            Assert.Null(successEvent);
-        }
+        Assert.NotNull(successEvent);
+        Assert.Empty(errorEvent);
     }
 
     [Fact]
@@ -92,7 +99,6 @@ public class DistroLoaderTests : IDisposable
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var target = new DistroLoader(_assemblyExec);
         var options = new SimpleOpenTelemetryOptions
         {
@@ -125,7 +131,6 @@ public class DistroLoaderTests : IDisposable
     public void LoadDistro_WithNoDistroSetting_ReturnsFalse()
     {
         // ARRANGE
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection().Build();
         var target = new DistroLoader(_assemblyExec);
         var options = new SimpleOpenTelemetryOptions();
 

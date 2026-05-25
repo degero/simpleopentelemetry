@@ -1,4 +1,5 @@
 {
+  "APPLICATIONINSIGHTS_STATSBEAT_DISABLED": "true",
   "SimpleOpenTelemetry": {
      "BuilderExtensions": [
       { 

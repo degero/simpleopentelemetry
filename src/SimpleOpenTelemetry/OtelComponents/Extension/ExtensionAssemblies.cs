@@ -13,7 +13,6 @@ internal static class ExtensionAssemblies
                 [ "AddXRayTraceId" ])
         };
 
-
     public static readonly Dictionary<MetricExtensionsEnum, AssemblyDescriptor>
         KnownMetricExtensions = new();
 

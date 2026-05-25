@@ -32,7 +32,8 @@ internal class DistroLoader : LoaderBase, IDistroLoader
                 EventSource.Log.ErrorEvent(ComponentKind, $"Unsupported OpenTelemetry Distro '{options.Distro}'. This Distro can not be used with OpenTelemetrySDKBuilder.");
                 return true; // found a distro but it cannot be used, this will skip any opentelemetry setup.
             }
-            TryInvokeComponent(options.Distro, (OpenTelemetryBuilder) builder, DistroAssemblies.KnownGenericHostDistros);
+            TryInvokeComponent(options.Distro, (OpenTelemetryBuilder) builder, DistroAssemblies.KnownGenericHostDistros, 
+                options, (a,b,c) => options.DistroOptions);
             return true; // return true regardless of distro invocation success as we wish to skip any opentelemetry setup
         }
         return false;

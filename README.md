@@ -63,6 +63,7 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
 
     ```
   - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();`   after `var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);`. This writes any errors to the EventLog and returns false if invalid.
+  
 ---
 
 For more detail on OpenTelemetry's two methods of use covered above see: 
@@ -74,7 +75,7 @@ For more detail on OpenTelemetry's two methods of use covered above see:
 
 ## Examples
 
-If you are in TLDR; mode to bother with the next sections, head over to the [example applications](./examples/) and [example configs](./example-configs/).
+If you are in TLDR; mode, head over to the [example applications](./examples/) and [example configs](./example-configs/) to find the configuration that suits your needs.
 
 
 ---
@@ -158,7 +159,7 @@ As SimpleOpenTelemetry uses dotnet's IConfiguration concepts and abstractions, i
 
 As the IConfigurationProvider for environment variables is enabled by default, you can define them all in environment variables or override the json file "SimpleOpenTelemetry" settings.
 
-For local development with sensitive values, it is recommended to take advantage of [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets).  
+For local development with sensitive values, it is recommended to take advantage of [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). This can be used for any configuration below or
 
 
 ---
@@ -198,6 +199,7 @@ For a json configuration file, you can start with one of the pre-built ones in [
 ```json
 "SimpleOpenTelemetry": {
     "Distro": "",
+    "DistroOptions": {},
     "Trace": {
       "Instrumentations": [],
       "InstrumentationConfig": {},
@@ -223,7 +225,8 @@ For a json configuration file, you can start with one of the pre-built ones in [
     },
     "ResourceDetectorConfig": {},
     "Propagators": [],
-    "Sampler": ""
+    "Sampler": "",
+    "BuilderExtensions": []
 }
 
 ```  
@@ -270,13 +273,15 @@ A distribution in terms of OpenTelemetry is '... a customized version of an Open
 
 In the case of SimpleOpenTelemetry, it is a library that will set up all signal collection and exporting settings for you with only a few minor settings such as exporter endpoints. By setting a distribution in your configuration, *all other configuration areas will be ignored*. The OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES settings/env vars however are picked up. This means any of the features listed previously will not be available as to not interfere with the distro.
 
+For examples listing all possible options (in their current default) see the [example-configs/distro folder](./example-configs/distro/)
+
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](
 https://opentelemetry.io/ecosystem/distributions/)
 
 
 #### Azure Monitor AspNetCore
 
-*Important* This Distro only supports use with generic host WebApplication (does not support using with StandaloneApp.AddSimpleOpenTelemetry()). If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter) but note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
+*Important* This Distro only supports use with generic host WebApplication (does not support using with StandaloneApp.AddSimpleOpenTelemetry()). If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter) or for all signals [Azure Monitor Exporter extension](#azure-monitor-exporter-1). Note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
 
 This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors and more. If you want more control over your setup you can still use most (not all) features provided in the Distro (see the link below) via the other configuration item covered in the following sections. NOTE: Azure RBAC auth is not currently supported.
 
@@ -297,7 +302,7 @@ SimpleOpenTelemetry:Distro json:
 
 Configuration:  
 
-You will need to specify an Application Insights connection string. It is recommend to set as an Environment variable and for local development, using dotnet user-secrets. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
+You will need to specify an Application Insights connection string, or use RBAC (you can use DefaultAzureCredential). It is recommend to set as an Environment variable and/or for local development, using dotnet user-secrets. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
 
 Notes:  
 
@@ -540,7 +545,7 @@ You can set exporter options for all signals in "SimpleOpenTelemetry:ExporterOpt
 
 For a full list of all the supported exporters see [TraceExporterEnum / MetricExporterEnum / LogExporterEnum](./src/SimpleOpenTelemetry/Exporter/ExporterAssemblies.cs)
 
-For examples see the [example-configs/exporter folder](./example-configs/exporter/)
+For examples listing all possible options (in their current default) see the [example-configs/exporter folder](./example-configs/exporter/)
 
 #### OTLP exporter
 
@@ -548,7 +553,7 @@ Signals supported: trace, metric, log
 
 Stability: Stable
 
-Documentation:  [OpenTelemetry OTLP Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/README.md)  
+Documentation: [OpenTelemetry OTLP Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/README.md)  
 
 Options: optional 
 

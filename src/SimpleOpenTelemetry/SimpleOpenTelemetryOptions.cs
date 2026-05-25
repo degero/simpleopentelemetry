@@ -33,6 +33,8 @@ internal class SimpleOpenTelemetryOptions
     /// </summary>
     public string? Distro { get; set; }
 
+    public IConfigurationSection? DistroOptions { get; set; }
+
     /// <summary>
     /// OpenTelemetry tracing settings
     /// </summary>

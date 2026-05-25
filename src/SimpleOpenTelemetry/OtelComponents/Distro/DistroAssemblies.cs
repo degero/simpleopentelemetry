@@ -14,6 +14,7 @@ internal static class DistroAssemblies
             [DistroEnum.AzureMonitorAspNetCore] = new(
                 "Azure.Monitor.OpenTelemetry.AspNetCore",
                 "Azure.Monitor.OpenTelemetry.AspNetCore.OpenTelemetryBuilderExtensions",
-                [ "UseAzureMonitor" ])
+                [ "UseAzureMonitor" ],
+                "AzureMonitorOptions")
         };
 }
