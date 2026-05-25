@@ -20,5 +20,5 @@ public enum MetricExporterEnum
 
     /* vendor libraries */
     /// <summary>Exports metrics to Azure Monitor Application Insights.</summary>
-    Azure
+    AzureMonitor
 }

@@ -121,6 +121,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         ConfigureLogging();
 
+        _extensionLoader.AddBuilderExtensions(_otelBuilder, _options);
+
     }
 
     /// <summary>
@@ -170,8 +172,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
     private void ConfigureResourceAttributes()
     {   
-        // Normally users will want to set in "Detectors" config at minium "EnvVar" for opentelemetry to load in
-        // it's OTEL env var settings OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME
+        // 'EnvVar' detector only be needed if OpenTelemetry SDK changes to not include this by default
         _otelBuilder.ConfigureResource(r =>
         {
             _resourceDetectorLoader.AddResourceDetectors(r, _options);

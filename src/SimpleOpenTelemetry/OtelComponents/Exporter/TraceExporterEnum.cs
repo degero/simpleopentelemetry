@@ -14,5 +14,5 @@ public enum TraceExporterEnum
 
     /// <summary>Exports traces to Azure Monitor Application Insights.</summary>
     /* vendor libraries */
-    Azure
+    AzureMonitor
 }

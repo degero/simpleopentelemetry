@@ -1,3 +1,4 @@
+using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
@@ -63,5 +64,19 @@ internal class ExtensionLoader : LoaderBase, IExtensionLoader
     /// <param name="options">Metric provider options</param>
     public void AddMetricExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options) => 
         TryInvokeComponents(options.Extensions, builder, ExtensionAssemblies.KnownMetricExtensions);
+    
+    /// <summary>
+    /// Adds a OpenTelemetryBuilder extension.
+    /// </summary>
+    /// <remarks>
+    /// Dynamically loads the extension assembly and invokes the appropriate extension method.
+    /// Configuration can be provided via appsettings.json or environment variables.
+    /// </remarks>
+    /// <param name="builder">The MeterProviderBuilder to configure.</param>
+    /// <param name="options">Metric provider options</param>
+    public void AddBuilderExtensions(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options) => 
+        options.BuilderExtensions?.ToList().ForEach(x => TryInvokeComponent(x.Type, 
+            builder, ExtensionAssemblies.KnownBuilderExtensions, options, (a,b,c) => x.Options)
+        );
     
 }

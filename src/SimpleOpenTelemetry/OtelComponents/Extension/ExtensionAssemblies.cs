@@ -19,4 +19,15 @@ internal static class ExtensionAssemblies
 
     public static readonly Dictionary<LogExtensionsEnum, AssemblyDescriptor>
         KnownLogExtensions = new();
+
+    public static readonly Dictionary<BuilderExtensionsEnum, AssemblyDescriptor>
+        KnownBuilderExtensions = new()
+        {
+            [BuilderExtensionsEnum.AzureMonitorExporter] = new(
+                "Azure.Monitor.OpenTelemetry.Exporter",
+                "Azure.Monitor.OpenTelemetry.Exporter.OpenTelemetryBuilderExtensions",
+                [ "UseAzureMonitorExporter" ],
+                "AzureMonitorExporterOptions",
+                false)
+        };
 }

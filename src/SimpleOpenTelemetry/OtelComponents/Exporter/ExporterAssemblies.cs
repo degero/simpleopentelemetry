@@ -17,12 +17,11 @@ internal static class ExporterAssemblies
                 [ "AddConsoleExporter" ]),
             
             /* Vendor exporters */
-            [TraceExporterEnum.Azure] = new(
+            [TraceExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 [ "AddAzureMonitorTraceExporter" ],
-                "AzureMonitorExporterOptions",
-                true),
+                "AzureMonitorExporterOptions"),
         };
 
     public static readonly Dictionary<MetricExporterEnum, AssemblyDescriptor>
@@ -47,12 +46,11 @@ internal static class ExporterAssemblies
                 "PrometheusAspNetCoreOptions"),
 
             /* Vendor libraries */
-            [MetricExporterEnum.Azure] = new(
+            [MetricExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 [ "AddAzureMonitorMetricExporter" ],
-                "AzureMonitorExporterOptions",
-                true),
+                "AzureMonitorExporterOptions"),
 
         };
 
@@ -66,12 +64,11 @@ internal static class ExporterAssemblies
                 [ "AddConsoleExporter" ]), 
 
             /* Vendor libraries */
-            [LogExporterEnum.Azure] = new(
+            [LogExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
                 [ "AddAzureMonitorLogExporter" ],
-                "AzureMonitorExporterOptions",
-                true),
+                "AzureMonitorExporterOptions"),
         };
 }
 

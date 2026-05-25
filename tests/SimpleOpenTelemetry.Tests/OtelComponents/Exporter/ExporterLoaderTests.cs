@@ -331,9 +331,6 @@ public class ExporterLoaderTests : IDisposable
         var services = new ServiceCollection();
         var (target, _) = InitExporter([]);
 
-        services.AddOpenTelemetry().WithLogging(r => r.AddAzureMonitorLogExporter());
-        
-
         // Act
         // This is what AddSimpleOpenTelemetry() is doing but 
         // done manually to isolate closer to the SUT
@@ -360,38 +357,47 @@ public class ExporterLoaderTests : IDisposable
     [Theory]
     [InlineData("AllSignals_TopLevelConfig", """
     {
-        "ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
-        "Trace:Exporters:0:Type": "Azure",
-        "Log:Exporters:0:Type": "Azure",
-        "Metric:Exporters:0:Type": "Azure"
+        "ExporterOptions"AzureMonitor:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "Trace:Exporters:0:Type": "AzureMonitor",
+        "Log:Exporters:0:Type": "AzureMonitor",
+        "Metric:Exporters:0:Type": "AzureMonitor"
+    }
+    """, 3, false)]
+    [InlineData("AllSignals_TopLevelConfig_Credential", """
+    {
+        "ExporterOptions"AzureMonitor:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "ExporterOptions"AzureMonitor:Credential": "Azure.Identity.DefaultAzureCredential",
+        "Trace:Exporters:0:Type": "AzureMonitor",
+        "Log:Exporters:0:Type": "AzureMonitor",
+        "Metric:Exporters:0:Type": "AzureMonitor"
     }
     """, 3, false)]
     [InlineData("AllSignals_NoConfig_ShouldFail", """
     {
-        "Trace:Exporters:0:Type": "Azure",
-        "Log:Exporters:0:Type": "Azure",
-        "Metric:Exporters:0:Type": "Azure"
+        "Trace:Exporters:0:Type": "AzureMonitor",
+        "Log:Exporters:0:Type": "AzureMonitor",
+        "Metric:Exporters:0:Type": "AzureMonitor"
     }
     """, 0, true)]
     [InlineData("OnlyTrace_TopLevelConfig", """
     {
-        "ExporterOptions:Azure:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
-        "Trace:Exporters:0:Type": "Azure"
+        "ExporterOptions"AzureMonitor:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "Trace:Exporters:0:Type": "AzureMonitor"
     }
     """, 1, false)]
     [InlineData("OnlyTrace_EntryLevelConfig", """
     {
-        "Trace:Exporters:0:Type": "Azure",
+        "Trace:Exporters:0:Type": "AzureMonitor",
         "Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
     }
     """, 1, false)]
     [InlineData("AllSignals_AllEntryLevelOptions", """
     {
-        "Trace:Exporters:0:Type": "Azure",
+        "Trace:Exporters:0:Type": "AzureMonitor",
         "Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
-        "Log:Exporters:0:Type": "Azure",
+        "Log:Exporters:0:Type": "AzureMonitor",
         "Log:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
-        "Metric:Exporters:0:Type": "Azure",
+        "Metric:Exporters:0:Type": "AzureMonitor",
         "Metric:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf"
     }
     """, 3, false)]
@@ -400,7 +406,7 @@ public class ExporterLoaderTests : IDisposable
         // Arrange
         var item = testName;
         Assert.Empty(_listener.Events);
-        var exporterType = LogExporterEnum.Azure;
+        var exporterType = LogExporterEnum.AzureMonitor;
         var services = new ServiceCollection();
 
         var (target, config) = InitExporter(JsonSerializer.Deserialize<Dictionary<string, string?>>(optionsJson)!);

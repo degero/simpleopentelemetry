@@ -58,6 +58,14 @@ internal class SimpleOpenTelemetryOptions
     /// </summary>
     public ResourceOptions? Resource { get; set; }
 
+    public BuilderExtensionConfig[]? BuilderExtensions{ get; set; }
+
+}
+
+internal class BuilderExtensionConfig
+{
+    public string? Type { get; set; }
+    public IConfigurationSection? Options { get; set; }
 }
 
 internal class SimpleOpenTelemetryExporterConfig<TEnum>

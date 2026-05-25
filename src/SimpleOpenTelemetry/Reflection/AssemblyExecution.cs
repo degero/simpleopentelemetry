@@ -192,6 +192,8 @@ internal class AssemblyExecution : IAssemblyExecution
         var options = Activator.CreateInstance(optionsType)!;
         section.Bind(options);
 
+        CreateDefaultInstanceOfComplexObjectProperty(options, section);
+
         var param = Expression.Parameter(optionsType, "opts");
         var source = Expression.Constant(options, optionsType);
         var assignments = optionsType
@@ -206,5 +208,59 @@ internal class AssemblyExecution : IAssemblyExecution
                     Expression.Block(assignments),
                     param)
             .Compile();
+    }
+
+    public void CreateDefaultInstanceOfComplexObjectProperty(object config, IConfiguration section)
+    {
+        Type type = config.GetType();
+
+        foreach (IConfigurationSection child in section.GetChildren())
+        {
+            PropertyInfo prop = type.GetProperty(child.Key,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            if (prop == null || !prop.CanWrite) continue;
+
+            Type propType = prop.PropertyType;
+
+            if (IsComplexType(propType) && !string.IsNullOrWhiteSpace(child.Value))
+            {
+                try 
+                {
+                    Type instanceType = Type.GetType(child.Value!, throwOnError: false, ignoreCase: true);
+                    if (instanceType is null)
+                    {
+                        string fullTypeName = child.Value.Trim();
+                        int lastDot = fullTypeName.LastIndexOf('.');
+                        string assemblyName = fullTypeName.Substring(0, lastDot);
+                        string typeName = fullTypeName; // GetType needs the full name including namespace
+
+                        var assembly = GetAssembly(assemblyName);
+                        instanceType = assembly.GetType(typeName);
+                    }
+                    object nestedInstance = Activator.CreateInstance(instanceType!, 
+                        BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
+                        null,
+                        Array.Empty<object>(),
+                        null);
+                    prop.SetValue(config, nestedInstance);
+                }
+                catch (Exception ex)
+                {
+                    EventSource.Log.ErrorEvent($"Failed to create default instance of Configuration Action Property {child.Value} for Configuration '{type.Name}'", ex.Message);
+                }
+            }
+        }
+    }
+
+    private bool IsComplexType(Type type)
+    {
+        return !type.IsPrimitive
+            && !type.IsEnum
+            && type != typeof(string)
+            && type != typeof(decimal)
+            && type != typeof(DateTime)
+            && type != typeof(Guid)
+            && !type.IsValueType;
     }
 }

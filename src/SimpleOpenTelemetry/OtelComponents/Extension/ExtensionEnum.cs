@@ -34,3 +34,10 @@ public enum LogExtensionsEnum
 }
 
 
+/// <summary>
+/// Enumeration of supported OpenTelemetryBuilder extensions.
+/// </summary>
+public enum BuilderExtensionsEnum
+{
+    AzureMonitorExporter
+}

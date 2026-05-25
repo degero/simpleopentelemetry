@@ -11,16 +11,16 @@ using SimpleOpenTelemetry.Examples.Shared;
 using SimpleOpenTelemetry.Extensions;
 
 
+// Add Event listeners outputing to console for demo/debug purposes
+using var otelListener = new OtelEventListener();
+using var simpleOtelListener = new SimpleOtelEventListener();
+
+// Needed to pass in SimpleOpenTelemetry configuration for standaldone app (a HostApplicationBuilder does this by default)
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
     .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: false)
-    .AddEnvironmentVariables()
     .Build();
-
-// Add Event listeners outputing to console for demo/debug purposes
-using var otelListener = new OtelEventListener();
-using var simpleOtelListener = new SimpleOtelEventListener();
 
 if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
 {
@@ -86,6 +86,7 @@ else
     Console.WriteLine("║     SimpleOpenTelemetry Console Application Standalone app Sample       ║");
     Console.WriteLine("╚═════════════════════════════════════════════════════════════════════════╝");
 
+    
     // Build logger factory with settings from appsettins.Development.json
     // using var loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(config.GetSection("Logging")));
 

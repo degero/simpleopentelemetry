@@ -14,5 +14,5 @@ public enum LogExporterEnum
 
     /// <summary>Exports logs to Azure Monitor Application Insights.</summary>
     /* vendor libraries */
-    Azure
+    AzureMonitor
 }
