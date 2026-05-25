@@ -27,7 +27,7 @@ public enum PropagatorEnum
 
     /* opentelemetry-dotnet-contrib */
     /// <summary>
-    /// AWS propagator.
+    /// AWS Xray propagator.
     /// </summary>
-    AWS,
+    AWSXray,
 }

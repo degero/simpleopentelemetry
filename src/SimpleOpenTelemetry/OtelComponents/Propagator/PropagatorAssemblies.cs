@@ -32,7 +32,7 @@ internal static class PropagatorAssemblies
             ),
 
             /* opentelemetry-dotnet-contrib propagators - OpenTelemetry.Extensions.AWS.nupkg */
-            [PropagatorEnum.AWS] = new(
+            [PropagatorEnum.AWSXray] = new(
                 "OpenTelemetry.Extensions.AWS",
                 "OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator"
             )

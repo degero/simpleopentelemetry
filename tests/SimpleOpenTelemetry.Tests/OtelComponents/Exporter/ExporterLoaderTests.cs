@@ -378,7 +378,7 @@ public class ExporterLoaderTests : IDisposable
         "Log:Exporters:0:Type": "AzureMonitor",
         "Metric:Exporters:0:Type": "AzureMonitor"
     }
-    """, 0, false)]
+    """, 3, false)]
     [InlineData("OnlyTrace_TopLevelConfig", """
     {
         "ExporterOptions:AzureMonitor:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",

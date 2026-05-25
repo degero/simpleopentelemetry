@@ -206,6 +206,7 @@ For a json configuration file, you can start with one of the pre-built ones in [
       "Sources": [],
       "Exporters": [],
       "Extensions": [],
+      "Propagators": [],
       "Settings": {}
     },
     "Metric": {
@@ -222,9 +223,8 @@ For a json configuration file, you can start with one of the pre-built ones in [
     "ExporterOptions": {},
     "Resource": {
       "Detectors": [ ],
+      "DetectorConfig": {}
     },
-    "ResourceDetectorConfig": {},
-    "Propagators": [],
     "Sampler": "",
     "BuilderExtensions": []
 }
@@ -489,7 +489,7 @@ Signals: trace
 
 Options: [WcfInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/WcfInstrumentationOptions.cs) 
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Wcf`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Wcf --prerelease`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -526,7 +526,7 @@ Signals: metric
 
 Options: none 
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Process`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Process --prerelease`
 
 SimpleOpenTelemetry:Metric:Instrumentations[] json:
 
@@ -804,7 +804,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
  "aws"
  ```
 
-(Optional) SimpleOpenTelemetry:ResourceDetectorConfig:AWS json:  
+(Optional) SimpleOpenTelemetry:Resource:DetectorConfig:AWS json:  
 
  ```json
  { "SemanticConventionVersion": "V1_29_0" }
@@ -814,7 +814,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 #### Azure
 
-Stability (as April 2026): Beta (as of march 2026)
+Stability: Beta (as of April 2026)
 
 Documentation: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
 
@@ -831,7 +831,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 #### Google Cloud Platform
 
-Stability: Alpha (as April 2026)
+Stability: Alpha (as of April 2026)
 
 Documentation: [Resource Detectors for Google Cloud Platform](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Gcp/README.md)
 
@@ -872,7 +872,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 > The OpenTelemetry SDK env var OTEL_PROPAGATORS is not supported (as of April 2026) in the dotnet sdk implementation
 
 
-You can add multiple propagators in the SimpleOpenTelemetry:Propagators[] json array. 
+You can add multiple propagators in the SimpleOpenTelemetry:Trace:Propagators[] json array. 
 
 
 **Nuget Packages**
@@ -894,10 +894,10 @@ The equivalent config setting (if you wish to append more to the default) being:
 
 #### Disable
 
-If you wish to disable this, explicitly set SimpleOpenTelemetry:Propagators as:
+If you wish to disable this, explicitly set SimpleOpenTelemetry:Trace:Propagators[] as:
 
 ```json
-{ "SimpleOpenTelemetry": { "Propagators": [ 'none' ]] } }
+"none"
 ```
 
 
@@ -910,10 +910,10 @@ Documentation: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenT
 Nuget Package:
 `dotnet add package OpenTelemetry.Extensions.AWS` 
 
-SimpleOpenTelemetry:Propagators[] json:  
+SimpleOpenTelemetry:Trace:Propagators[] json:  
 
  ```json
- "aws"
+ "awsxray"
  ```
 
 
@@ -930,9 +930,11 @@ For a full list of all the additional supported samplers see [SamplerEnum](./src
 For Azure users, sampling is built into the exporter setup/options.
 
 
-#### AWS X-Ray Remote Sampler (Currently unsupported due to irregular registration pattern requiring prebuilt resource)
+#### AWS X-Ray Remote Sampler
 
-Stability (as April 2026): Alpha
+Stability: Alpha (as of April 2026)
+
+Notes: Currently unsupported due to irregular registration pattern requiring prebuilt resource
 
 Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 

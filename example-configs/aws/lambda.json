@@ -1,0 +1,29 @@
+{
+  "SimpleOpenTelemetry": {
+    "Trace": {
+      "Instrumentations": [
+        "AWSLambda"
+      ],
+      "InstrumentationConfig": {
+        "AWSLambda": {
+          "SemanticConventionVersion": "V1_29_0",
+          "DisableAwsXRayContextExtraction": true,
+          "SetParentFromBatch": true
+        }
+      },
+      "Exporters": [],
+      "Extensions": [ "awsxraytraceid" ],
+      "Propagators": [ "awsxray" ],
+      "Settings": {
+        "SetErrorStatusOnException": true
+      },
+      "Sources": [ "SimpleOpenTelemetry.Examples.AspNetCore.*" ]
+    }
+  },
+  "Resource": {
+    "Detectors": ["aws"],
+    "DetectorConfig": {
+      "AWS": { "SemanticConventionVersion": "V1_29_0" }
+    }
+  }
+}

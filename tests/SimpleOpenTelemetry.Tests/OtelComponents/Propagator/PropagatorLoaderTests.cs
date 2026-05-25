@@ -151,7 +151,7 @@ public class PropagatorLoaderTests
 
     [Theory]
     [InlineData(PropagatorEnum.B3, "OpenTelemetry.Extensions.Propagators.B3Propagator")]
-    [InlineData(PropagatorEnum.AWS, "OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator")]
+    [InlineData(PropagatorEnum.AWSXray, "OpenTelemetry.Extensions.AWS.Trace.AWSXRayPropagator")]
     public void AddPropagators_WithNupkgPropagator_SetsSingleNupkgPropagator(PropagatorEnum propagator, string className)
     {
         var original = Propagators.DefaultTextMapPropagator;
@@ -220,7 +220,7 @@ public class PropagatorLoaderTests
             {
                 Trace = new() 
                 {
-                    Propagators = [ nameof(PropagatorEnum.AWS), nameof(PropagatorEnum.TraceContext) ]
+                    Propagators = [ nameof(PropagatorEnum.AWSXray), nameof(PropagatorEnum.TraceContext) ]
                 }
             };
 
