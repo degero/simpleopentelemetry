@@ -8,7 +8,7 @@
 
     <!-- NuGet Package Properties -->
     <PackageId>SimpleOpenTelemetry</PackageId>
-    <Version>0.0.1-alpha.1</Version>
+    <Version>0.0.1-alpha.2</Version>
     <Authors>Chad Paynter</Authors>
     <Company></Company>
     <Description>A lightweight, low-friction .NET library providing a fast and simple way to add OpenTelemetry to .NET applications via IConfiguration. Example configurations can be dropped in, giving low hassle set up of distributed tracing, instrumentation, exporters, and more.</Description>

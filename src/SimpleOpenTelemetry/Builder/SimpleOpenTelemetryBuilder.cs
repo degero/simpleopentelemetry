@@ -109,9 +109,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         BindConfigurationToSimpleOpenTelemetryOptions();
 
-        // Check and load distro, this will skip any other configuration
-        if (_distroLoader.LoadDistro(_otelBuilder, _options))
-            return;
+        // Check and load distro first - other settings can be appended
+        _distroLoader.LoadDistro(_otelBuilder, _options);
 
         ConfigureResourceAttributes();
         

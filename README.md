@@ -44,9 +44,13 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
 - Add the SimpleOpenTelemetry nupkg: `dotnet add package --prerelease SimpleOpenTelemetry`
 - Add a "SimpleOpenTelemetry": {} root section to your appsettings.{environment}.json and read the next sections to setup.
 - Add boostrapping code:
+  
+  
   - For Generic Host apps like aspnetcore (or any apps using WebApplicationBuilder/HostApplicationBuilder):
     - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
     - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
+  
+
   - For Standalone apps (no Generic host): 
     - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and   
     ```csharp
@@ -271,7 +275,9 @@ The next sections cover setting up the subsections of your "SimpleOpenTelemetry"
 
 A distribution in terms of OpenTelemetry is '... a customized version of an OpenTelemetry component...'. 
 
-In the case of SimpleOpenTelemetry, it is a library that will set up all signal collection and exporting settings for you with only a few minor settings such as exporter endpoints. By setting a distribution in your configuration, *all other configuration areas will be ignored*. The OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES settings/env vars however are picked up. This means any of the features listed previously will not be available as to not interfere with the distro.
+In the case of SimpleOpenTelemetry, it is a library that will set up all signal collection and exporting settings for you with only a few minor settings you can set in "DistroOptions": {}. The OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES settings/env vars should be set also. 
+
+*IMPORTANT*: Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry or OpenTelemetry 'OTEL_' settings.
 
 For examples listing all possible options (in their current default) see the [example-configs/distro folder](./example-configs/distro/)
 
@@ -302,11 +308,23 @@ SimpleOpenTelemetry:Distro json:
 
 Configuration:  
 
-You will need to specify an Application Insights connection string, or use RBAC (you can use DefaultAzureCredential). It is recommend to set as an Environment variable and/or for local development, using dotnet user-secrets. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
+You must specify an Application Insights connection string, or use RBAC (by adding the 'Credential' field in DistroOptions). You can set the ConnectionString via: 'SimpleOpenTelemetry:DistroOptions:ConnectionString' or 'APPLICATIONINSIGHTS_CONNECTION_STRING'.
+It is recommended to set as using 'dotnet user-secrets' or as a secret setting in Azure. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
+
+SimpleOpenTelemetry:DistroOptions json:  
+
+RBAC (only the key is needed in connectionstring, you can use this placeholder and the real key as a secret in hosted envs)
+
+```json
+{ 
+  "Credential": "Azure.Identity.DefaultAzureCredential",
+  "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000"
+}
+```
 
 Notes:  
 
-This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in code to the OpenTelemetry builder. For an example see the [aspnetcore example WithTracing() setup](./examples/aspnetcore/Program.cs)
+This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./examples/aspnetcore/Program.cs)
 
 If you add a package `OpenTelemetry.Instrumentation.SqlClient` you will need to configure it by code. As the distro will backoff from setting up its own internal sqlclient instrumentation if it detects it.
 
