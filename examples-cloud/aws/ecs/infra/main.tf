@@ -124,29 +124,6 @@ resource "aws_ecs_cluster" "cluster" {
   name = "${var.app_name}-cluster"
 }
 
-# resource "aws_subnet" "public" {
-#   vpc_id                  = aws_vpc.main.id
-#   cidr_block              = "10.0.1.0/24"
-#   availability_zone       = "${var.region}a"
-#   map_public_ip_on_launch = true
-
-#   tags = {
-#     Name = "${var.project_name}-public-subnet-1"
-#   }
-# }
-
-# --- Find subnet in ap-southeast-1b ---
-# data "aws_subnet" "selected" {
-#   filter {
-#     name   = "availabilityZone"
-#     values = ["$regionb"]
-#   }
-#   filter {
-#     name   = "vpc-id"
-#     values = [data.aws_vpc.default.id]
-#   }
-# }
-
 # --- EC2 Instance
 resource "aws_instance" "ecs_host" {
   ami                         = data.aws_ssm_parameter.ecs_ami.value
@@ -308,32 +285,7 @@ resource "aws_ecs_task_definition" "app" {
   }
 
   container_definitions = jsonencode(local.container_defs)
-
-  # container_definitions = jsonencode([{
-  #   name      = "${var.app_name}-aspnetcore"
-  #   image     = var.image
-  #   essential = true
-  #   portMappings = [{
-  #     containerPort = 80
-  #     hostPort      = 80
-  #     protocol      = "tcp"
-  #   }]
-  #   environment = [
-  #     { name = "AWS_LOG_STREAM_NAME",          value = "app" },
-  #     { name = "ASPNETCORE_URLS",              value = "http://+:80" },
-  #     { name = "ASPNETCORE_ENVIRONMENT",       value = "Production" },
-  #     { name = "ECS_ENABLE_CONTAINER_METADATA", value = "true" }
-  #   ]
-  #   logConfiguration = {
-  #       logDriver = "awslogs"
-  #       options = {
-  #         "awslogs-group"         = aws_cloudwatch_log_group.app.name
-  #         "awslogs-region"        = var.region
-  #         "awslogs-stream-prefix" = "ecs"
-  #       }
-  #     }
-
-  # }])
+  
 }
 
 # --- ECS Service ---

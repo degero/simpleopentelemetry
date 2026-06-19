@@ -1,13 +1,14 @@
 using System.Diagnostics;
-using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using OpenTelemetry;
 using OpenTelemetry.Instrumentation.EntityFrameworkCore;
 using OpenTelemetry.Instrumentation.SqlClient;
+using OpenTelemetry.Sampler.AWS;
+using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Examples.AspNetCore.Data;
 using SimpleOpenTelemetry.Examples.Shared;
 using SimpleOpenTelemetry.Extensions;
+using SimpleOpenTelemetry.OtelComponents.Resource;
 
 // Add Event listeners outputing to console for demo/debug purposes
 using var otelListener = new OtelEventListener();
@@ -66,11 +67,6 @@ var otelBuilder = builder.AddSimpleOpenTelemetry();
 
 sw.Stop();
 Console.WriteLine($"AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
-
-// Need to add in an event source by code if using the Azure monitor distro
-var distro = builder.Configuration.GetValue<string>("SimpleOpenTelemetry:Distro");
-if (string.Equals(distro, SimpleOpenTelemetry.OtelComponents.Distro.DistroEnum.AzureMonitorAspNetCore.ToString(), StringComparison.OrdinalIgnoreCase))
-    otelBuilder.WithTracing(r => r.AddSource("SimpleOpenTelemetry.Examples.AspNetCore.*"));
 
 var app = builder.Build();
 
