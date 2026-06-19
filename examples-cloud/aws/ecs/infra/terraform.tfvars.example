@@ -1,0 +1,5 @@
+# ── Adjust these values ─────────────────────────────────────────────────────────
+region = "us-east-1"
+image    = "yourimagepathandname"
+enable_client_xray_sampler  = "false"
+enable_otel_event_listeners = "false"

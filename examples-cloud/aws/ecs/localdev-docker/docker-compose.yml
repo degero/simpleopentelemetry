@@ -1,0 +1,38 @@
+services:
+  otel:
+    image: amazon/aws-otel-collector:latest
+    command: --config /config/${OTEL_COLLECTOR_CONFIG}
+    volumes:
+      - ~/.aws:/home/aoc/.aws:ro
+      - .:/config
+    environment:
+      - AWS_REGION=${AWS_REGION}
+      - LOG_GROUP_NAME=${LOG_GROUP_NAME}
+      - LOG_GROUP_STREAM=${LOG_GROUP_STREAM}
+      - LOG_RETENTION_DAYS=${LOG_RETENTION_DAYS}
+      - METRIC_RETENTION_DAYS=${METRIC_RETENTION_DAYS}
+      - COLLECTOR_MEM_LIMIT_MB=${COLLECTOR_MEM_LIMIT_MB}
+      - COLLECTOR_SPIKE_LIMIT_MB=#{COLLECTOR_SPIKE_LIMIT_MB}
+      - GOMEMLIMIT=${GOMEMLIMIT}
+    ports:
+      - '4317:4317'
+      - '2000:2000'
+
+  app:
+    build: 
+      context: ../
+      dockerfile: Dockerfile
+    environment: 
+      - UseXraySampler=${USE_XRAY_SAMPLER}
+      - OTEL_AWS_APPLICATION_SIGNALS_ENABLED=false # Disable Application Signals to avoid duplicates/costs
+      - AWS_REGION=${AWS_REGION}
+      - INSTANCE_ID
+      - LISTEN_ADDRESS=0.0.0.0:8080
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4317
+      - AWS_XRAY_SAMPLER_ENDPOINT=http://otel:2000
+      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - '8080:8080'     
+    volumes:
+      - ~/.aws:/root/.aws:ro

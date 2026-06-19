@@ -1,0 +1,94 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: ${env:COLLECTOR_MEM_LIMIT_MB}
+    spike_limit_mib: ${env:COLLECTOR_SPIKE_LIMIT_MB}
+  batch/traces:
+    timeout: 1s
+    send_batch_size: 50
+    send_batch_max_size: 200
+  batch/metrics:
+    timeout: 10s
+    send_batch_size: 200
+    send_batch_max_size: 1000
+  batch/logs:
+    timeout: 10s
+    send_batch_size: 1024
+    send_batch_max_size: 8000
+  filter/traces:
+    traces:
+      span: # Filter Xray Sampler requests, health and metrics
+        - >
+          IsMatch(attributes["url.full"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
+          IsMatch(attributes["http.route"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
+          IsMatch(attributes["http.url"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*")
+  # Disable this If you are using a AWS XRay remote sampler or another sampler on app side 
+  tail_sampling:
+    decision_wait: 10s
+    policies:
+      - name: errors
+        type: status_code
+        status_code: { status_codes: [ERROR] }
+      - name: slow-traces
+        type: latency
+        latency: { threshold_ms: 2000 }
+      - name: probabilistic
+        type: probabilistic
+        probabilistic: { sampling_percentage: 10 }
+
+exporters:
+  otlp_http/logs:
+    compression: gzip
+    logs_endpoint: https://logs.${env:AWS_REGION}.amazonaws.com/v1/logs
+    headers: 
+      x-aws-log-group: ${env:LOG_GROUP_NAME}
+      x-aws-log-stream: ${env:LOG_GROUP_STREAM}
+    auth:
+      authenticator: sigv4auth/logs
+      
+  otlp_http/traces:
+    compression: gzip
+    traces_endpoint: https://xray.${env:AWS_REGION}.amazonaws.com/v1/traces
+    auth:
+      authenticator: sigv4auth/traces
+
+  otlp_http/metrics:
+    compression: gzip
+    metrics_endpoint: https://monitoring.${env:AWS_REGION}.amazonaws.com/v1/metrics
+    auth:
+      authenticator: sigv4auth/metrics
+
+extensions:
+  health_check:
+  awsproxy: #X-ray remote sampler
+    region: ${env:AWS_REGION}
+  sigv4auth/logs:
+    region: ${env:AWS_REGION}
+    service: "logs"
+  sigv4auth/traces:
+    region: ${env:AWS_REGION}
+    service: "xray"
+  sigv4auth/metrics:
+    region: ${env:AWS_REGION}
+    service: "monitoring"
+
+service:
+  extensions: [awsproxy,health_check,sigv4auth/logs,sigv4auth/traces,sigv4auth/metrics]
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter,batch/logs]
+      exporters: [otlp_http/logs]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter,filter/traces,tail_sampling,batch/traces]
+      exporters: [otlp_http/traces]  
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter,batch/metrics]
+      exporters: [otlp_http/metrics]

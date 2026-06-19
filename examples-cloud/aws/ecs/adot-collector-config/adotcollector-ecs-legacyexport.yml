@@ -1,0 +1,75 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+    
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: ${env:COLLECTOR_MEM_LIMIT_MB}
+    spike_limit_mib: ${env:COLLECTOR_SPIKE_LIMIT_MB}
+  batch/traces:
+    timeout: 1s
+    send_batch_size: 50
+    send_batch_max_size: 200
+  batch/metrics:
+    timeout: 10s
+    send_batch_size: 200
+    send_batch_max_size: 1000
+  batch/logs:
+    timeout: 10s
+    send_batch_size: 1024
+    send_batch_max_size: 8000
+  filter/traces:
+    traces:
+      span: # Filter Xray Sampler requests, health and metrics
+        - >
+          IsMatch(attributes["url.full"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
+          IsMatch(attributes["http.route"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
+          IsMatch(attributes["http.url"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*")
+  # Disable this If you are using a AWS XRay remote sampler or another sampler on app side 
+  tail_sampling:
+    decision_wait: 10s
+    policies:
+      - name: errors
+        type: status_code
+        status_code: { status_codes: [ERROR] }
+      - name: slow-traces
+        type: latency
+        latency: { threshold_ms: 2000 }
+      - name: probabilistic
+        type: probabilistic
+        probabilistic: { sampling_percentage: 10 }
+
+exporters:
+  awsxray:
+    region: ${env:AWS_REGION}
+  awsemf:
+    region: ${env:AWS_REGION}
+    log_retention: ${env:METRIC_RETENTION_DAYS}
+  awscloudwatchlogs:
+    region: ${env:AWS_REGION}
+    log_group_name: ${env:LOG_GROUP_NAME}
+    log_stream_name: ${env:LOG_GROUP_STREAM}
+    log_retention: ${env:LOG_RETENTION_DAYS}
+
+extensions:
+  health_check:
+  awsproxy: #X-ray remote sampler
+    region: ${env:AWS_REGION}
+
+service:
+  extensions: [awsproxy,health_check]
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter,batch/logs]
+      exporters: [awscloudwatchlogs]
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter,filter/traces,tail_sampling,batch/traces]
+      exporters: [awsxray]
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter,batch/metrics]
+      exporters: [awsemf]
