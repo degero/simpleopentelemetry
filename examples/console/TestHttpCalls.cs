@@ -26,10 +26,13 @@ public class TestHttpCalls : ITestHttpCalls
         {
             _logger.LogInformation("\n📡 Demonstrating HTTP Client Instrumentation");
 
-            activity!.SetTag("custom.tag", "hello");
-            activity.SetStatus(ActivityStatusCode.Ok);
-            var activityEvent = new ActivityEvent("Work");
-            activity.AddEvent(activityEvent);
+            if (activity != null && activity.IsAllDataRequested == true)
+            {
+                activity!.SetTag("custom.tag", "hello");
+                activity.SetStatus(ActivityStatusCode.Ok);
+                var activityEvent = new ActivityEvent("Work");
+                activity.AddEvent(activityEvent);
+            }
         }
 
         using (var activity = ActivitySource.StartActivity("MakeHttpCalls"))

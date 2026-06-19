@@ -16,7 +16,7 @@ public class OtelEventListener : EventListener
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
         var message = eventData.Message != null && eventData.Payload?.Count > 0
-            ? string.Format(eventData.Message, eventData.Payload.ToArray())
+            ? Utils.SafeFormat(eventData.Message, eventData.Payload.ToArray())
             : eventData.Message ?? eventData.EventName;
 
         Console.WriteLine($"[OTel/{eventData.Level}] [{eventData.EventSource.Name}] {message}");

@@ -395,6 +395,7 @@ public class ExporterLoaderTests : IDisposable
     {
         "Trace:Exporters:0:Type": "AzureMonitor",
         "Trace:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
+        "Trace:Exporters:0:Options:SamplingRatio": "0.1",
         "Log:Exporters:0:Type": "AzureMonitor",
         "Log:Exporters:0:Options:ConnectionString": "InstrumentationKey=asdfasdf;IngestionEndpoint=https://asdfasdff.applicationinsights.azure.com/;LiveEndpoint=https://asdfasdf.livediagnostics.monitor.azure.com/;ApplicationId=asdfasdf",
         "Metric:Exporters:0:Type": "AzureMonitor",

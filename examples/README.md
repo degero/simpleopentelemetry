@@ -129,14 +129,14 @@ If you enable EFCore as mentioned before, you will see Entity framework and SqlC
 
 ## Using the sample with Azure
 
-
-### Azure Monitor  
+You can deploy this app to Azure by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/azure/) and following setup instructions there. Ensure you have an "UseSqlEfCore": "false" item and the "Sources": [] entry the same as the appsettings.Example.json entry.
 
 - Go to your Application Insights resource in Azure Portal
-- View traces in "Performance" or "Failures" sections  
-
+- Verify data is flowing using this KQL [Azure monitor exporter] (../README.md#azure-monitor-aspnetcore)
 
 ## Using the sample with AWS
+
+
 
 
 ## Using the sample with New Relic

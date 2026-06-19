@@ -37,7 +37,8 @@ public class DistroLoaderTests : IDisposable
     [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), """
     {
         "SimpleOpenTelemetry:DistroOptions:ConnectionString": "InstrumentationKey=asdfasdf;",
-        "SimpleOpenTelemetry:DistroOptions:Credential": "Azure.Identity.DefaultAzureCredential"
+        "SimpleOpenTelemetry:DistroOptions:Credential": "Azure.Identity.DefaultAzureCredential",
+        "SimpleOpenTelemetry:DistroOptions:SamplingRatio": "0.1"
     }
     """)]
     public void LoadDistro_WithDistroOptions_LogsSuccess_AndReturnsTrue(
@@ -82,6 +83,57 @@ public class DistroLoaderTests : IDisposable
         mockAssemblyExec.Verify(r => r.InvokeParameterless(It.IsAny<MethodInfo>(), It.IsAny<object>()),
             Times.Exactly(0));
 
+        var successEvent = _listener.Events.FirstOrDefault(e =>
+            e.Level == EventLevel.Verbose &&
+            e.Payload != null &&
+            e.Payload.Any(p => p?.ToString()?.Contains($"Registered OpenTelemetry Distro '{options.Distro}'") ?? false));
+        
+        var errorEvent = _listener.Events.Where(e =>
+            e.Level == EventLevel.Error);
+
+        Assert.NotNull(successEvent);
+        Assert.Empty(errorEvent);
+    }
+
+    
+    [Theory]
+    [InlineData(nameof(DistroEnum.AzureMonitorAspNetCore), """
+    {
+        "SimpleOpenTelemetry:DistroOptions:ConnectionString": "InstrumentationKey=asdfasdf;",
+        "SimpleOpenTelemetry:DistroOptions:SamplingRatio": "0.1"
+    }
+    """)]
+    public void LoadDistro_WithDistroOptions_DoesNotLogError_WhenOptionValueTypeCorrect(
+        string distroName,
+        string? optionsJson = null
+    )
+    {
+        // ARRANGE
+        Assert.Empty(_listener.Events);
+      
+        var target = new DistroLoader(_assemblyExec);
+        var options = new SimpleOpenTelemetryOptions
+        {
+            Distro = distroName
+        };
+
+        if (optionsJson is not null)
+        {
+            var distroOptions = new ConfigurationBuilder()
+            .AddInMemoryCollection(JsonSerializer.Deserialize<Dictionary<string, string?>>(optionsJson)!)
+            .Build()
+            .GetSection($"{SimpleOpenTelemetryOptions.SectionName}:DistroOptions");
+
+            options.DistroOptions = distroOptions;
+        }
+
+        var services = new ServiceCollection();
+        var otelBuilder = services.AddOpenTelemetry();
+        
+        // ACT
+        var foundConfig = target.LoadDistro(otelBuilder, options);
+
+        // ASSERT
         var successEvent = _listener.Events.FirstOrDefault(e =>
             e.Level == EventLevel.Verbose &&
             e.Payload != null &&

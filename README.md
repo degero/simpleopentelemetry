@@ -36,6 +36,11 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin ResourceDetector 'AssemblyVersion' (see [AssemblyVersion](#assemblyversion)). Overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
 - 'All signal' exporter option overridable at the signal level for exporter type
 
+---
+
+## Limitations
+
+- Complex types on options for components (eg Instrumentation, exporters etc) are not supported which may limit your ability to control some telemetry (eg. AspNetCoreInstrumentation sending GET /health telemetry). These can still be set via code if needed.
 
 ---
 
@@ -89,7 +94,7 @@ If you are in TLDR; mode, head over to the [example applications](./examples/) a
 
 SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/docs/specs/otel/error-handling/) as OpenTelemetry for error handling in that it 'MUST NOT throw unhandled exceptions at runtime.'. Building on that it will not throw any errors if a configuration does not work (eg config env var / files change) it will not prevent the app from running. Note that "SimpleOpenTelemetry-" prefixed events only occur at the app startup and will only emit if a listener is registered before starting.
 
-SimpleOpenTelemetry will throw exceptions for null parameters passed to it's registration methods. SimpleOpenTelemetry records any errors as diagnostics events (as OpenTelemetry does). These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples/) folder demonstrate listening to this and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
+SimpleOpenTelemetry will throw exceptions for null parameters passed to it's registration methods. SimpleOpenTelemetry records any errors as diagnostics events (as OpenTelemetry does). These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples/) folder demonstrate custom code listening to this and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
 
 Some options to listen to events if not using a code based event listener/console output in the examples:
 
@@ -114,8 +119,11 @@ dotnet-trace collect --providers "SimpleOpenTelemetry-Core:0xFFFFFFFF:5" -- dotn
 8. View events in the datafile created
 
 
-
 Information on collecting OpenTelemetry events: [OpenTelemetry Troubleshooting](https://opentelemetry.io/docs/languages/dotnet/troubleshooting/)
+
+You can also make use of OpenTelemetry's diagnostics writer. This writes any diagnostics to log files. You can place a OTEL_DIAGNOSTICS.json file in the apps working directory.
+[OpenTelemetry-dotnet self-diagnostics](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/README.md#self-diagnostics)
+
 
 ---
 
@@ -172,11 +180,12 @@ For local development with sensitive values, it is recommended to take advantage
 
 The OTEL_* environment variables / json config are partially supported (see below) and load in by default (as this is done by the underlying OpenTelemetry SDK registration) but for many components those settings can be defined/overridden explicitly for their signal type/functionality in the configuration file.
 
-Some useful OTEL_ environment variables you can make use of (* indicates a core recommended setting to set):  
+Some core and critical OTEL_ environment variables you can make use of (* indicates a core recommended setting to set):  
 
+- [OTEL_TRACES_SAMPLER/OTEL_TRACES_SAMPLER_ARG](https://opentelemetry.io/docs/languages/dotnet/sampling/#environment-variable-configuration)
 - [OTEL_SERVICE_NAME](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
 - [OTEL_RESOURCE_ATTRIBUTES](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
-- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar)
+- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) * contrary to spec, examplars are off by default due to performance cost.
 - [OTEL_SDK_DISABLED](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
 
 
@@ -185,6 +194,8 @@ Some useful OTEL_ environment variables you can make use of (* indicates a core 
  The OpenTelemetry Documentation [SDK Environment Variables](https://OpenTelemetry.io/docs/specs/otel/configuration/sdk-environment-variables) page is a specification not a reference for the dotnet implementation. Many of these are (as of april 2026) unsupported such as **OTEL_PROPAGATORS, OTEL_TRACES_EXPORTER, OTEL_LOGS_EXPORTER, OTEL_METRICS_EXPORTER** 
 > If you wish to make use of any of the environment variables in the spec but not above, check the [dotnet documentation to confirm it is implemented](https://OpenTelemetry.io/docs/languages/dotnet/getting-started/), or even quicker too dive into the [OpenTelemetry-dotnet repo](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main) to search.
 >
+
+When setting SimpleOpenTelemetry configuration as Environment variables use the __ seperator for the hierarchical structure eg SimpleOpenTelemetry:Trace:Options as SimpleOpenTelemetry__Trace__Options. See [MSLearn - configuration-keys-and-values](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#configuration-keys-and-values).
 
 ---
 
@@ -197,7 +208,7 @@ To get started, add a "SimpleOpenTelemetry" section to the root of your appsetti
 
 Similarly for the subsections "Metric/Trace/Log", OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and  subsequent exports etc) when the corresponding section exists. If at least on is not set it will not run AddOpenTelemetry() with your application.
 
-For a json configuration file, you can start with one of the pre-built ones in [](./example-configs/) or setup the top level config items and follow the next sections covering the items you can add:  
+For a json configuration file, you can start with a full pre-built configuration in [./example-configs/[aws/azure/gcp]](./example-configs/) or add in using snippets in [./example-configs/components](./example-configs/components) or setup the top level config items and follow the next sections covering the items you can add:  
 
 
 ```json
@@ -250,6 +261,18 @@ If what you need isn't available, you can build your own following the OpenTelem
 
 ---
 
+## Production use tips
+
+- If you are not sending telemetry to an OpenTelemetry Collector using tail-based sampling, ensure you always have a ratio based sampler set in *OTEL_TRACES_SAMPLER* with a *OTEL_TRACES_SAMPLER_ARG* or code, as traces can be costly. See [OpenTelemetry - Sampling production guidance  ](https://opentelemetry.io/docs/languages/dotnet/sampling/#production-guidance)
+
+- *OTEL_SERVICE_NAME* and *OTEL_RESOURCE_ATTRIBUTES* should always be set. This is best as Env vars for your deployed environments
+
+- Review the OpenTelemetry Best Practices doco for [Traces](https://opentelemetry.io/docs/languages/dotnet/traces/best-practices/), [Logs](https://opentelemetry.io/docs/languages/dotnet/logs/best-practices/) and [Metrics](https://opentelemetry.io/docs/languages/dotnet/metrics/best-practices/)
+
+- Review the OpenTelemetry dotnet doco for best practices [Tracesw](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
+
+---
+
 
 ## Configuration
 
@@ -279,7 +302,7 @@ In the case of SimpleOpenTelemetry, it is a library that will set up all signal 
 
 *IMPORTANT*: Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry or OpenTelemetry 'OTEL_' settings.
 
-For examples listing all possible options (in their current default) see the [example-configs/distro folder](./example-configs/distro/)
+For examples listing all possible options (in their current default) see the [example-configs/components/distro folder](./example-configs/components/distro/)
 
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](
 https://opentelemetry.io/ecosystem/distributions/)
@@ -289,7 +312,7 @@ https://opentelemetry.io/ecosystem/distributions/)
 
 *Important* This Distro only supports use with generic host WebApplication (does not support using with StandaloneApp.AddSimpleOpenTelemetry()). If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter) or for all signals [Azure Monitor Exporter extension](#azure-monitor-exporter-1). Note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
 
-This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors and more. If you want more control over your setup you can still use most (not all) features provided in the Distro (see the link below) via the other configuration item covered in the following sections. NOTE: Azure RBAC auth is not currently supported.
+This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. If you want more control over your setup you can still use most (not all) features provided in the Distro (see the link below) via the other configuration item covered in the following sections. NOTE: Azure RBAC auth is not currently supported.
 
 Documentation:  
 [GitHub Azure SDK - Azure.Monitor.OpenTelemetry.AspNetCore](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/README.md)  
@@ -299,6 +322,7 @@ Documentation:
 
 Nuget Package:
 `dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore`   
+`dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
 
 SimpleOpenTelemetry:Distro json:  
 
@@ -308,7 +332,7 @@ SimpleOpenTelemetry:Distro json:
 
 Configuration:  
 
-You must specify an Application Insights connection string, or use RBAC (by adding the 'Credential' field in DistroOptions). You can set the ConnectionString via: 'SimpleOpenTelemetry:DistroOptions:ConnectionString' or 'APPLICATIONINSIGHTS_CONNECTION_STRING'.
+You must specify an Application Insights connection string, or use RBAC (by adding the 'Credential' field in DistroOptions). You can set the ConnectionString via: 'SimpleOpenTelemetry:DistroOptions:ConnectionString'.
 It is recommended to set as using 'dotnet user-secrets' or as a secret setting in Azure. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
 
 SimpleOpenTelemetry:DistroOptions json:  
@@ -322,7 +346,21 @@ RBAC (only the key is needed in connectionstring, you can use this placeholder a
 }
 ```
 
+You can confirm your telemetry data is flowing with KQL:
+
+
+```KQL
+union requests, dependencies, traces, exceptions, customMetrics
+| where timestamp > ago(5m)
+| where sdkVersion contains "otel"
+| summarize count() by sdkVersion, itemType
+| order by itemType
+```
+
+
 Notes:  
+
+There's a lot of transformation to squeeze OTLP data into Azure Monitor's data structures. eg customMetrics has a '_APPRESOURCEPREVIEW_' entry with otel resource attributes. If you can sacrifice the benefits of this distro (see 'Why should I use the Azure Monitor OpenTelemetry Distro' above) and want to store the 'pure' OTLP data look at using an OTLP exporter.
 
 This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./examples/aspnetcore/Program.cs)
 
@@ -385,7 +423,7 @@ Any options for instrumentations can be placed in
 
 eg `SimpleOpenTelemetry:Trace:InstrumentationConfig:AWS:SuppressDownstreamInstrumentation = "true"`
 
-
+*IMPORTANT*: Complex types or Func<>/Action<> aren't supported on Options fields. It will NOT be possible to use filters to prevent instrumentation of specific scenarios for AspNetCore, HttpClient, SqlClient etc eg (GET /health). You can either add+configure the instrumentation manually in code after AddSimpleOpenTelemetry() or if using an otel collector use a filter there (this generates more telemetry traffic/processing however). 
 
 #### AspNetCore
 
@@ -405,7 +443,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
  "AspNetCore"
 ```
 
-#### HTTP
+#### HTTPClient
 
 Documentation: [HttpClient and HttpWebRequest instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/README.md)
 
@@ -563,7 +601,7 @@ You can set exporter options for all signals in "SimpleOpenTelemetry:ExporterOpt
 
 For a full list of all the supported exporters see [TraceExporterEnum / MetricExporterEnum / LogExporterEnum](./src/SimpleOpenTelemetry/Exporter/ExporterAssemblies.cs)
 
-For examples listing all possible options (in their current default) see the [example-configs/exporter folder](./example-configs/exporter/)
+For examples listing all possible options (in their current default) see the [example-configs/components/exporter folder](./example-configs/components/exporter/)
 
 #### OTLP exporter
 
@@ -591,6 +629,8 @@ SimpleOpenTelemetry:<SignalType>:Exporters[] json:
 { "type": "otlp", "options": {...} }
 ```
   
+// TODO list out all the options
+
 ---
 
 
@@ -682,15 +722,32 @@ Stability: Stable
 
 Documentation: [Azure Monitor Exporter client library for .NET README.md](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/README.md) 
 
-Options: mandatory (if not defined in SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString or APPLICATIONINSIGHTS_CONNECTION_STRING) 
+Options: mandatory (if not defined in top level SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString) 
 [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)   
 
-Notes: This exporter does not support Live Metrics, for this, use the distro if using AspNet Core or the [AzureMonitorExporter Extension](#azure-monitor-exporter-1). Also if you want all signals exported all with the same settings it is simpler to use the extension. This only utilizes most but not all of the [Azure Monitor AspNet Core Distro](#azure-monitor-aspnetcore) features.
+Notes: 
+
+There's a lot of transformation to squeeze OTLP data into Azure Monitor's data structures. eg customMetrics has a '_APPRESOURCEPREVIEW_' entry with otel resource attributes. If you want to store the 'pure' OTLP data look at using an OTLP exporter.
+
+This exporter does not support Live Metrics, for this, use the distro if using AspNet Core or the [AzureMonitorExporter Extension](#azure-monitor-exporter-1). Also if you want all signals exported all with the same settings it is simpler to use the extension. This only utilizes most but not all of the [Azure Monitor AspNet Core Distro](#azure-monitor-aspnetcore) features.
 
 RBAC access via the 'Credential' option is supported. See the example-config. You can set sampling options (it has builtin sampler setup, different to OTEL_TRACES_SAMPLER_* settings), and more in the options. 
 
+You can confirm your telemetry data is flowing with KQL:
+
+
+```KQL
+union requests, dependencies, traces, exceptions, customMetrics
+| where timestamp > ago(5m)
+| where sdkVersion contains "otel"
+| summarize count() by sdkVersion, itemType
+| order by itemType
+```
+
+
 Nuget Package:
 `dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
+`dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
 
 SimpleOpenTelemetry:<SignalType>:Exporters[] json:  
 
@@ -703,7 +760,9 @@ SimpleOpenTelemetry:<SignalType>:Exporters[] json:
 
 ### Resource Detectors
 
-Resource detectors are set under SimpleOpenTelemetry:Resource:Detectors[] string array.
+Resource detectors are set under SimpleOpenTelemetry:Resource:Detectors[] string array. These will process in the array order eg. 
+
+*IMPORTANT*: Detectors may override the resource attributes set by a preceding detector eg 'service.name' so it is recommended to read their documentation before adding.
 
 All the supported resource detectors are listed here [ResourceDetectorEnum](./src/SimpleOpenTelemetry/Resource/ResourceDetectorEnum.cs)
 
@@ -845,6 +904,30 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
  "azure"
  ```
 
+Notes:
+
+OTEL_SERVICENAME / service.name (and several OTEL_RESOURCE attributes), a core OTEL attribute will be overridden by the Azure's resource detector using the Azure resource's name and resource information. Information regarding which are set is in the above doco.
+
+It is possible to change by code.
+
+eg.
+
+```csharp
+var otelBuilder = builder.AddSimpleOpenTelemetry();
+var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
+if (!string.IsNullOrEmpty(serviceName)) {
+    otelBuilder.ConfigureResource(r => r.AddAttributes(new Dictionary<string, object>
+    {
+        ["service.name"] = serviceName
+    }));
+}
+```
+
+OR
+
+*USE WITH CAUTION*
+
+Add an `"envvar"` after this detector. This will 'rewrite' the attributes by taking values from OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME. Refer to the detector doco information on attributes it sets and ensure they are not in OTEL_RESOURCE_ATTRIBUTES.
 
 
 #### Google Cloud Platform
@@ -952,14 +1035,14 @@ For Azure users, sampling is built into the exporter setup/options.
 
 Stability: Alpha (as of April 2026)
 
-Notes: Currently unsupported due to irregular registration pattern requiring prebuilt resource
+Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. Requires setup in CloudWatch to support xray sampler settings
 
 Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
 Nuget Package:
 `dotnet add package OpenTelemetry.Sampler.AWS --prerelease`  
  
-SimpleOpenTelemetry:Samplers[] json:  
+SimpleOpenTelemetry:Trace:Sampler json:  
 
 ```json
  "aws"
@@ -998,13 +1081,13 @@ SimpleOpenTelemetry:BuilderExtensions[] json:
 
 ---
 
-#### AWS X-Ray Remote Sampler
+#### AWS X-Ray Trace ID Generator
 
 Stability: Stable
 
 Signal: Trace
 
-Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
+Documentation: [Tracing with AWS Distro for OpenTelemetry .Net SDK](https://github.com/ope  n-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
 
 Notes: This is commonly used with the AWS Xray Propagator as mentioned in README.md above.
 

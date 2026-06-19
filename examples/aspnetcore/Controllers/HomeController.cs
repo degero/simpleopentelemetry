@@ -41,10 +41,13 @@ public class HomeController : Controller
         // 2. SPAN → goes to Tempo
         using (var activity = _activitySource.StartActivity("DoSomeWork"))
         {
-            activity!.SetTag("custom.tag", "hello");
-            activity.SetStatus(ActivityStatusCode.Ok);
-            var activityEvent = new ActivityEvent("Work");
-            activity.AddEvent(activityEvent);
+            if (activity != null && activity.IsAllDataRequested == true)
+            {
+                activity.SetTag("custom.tag", "hello");
+                activity.SetStatus(ActivityStatusCode.Ok);
+                var activityEvent = new ActivityEvent("Work");
+                activity.AddEvent(activityEvent);
+            }
         }
 
         // 3. If enabled Use EF traces with the EFCore + SqlClient instrumentations

@@ -12,7 +12,6 @@
   "OTEL_SERVICE_NAME": "console-simpleopentelemetry",
   "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
   "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-  "OTEL_METRICS_EXEMPLAR_FILTER": "trace_based",
   "SimpleOpenTelemetry": {
     "Trace": {
       "Instrumentations": [
