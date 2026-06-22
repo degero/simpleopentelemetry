@@ -1,9 +1,9 @@
 {
-  "APPLICATIONINSIGHTS_STATSBEAT_DISABLED": "true",
   "SimpleOpenTelemetry": {
     "ExporterOptions": {
       "AzureMonitor": {
         "Credential": "Azure.Identity.DefaultAzureCredential",
+        "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
         "SamplingRatio": "1.0",
         "TracesPerSecond": "5.0",
         "Version": "v2_1",
@@ -15,19 +15,13 @@
       }
     },
     "Trace": {
-       "Exporters": [
-        { "type": "AzureMonitor" }
-      ]
+       "Exporters": [ { "type": "AzureMonitor" } ]
     },
     "Metric": {
-       "Exporters": [
-        { "type": "AzureMonitor" }
-      ]
+       "Exporters": [ { "type": "AzureMonitor" } ]
     },
     "Log": {
-       "Exporters": [
-        { "type": "AzureMonitor" }
-      ]
+       "Exporters": [ { "type": "AzureMonitor" } ]
     }
   }
 }

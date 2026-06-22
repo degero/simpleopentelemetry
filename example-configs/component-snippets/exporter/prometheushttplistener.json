@@ -1,0 +1,16 @@
+{
+  "SimpleOpenTelemetry": {
+    "Metric": {
+      "Exporters": [
+        {
+          "type": "prometheushttplistener",
+          "options": {
+            "ScrapeEndpointPath": "prometheus",
+            "DisableTotalNameSuffixForCounters": "true",
+            "UriPrefixes": [ "http://127.0.0.1:9090/" ],
+          }
+        }
+      ]
+    }
+  }
+}

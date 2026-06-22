@@ -1,0 +1,12 @@
+{
+  "SimpleOpenTelemetry": {
+    "Resource": {
+      "Detectors": [ "aws" ],
+      "DetectorConfig": {
+        "AWS": {
+          "SemanticConventionVersion": "V1_29_0"
+        }
+      }
+    }
+  }
+}

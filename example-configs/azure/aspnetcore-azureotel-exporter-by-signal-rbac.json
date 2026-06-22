@@ -1,0 +1,45 @@
+{
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yournamespace,deployment.environment.name=dev",
+  "OTEL_TRACES_SAMPLER":"parentbased_traceidratio",
+  "OTEL_TRACES_SAMPLER_ARG":"0.1", 
+  "SimpleOpenTelemetry": {
+    "ExporterOptions": {
+      "AzureMonitor": {
+        "Credential": "Azure.Identity.DefaultAzureCredential",
+        "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+        "SamplingRatio": "0.1",
+        "EnableTraceBasedLogsSampler": "false"
+      }
+    },
+    "Trace": {
+      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Instrumentations": [
+        "HttpClient",
+        "AspNetCore",
+        "SqlClient",
+        "EFCore"
+      ],
+      "Settings": {
+        "SetErrorStatusOnException": true
+      },
+      "Sources": [ "yourappnamespace.*" ]
+    },
+    "Metric": {
+      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Instrumentations": [
+        "HttpClient",
+        "AspNetCore"
+      ]
+    },
+    "Log": {
+      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Settings": {
+        "IncludeFormattedMessage": true
+      }
+    },
+    "Resource": {
+      "Detectors": [ "azure" ]
+    }
+  }
+}

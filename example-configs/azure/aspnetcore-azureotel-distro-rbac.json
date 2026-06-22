@@ -1,0 +1,22 @@
+{
+  "OTEL_SERVICE_NAME": "unknown",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=unknown,deployment.environment.name=dev",
+  "SimpleOpenTelemetry": {
+    "Distro": "AzureMonitorAspNetCore",
+    "DistroOptions": {
+      "Credential": "Azure.Identity.DefaultAzureCredential",
+      "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+      "SamplingRatio": "0.1",
+      "EnableTraceBasedLogsSampler": "false"
+    },
+    "Trace": {
+      "Instrumentations": [
+        "EFCore"
+      ],
+      "Settings": {
+        "SetErrorStatusOnException": true
+      },
+      "Sources": [ "yourappnamespace.*" ]
+    }
+  }
+}

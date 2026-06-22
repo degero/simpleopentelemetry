@@ -1,5 +1,4 @@
 {
-  "APPLICATIONINSIGHTS_STATSBEAT_DISABLED": "true",
   "SimpleOpenTelemetry": {
     "Distro": "AzureMonitorAspNetCore",
     "DistroOptions": {

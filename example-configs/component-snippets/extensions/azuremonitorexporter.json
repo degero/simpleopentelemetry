@@ -1,7 +1,6 @@
 {
-  "APPLICATIONINSIGHTS_STATSBEAT_DISABLED": "true",
   "SimpleOpenTelemetry": {
-     "BuilderExtensions": [
+    "BuilderExtensions": [
       { 
         "Type": "AzureMonitorExporter",
         "Options": {
@@ -18,3 +17,4 @@
       }
     ]
   }
+}

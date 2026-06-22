@@ -1,5 +1,0 @@
-{
-    "Traces":  "https://<n>-dce-<id>.<region>.ingest.monitor.azure.com/.../otlp/v1/traces",
-    "Metrics": "https://<n>-dce-<id>.<region>.metrics.ingest.monitor.azure.com/.../otlp/v1/metrics",
-    "Logs":    "https://<n>-dce-<id>.<region>.ingest.monitor.azure.com/.../otlp/v1/logs"
-}
