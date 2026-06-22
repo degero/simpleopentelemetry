@@ -86,6 +86,8 @@ The configuration 'simpleopentelemetry-config/appsettings.DirectExport.json' all
 
 ## Run locally using AWS otel collector
 
+Note: the 'AWSSDK*' packages are not needed for this type of app, it is only for direct export example above and can be removed with the code in Program.cs to reduce the app footprint.
+
 The configuration 'simpleopentelemetry-config/appsettings.OtelCollector.json' requires either running the app and collector in the /localdev-docker/ or you can debug the app locally and remove the app service from the docker-compose.yml. 
 
 1. Create a log group and logstream in the loggroup (Cloudwatch > Log Management) matching your log_group_name setting and log_stream_name to match what is in /localdev-docker/.env, adjust names if you want something different.
@@ -123,6 +125,7 @@ aws ec2 describe-spot-price-history \
   --region <yourregion> \
   --max-results 5
 ```
+
 
 ## Refining your ECS environment
 
