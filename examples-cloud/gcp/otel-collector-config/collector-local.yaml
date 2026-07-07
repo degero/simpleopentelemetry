@@ -1,0 +1,118 @@
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+  googleclientauth:
+    project: ${GOOGLE_CLOUD_PROJECT}
+    quota_project: ${GOOGLE_CLOUD_PROJECT}
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  batch:
+    send_batch_max_size: 200
+    send_batch_size: 200
+    timeout: 5s
+  memory_limiter:
+    check_interval: 1s
+    limit_percentage: 65
+    spike_limit_percentage: 20
+  transform/fix_severity:
+    log_statements: # Normalise .Net ILogger severity to work with GCP
+      - set(log.severity_text, "TRACE") where log.severity_text == "Trace"
+      - set(log.severity_text, "DEBUG") where log.severity_text == "Debug"
+      - set(log.severity_text, "INFO")  where log.severity_text == "Information"
+      - set(log.severity_text, "WARN")  where log.severity_text == "Warning"
+      - set(log.severity_text, "ERROR") where log.severity_text == "Error"
+      - set(log.severity_text, "FATAL") where log.severity_text == "Critical"
+  resource/required_labels:
+    attributes:
+      - key: cloud.region # only needed for local dev
+        value: ${GOOGLE_CLOUD_REGION}
+        action: upsert
+      - key: service.instance.id # only needed for local dev
+        value: otel-local-dev
+        action: upsert
+      - key: gcp.project_id
+        value: ${GOOGLE_CLOUD_PROJECT}
+        action: upsert
+ 
+  # This transform processor avoids ingestion errors if metrics contain datapoint.attributes with names that are reserved for the prometheus_target resource.
+  transform/collision:
+    metric_statements:
+      - set(datapoint.attributes["exported_location"], datapoint.attributes["location"])
+      - delete_key(datapoint.attributes, "location")
+      - set(datapoint.attributes["exported_cluster"], datapoint.attributes["cluster"])
+      - delete_key(datapoint.attributes, "cluster")
+      - set(datapoint.attributes["exported_namespace"], datapoint.attributes["namespace"])
+      - delete_key(datapoint.attributes, "namespace")
+      - set(datapoint.attributes["exported_job"], datapoint.attributes["job"])
+      - delete_key(datapoint.attributes, "job")
+      - set(datapoint.attributes["exported_instance"], datapoint.attributes["instance"])
+      - delete_key(datapoint.attributes, "instance")
+      - set(datapoint.attributes["exported_project_id"], datapoint.attributes["project_id"])
+      - delete_key(datapoint.attributes, "project_id")
+  # Optional: enables structured logging (jsonPayload) for querying log parameters when
+  # your app otel sdk logging setting 'IncludeFormattedMessage' is false.
+  # Eg. message will have: 'message {parameter}' and carried over to jsonPayload.message
+  # https://cloud.google.com/logging/docs/structured-logging
+  transform/conditional_logs_structured:
+    log_statements:
+    - context: log
+      conditions:
+       - IsMatch(body, ".*\\{[^}]+\\}.*")
+      statements:
+      - set(attributes["message"], body)
+      - set(body, attributes)
+  # When your app otel sdk logging setting 'IncludeFormattedMessage' is true.
+  # Eg. message will have: 'message the-parameter-value' nd carried over to jsonPayload.message
+  # Note the '{OriginalFormat}' field is copied over to the jsonPayload if you need to query by that
+  transform/conditional_logs_structured_fromformatted:
+    log_statements:
+    - context: log
+      conditions:
+        - attributes["{OriginalFormat}"] != nil
+      statements:
+        - set(attributes["message"], body)
+        - set(body, attributes)
+
+exporters:
+  otlp_http/google:
+    encoding: proto
+    endpoint: https://telemetry.googleapis.com
+    auth:
+      authenticator: googleclientauth
+  googlecloud:
+    project: ${GOOGLE_CLOUD_PROJECT}
+    log:
+      default_log_name: ${GOOGLE_CLOUD_LOG_NAME}
+  googlemanagedprometheus:
+    project: ${GOOGLE_CLOUD_PROJECT}
+
+service:
+  extensions: [health_check, googleclientauth]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter,resource/required_labels,batch]
+      exporters: [otlp_http/google]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter,resource/required_labels,transform/fix_severity,batch]
+      exporters: [otlp_http/google] # Legacy exporter - 'googlecloud'
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter,resource/required_labels,transform/collision,batch]
+      exporters: [otlp_http/google] # Legacy exporter - 'googlemanagedprometheus'
+  telemetry:
+    metrics:
+      readers:
+        - periodic:
+            exporter:
+              otlp:
+                protocol: grpc
+                endpoint: http://otel:4317
+                insecure: true
