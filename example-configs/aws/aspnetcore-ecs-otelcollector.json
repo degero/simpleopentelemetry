@@ -11,7 +11,7 @@
     },
     "Log": {
       "Exporters": [ { "type": "otlp" } ],
-      "Options": {
+      "Settings": {
         "IncludeFormattedMessage": "true"
       }
     },

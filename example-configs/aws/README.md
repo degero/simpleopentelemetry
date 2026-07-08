@@ -13,10 +13,10 @@ AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs
 ## How to use
 
 1. Copy `aspnetcore-ecs-otelcollector.json` into your app as `appsettings.Development.json` or `appsettings.Production.json`.
-2. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, region, and endpoint settings for your environment.
-3. Ensure the required AWS/OpenTelemetry packages are installed in your app.
-4. Ensure AWS Cloudwatch resources are setup
-
+1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, region, and endpoint settings for your environment.
+1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
+1. Ensure AWS Cloudwatch resources are setup
+1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
 For a full working application and infrastructure example, see:
 
 - `examples-cloud/aws/ecs/README.md`
@@ -26,7 +26,7 @@ For a full working application and infrastructure example, see:
 Run these in your app project folder:
 
 ```
-dotnet add package SimpleOpenTelemetry --prerelease
+dotnet add package SimpleOpenTelemetry
 dotnet add package OpenTelemetry.Instrumentation.AWS
 dotnet add package OpenTelemetry.Instrumentation.AspNetCore
 dotnet add package OpenTelemetry.Instrumentation.Http
