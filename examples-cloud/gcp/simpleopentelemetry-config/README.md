@@ -2,7 +2,7 @@
 
 Included in these files are the minimum recommended resource attributes and tracing set under `SimpleOpenTelemetry:Trace:Sources` for an dotnet app with the root namespace `soteltestgcp`. Adjust these as suited to your app name / namespace / version / deployment env.
 
-See information in [otelj-collector-config/README.md](../otel-collector-config/README.md) for specific constraints in GCP that affect app telemetry collection (eg. Cloud Run's automatic tracing / sampling)
+See information in [../README.md](../README.md) and [otelj-collector-config/README.md](../otel-collector-config/README.md) for google environment setup and permisions as well as specific constraints in GCP that affect app telemetry collection (eg. Cloud Run's automatic tracing / sampling)
 
 # appsettings.OtelCollector.json
 
@@ -27,6 +27,7 @@ OpenTelemetry.Instrumentation.AspNetCore
 OpenTelemetry.Instrumentation.Http
 OpenTelemetry.Resources.Gcp
 ```
+
 
 It also requires custom code which you can see in the example [app/Program.cs](../app/Program.cs). It configures telemetry key adjustments to work correctly with Google Observability as done by the opentelemetry collector configs in the [otel-collector-config](../otel-collector-config/) folder.
 

@@ -84,15 +84,6 @@ if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.I
     }
 }
 
-
-// var ratio = builder.Configuration.GetValue<double>("TracingSampleRatio", 1.0);
-
-// otelBuilder.WithTracing(t => t.SetSampler(new ParentBasedSampler(
-//     rootSampler: new TraceIdRatioBasedSampler(ratio),
-//     remoteParentSampled: new AlwaysOnSampler(),
-//     remoteParentNotSampled: new TraceIdRatioBasedSampler(ratio)
-// )));
-
 // If you wish to use the default 'parent based' sampling, enabling this
 // will stop the issue introduced by Cloud Run injecting a parent span / making sampling decisions
 // which affect trace settings / sampling settings in app configuration.

@@ -162,10 +162,6 @@ resource "google_cloud_run_v2_service" "app" {
         name  = "GOOGLE_CLOUD_PROJECT"
         value = var.gcp_project_id
       }
-      # env {
-      #   name  = "GCP_REGION"
-      #   value = var.gcp_region
-      # }
       env {
         name  = "OTEL_RESOURCE_ATTRIBUTES"
         value = var.otel_resource_attributes
@@ -174,14 +170,6 @@ resource "google_cloud_run_v2_service" "app" {
         name  = "GOOGLE_CLOUD_LOG_NAME"
         value = var.gcp_log_name
       }
-      # env {
-      #   name  = "OTEL_TRACES_SAMPLER_ARG"
-      #   value = "1.0"
-      # }
-      # env {
-      #   name  = "OTEL_TRACES_SAMPLER"
-      #   value = "parentbased_always_on"
-      # }
       env {
         name  = "EnableOtelEventListeners"
         value = "${var.enable_otel_event_listeners}"
@@ -229,10 +217,6 @@ resource "google_cloud_run_v2_service" "app" {
         image = var.otel_image
         args  = ["--config=/etc/otel/otel-collector-config.yaml"]
 
-        # ports {
-        #   container_port = 80
-        # }
-
         env {
           name  = "GOOGLE_CLOUD_PROJECT"
           value = var.gcp_project_id
@@ -241,10 +225,6 @@ resource "google_cloud_run_v2_service" "app" {
           name  = "GOOGLE_CLOUD_LOG_NAME"
           value = var.gcp_log_name
         }
-        # env {
-        #   name  = "GCP_REGION"
-        #   value = var.gcp_region
-        # }
         volume_mounts {
           name       = "otel-config"
           mount_path = "/etc/otel"
