@@ -30,7 +30,7 @@ builder.Services.AddHealthChecks();
 
 var otelBuilder = builder.AddSimpleOpenTelemetry();
 
-// GCP Direct export requires bearer token authentication
+// GCP Direct export requires bearer token authentication - default to sidecar if no endpoint set
 var otlpEndpoint = builder.Configuration.GetValue("OTEL_EXPORTER_OTLP_ENDPOINT","")?.TrimEnd('/') ?? "https://telemetry.googleapis.com";
 if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.InvariantCultureIgnoreCase))
 {
@@ -61,7 +61,7 @@ if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.I
             options.Protocol = protocol;
             options.Endpoint = new Uri(otlpEndpoint + "/v1/logs");
             options.HttpClientFactory = bearerTokenProvider.CreateHttpClientFactory();
-        }).AddProcessor(new GcpLogNameProcessor(logName)) // Allow setting log name and fix severity as the collector-cloudrun-otlpexport.yaml does
+        }).AddProcessor(new GcpLogNameProcessor(logName)) // Allow setting log name and fix severity as the otelcollector-cloudrun-otlpexport.yaml does
           .AddProcessor(new GcpLogSeverityTextProcessor())
         );
 

@@ -189,7 +189,7 @@ In the [infra](./infra/) directory
 
 1. Cloud Run injects tracing and has sampling that cannot be configured which impacts tracing negatively. To verify all your traces, set the 'demonstration' `ignore_cloudrun_trace_sampling` terraform variable true . See [otel-collector-config/README.md](./otel-collector-config/README.md) and the notes in the app [app/Program.cs](./app/Program.cs) for further detail.
 
-1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/collector-cloudrun-otlpexport.yaml](./otel-collector-config/collector-cloudrun-otlpexport.yaml) or [otel-collector-config/collector-cloudrun-legacyexport.yaml](./otel-collector-config/collector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` beside the terraform.
+1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/otelcollector-cloudrun-otlpexport.yaml](./otel-collector-config/otelcollector-cloudrun-otlpexport.yaml) or [otel-collector-config/otelcollector-cloudrun-legacyexport.yaml](./otel-collector-config/otelcollector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` beside the terraform.
 
 1. Deploy the terraform:
 

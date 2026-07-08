@@ -1,14 +1,18 @@
-# AWS AppSettings Configs
+# SimpleOpenTelemetry Appsettings Configs for Google Cloud Platform
 
 This folder contains Google Cloud Platform focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-cloudrun-collectorsidecar.json`: Base appsettings for ASP.NET Core apps that send telemetry via a 'Google Built' Google distro for OpenTelemetry collector sidecar. See the [example app](../../examples-cloud/gcp/cloudrun/) for how to use this config in AWS.
+- `aspnetcore-cloudrun-collectorsidecar.json`: Base appsettings for ASP.NET Core apps that send telemetry via a 'Google Built' Google distro for OpenTelemetry collector sidecar. See the [example app README](../../examples-cloud/gcp/cloudrun/README.md) for how to use this config in Google and confiugre the sidecar.
 
 ## How to use
 
-With an existing / new aspnetcore app:
+See the [full working example](../../examples-cloud/gcp/cloudrun/) with application, permissions, collector config (including for local docker use) and infrastructure. This also covers google observability constraints and quirks from a normal standards. 
+
+OR
+
+with an existing / new aspnetcore app:
 
 1. Copy the above file into your app as `appsettings.Development.json` or `appsettings.Production.json`.
 1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, namespace, version, environment etc.
@@ -17,15 +21,10 @@ With an existing / new aspnetcore app:
 1. If running locally, ensure you are logged in with google cloud cli
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
 
-For a full working application, permissions, collector config (including for local docker use) and infrastructure example, see:
-
-- `examples-cloud/aws/cloudrun/README.md`
-
-This also covers google observability constraints and quirks from a normal standards.
 
 ## Required package install commands
 
-If you dont need aspnetcore or httpclient metrics / traces, remove from your SimpleOpenTelemetry config and omit those packages below.
+If you don't need aspnetcore or httpclient metrics / traces, remove from your SimpleOpenTelemetry config and omit those packages below.
 
 Run these in your app project folder:
 
