@@ -53,10 +53,11 @@ Create a project:
 gcloud projects create soteltest --name="SotelTest"
 ```
 
-Set active project and login for ADC (Google Application Default Credentials):
+Set active project, enable billing (or on [web console](https://console.cloud.google.com/billing/linkedaccount?project=soteltest), request who controls billing to do so) and login for ADC (Google Application Default Credentials):
 
 ```
 gcloud config set project soteltest
+gcloud billing projects link soteltest --billing-account=<yourbillingaccoutid>
 gcloud auth application-default login
 gcloud auth application-default set-quota-project soteltest
 ```
@@ -67,26 +68,19 @@ gcloud services enable logging.googleapis.com telemetry.googleapis.com monitorin
 ```
 
 If running the app locally (direct or with collector on Docker)
-```sh
 
-PROJECT_ID=soteltest
-USER_EMAIL=yourgoogleconsoleaccount@email.com
+```powershell
+$Env:PROJECT_ID="soteltest"
+$Env:USER_EMAIL="yourgoogleconsoleaccount@email.com"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="user:$USER_EMAIL" \
-  --role="roles/monitoring.metricWriter"
+gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/monitoring.metricWriter"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="user:$USER_EMAIL" \
-  --role="roles/cloudtrace.agent"
+gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/cloudtrace.agent"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="user:$USER_EMAIL" \
-  --role="roles/logging.logWriter"
+gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/logging.logWriter"
 
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-  --member="user:$USER_EMAIL" \
-  --role="roles/serviceusage.serviceUsageConsumer"
+gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/serviceusage.serviceUsageConsumer"
+
 ```
 
 <br>
@@ -113,7 +107,7 @@ In the [app](./app/) directory:
 1. In `appsettings.Development.json` adjust the `OTEL_RESOURCE_ATTRIBUTES` value for `gcp.project_id=soteltest,service.instance.id=otel-local-dev,location=us-east1` eg. if using a different projectid (shortname), or location or want a different resource instance id. You can also change the `GOOGLE_CLOUD_LOG_NAME` if you want this different.
 1. Run the app: `dotnet run`
 1. Navigate to [http://localhost:5195](http://localhost:5195) and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default.
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
 
 <br>
 
@@ -139,7 +133,7 @@ In the [app](./app/) directory:
 In the [localdev-docker](./localdev-docker/) directory:
 
 1. Copy [localdev-docker/.env](./localdev-docker/.env.example) to `.env` file
-1. Verify values for `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_REGION` related to your project. Set `GCLOUD_CONFIG_DIR` to where gcloud cli stores its files, specifically `application_default_credentials.json`
+1. Verify values for `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_REGION` and `OTEL_RESOURCE_ATTRIBUTES` related to your project id / region. Set `GCLOUD_CONFIG_DIR` to where gcloud cli stores its files, specifically `application_default_credentials.json`
 1. Run:
 
 ```powershell
@@ -148,7 +142,7 @@ In the [localdev-docker](./localdev-docker/) directory:
 
 1. Check in your docker that the otel container logs show `Everything is ready. Begin running and processing data.` as it may take a moment to start up.
 1. Open `http://localhost:8080` and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default.
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
 
 <br>
 
@@ -191,7 +185,7 @@ In the [infra](./infra/) directory
 
 1. Based on the app configuration you chose copy [terraform.tfvars.directexportexample](./infra/terraform.tfvars.directexportexample) or [terraform.tfvars.sidecarexample](./infra/terraform.tfvars.sidecarexample) to `terraform.tfvars` 
 
-1. Update `terraform.tfvars` file `app_image` with your image '`ghcr.io/username/[yourtag]`', set `region` to your project region and `project_id` if it is not '`soteltest`'.
+1. Update `terraform.tfvars` file `app_image` with your image '`ghcr.io/username/[yourtag]`', set `region` to your project region and `project_id`/`otel_resource_attributes` if project is not '`soteltest`'.
 
 1. Cloud Run injects tracing and has sampling that cannot be configured which impacts tracing negatively. To verify all your traces, set the 'demonstration' `ignore_cloudrun_trace_sampling` terraform variable true . See [otel-collector-config/README.md](./otel-collector-config/README.md) and the notes in the app [app/Program.cs](./app/Program.cs) for further detail.
 
@@ -206,7 +200,13 @@ terraform apply
 ```
 
 1. Use `service_url` output to navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default.
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
+
+
+**Troubleshooting**:
+
+- Direct export may have issues getting the ADC `Your default credentials were not found.` as the credentials have not propagated yet. Adding a new env var to the app in main.tf and running terraform apply will restart it. As direct export is just a proof of concept and not recommended for production it has not been resolved.
+
 
 <br>
 
@@ -215,8 +215,16 @@ terraform apply
 In the [infra](./infra/) directory
 
 ```powershell
-cd infra
 terraform destroy
+```
+
+## Cleanup the Google cloud project
+
+If you don't having billing access, request who does to unlink before delete
+
+```
+gcloud billing projects unlink soteltest
+gcloud projects delete soteltest
 ```
 
 <br>

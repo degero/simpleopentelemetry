@@ -29,6 +29,21 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://localhost:5056"
       }
+    },
+    {
+      "name": ".NET: examples-cloud/gcp/cloudrun",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: examples-cloud/gcp/cloudrun",
+      "program": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app/bin/Debug/net10.0/soteltestgcp.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5195"
+      }
     }
   ],
   "compounds": [
