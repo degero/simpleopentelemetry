@@ -166,6 +166,7 @@ In the [app](./app/) directory:
 
 ```
 {
+  "EnableOtelEventListeners": "true",
   "Logging": {
     "LogLevel": {
       "Default": "Trace"

@@ -79,3 +79,8 @@ variable "sidecar_memory" {
   type    = string
   default = "256Mi"
 }
+
+variable "collector_go_memory_limit" {
+  type    = string
+  default = "112MiB" # This should be 80% of planned hard limit
+}

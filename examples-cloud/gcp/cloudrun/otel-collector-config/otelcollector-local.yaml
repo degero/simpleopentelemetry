@@ -9,7 +9,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4317
+        endpoint: 0.0.0.0:4319
 
 processors:
   batch:
@@ -39,7 +39,27 @@ processors:
       - key: gcp.project_id
         value: ${GOOGLE_CLOUD_PROJECT}
         action: upsert
- 
+  filter/self-metrics: # Filter to items for alerting and basic monitoring - exporter fail metrics only emit on failure
+    error_mode: ignore # Sample alerts / dash (note some meters are custom/outdated) on https://github.com/monitoringartist/opentelemetry-collector-monitoring
+    metrics:
+      metric:
+        - 'IsMatch(name, "^scrape_")'
+        - 'IsMatch(name, "^otelcol_") and
+            not (
+              name == "otelcol_receiver_refused_spans_total" or
+              name == "otelcol_receiver_refused_metric_points_total" or
+              name == "otelcol_receiver_refused_log_records_total" or
+              name == "otelcol_exporter_enqueue_failed_spans_total" or
+              name == "otelcol_exporter_enqueue_failed_metric_points_total" or
+              name == "otelcol_exporter_enqueue_failed_log_records_total" or
+              name == "otelcol_exporter_send_failed_log_records_total" or
+              name == "otelcol_exporter_send_failed_spans_total" or
+              name == "otelcol_exporter_send_failed_metric_points_total" or
+              name == "otelcol_exporter_queue_size" or
+              name == "otelcol_exporter_queue_capacity" or
+              name == "otelcol_process_memory_rss_bytes" or
+              name == "otelcol_process_cpu_seconds_total" or
+              name == "otelcol_process_uptime_seconds_total")'
   # This transform processor avoids ingestion errors if metrics contain datapoint.attributes with names that are reserved for the prometheus_target resource.
   transform/collision:
     metric_statements:
@@ -82,15 +102,19 @@ processors:
 exporters:
   otlp_http/google:
     encoding: proto
-    endpoint: https://telemetry.googleapis.com
-    auth:
-      authenticator: googleclientauth
+    endpoint: http://host.docker.internal:4318
   googlecloud:
     project: ${GOOGLE_CLOUD_PROJECT}
     log:
       default_log_name: ${GOOGLE_CLOUD_LOG_NAME}
   googlemanagedprometheus:
     project: ${GOOGLE_CLOUD_PROJECT}
+  debug/metrics:
+    verbosity: detailed
+  debug/traces:
+    verbosity: detailed
+  debug/logs:
+    verbosity: detailed
 
 service:
   extensions: [health_check, googleclientauth]
@@ -108,11 +132,14 @@ service:
       processors: [memory_limiter,resource/required_labels,transform/collision,batch]
       exporters: [otlp_http/google] # Legacy exporter - 'googlemanagedprometheus'
   telemetry:
+    resource:
+        service.name: opentelemetry-collector/metrics
     metrics:
       readers:
         - periodic:
+            interval: 10000
             exporter:
               otlp:
                 protocol: grpc
-                endpoint: http://otel:4317
+                endpoint: localhost:4319
                 insecure: true

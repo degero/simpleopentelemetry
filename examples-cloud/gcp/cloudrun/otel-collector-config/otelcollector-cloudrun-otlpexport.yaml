@@ -1,3 +1,4 @@
+# Tested with google-cloud-opentelemetry-collector/otelcol-google:0.151.0
 # This configuration is based off GCP samples
 # https://github.com/GoogleCloudPlatform/opentelemetry-operations-collector/blob/v0.151.0/google-built-opentelemetry-collector/docs/examples/configuration/config-standard.yaml
 # https://github.com/GoogleCloudPlatform/golang-samples/blob/8d0adc7d04866c0f870c7964654bf7af49bf4c7f/run/custom-metrics/collector/collector-config.yaml
@@ -14,7 +15,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-
+          
 processors:
   batch:
     # Based on googles example collector settings
@@ -92,11 +93,27 @@ processors:
           IsMatch(attributes["url.full"], ".*(/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.route"], ".*(/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.url"], ".*(/healthcheck|/health|/metrics).*")
-  filter/self-metrics: # Filter to kust the essential of the collectors 60+ metrics
-    error_mode: ignore
+  filter/self-metrics: # Filter to items for alerting and basic monitoring  - exporter fail metrics only emit on failure
+    error_mode: ignore # Sample alerts / dash (note some meters are custom/outdated) on https://github.com/monitoringartist/opentelemetry-collector-monitoring
     metrics:
       metric:
-        - 'IsMatch(name, "^otelcol_") and not (name == "otelcol_process_uptime" or name == "otelcol_process_memory_rss" or name == "otelcol_grpc_io_client_completed_rpcs")'
+        - 'IsMatch(name, "^scrape_")'
+        - 'IsMatch(name, "^otelcol_") and
+            not (
+              name == "otelcol_receiver_refused_spans" or
+              name == "otelcol_receiver_refused_metric_points" or
+              name == "otelcol_receiver_refused_log_records" or
+              name == "otelcol_exporter_enqueue_failed_spans" or
+              name == "otelcol_exporter_enqueue_failed_metric_points" or
+              name == "otelcol_exporter_enqueue_failed_log_records" or
+              name == "otelcol_exporter_send_failed_log_records" or
+              name == "otelcol_exporter_send_failed_spans" or
+              name == "otelcol_exporter_send_failed_metric_points" or
+              name == "otelcol_exporter_queue_size" or
+              name == "otelcol_exporter_queue_capacity" or
+              name == "otelcol_process_memory_rss" or
+              name == "otelcol_process_cpu_seconds" or
+              name == "otelcol_process_uptime")'
   tail_sampling: # For use when running a centralised collector on cloud run
     # How long to wait, after the first span of a trace arrives, before
     # deciding whether to keep it. Must be long enough for the slowest
@@ -150,11 +167,14 @@ service:
       processors: [memory_limiter,filter/self-metrics,resourcedetection,resource/required_labels,transform/collision,batch]
       exporters: [otlp_http/google]
   telemetry:
+    resource:
+        service.name: opentelemetry-collector/metrics
     metrics:
       readers:
         - periodic:
+            interval: 10000
             exporter:
               otlp:
                 protocol: grpc
-                endpoint: http://localhost:4317
+                endpoint: localhost:4317
                 insecure: true

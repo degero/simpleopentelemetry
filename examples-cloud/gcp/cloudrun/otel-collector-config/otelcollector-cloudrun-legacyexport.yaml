@@ -1,3 +1,4 @@
+# Tested with google-cloud-opentelemetry-collector/otelcol-google:0.151.0
 # This configuration is based off GCP samples
 # https://github.com/GoogleCloudPlatform/opentelemetry-operations-collector/blob/v0.151.0/google-built-opentelemetry-collector/docs/examples/configuration/config-standard.yaml
 # https://github.com/GoogleCloudPlatform/golang-samples/blob/8d0adc7d04866c0f870c7964654bf7af49bf4c7f/run/custom-metrics/collector/collector-config.yaml
@@ -14,7 +15,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-
+          
 processors:
   batch:
     # batch metrics before sending to reduce API usage
@@ -87,6 +88,27 @@ processors:
           IsMatch(attributes["url.full"], ".*(/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.route"], ".*(/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.url"], ".*(/healthcheck|/health|/metrics).*")
+  filter/self-metrics: # Filter to items for alerting and basic monitoring  - exporter fail metrics only emit on failure
+    error_mode: ignore # Sample alerts / dash (note some meters are custom/outdated) on https://github.com/monitoringartist/opentelemetry-collector-monitoring
+    metrics:
+      metric: # legacy prometheus export will put suffixes on these when you view in google observability UI  
+        - 'IsMatch(name, "^scrape_")'
+        - 'IsMatch(name, "^otelcol_") and
+            not (
+              name == "otelcol_receiver_refused_spans" or
+              name == "otelcol_receiver_refused_metric_points" or
+              name == "otelcol_receiver_refused_log_records" or
+              name == "otelcol_exporter_enqueue_failed_spans" or
+              name == "otelcol_exporter_enqueue_failed_metric_points" or
+              name == "otelcol_exporter_enqueue_failed_log_records" or
+              name == "otelcol_exporter_send_failed_log_records" or
+              name == "otelcol_exporter_send_failed_spans" or
+              name == "otelcol_exporter_send_failed_metric_points" or
+              name == "otelcol_exporter_queue_size" or
+              name == "otelcol_exporter_queue_capacity" or
+              name == "otelcol_process_memory_rss" or
+              name == "otelcol_process_cpu_seconds" or
+              name == "otelcol_process_uptime")'
   resource/required_labels:
     attributes:
       - key: service.instance.id # normalise the resource detector to standard otel attrib - service name should be set on app
@@ -150,14 +172,17 @@ service:
       exporters: [googlecloud]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter,resourcedetection,resource/required_labels,transform/collision,batch]
+      processors: [memory_limiter,filter/self-metrics,resourcedetection,resource/required_labels,transform/collision,batch]
       exporters: [googlemanagedprometheus]
   telemetry:
+    resource:
+        service.name: opentelemetry-collector/metrics
     metrics:
       readers:
         - periodic:
+            interval: 10000
             exporter:
               otlp:
                 protocol: grpc
-                endpoint: http://localhost:4317
+                endpoint: localhost:4317
                 insecure: true

@@ -218,6 +218,10 @@ resource "google_cloud_run_v2_service" "app" {
         args  = ["--config=/etc/otel/otel-collector-config.yaml"]
 
         env {
+          name = "GOMEMLIMIT"         
+          value = var.collector_go_memory_limit
+        }
+        env {
           name  = "GOOGLE_CLOUD_PROJECT"
           value = var.gcp_project_id
         }
