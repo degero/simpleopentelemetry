@@ -1,8 +1,9 @@
 {
-  "OTEL_SERVICE_NAME": "yourappname",
-  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yournamespace,deployment.environment.name=dev",
+  "EnableOtelEventListeners": "true",
+  "OTEL_SERVICE_NAME": "soteltestazure",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
   "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",
-  "OTEL_TRACES_SAMPLER_ARG": "0.05", 
+  "OTEL_TRACES_SAMPLER_ARG": "1.0", 
   "SimpleOpenTelemetry": {
     "BuilderExtensions": [
       { 
@@ -10,7 +11,6 @@
         "Options": {
           "Credential": "Azure.Identity.DefaultAzureCredential",
           "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
-          "SamplingRatio": "0.1",
           "EnableTraceBasedLogsSampler": "false"
         }
       }
@@ -18,14 +18,12 @@
     "Trace": {
       "Instrumentations": [
         "HttpClient",
-        "AspNetCore",
-        "SqlClient",
-        "EFCore"
+        "AspNetCore"
       ],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [ "yourappnamespace.*" ]
+      "Sources": [ "soteltestazure.*" ]
     },
     "Metric": {
       "Instrumentations": [
