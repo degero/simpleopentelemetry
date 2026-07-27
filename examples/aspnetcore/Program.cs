@@ -3,14 +3,13 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Instrumentation.EntityFrameworkCore;
 using OpenTelemetry.Instrumentation.SqlClient;
-using OpenTelemetry.Sampler.AWS;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.Examples.AspNetCore.Data;
 using SimpleOpenTelemetry.Examples.Shared;
 using SimpleOpenTelemetry.Extensions;
 using SimpleOpenTelemetry.OtelComponents.Resource;
 
-// Add Event listeners outputing to console for demo/debug purposes
+// Add Event listeners outputting to console for demo/debug purposes
 using var otelListener = new OtelEventListener();
 using var simpleOtelListener = new SimpleOtelEventListener();
 
