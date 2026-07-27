@@ -25,7 +25,7 @@ public class ResourceBuilderExtensionsTests
 
         var resource = builder.Build();
         Assert.Contains(resource.Attributes, 
-            a => a.Key == "service.version" && a.Value.ToString() == "18.4.0"); 
+            a => a.Key == "service.version" && a.Value.ToString() == "18.6.0"); 
         // Not ideal, a tad brittle, The version of the test framework
 
     }
