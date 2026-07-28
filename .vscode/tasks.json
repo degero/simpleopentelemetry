@@ -36,6 +36,18 @@
         "Debug"
       ],
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build: examples-cloud/azure/appservice",
+      "type": "process",
+      "command": "dotnet",
+      "args": [
+        "build",
+        "${workspaceFolder}/examples-cloud/azure/appservice/app/soteltestazure.csproj",
+        "-c",
+        "Debug"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ]
 }

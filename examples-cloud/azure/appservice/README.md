@@ -135,12 +135,13 @@ This approach uses Infrastructure as Code (Terraform) with Azure Developer CLI f
 
 ### Prerequisites
 
+- Azure subscription
 - .NET 10 SDK
 - [Terraform](https://www.terraform.io/downloads.html) (>= 1.0)
 - [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd) (azd)
 - Azure CLI authenticated: `az login`
-- Azure subscription
-- A `appsettings.Production.json` file setup in the /app folder
+- AZD authenticated: `azd auth login --use-device-code`
+- A `appsettings.Production.json` file setup in the /app folder from sample in [simpleopentelemetry-config/](./simpleopentelemetry-config/)
 
 
 ### Deployment 
@@ -175,6 +176,7 @@ terraform apply
 
 Terraform will create:
 - A resource group
+- A log analtyics workspace for app insights
 - An Application Insights resource
 - An App Service Plan (Free tier `F1`)
 - An App Service with system-assigned managed identity
@@ -186,6 +188,8 @@ The deployment will also configure the required app settings, including:
 - `OTEL_RESOURCE_ATTRIBUTES`
 - `OTEL_METRICS_EXEMPLAR_FILTER`
 - `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` (automatically set to the App Insights instrumentation key)
+
+The log analtyics assignment may have issues on deployment where you will see an error when browsing telemetry 'Error retrieving data'. If you re-assign the workspace in the appinsights properties this should resolve.
 
 ### Verify telemetry in Azure Monitor
 

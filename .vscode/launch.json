@@ -44,6 +44,21 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_URLS": "http://localhost:5195"
       }
+    },
+    {
+      "name": ".NET: examples-cloud/azure/appservice",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build: examples-cloud/azure/appservice",
+      "program": "${workspaceFolder}/examples-cloud/azure/appservice/app/bin/Debug/net10.0/soteltestazure.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/examples-cloud/azure/appservice/app",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5147"
+      }
     }
   ],
   "compounds": [
