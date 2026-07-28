@@ -2,7 +2,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 4.81"
     }
   }
 }
@@ -40,29 +40,48 @@ resource "azurerm_application_insights" "appinsights" {
 
   # Optional: cap daily data volume to control costs in dev
   daily_data_cap_in_gb                     = 1
-  daily_data_cap_notifications_disabled    = false
+  
   tags = var.tags
+
+  depends_on = [azurerm_log_analytics_workspace.law]
+  lifecycle {
+    ignore_changes = [workspace_id]
+  }
+  timeouts {
+    create = "10m"
+    read   = "10m"
+    update = "10m"
+  }
 }
 
-# # need this to remove auto-gen alert for appinsights
-# resource "null_resource" "cleanup_failure_anomalies" {
-#   triggers = {
-#     rg_name       = azurerm_resource_group.rg.name
-#     ai_name       = azurerm_application_insights.appinsights.name
-#     # subscription  = data.azurerm_client_config.current.subscription_id
-#   }
+# Dedicated (empty) action group so we're not depending on Azure's
+# auto-created "Application Insights Smart Detection" group
+resource "azurerm_monitor_action_group" "noop" {
+  name                = "ag-noop-${var.app_insights_name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  short_name          = "noop"
+}
 
-#   provisioner "local-exec" {
-#     when    = destroy
-#     command = <<-EOT
-#       az monitor alert-rule delete \
-#         --resource-group "${self.triggers.rg_name}" \
-#         --name "Failure Anomalies - ${self.triggers.ai_name}" || true
-#     EOT
-#   }
+# Adopts and disables the auto-generated "Failure Anomalies" rule.
+# Terraform PUTs this on the same resource ID Azure already created,
+# so it overwrites/adopts it in place — no manual import or az cli needed.
+resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
+  name                = "Failure Anomalies - ${azurerm_application_insights.appinsights.name}"
+  resource_group_name = azurerm_resource_group.rg.name
+  description         = "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls."
+  severity            = "Sev3"
+  frequency           = "PT1M"
+  detector_type       = "FailureAnomaliesDetector"
+  scope_resource_ids  = [azurerm_application_insights.appinsights.id]
 
-#   depends_on = [azurerm_application_insights.appinsights]
-# }
+  enabled = false   # <- disables it; Terraform re-asserts this every apply
+
+  action_group {
+    ids = [azurerm_monitor_action_group.noop.id]
+  }
+
+  tags = var.tags
+}
 
 # App Service Plan (Free Tier)
 resource "azurerm_service_plan" "appserviceplan" {
