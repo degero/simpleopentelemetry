@@ -1,10 +1,10 @@
-# AWS AppSettings Configs
+# SimpleOpenTelemetry AppSettings Configs for AWS 
 
 This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../examples-cloud/aws/ecs/) for how to use this config in AWS.
+- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../examples-cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
 
 ## ADOT collector configs
 

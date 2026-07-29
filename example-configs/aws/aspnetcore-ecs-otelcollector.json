@@ -1,13 +1,13 @@
 {
-  "OTEL_SERVICE_NAME": "soteltestaws",
-  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yourappnamespace,deployment.environment.name=dev",
   "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otel:4317",
   "SimpleOpenTelemetry": {
     "Trace": {
       "Instrumentations": [ "AWS", "AspNetCore", "HttpClient" ],
       "Propagators": [ "AWSXray" ],
       "Exporters": [ { "type": "otlp" } ],
-      "Sources": [ "soteltestaws.*" ]
+      "Sources": [ "yourappnamespace.*" ]
     },
     "Log": {
       "Exporters": [ { "type": "otlp" } ],
