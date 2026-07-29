@@ -91,7 +91,7 @@ Note: the 'AWSSDK*' packages are not needed for this type of app, it is only for
 The configuration 'simpleopentelemetry-config/appsettings.OtelCollector.json' requires either running the app and collector in the /localdev-docker/ or you can debug the app locally and remove the app service from the docker-compose.yml. 
 
 1. Create a log group and logstream in the loggroup (Cloudwatch > Log Management) matching your log_group_name setting and log_stream_name to match what is in /localdev-docker/.env, adjust names if you want something different.
-1. Adjust /localdev-docker/.env to the region you are using and change OTEL_COLLECTOR_CONFIG, USE_XRAY_SAMPLER to what you wish to use
+1. Adjust copy /localdev-docker/.env.example to .env and set to the region you are using and change OTEL_COLLECTOR_CONFIG, USE_XRAY_SAMPLER to what you wish to use
 1. Copy simpleopentelemetry-config/appsettings.OtelCollector.json to app/appsettings.Development.json
 1. If debugging your app outside docker compose: Change the OTEL_EXPORTER_OTLP_ENDPOINT in this file to host 'localhost' and remove service: 'otel' from the docker-compose.yml 
 1. Run the app in container with BuildAndRunDocker.ps1 or if you removed the app service from docker-compose.yml use in /app: dotnet run, and in /localdev-docker: docker compose up
@@ -135,16 +135,18 @@ To add other telemetry attributes, refer to the ECS samples from this (aws-obser
 ## Other links
 
 An alternative to SimpleOpenTelemetry is to send data directly to OTLP endpoints with AWS distro (ADOT) autoinstrumentation (logs are not supported):
+
+
 [AWS - Exporting collector-less telemetry using AWS Distro for OpenTelemetry (ADOT) SDK](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLP-UsingADOT.html)
 
 
-ADOT aws-opentelemetry-collector [github repo](https://github.com/aws-observability/aws-otel-collector)
+[ADOT aws-opentelemetry-collector github repo](https://github.com/aws-observability/aws-otel-collector)
 
 
-Xray remote sampler [github repo](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
+ [Xray remote sampler github repo](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
 
-[AWS dotnet manual Otel instrumentation guid for legacy and OTEL SDK](https://docs.aws.amazon.com/xray/latest/devguide/introduction-dotnet.html#manual-instrumentation-dotnet)
+[AWS dotnet manual Otel instrumentation guide for legacy and OTEL SDK](https://docs.aws.amazon.com/xray/latest/devguide/introduction-dotnet.html#manual-instrumentation-dotnet)
 
 
 [AWS dotnet manual Otel instrumentation guid for OTEL SDK](https://aws-otel.github.io/docs/getting-started/dotnet-sdk/manual-instr)

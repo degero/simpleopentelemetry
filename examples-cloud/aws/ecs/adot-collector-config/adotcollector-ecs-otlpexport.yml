@@ -27,6 +27,27 @@ processors:
           IsMatch(attributes["url.full"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.route"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*") or
           IsMatch(attributes["http.url"], ".*(GetSamplingRules|SamplingTargets|/healthcheck|/health|/metrics).*")
+  filter/self-metrics: # Filter to items for alerting and basic monitoring  - exporter fail metrics only emit on failure
+    error_mode: ignore # Sample alerts / dash (note some meters are custom/outdated) on https://github.com/monitoringartist/opentelemetry-collector-monitoring
+    metrics:
+      metric:
+        - 'IsMatch(name, "^scrape_")'
+        - 'IsMatch(name, "^otelcol_") and
+            not (
+              name == "otelcol_receiver_refused_spans" or
+              name == "otelcol_receiver_refused_metric_points" or
+              name == "otelcol_receiver_refused_log_records" or
+              name == "otelcol_exporter_enqueue_failed_spans" or
+              name == "otelcol_exporter_enqueue_failed_metric_points" or
+              name == "otelcol_exporter_enqueue_failed_log_records" or
+              name == "otelcol_exporter_send_failed_log_records" or
+              name == "otelcol_exporter_send_failed_spans" or
+              name == "otelcol_exporter_send_failed_metric_points" or
+              name == "otelcol_exporter_queue_size" or
+              name == "otelcol_exporter_queue_capacity" or
+              name == "otelcol_process_memory_rss" or
+              name == "otelcol_process_cpu_seconds" or
+              name == "otelcol_process_uptime")'
   # Disable this If you are using a AWS XRay remote sampler or another sampler on app side 
   tail_sampling:
     decision_wait: 10s
@@ -90,5 +111,17 @@ service:
       exporters: [otlp_http/traces]  
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter,batch/metrics]
+      processors: [memory_limiter,filter/self-metrics,batch/metrics]
       exporters: [otlp_http/metrics]
+  telemetry:
+    resource:
+        service.name: opentelemetry-collector/metrics
+    metrics:
+      readers:
+        - periodic:
+            interval: 10000
+            exporter:
+              otlp:
+                protocol: grpc
+                endpoint: localhost:4317
+                insecure: true
