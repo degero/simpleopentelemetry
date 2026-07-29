@@ -1,12 +1,12 @@
 {
-  "OTEL_SERVICE_NAME": "soteltestgcp",
-  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=development",
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yourappnamespace,deployment.environment.name=development",
   "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
   "SimpleOpenTelemetry": {
     "Trace": {
       "Instrumentations": [ "AspNetCore", "HttpClient" ],
       "Exporters": [ { "type": "otlp" } ],
-      "Sources": [ "soteltestgcp.*" ]
+      "Sources": [ "yourappnamespace.*" ]
     },
     "Log": {
       "Exporters": [ { "type": "otlp" } ],

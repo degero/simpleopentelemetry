@@ -1,0 +1,118 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Determine which packages have a version in repo that is newer than on NuGet (or not yet published).
+  check-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      pack_core: ${{ steps.packages.outputs.pack_core }}
+      any_to_publish: ${{ steps.packages.outputs.any_to_publish }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get package versions from csproj
+        id: versions
+        run: |
+          get_version() { sed -n 's/.*<Version>\([^<]*\)<\/Version>.*/\1/p' "$1" | head -1 | tr -d ' \r'; }
+          echo "core=$(get_version src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj)" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with NuGet and decide what to publish
+        id: packages
+        run: |
+          need_publish() {
+            local our_version="$1"
+            local pkg_id="$2"
+            local index_url="https://api.nuget.org/v3-flatcontainer/${pkg_id}/index.json"
+            local latest
+            latest=$(curl -sf "$index_url" | jq -r '.versions[]' | sort -V | tail -1)
+            if [ -z "$latest" ]; then
+              echo "yes"   # not on NuGet yet
+              return
+            fi
+            local greater
+            greater=$(printf '%s\n' "$our_version" "$latest" | sort -V | tail -1)
+            if [ "$greater" = "$our_version" ] && [ "$our_version" != "$latest" ]; then
+              echo "yes"   # our version is newer
+            else
+              echo "no"
+            fi
+          }
+
+          CORE_VER="${{ steps.versions.outputs.core }}"
+
+          PACK_CORE=$(need_publish "$CORE_VER" "simpleopentelemetry")
+
+          echo "pack_core=$PACK_CORE" >> "$GITHUB_OUTPUT"
+
+          if [ "$PACK_CORE" = "yes" ]; then
+            echo "any_to_publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "any_to_publish=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Build
+        run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental
+
+      - name: Test
+        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --verbosity normal
+
+  pack:
+    needs: [check-versions, build-and-test]
+    if: needs.check-versions.outputs.any_to_publish == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Pack
+        run: |
+          mkdir -p nupkgs
+          PACK_CORE="${{ needs.check-versions.outputs.pack_core }}"
+
+          if [ "$PACK_CORE" = "yes" ]; then
+            dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs
+          fi
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: nupkgs/*.nupkg
+
+  push-to-nuget:
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: nuget-publish
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+
+      - name: Push to NuGet.org
+        run: |
+          for nupkg in *.nupkg; do
+            dotnet nuget push "$nupkg" \
+              --source https://api.nuget.org/v3/index.json \
+              --api-key "${{ secrets.NUGET_API_KEY }}" \
+              --skip-duplicate
+          done
