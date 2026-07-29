@@ -76,3 +76,15 @@ SELECT average(`aspnetcore.memory_pool.allocated`)
 FROM Metric 
 TIMESERIES FACET service.name
 ```
+
+
+## Configuration notes
+
+Other trace/metric instrumentations that may be useful in the this hosting scenario for deeper metrics:
+
+- OpenTelemetry.Instrumentation.Runtime
+- OpenTelemetry.Instrumentation.Process
+
+See the [SimpleOpenTelemetry README.md](../../README.md#process-runtime) to set these up
+
+A custom meter for System.Net.NameResolution is included as an example and can be removed if this metric is unneeded

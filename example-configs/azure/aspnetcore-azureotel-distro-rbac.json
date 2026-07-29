@@ -14,6 +14,9 @@
     "Metric": {
       "Instrumentations": [
         "AspNetCore"
+      ],
+      "CustomMeters": [
+        "System.Net.NameResolution"
       ]
     },
     "Trace": {

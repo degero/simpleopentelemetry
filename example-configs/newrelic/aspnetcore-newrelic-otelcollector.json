@@ -16,7 +16,10 @@
     },
     "Metric": {
       "Exporters": [ { "type": "otlp" } ],
-      "Instrumentations": [ "AspNetCore", "HttpClient" ]
+      "Instrumentations": [ "AspNetCore", "HttpClient" ],
+      "CustomMeters": [
+        "System.Net.NameResolution"
+      ]
     }
   }
 }

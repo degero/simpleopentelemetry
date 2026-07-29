@@ -30,6 +30,9 @@
       "Instrumentations": [
         "HttpClient",
         "AspNetCore"
+      ],
+      "CustomMeters": [
+        "System.Net.NameResolution"
       ]
     },
     "Log": {

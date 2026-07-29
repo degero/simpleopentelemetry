@@ -95,11 +95,14 @@ Adjust your sampling settings as required, for more information see [MSLearn - E
 
 Log settings for the Azure monitor exporter match what the ASPNetCore distro sets.
 
-Other trace instrumentations that may be useful in the this hosting scenario for deeper metrics:
+Other trace/metric instrumentations that may be useful in the this hosting scenario for deeper metrics:
 
 - OpenTelemetry.Instrumentation.Runtime
 - OpenTelemetry.Instrumentation.Process
 
+See the [SimpleOpenTelemetry README.md](../../README.md#process-runtime) to set these up
+
+A custom meter for System.Net.NameResolution is included as an example and can be removed if this metric is unneeded
 
 ## Library Quirks
 

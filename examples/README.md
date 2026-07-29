@@ -46,17 +46,18 @@ This uses local volumes so for a full data flush delete the volumes in docker.
 
 For either example, To use config file loading, in the project folder:
     cp appsettings.Example.json appsettings.Development.json
-OR to Env vars, in this README folder use one of these for the respective app type:
-    cp envvars.Example.aspnetcore.json envvars.json
-    cp envvars.Example.console.json envvars.json
+OR to use Env vars, you can set any / all values based on the above appsettings
+eg:
+```powershell
+$Env:SimpleOpenTelemetry__Trace__Settings__SetErrorStatusOnException = "true"
+```
 
-Make adjustments to these files based on the different examples below.
-NOTE: when using the envvars.json, you will need to run .\SetConfigEnvVars.ps1 before launching the app.
+Make adjustments to these files / env vars based on the different examples below.
 
 ## Using the AspNetCore example
 
 This uses a WebApplicationBuilder generic host setup. 
-To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development / envvars.json and set "UseSqlEfCore": "true" 
+To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development and set "UseSqlEfCore": "true" 
 
 To run:  
 
@@ -75,7 +76,7 @@ Navigate to other links and back to home to trigger log / trace / efcore+sqlclie
 
 ## Using the console example
 
-This uses a generic host setup in the default config. to test with a non-generic host setup change the setting 'UseGenericHost' to 'false' in the appsettings.Development.json / envvars.json
+This uses a generic host setup in the default config. to test with a non-generic host setup change the setting 'UseGenericHost' to 'false' in the appsettings.Development.json
 
 This example will run some http calls and traces you can view in your local telemetry servers
 
@@ -134,9 +135,18 @@ You can deploy this app to Azure by setting an appsettings.Production.json with 
 - Go to your Application Insights resource in Azure Portal
 - Verify data is flowing using this KQL [Azure monitor exporter] (../README.md#azure-monitor-aspnetcore)
 
+
 ## Using the sample with AWS
 
+You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [examples-cloud/aws/ecs/README.md](../examples-cloud/aws/ecs/README.md).
 
+
+## Using the sample with GCP
+
+You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [examples-cloud/gcp/cloudrun/README.md](../examples-cloud/gcp/cloudrun/README.md).
 
 
 ## Using the sample with New Relic
+
+
+You can deploy this app to New Relic by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/newrelic/) and following setup instructions and telemetry verification there.
