@@ -16,6 +16,7 @@ For EU users use `otlp.eu01.nr-data.net:4317` rather than the endpoint given in 
 With the [examples/aspnetcore/](../../examples-localdev/aspnetcore/) app:
 
 1. Copy the contents (except for OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES) of `aspnetcore-newrelic-directexport.json` file into the example app `appsettings.Development.json`
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. Get your NewRelic api key from the [NewRelic website](https://one.newrelic.com/admin-portal/api-keys/home)
 1. Set a dotnet user-secret with the command in the example app folder:
 ```powershell
@@ -65,15 +66,15 @@ httpclient:
 
 ```
 SELECT average(`http.client.open_connections`)
-FROM Metric 
+FROM Metric
 TIMESERIES FACET service.name
 ```
 
 aspnetcore:
 
 ```
-SELECT average(`aspnetcore.memory_pool.allocated`) 
-FROM Metric 
+SELECT average(`aspnetcore.memory_pool.allocated`)
+FROM Metric
 TIMESERIES FACET service.name
 ```
 

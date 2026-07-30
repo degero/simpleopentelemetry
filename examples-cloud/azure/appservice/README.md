@@ -34,7 +34,7 @@ This example contains a low-complexity Azure App Service demo app that shows how
 - `OTEL_SERVICE_NAME` may be overwritten by the Azure resource detector for App Service. If you need a stable service name, use custom resource configuration or explicit `service.name` settings.
 - Use `EnableOtelEventListeners=true` for additional OpenTelemetry diagnostic output.
 
-## Setup your Azure CLI 
+## Setup your Azure CLI
 
 1. Sign in and select your subscription:
 
@@ -52,11 +52,13 @@ In `examples-cloud/azure/appservice/app/`:
    - `../simpleopentelemetry-config/aspnetcore-azureotel-exporter-by-signal-rbac.json`
    - `../simpleopentelemetry-config/aspnetcore-azureotel-distro-rbac.json`
 
-2. Customize the config values if need be
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
+
+1. Customize the config values if need be
    - `OTEL_SERVICE_NAME`
    - `OTEL_RESOURCE_ATTRIBUTES`
 
-3. Sampling is set to 100% for dev/debugging purposes
+1. Sampling is set to 100% for dev/debugging purposes
 
 ## Local run with selected config
 
@@ -144,7 +146,7 @@ This approach uses Infrastructure as Code (Terraform) with Azure Developer CLI f
 - A `appsettings.Production.json` file setup in the /app folder from sample in [simpleopentelemetry-config/](./simpleopentelemetry-config/)
 
 
-### Deployment 
+### Deployment
 
 ```powershell
 azd up
@@ -249,6 +251,6 @@ The app settings are configured in `app/appservicesettings.json` and automatical
 **Note:** In App Service environment variables, colons (`:`) in configuration keys are converted to double underscores (`__`). For example, `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` becomes `SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString` in the environment.
 
 
-## Production use and other documentation 
+## Production use and other documentation
 
 For production templates and Doco see [example-configs/azure/README.md](../../../example-configs/azure/README.md)

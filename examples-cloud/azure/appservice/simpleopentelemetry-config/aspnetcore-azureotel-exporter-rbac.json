@@ -1,7 +1,6 @@
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Trace", // Switch to Information for PROD
       "Microsoft.AspNetCore": "Warning",
       // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
       "Microsoft.Hosting.Lifetime": "Warning",

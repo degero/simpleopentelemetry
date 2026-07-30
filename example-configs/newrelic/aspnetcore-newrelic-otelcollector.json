@@ -1,7 +1,6 @@
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Trace", // Switch to Information for PROD
       "Microsoft.AspNetCore": "Warning",
       // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
       "Microsoft.Hosting.Lifetime": "Warning",
@@ -14,19 +13,39 @@
   "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:4317",
   "SimpleOpenTelemetry": {
     "Trace": {
-      "Instrumentations": [ "AspNetCore", "HttpClient" ],
-      "Exporters": [ { "type": "otlp" } ],
-      "Sources": [ "yourappnamespace.*" ]
+      "Instrumentations": [
+        "AspNetCore",
+        "HttpClient"
+      ],
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
+      "Sources": [
+        "yourappnamespace.*"
+      ]
     },
     "Log": {
-      "Exporters": [ { "type": "otlp" } ],
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
       "Settings": {
         "IncludeFormattedMessage": "true"
       }
     },
     "Metric": {
-      "Exporters": [ { "type": "otlp" } ],
-      "Instrumentations": [ "AspNetCore", "HttpClient" ],
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
+      "Instrumentations": [
+        "AspNetCore",
+        "HttpClient"
+      ],
       "CustomMeters": [
         "System.Net.NameResolution"
       ]

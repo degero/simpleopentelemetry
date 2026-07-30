@@ -1,4 +1,4 @@
-# SimpleOpenTelemetry Appsettings Configs for Azure AppService AspNetCore 
+# SimpleOpenTelemetry Appsettings Configs for Azure AppService AspNetCore
 
 These configs cover using Azure's [ASPNetCore](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/README.md) and [Exporter](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/README.md) libraries. The former adds extra features such as extra instrumentations (httpclient, sqlcient), resource detectors and logging automatically and the later config replicates these. There are some quirks to the AspNetCore distro so you may want to use the exporter for more control or exporter by signal (with the loss of live metrics offline storage etc). `aspnetcore-azureotel-exporter-rbac.json` includes live metrics
 
@@ -18,7 +18,7 @@ If running with RBAC locally (the default of these configs) you will need to ass
 Adjust your config related to the optional instrumentations
 
 **optional**
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore`   
+`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore`
 `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore`
 
 *IMPORTANT*
@@ -30,7 +30,7 @@ If you add package `OpenTelemetry.Instrumentation.SqlClient` you will need to co
 
 These are the core packages as distro uses, adjust your config related to the optional instrumentations
 
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`  
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
 `dotnet add package OpenTelemetry.Instrumentation.Http`
 
 **optional**
@@ -49,6 +49,7 @@ Customise:
  - Trace:Sources: Replace 'yourappnamespace' with your apps root namespace or remove this if you don't have any custom diagnostics events or if using aspnetcore distro you can use the builtin trace source (see doco)
  - Remove any instrumentations you may not need (and their respective nuget package).
  - Adjust logging settings and SetErrorStatusOnException (see notes below)
+ - For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 
 
 ## Other options and Sampling

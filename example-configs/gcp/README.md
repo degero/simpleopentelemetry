@@ -8,13 +8,14 @@ This folder contains Google Cloud Platform focused appsettings examples for Simp
 
 ## How to use
 
-See the [full working example](../../examples-cloud/gcp/cloudrun/) with application, permissions, collector config (including for local docker use) and infrastructure. This also covers google observability constraints and quirks from a normal standards. 
+See the [full working example](../../examples-cloud/gcp/cloudrun/) with application, permissions, collector config (including for local docker use) and infrastructure. This also covers google observability constraints and quirks from a normal standards.
 
 OR
 
 with an existing / new aspnetcore app:
 
 1. Copy the above file into your app as `appsettings.Development.json` or `appsettings.Production.json`.
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, namespace, version, environment etc.
 1. Ensure the required packages below are installed in your app.
 1. Ensure Google project with your or a cloud run service account with permissions to Google Observability endpoints are setup

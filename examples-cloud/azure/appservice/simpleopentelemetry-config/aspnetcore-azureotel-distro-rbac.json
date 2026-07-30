@@ -1,7 +1,6 @@
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Trace", // Switch to Information for PROD
       "Microsoft.AspNetCore": "Warning",
       // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
       "Microsoft.Hosting.Lifetime": "Warning",
@@ -13,7 +12,7 @@
   "OTEL_SERVICE_NAME": "soteltestazure",
   "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
   "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",
-  "OTEL_TRACES_SAMPLER_ARG": "1.0", 
+  "OTEL_TRACES_SAMPLER_ARG": "1.0",
   "SimpleOpenTelemetry": {
     "Distro": "AzureMonitorAspNetCore",
     "DistroOptions": {
@@ -33,7 +32,9 @@
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [ "soteltestazure.*" ]
+      "Sources": [
+        "soteltestazure.*"
+      ]
     }
   }
 }

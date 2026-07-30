@@ -91,6 +91,8 @@ The configuration 'simpleopentelemetry-config/appsettings.DirectExport.json' all
 
 1. Copy simpleopentelemetry-config/appsettings.DirectExport.json to app/appsettings.Development.json
 
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
+
 1. Set your OTEL_EXPORTER_OTLP_* and AWS_REGION to the AWS endpoints and region you are using (see below guide)
 
 1. Run the application
@@ -109,6 +111,8 @@ The configuration 'simpleopentelemetry-config/appsettings.OtelCollector.json' re
 1. Adjust copy /localdev-docker/.env.example to .env and set to the region you are using and change OTEL_COLLECTOR_CONFIG, USE_XRAY_SAMPLER to what you wish to use
 
 1. Copy simpleopentelemetry-config/appsettings.OtelCollector.json to app/appsettings.Development.json
+
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 
 1. If debugging your app outside docker compose: Change the OTEL_EXPORTER_OTLP_ENDPOINT in this file to host 'localhost' and remove service: 'otel' from the docker-compose.yml
 

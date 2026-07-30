@@ -39,7 +39,7 @@ At the time of writing (June 2026) Metrics OTLP endpoint is [Pre-GA](https://doc
 
 Google has mandatory attributes required in telemetry sent: `gcp.project_id`, `service.instance.id` and `cloud.region` (or location, however google's example otel collectors `transform/collision` rename it and seems to be reserved). If using a collector these sample configurations take care of this. For direct export, the 'GCP' resource detector set in the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) will add these when in cloud run, for local use you can set them in "OTEL_RESOURCE_ATTRIBUTES" the file has these as guidance.
 
-Google's Observability platform has some quirks / differences from some OpenTelemetry norms which are noted and worth checking in this readme as well as information about production considerations for collector configuration [./otel-collector-config/README.md](./otel-collector-config/README.md). 
+Google's Observability platform has some quirks / differences from some OpenTelemetry norms which are noted and worth checking in this readme as well as information about production considerations for collector configuration [./otel-collector-config/README.md](./otel-collector-config/README.md).
 
 <br>
 
@@ -91,6 +91,7 @@ In the [app](./app/) directory:
 
 
 1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) to `appsettings.Development.json`
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. In `appsettings.Development.json` add at the top for extra debugging / logging:
 
 ```
@@ -107,7 +108,7 @@ In the [app](./app/) directory:
 1. In `appsettings.Development.json` adjust the `OTEL_RESOURCE_ATTRIBUTES` value for `gcp.project_id=soteltest,service.instance.id=otel-local-dev,location=us-east1` eg. if using a different projectid (shortname), or location or want a different resource instance id. You can also change the `GOOGLE_CLOUD_LOG_NAME` if you want this different.
 1. Run the app: `dotnet run`
 1. Navigate to [http://localhost:5195](http://localhost:5195) and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 <br>
 
@@ -116,6 +117,7 @@ In the [app](./app/) directory:
 In the [app](./app/) directory:
 
 1. Copy [simpleopentelemetry-config/appsettings.OtelCollector.json](./simpleopentelemetry-config/appsettings.OtelCollector.json) to `appsettings.Development.json`
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. In `appsettings.Development.json` add at the top for extra debugging / logging:
 
 ```
@@ -142,7 +144,7 @@ In the [localdev-docker](./localdev-docker/) directory:
 
 1. Check in your docker that the otel container logs show `Everything is ready. Begin running and processing data.` as it may take a moment to start up.
 1. Open `http://localhost:8080` and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 <br>
 
@@ -162,7 +164,7 @@ gh auth token | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 In the [app](./app/) directory:
 
 1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) for direct exporting in Cloud Run (no collector sidecar) or [simpleopentelemetry-config/appsettings.OtelCollector.json](simpleopentelemetry-config/appsettings.OtelCollector.json) to `appsettings.Production.json`
-1. In `appsettings.Development.json` add at the top for trace level extra logging:
+1. In `appsettings.Production.json` add at the top for trace level extra logging:
 
 ```
 {
@@ -179,12 +181,12 @@ In the [app](./app/) directory:
 
 In the [root](./) directory:
 
-1. Run `docker build --no-cache -t [ghcr.io/docker.io]/username/[yourtag] .` 
+1. Run `docker build --no-cache -t [ghcr.io/docker.io]/username/[yourtag] .`
 1. Run `docker push ghcr.io/username/[yourtag]`
 
 In the [infra](./infra/) directory
 
-1. Based on the app configuration you chose copy [terraform.tfvars.directexportexample](./infra/terraform.tfvars.directexportexample) or [terraform.tfvars.sidecarexample](./infra/terraform.tfvars.sidecarexample) to `terraform.tfvars` 
+1. Based on the app configuration you chose copy [terraform.tfvars.directexportexample](./infra/terraform.tfvars.directexportexample) or [terraform.tfvars.sidecarexample](./infra/terraform.tfvars.sidecarexample) to `terraform.tfvars`
 
 1. Update `terraform.tfvars` file `app_image` with your image '`ghcr.io/username/[yourtag]`', set `region` to your project region and `project_id`/`otel_resource_attributes` if project is not '`soteltest`'.
 
@@ -201,7 +203,7 @@ terraform apply
 ```
 
 1. Use `service_url` output to navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'  
+1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 
 **Troubleshooting**:
