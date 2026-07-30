@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET: examples-localdev/console",
+      "name": ".NET: example-apps/localdev/console",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/examples-localdev/console/bin/Debug/net10.0/Console.dll",
+      "program": "${workspaceFolder}/example-apps/localdev/console/bin/Debug/net10.0/Console.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples-localdev/console",
+      "cwd": "${workspaceFolder}/example-apps/localdev/console",
       "console": "integratedTerminal",
       "stopAtEntry": false,
       "env": {
@@ -16,13 +16,13 @@
       }
     },
     {
-      "name": ".NET: examples-localdev/aspnetcore",
+      "name": ".NET: example-apps/localdev/aspnetcore",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/examples-localdev/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
+      "program": "${workspaceFolder}/example-apps/localdev/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples-localdev/aspnetcore",
+      "cwd": "${workspaceFolder}/example-apps/localdev/aspnetcore",
       "stopAtEntry": false,
       "launchBrowser": {
         "enabled": true,
@@ -37,17 +37,17 @@
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       },
       "sourceFileMap": {
-        "/Views": "${workspaceFolder}/examples-localdev/aspnetcore/Views"
+        "/Views": "${workspaceFolder}/example-apps/localdev/aspnetcore/Views"
       }
     },
     {
-      "name": ".NET: examples-cloud/gcp/cloudrun",
+      "name": ".NET: example-apps/cloud/gcp/cloudrun",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app/bin/Debug/net10.0/soteltestgcp.dll",
+      "program": "${workspaceFolder}/example-apps/cloud/gcp/cloudrun/app/bin/Debug/net10.0/soteltestgcp.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app",
+      "cwd": "${workspaceFolder}/example-apps/cloud/gcp/cloudrun/app",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -59,13 +59,13 @@
       }
     },
     {
-      "name": ".NET: examples-cloud/azure/appservice",
+      "name": ".NET: example-apps/cloud/azure/appservice",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/examples-cloud/azure/appservice/app/bin/Debug/net10.0/soteltestazure.dll",
+      "program": "${workspaceFolder}/example-apps/cloud/azure/appservice/app/bin/Debug/net10.0/soteltestazure.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples-cloud/azure/appservice/app",
+      "cwd": "${workspaceFolder}/example-apps/cloud/azure/appservice/app",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
@@ -77,13 +77,13 @@
       }
     },
     {
-      "name": ".NET: examples-cloud/aws/ecs",
+      "name": ".NET: example-apps/cloud/aws/ecs",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/examples-cloud/aws/ecs/app/bin/Debug/net10.0/soteltestaws.dll",
+      "program": "${workspaceFolder}/example-apps/cloud/aws/ecs/app/bin/Debug/net10.0/soteltestaws.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples-cloud/aws/ecs/app",
+      "cwd": "${workspaceFolder}/example-apps/cloud/aws/ecs/app",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",

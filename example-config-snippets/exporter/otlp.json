@@ -4,11 +4,12 @@
       "Otlp": {
         "Headers": null,
         "TimeoutMilliseconds": 10000,
+        "Endpoint": "http://localhost:4317",
         "Protocol": "Grpc",
         "Compression": "None",
         "UserAgentProductIdentifier": "",
         "ExportProcessorType": "Batch"
-        }
+      }
     },
     "Trace": {
        "Exporters": [ { "type": "Otlp" } ]
