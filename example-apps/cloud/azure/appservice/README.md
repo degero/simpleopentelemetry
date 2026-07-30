@@ -45,7 +45,7 @@ az account set --subscription "<subscription-id>"
 
 ## Setup your SimpleOpentelemetry configuration
 
-In `examples-cloud/azure/appservice/app/`:
+In `example-apps/cloud/azure/appservice/app/`:
 
 1. Copy one of the sample configs to `appsettings.Development.json` or (for deployment to appservice) `appsettings.Production.json`:
    - `../simpleopentelemetry-config/aspnetcore-azureotel-exporter-rbac.json`

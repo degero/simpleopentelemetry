@@ -56,22 +56,22 @@ Make adjustments to these files / env vars based on the different examples below
 
 ## Using the AspNetCore example
 
-This uses a WebApplicationBuilder generic host setup. 
-To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development and set "UseSqlEfCore": "true" 
+This uses a WebApplicationBuilder generic host setup.
+To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb running, edit appsettings.Development and set "UseSqlEfCore": "true"
 
-To run:  
+To run:
 
 ```
-cd ./examples-localdev/aspnetcore
+cd ./example-apps/localdev/aspnetcore
 ..setup the config file...
 dotnet run
 ```
 
-To generate metrics / logs / traces:  
+To generate metrics / logs / traces:
 
 When launched, navigate to http://localhost:5056/
 
-Navigate to other links and back to home to trigger log / trace / efcore+sqlclient (if enabled) telemetry on the home page muitple times.  
+Navigate to other links and back to home to trigger log / trace / efcore+sqlclient (if enabled) telemetry on the home page muitple times.
 
 
 ## Using the console example
@@ -80,15 +80,15 @@ This uses a generic host setup in the default config. to test with a non-generic
 
 This example will run some http calls and traces you can view in your local telemetry servers
 
-To run:  
+To run:
 
 ```
-cd ./examples-localdev/console
+cd ./example-apps/localdev/console
 ..setup the config file...
 dotnet run
 ```
 
-It runs the below:  
+It runs the below:
 
 1. **Configuration**: Loads OpenTelemetry via SimpleOpenTelemetry exporter/trace/metrics/logging settings from `appsettings.Development.json` or environment variables
 2. **Initialization**: Sets up SimpleOpenTelemetry with loaded settings
@@ -109,13 +109,13 @@ You can view the telemetry collected on your [local grafana server](http://local
 
 ### Grafana
 
-For viewing all telemetry at a high level, navigate to Connections > Data Sources and you can hit the 'Explore data' on each of the service types or just Explore. 
+For viewing all telemetry at a high level, navigate to Connections > Data Sources and you can hit the 'Explore data' on each of the service types or just Explore.
 
 On the data explorer pages click 'Go queryless' to get a quick glance at the data comingh through.
 
-To examine the traces that are generated in HomeController.cs, go to the Explore section -> Select tempo in the top left -> set query type 'search' -> set span name = 'DoSomeWork' you can view the demo trace information sent. This includes span attributes (tag) and events as pictured.  
+To examine the traces that are generated in HomeController.cs, go to the Explore section -> Select tempo in the top left -> set query type 'search' -> set span name = 'DoSomeWork' you can view the demo trace information sent. This includes span attributes (tag) and events as pictured.
 
-If you enable EFCore as mentioned before, you will see Entity framework and SqlClient traces here too under spans 'EFCoreGetProducts' and 'Select [Products]'.  
+If you enable EFCore as mentioned before, you will see Entity framework and SqlClient traces here too under spans 'EFCoreGetProducts' and 'Select [Products]'.
 
 ![Grafana Tempo Trace Example](./_README_TempoExplore.png)
 
@@ -138,12 +138,12 @@ You can deploy this app to Azure by setting an appsettings.Production.json with 
 
 ## Using the sample with AWS
 
-You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [examples-cloud/aws/ecs/README.md](../examples-cloud/aws/ecs/README.md).
+You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [example-apps/cloud/aws/ecs/README.md](../cloud/aws/ecs/README.md).
 
 
 ## Using the sample with GCP
 
-You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [examples-cloud/gcp/cloudrun/README.md](../examples-cloud/gcp/cloudrun/README.md).
+You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [example-apps/cloud/gcp/cloudrun/README.md](../cloud/gcp/cloudrun/README.md).
 
 
 ## Using the sample with New Relic

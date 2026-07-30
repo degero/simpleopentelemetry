@@ -9,7 +9,7 @@
 </PropertyGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
+	  <ProjectReference Include="..\..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
 	  <ProjectReference Include="..\shared\Shared.csproj" />
   </ItemGroup>
 

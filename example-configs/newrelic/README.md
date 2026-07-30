@@ -13,7 +13,7 @@ For EU users use `otlp.eu01.nr-data.net:4317` rather than the endpoint given in 
 
 ## How to use
 
-With the [examples-localdev/aspnetcore/](../../examples-localdev/aspnetcore/) app:
+With the [example-apps/localdev/aspnetcore/](../../example-apps/localdev/aspnetcore/) app:
 
 1. Copy the contents (except for OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES) of `aspnetcore-newrelic-directexport.json` file into the example app `appsettings.Development.json`
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting

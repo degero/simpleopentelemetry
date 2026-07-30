@@ -4,24 +4,23 @@ This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../examples-cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
+- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../example-apps/cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
 
 ## ADOT collector configs
 
-AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../examples-cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html).
+AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../example-apps/cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html).
 
 If using the AWS legacy metrics export from the collector, you will need to query metrics via the 'Classic metrics' area.
 
 ## How to use
 
 1. Copy `aspnetcore-ecs-otelcollector.json` into your app as `appsettings.Development.json` or `appsettings.Production.json`.
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, region, and endpoint settings for your environment.
 1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
 1. Ensure AWS Cloudwatch resources are setup
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
-For a full working application and infrastructure example, see:
-
-- `examples-cloud/aws/ecs/README.md`
+For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../example-apps/cloud/aws/ecs/README.md)
 
 ## Required package install commands
 
@@ -47,8 +46,8 @@ Why:
 
 To enable in code, see:
 
-- `examples-cloud/aws/ecs/README.md` (X-Ray Remote Sampling section)
-- `examples-cloud/aws/ecs/app/Program.cs` (the `UseXraySampler` code path)
+- `example-apps/cloud/aws/ecs/README.md` (X-Ray Remote Sampling section)
+- `example-apps/cloud/aws/ecs/app/Program.cs` (the `UseXraySampler` code path)
 
 If you also implement the optional code-only X-Ray remote sampler path shown in that example, add:
 
@@ -58,6 +57,7 @@ dotnet add package OpenTelemetry.Sampler.AWS --prerelease
 
 ## Configuration notes
 
+AWS ECS logs console output by default so you may wish to add `builder.Logging.ClearProviders()` before calling AddSimpleOpenTelemetry() to remove console logging output.
 
 Other trace/metric instrumentations that may be useful in the this hosting scenario for deeper metrics:
 
