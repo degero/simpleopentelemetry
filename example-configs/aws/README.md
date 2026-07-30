@@ -1,4 +1,4 @@
-# SimpleOpenTelemetry AppSettings Configs for AWS 
+# SimpleOpenTelemetry AppSettings Configs for AWS
 
 This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
@@ -8,7 +8,9 @@ This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
 ## ADOT collector configs
 
-AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../examples-cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the (Amazon Cloudwatch - Getting started)[https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html].
+AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../examples-cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html).
+
+If using the AWS legacy metrics export from the collector, you will need to query metrics via the 'Classic metrics' area.
 
 ## How to use
 
@@ -55,6 +57,7 @@ dotnet add package OpenTelemetry.Sampler.AWS --prerelease
 ```
 
 ## Configuration notes
+
 
 Other trace/metric instrumentations that may be useful in the this hosting scenario for deeper metrics:
 
