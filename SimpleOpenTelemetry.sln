@@ -5,20 +5,20 @@ VisualStudioVersion = 18.2.11415.280
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry", "src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj", "{934CB77B-DFE8-99F0-8A6C-87F95E3803D9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples-localdev", "examples-localdev", "{34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "localdev", "localdev", "{34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}"
 	ProjectSection(SolutionItems) = preProject
-		examples-localdev\README.md = examples-localdev\README.md
+		example-apps\localdev\README.md = example-apps\localdev\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore", "examples-localdev\aspnetcore\AspNetCore.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E039}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore", "example-apps\localdev\aspnetcore\AspNetCore.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E039}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "examples-localdev\console\Console.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E040}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "example-apps\localdev\console\Console.csproj", "{5A7BB03E-560C-0A1A-F54F-F304BF40E040}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{95C8B8C9-E3D5-4BFB-8727-702038E77D82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.Tests", "tests\SimpleOpenTelemetry.Tests\SimpleOpenTelemetry.Tests.csproj", "{CD26694E-037B-40BF-BEAD-6FBED597D245}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "examples-localdev\shared\Shared.csproj", "{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared", "example-apps\localdev\shared\Shared.csproj", "{C17F748C-74B7-4B66-EDCB-FD378D75D3A1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleOpenTelemetry.IntegrationTests", "tests\SimpleOpenTelemetry.IntegrationTests\SimpleOpenTelemetry.IntegrationTests.csproj", "{F4913D4D-654D-4447-9B48-D3B49874A430}"
 EndProject
@@ -57,6 +57,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "newrelic", "newrelic", "{78
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example-config-snippets", "example-config-snippets", "{528F4E63-CB34-4253-8776-61CAA111F0D7}"
+	ProjectSection(SolutionItems) = preProject
+		example-config-snippets\README.md = example-config-snippets\README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "distro", "distro", "{9E7EF8FA-9E35-451A-BF16-7454A007A310}"
 	ProjectSection(SolutionItems) = preProject
@@ -89,28 +92,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resourcedetectors", "resour
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4C5B3160-F5E4-4C2E-A0E2-55666BE7A11C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples-cloud", "examples-cloud", "{E46EFEB5-A302-426C-A99F-4050C051BB7C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cloud", "cloud", "{E46EFEB5-A302-426C-A99F-4050C051BB7C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{C570C0DD-E08B-4AA6-AC68-F00AEEF94C0D}"
 	ProjectSection(SolutionItems) = preProject
-		examples-cloud\aws\ecs\README.md = examples-cloud\aws\ecs\README.md
+		example-apps\cloud\aws\ecs\README.md = example-apps\cloud\aws\ecs\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestaws", "examples-cloud\aws\ecs\app\soteltestaws.csproj", "{1F11BFED-5384-332C-DCE5-5F7AB210D009}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestaws", "example-apps\cloud\aws\ecs\app\soteltestaws.csproj", "{1F11BFED-5384-332C-DCE5-5F7AB210D009}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure", "azure", "{865745A1-BD48-45EB-96C8-580997C50BCD}"
 	ProjectSection(SolutionItems) = preProject
-		examples-cloud\azure\appservice\README.md = examples-cloud\azure\appservice\README.md
+		example-apps\cloud\azure\appservice\README.md = example-apps\cloud\azure\appservice\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gcp", "gcp", "{9A3241B8-C000-435E-8D30-BB1570980F47}"
 	ProjectSection(SolutionItems) = preProject
-		examples-cloud\gcp\cloudrun\README.md = examples-cloud\gcp\cloudrun\README.md
+		example-apps\cloud\gcp\cloudrun\README.md = example-apps\cloud\gcp\cloudrun\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestazure", "examples-cloud\azure\appservice\app\soteltestazure.csproj", "{54ECAF4A-F5D8-4883-8271-FB49AA88CBE3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestazure", "example-apps\cloud\azure\appservice\app\soteltestazure.csproj", "{54ECAF4A-F5D8-4883-8271-FB49AA88CBE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestgcp", "examples-cloud\gcp\cloudrun\app\soteltestgcp.csproj", "{05A6EC93-E1BE-075A-F7F6-EB59D1BB344D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestgcp", "example-apps\cloud\gcp\cloudrun\app\soteltestgcp.csproj", "{05A6EC93-E1BE-075A-F7F6-EB59D1BB344D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example-apps", "example-apps", "{6CA5258E-4499-4B20-AF5C-707C7C180A98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -236,6 +241,7 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{934CB77B-DFE8-99F0-8A6C-87F95E3803D9} = {4C5B3160-F5E4-4C2E-A0E2-55666BE7A11C}
+		{34B0BD7D-84E0-4AC2-9F98-03C747EB80A9} = {6CA5258E-4499-4B20-AF5C-707C7C180A98}
 		{5A7BB03E-560C-0A1A-F54F-F304BF40E039} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 		{5A7BB03E-560C-0A1A-F54F-F304BF40E040} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 		{CD26694E-037B-40BF-BEAD-6FBED597D245} = {95C8B8C9-E3D5-4BFB-8727-702038E77D82}
@@ -250,6 +256,7 @@ Global
 		{EEEA3893-43E0-4215-836D-47803B93E09E} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
 		{B44F8B0F-97EC-4448-BAB6-FC0EBDDAB7AA} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
 		{DD44ECB4-DC93-40B2-8CD2-9FC824C3E171} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
+		{E46EFEB5-A302-426C-A99F-4050C051BB7C} = {6CA5258E-4499-4B20-AF5C-707C7C180A98}
 		{C570C0DD-E08B-4AA6-AC68-F00AEEF94C0D} = {E46EFEB5-A302-426C-A99F-4050C051BB7C}
 		{1F11BFED-5384-332C-DCE5-5F7AB210D009} = {C570C0DD-E08B-4AA6-AC68-F00AEEF94C0D}
 		{865745A1-BD48-45EB-96C8-580997C50BCD} = {E46EFEB5-A302-426C-A99F-4050C051BB7C}

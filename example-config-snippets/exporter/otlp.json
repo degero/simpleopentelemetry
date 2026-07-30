@@ -1,1 +1,22 @@
-// TODO Chad
+{
+  "SimpleOpenTelemetry": {
+    "ExporterOptions": {
+      "Otlp": {
+        "Headers": null,
+        "TimeoutMilliseconds": 10000,
+        "Protocol": "Grpc",
+        "Compression": "None",
+        "UserAgentProductIdentifier": "",
+        "ExportProcessorType": "Batch"
+        }
+    },
+    "Trace": {
+       "Exporters": [ { "type": "Otlp" } ]
+    },
+    "Metric": {
+       "Exporters": [ { "type": "Otlp" } ]
+    },
+    "Log": {
+       "Exporters": [ { "type": "Otlp" } ]
+    }
+}

@@ -1,7 +1,6 @@
 # SimpleOpenTelemetry
 
-A lightweight, low-friction .NET library providing a simple, low code option to setup code-based OpenTelemetry instrumentation on dotnet applications via configuration file or env vars.
-
+A lightweight, low-code .NET library for configuring OpenTelemetry via IConfiguration, supporting both generic-host and standalone apps. Example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
 
 **Supported Frameworks:** .NET 10.0, .NET 8.0
 
@@ -34,7 +33,7 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
 - Pluggable components by adding config entry and NuGet package to your app for telemetry features you need.
 - Example configuration files for common app / cloud platform / 3rd party telemetry service scenarios [example-configs](./example-configs/)
 - Component snippets so you can quickly add in extra otel components [example-config-snippets](./example-config-snippets/)
-- Cloud examples for AWS, Azure and GCP [examples-cloud/](./examples-cloud/)
+- Cloud examples for AWS, Azure and GCP [example-apps/cloud/](./example-apps/cloud/)
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin ResourceDetector 'AssemblyVersion' (see [AssemblyVersion](#assemblyversion)). Overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
 - 'All signal' exporter option overridable at the signal level for exporter type
 - `OpenTelemetry`, `OpenTelemetry.Extensions.Hosting` and `OpenTelemetry.Exporter.OpenTelemetryProtocol` packages are included in this lib. Making Generic host registration and OTLP export.
@@ -57,8 +56,11 @@ SimpleOpenTelemetry handles the boilerplate configuration needed when using manu
 
 
   - For Generic Host apps like aspnetcore (or any apps using WebApplicationBuilder/HostApplicationBuilder):
+
     - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
-    - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry.
+
+    - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry. This may be best to do if console / std logging is enabled on a cloud hosting platform.
+
     - Optionally, to validate OpenTelemetry have the key app identifiers set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
 
 
@@ -90,7 +92,7 @@ For more detail on OpenTelemetry's two methods of use covered above see:
 
 ## Examples
 
-If you are in TLDR; mode, head over to the [localdev example applications](./examples-localdev/), [cloud specific example applications](./examples-cloud/) and [example configs](./example-configs/) to find the configuration that suits your needs.
+If you are in TLDR; mode, head over to the [localdev example applications](./example-apps/localdev/), [cloud specific example applications](./example-apps/cloud/) and [example configs](./example-configs/) to find the configuration that suits your needs.
 
 
 ---
@@ -271,7 +273,7 @@ In the case of SimpleOpenTelemetry, it is a library that will set up all signal 
 
 *IMPORTANT*: Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry or OpenTelemetry 'OTEL_' settings.
 
-For examples listing all possible options (in their current default) see the [example-configs/components/distro folder](./example-configs/components/distro/)
+For examples listing all possible options (in their current default) see the [example-config-snippets/distro folder](./example-config-snippets/distro/)
 
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](
 https://opentelemetry.io/ecosystem/distributions/)
@@ -315,6 +317,9 @@ RBAC (only the key is needed in connectionstring, you can use this placeholder a
 }
 ```
 
+For supported configurable options see [example-config-snippets/distro/azuremonitoraspnetcore.json](./example-config-snippets/distro/azuremonitoraspnetcore.json)
+
+
 You can confirm your telemetry data is flowing with KQL:
 
 
@@ -331,7 +336,7 @@ Notes:
 
 There's a lot of transformation to squeeze OTLP data into Azure Monitor's data structures. eg customMetrics has a '_APPRESOURCEPREVIEW_' entry with otel resource attributes. If you can sacrifice the benefits of this distro (see 'Why should I use the Azure Monitor OpenTelemetry Distro' above) and want to store the 'pure' OTLP data look at using an OTLP exporter.
 
-This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./examples-localdev/aspnetcore/Program.cs)
+This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./example-apps/localdev/aspnetcore/Program.cs)
 
 If you add a package `OpenTelemetry.Instrumentation.SqlClient` you will need to configure it by code. As the distro will backoff from setting up its own internal sqlclient instrumentation if it detects it.
 
@@ -341,7 +346,7 @@ If you add a package `OpenTelemetry.Instrumentation.SqlClient` you will need to 
 
 ### Logging
 
-Logging providers are not cleared by SimpleOpenTelemetry (, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [examples](./examples-localdev/).
+Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [examples](./example-apps/localdev/).
 
 
 #### Settings
@@ -448,6 +453,8 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
  "AWS"
 ```
 
+For supported configurable options see [example-config-snippets/instrumentations/aws.json](./example-config-snippets/instrumentations/aws.json)
+
 
 #### AWS Lambda
 
@@ -467,6 +474,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
  "AWSLambda"
 ```
 
+For supported configurable options see [example-config-snippets/instrumentations/awslambda.json](./example-config-snippets/instrumentations/awslambda.json)
 
 #### Sql Client
 
@@ -570,7 +578,7 @@ You can set exporter options for all signals in "SimpleOpenTelemetry:ExporterOpt
 
 For a full list of all the supported exporters see [TraceExporterEnum / MetricExporterEnum / LogExporterEnum](./src/SimpleOpenTelemetry/Exporter/ExporterAssemblies.cs)
 
-For examples listing all possible options (in their current default) see the [example-configs/components/exporter folder](./example-configs/components/exporter/)
+For examples listing all possible options (in their current default) see the [example-config-snippets/exporter folder](./example-config-snippets/exporter/)
 
 #### OTLP exporter
 
@@ -582,25 +590,18 @@ Documentation: [OpenTelemetry OTLP Exporter README.md](https://github.com/open-t
 
 Options: optional
 
-Notes: All OpenTelemetry SDK OTEL_ environment variables or (root) settings json values will be used to send to OTLP endpoints for entries don't have options defined
+Notes: All OpenTelemetry SDK OTEL_ environment variables or (root) settings json values will be used to send to OTLP endpoints for entries don't have options defined.
 
 Nuget Package: none (builtin to OpenTelemetry .net lib)
 
 SimpleOpenTelemetry:<SignalType>:Exporters[] json:
 ```json
-{ "type": "otlp" }
+{ "type": "otlp", "options": { ... } }
 ```
 
-If you want to export to multiple OTLP endpoints / have full configuration options add the below, for field names/values see [OtlpExporterOptions.cs)](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs))
+For supported configurable options see [example-config-snippets/exporter/otlp.json](./example-config-snippets/exporter/otlp.json)
 
-SimpleOpenTelemetry:<SignalType>:Exporters[] json:
-```json
-{ "type": "otlp", "options": {...} }
-```
-
-// TODO list out all the options
-
----
+There are unsupported configuration options such as HttpFactory. If you wish to utilise these, the exporter will need to be configured by code, see [OtlpExporterOptions.cs)](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs))
 
 
 #### Console Exporter
@@ -647,6 +648,8 @@ SimpleOpenTelemetry:Metric:Exporters[] json:
 ```
 
 
+For supported configurable options see [example-config-snippets/exporter/prometheushttplistener.json](./example-config-snippets/exporter/prometheushttplistener.json.json)
+
 ---
 
 
@@ -658,7 +661,7 @@ Stability: Beta (as of april 2026)
 
 Documentations: [OpenTelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md)
 
-Options: optional, the documentation doesn't seem to mention but you can set anything defined in 'PrometheusAspNetCoreOptions.cs' of this project.
+Options: optional, the documentation doesn't appear to mention, but you can set anything defined in 'PrometheusAspNetCoreOptions.cs' of this project.
 
 Notes: For AspNetCore apps only. Hosts prometheus scrape endpoint defaulted on http://apphost:port/metrics.
 
@@ -670,6 +673,10 @@ SimpleOpenTelemetry:Metric:Exporters[] json:
 ```json
 { "type": "prometheusaspnetcore", "options": {...} }
 ```
+
+
+For supported configurable options see [example-config-snippets/exporter/prometheusaspnetcore.json](./example-config-snippets/exporter/prometheusaspnetcore.json)
+
 
 Additional setup needed:
 
@@ -724,6 +731,7 @@ SimpleOpenTelemetry:<SignalType>:Exporters[] json:
  { "type": "AzureMonitor", "options": {...} }
  ```
 
+For supported configurable options see [example-config-snippets/exporter/azuremonitor.json](./example-config-snippets/exporter/azuremonitor.json)
 
 ---
 
@@ -850,12 +858,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
  "aws"
  ```
 
-(Optional) SimpleOpenTelemetry:Resource:DetectorConfig:AWS json:
-
- ```json
- { "SemanticConventionVersion": "V1_29_0" }
- ```
-
+For supported configurable options see [example-config-snippets/resourcedetectors/aws.json](./example-config-snippets/resourcedetectors/aws.json)
 
 
 #### Azure
@@ -1047,6 +1050,7 @@ SimpleOpenTelemetry:BuilderExtensions[] json:
  { "Type": "AzureMonitorExporter", "Options": {...} }
  ```
 
+For supported configurable options see [example-config-snippets/extensions/azuremonitorexporter.json](./example-config-snippets/extensions/azuremonitorexporter.json)
 
 ---
 
@@ -1089,7 +1093,7 @@ For an example of all the dotnet tracing features see [MSLearn - Adding distribu
 
 SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/docs/specs/otel/error-handling/) as OpenTelemetry for error handling in that it 'MUST NOT throw unhandled exceptions at runtime.'. Building on that it will not throw any errors if a configuration does not work (eg config env var / files change) it will not prevent the app from running. Note that "SimpleOpenTelemetry-" prefixed events only occur at the app startup and will only emit if a listener is registered before starting.
 
-SimpleOpenTelemetry will throw exceptions for null parameters passed to it's registration methods. SimpleOpenTelemetry records any errors as diagnostics events (as OpenTelemetry does). These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./examples-localdev/) folder demonstrate custom code listening to this and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
+SimpleOpenTelemetry will throw exceptions for null parameters passed to it's registration methods. SimpleOpenTelemetry records any errors as diagnostics events (as OpenTelemetry does). These events will have a "SimpleOpenTelemetry-" prefix. Projects in the [examples](./example-apps/localdev/) folder demonstrate custom code listening to this and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
 
 Some options to listen to events if not using a code based event listener/console output in the examples:
 
