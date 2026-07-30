@@ -29,14 +29,14 @@ if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
     Console.WriteLine("║     SimpleOpenTelemetry Console Application Generic Host Sample     ║");
     Console.WriteLine("╚═════════════════════════════════════════════════════════════════════╝");
 
-    
+
 
     // Setup .net Generic host
     Console.WriteLine($"[Demo] Initialising .Net Generic Host and loading appsettings json configurations");
     HostApplicationBuilder builder = Host.CreateApplicationBuilder();
 
     // OPTIONAL: clear loggers so the OpenTelemetry logger is attached
-    builder.Logging.ClearProviders();
+    //builder.Logging.ClearProviders();
 
     Console.WriteLine($"[Demo] Initialising / Configuring OpenTelemetry with SimpleOpenTelemetry");
 
@@ -86,12 +86,12 @@ else
     Console.WriteLine("║     SimpleOpenTelemetry Console Application Standalone app Sample       ║");
     Console.WriteLine("╚═════════════════════════════════════════════════════════════════════════╝");
 
-    
+
     // Build logger factory with settings from appsettins.Development.json
     // using var loggerFactory = LoggerFactory.Create(builder => builder.AddConfiguration(config.GetSection("Logging")));
 
     // Create a logger factory with OpenTelemetry as it is not auto added as
-    // when using Generic Host Opentelemetry registration extensions 
+    // when using Generic Host Opentelemetry registration extensions
     using var loggerFactory = LoggerFactory.Create(builder =>
     {
         builder.AddConfiguration(config.GetSection("Logging"));
@@ -101,7 +101,7 @@ else
     var sw = Stopwatch.StartNew();
 
     var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
-    
+
     Console.WriteLine($"[Demo] AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
 
     // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
@@ -112,7 +112,7 @@ else
     // Create the typed logger from the loggerfactory created by OpenTelemetry
     var sdkLoggerFactory = sdk!.GetLoggerFactory();
     ILogger<TestHttpCalls> testCallsLogger = sdkLoggerFactory?.CreateLogger<TestHttpCalls>() ?? throw new InvalidOperationException("Logger factory is null.");
-   
+
     // 1. DEMO calls to view in Grafana Loki and Tempo queries and Jaeger
     testCallsLogger.LogInformation("Test log message from Generic Host Console App");
     testCallsLogger.LogTrace("Test trace message Generic Host Console App");
@@ -127,7 +127,7 @@ else
     // 2. SPAN → goes to Tempo from httpclient instrumentation and custom traces
     await testHttpCalls.DemonstrateHttpCalls();
 
-    // 3. Its required to run this to finish exporting and logs before terminating 
+    // 3. Its required to run this to finish exporting and logs before terminating
     //    as it is not takenc care of like a Generic host app
     sdk.Dispose();
 
