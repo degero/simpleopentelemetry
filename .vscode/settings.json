@@ -1,11 +1,9 @@
 {
+  "security.workspace.trust.enabled": true,
   // Helps the C# extension pick the right solution when opening the repo root.
-  "dotnet.defaultSolution": "SimpleOpenTelemetry.sln"
-}
-{
+  "dotnet.defaultSolution": "SimpleOpenTelemetry.sln",
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
-  "editor.tabSize": 4,
   "editor.insertSpaces": true,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,

@@ -1,10 +1,10 @@
-# SimpleOpenTelemetry Appsettings Configs for newrelic
+# SimpleOpenTelemetry Appsettings Configs for NewRelic
 
-This folder contains newrelic focused appsettings examples for SimpleOpenTelemetry.
+This folder contains NewRelic focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-newrelic-directexport.json`: Base appsettings for ASP.NET Core apps that send telemetry directly to newrelic.
+- `aspnetcore-newrelic-directexport.json`: Base appsettings for ASP.NET Core apps that send telemetry directly to NewRelic.
 - `aspnetcore-newrelic-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via the standard OpenTelemetry collector sidecar.
 
 ## New Relic endpoints
@@ -13,10 +13,10 @@ For EU users use `otlp.eu01.nr-data.net:4317` rather than the endpoint given in 
 
 ## How to use
 
-With the [examples/aspnetcore/](../../examples/aspnetcore/) app:
+With the [examples/aspnetcore/](../../examples-localdev/aspnetcore/) app:
 
 1. Copy the contents (except for OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES) of `aspnetcore-newrelic-directexport.json` file into the example app `appsettings.Development.json`
-1. Get your newrelic api key from the [newrelic website](https://one.newrelic.com/admin-portal/api-keys/home)
+1. Get your NewRelic api key from the [NewRelic website](https://one.newrelic.com/admin-portal/api-keys/home)
 1. Set a dotnet user-secret with the command in the example app folder:
 ```powershell
 dotnet user-secrets set "OTEL_EXPORTER_OTLP_HEADERS" "api-key=<newreliceapikey>"
@@ -32,7 +32,7 @@ With an existing / new aspnetcore app:
 1. Ensure the required packages below are installed in your app.
 1. look at the [component-snippets](../component-snippets/) to add any other instrumentations, resource detectors etc for your hosted env and add their relevant packages
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
-1. Run the app and verify telemetry on the newrelic website
+1. Run the app and verify telemetry on the NewRelic website
 
 ## Required package install commands
 
@@ -56,7 +56,7 @@ https://docs.newrelic.com/docs/opentelemetry/get-started/collector-processing/op
 https://github.com/newrelic/newrelic-opentelemetry-examples/tree/main/other-examples/collector/nr-config
 
 
-## Checking telemetry on newrelic
+## Checking telemetry on NewRelic
 
 Viewing traces and logs are straightfoward on the site however here are some sample dashboard queries for
 the sample apps httpclient / aspnetcore metrics

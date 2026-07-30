@@ -52,13 +52,14 @@ public class App : IHostedService
 
 	private async Task DoWorkAsync(CancellationToken cancellationToken)
 	{
-        // 1. DEMO calls to view in Grafana Loki and Tempo queries and Jaeger
-        _logger.LogInformation("Test log message from Generic Host Console App");
-        _logger.LogTrace("Test trace message Generic Host Console App");
-        _logger.LogDebug("Test debug message Generic Host Console App");
-        _logger.LogWarning("Test warning message Generic Host Console App");
-        _logger.LogError("Test error message Generic Host Console App");
-        _logger.LogCritical("Test critical message Generic Host Console App");
+		var action = "Index";
+		// Test with message formatting covered in the OTEL log settings 'IncludeFormattedMessage'
+		_logger.LogInformation("Test log message from Generic Host Console App running task: {Action}", action);
+		_logger.LogTrace("Test trace message Generic Host Console App running task: {Action}", action);
+		_logger.LogDebug("Test debug message Generic Host Console App running task: {Action}", action);
+		_logger.LogWarning("Test warning message Generic Host Console App running task: {Action}", action);
+		_logger.LogError("Test error message Generic Host Console App running task: {Action}", action);
+		_logger.LogCritical("Test critical message Generic Host Console App running task: {Action}", action);
 
 		await _httpCalls.DemonstrateHttpCalls();
 

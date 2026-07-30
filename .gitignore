@@ -51,7 +51,6 @@ ehthumbs.db
 
 # Others
 .env
-.env.*
 *.local
 envvars.json
 
@@ -98,7 +97,3 @@ SAMPLES_*
 *.tfvars
 !terraform.tfvars.example
 .terraform.lock.hcl
-
-# TODO Chad remove
-retired/**/*
-spec.md

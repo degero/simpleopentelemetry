@@ -18,8 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 OtelEventListener? otelListener = null;
 SimpleOtelEventListener? simpleOtelListener = null;
 
-// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console 
-if (builder.Configuration.GetValue("EnableOtelEventListeners",false))
+// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console
+if (builder.Configuration.GetValue("EnableOtelEventListeners", false))
 {
     otelListener = new OtelEventListener();
     simpleOtelListener = new SimpleOtelEventListener();
@@ -30,23 +30,23 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks();
 
 // OPTIONAL: clear loggers so only the OpenTelemetry logger is attached
-// As the ECS task definition in the terraform has 'logConfiguration' removing 
+// As the ECS task definition in the terraform has 'logConfiguration' removing
 // this would result in duplicate logs, console and otlp exporter
-builder.Logging.ClearProviders();
+//builder.Logging.ClearProviders();
 
 // ### This is the only ESSENTIAL code to add SimpleOpenTelemetry - the next sections are only for
 // ### direct exporting to AWS OTLP endpoints or AWS Xray Remote Sampler
 var otelBuilder = builder.AddSimpleOpenTelemetry();
 
 // Get env vars to determine if we need direct export or xray sampler enabled - as it can only be done via code
-var servicename = builder.Configuration.GetValue("OTEL_SERVICE_NAME","unknown");
+var servicename = builder.Configuration.GetValue("OTEL_SERVICE_NAME", "unknown");
 var traceEndpoint = builder.Configuration.GetValue<string>("OTEL_EXPORTER_OTLP_TRACES_ENDPOINT");
 
 if (!builder.Configuration.GetValue("UseOtelCollector", true))
 {
     // ### - Custom Http Auth for direct export - Not recommended for production
     var region = builder.Configuration.GetValue<string>("AWS_REGION")!;
-    var creds  = new DefaultAWSCredentialsIdentityResolver();
+    var creds = new DefaultAWSCredentialsIdentityResolver();
     var env = builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT");
     var logGroupName = builder.Configuration.GetValue<string>("AWS_LOG_GROUP_NAME");
     var logStreamName = builder.Configuration.GetValue<string>("AWS_LOG_STREAM_NAME");
@@ -105,16 +105,16 @@ if (!builder.Configuration.GetValue("UseOtelCollector", true))
                     return client;
                 };
             }));
-    // ### - END Custom Http Auth for direct export 
+    // ### - END Custom Http Auth for direct export
 }
 else if (builder.Configuration.GetValue("UseXraySampler", false))
 {
     // ### - X-Ray Sampling - Only possible to enable if using aws-otel-collector as its not possible to add request sig like above
     // For more details see https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md
-    var resourceAttribs = builder.Configuration.GetValue("OTEL_RESOURCE_ATTRIBUTES","");
-    
+    var resourceAttribs = builder.Configuration.GetValue("OTEL_RESOURCE_ATTRIBUTES", "");
+
     // Unfortunately the design of this requires a prebuilt resource unlike all other libraries using a lazy loaded Resource / ResourceBuilder
-    // so in actuality there will be two resources, this replicates what is configured in the SimpleOpenTelemetry:Trace section 
+    // so in actuality there will be two resources, this replicates what is configured in the SimpleOpenTelemetry:Trace section
     var resourceBuilder = ResourceBuilder
         .CreateDefault()
         .AddService(servicename, "demo-simpleopentelemetry")
@@ -123,13 +123,13 @@ else if (builder.Configuration.GetValue("UseXraySampler", false))
             new("OTEL_RESOURCE_ATTRIBUTES",resourceAttribs)
         ])
         .AddEnvironmentVariableDetector();
-        // .AddAWSECSDetector() // Add which ever AWSResourceBuilderExtensions extension for your target env
-        // .AddAWSEC2Detector();
+    // .AddAWSECSDetector() // Add which ever AWSResourceBuilderExtensions extension for your target env
+    // .AddAWSEC2Detector();
 
     var samplerEndpoint = builder.Configuration.GetValue("AWS_XRAY_SAMPLER_ENDPOINT", "http://localhost:2000");
 
     otelBuilder.WithTracing(t => t.AddSource("soteltestaws.*")
-        .SetSampler(AWSXRayRemoteSampler.Builder(resourceBuilder.Build()) 
+        .SetSampler(AWSXRayRemoteSampler.Builder(resourceBuilder.Build())
         .SetPollingInterval(TimeSpan.FromSeconds(5))
         .SetEndpoint(samplerEndpoint)
         .Build()));

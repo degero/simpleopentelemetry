@@ -21,7 +21,8 @@ builder.Services.AddControllersWithViews();
 // Add EFCore if enabled in config
 if (builder.Configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
 {
-    builder.Services.AddDbContext<AppDbContext>(options => {
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     });
 }
@@ -31,7 +32,7 @@ if (builder.Configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
 // https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/19db4b8e6bb8821f89450693b14e609793452351/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/README.md
 builder.Services.Configure<EntityFrameworkInstrumentationOptions>(options =>
 {
-    // Adds in helpful name to EF tracing 
+    // Adds in helpful name to EF tracing
     options.EnrichWithIDbCommand = (activity, command) =>
     {
         var stateDisplayName = $"EFCoreCmd{command.CommandType}";
@@ -56,8 +57,8 @@ builder.Services.Configure<SqlClientTraceInstrumentationOptions>(options =>
     };
 });
 
-// OPTIONAL: clear loggers so the OpenTelemetry logger is attached
-builder.Logging.ClearProviders();
+// OPTIONAL: clear loggers so only the OpenTelemetry logger is attached
+//builder.Logging.ClearProviders();
 
 var sw = Stopwatch.StartNew();
 

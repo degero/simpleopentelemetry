@@ -2,13 +2,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": ".NET: examples/console",
+      "name": ".NET: examples-localdev/console",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build: examples/console",
-      "program": "${workspaceFolder}/examples/console/bin/Debug/net10.0/Console.dll",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples-localdev/console/bin/Debug/net10.0/Console.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples/console",
+      "cwd": "${workspaceFolder}/examples-localdev/console",
       "console": "integratedTerminal",
       "stopAtEntry": false,
       "env": {
@@ -16,101 +16,83 @@
       }
     },
     {
-      "name": ".NET: examples/aspnetcore",
+      "name": ".NET: examples-localdev/aspnetcore",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build: examples/aspnetcore",
-      "program": "${workspaceFolder}/examples/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/examples-localdev/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
       "args": [],
-      "cwd": "${workspaceFolder}/examples/aspnetcore",
-      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/examples-localdev/aspnetcore",
       "stopAtEntry": false,
+      "launchBrowser": {
+        "enabled": true,
+        "args": "http://localhost:5056"
+      },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:5056"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/examples-localdev/aspnetcore/Views"
       }
     },
     {
       "name": ".NET: examples-cloud/gcp/cloudrun",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build: examples-cloud/gcp/cloudrun",
+      "preLaunchTask": "build",
       "program": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app/bin/Debug/net10.0/soteltestgcp.dll",
       "args": [],
       "cwd": "${workspaceFolder}/examples-cloud/gcp/cloudrun/app",
-      "console": "integratedTerminal",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:5195"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
     },
     {
       "name": ".NET: examples-cloud/azure/appservice",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "build: examples-cloud/azure/appservice",
+      "preLaunchTask": "build",
       "program": "${workspaceFolder}/examples-cloud/azure/appservice/app/bin/Debug/net10.0/soteltestazure.dll",
       "args": [],
       "cwd": "${workspaceFolder}/examples-cloud/azure/appservice/app",
-      "console": "integratedTerminal",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "http://localhost:5147"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
-    }
-  ],
-  "compounds": [
+    },
     {
-      "name": ".NET: examples (pick one)",
-      "configurations": [
-        ".NET: examples/console",
-        ".NET: examples/aspnetcore"
-      ],
-      "stopAll": true
-    }
-  ]
-}
-
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": ".NET Core Launch (web)",
+      "name": ".NET: examples-cloud/aws/ecs",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
-      "program": "${workspaceFolder}/samples/aspnetcore/bin/Debug/net10.0/aspnetcore.dll",
+      "program": "${workspaceFolder}/examples-cloud/aws/ecs/app/bin/Debug/net10.0/soteltestaws.dll",
       "args": [],
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/examples-cloud/aws/ecs/app",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
       },
-      "sourceFileMap": {
-        "/Views": "${workspaceFolder}/Views"
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
-    },
-    {
-      "name": ".NET Core Launch (web) - Watch",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "watch",
-      "program": "${workspaceFolder}/samples/aspnetcore/bin/Debug/net10.0/aspnetcore.dll",
-      "args": [],
-      "cwd": "${workspaceFolder}",
-      "stopAtEntry": false,
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
-      }
-    },
-    {
-      "name": ".NET Core Attach",
-      "type": "coreclr",
-      "request": "attach"
     }
   ]
 }

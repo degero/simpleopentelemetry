@@ -17,8 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 OtelEventListener? otelListener = null;
 SimpleOtelEventListener? simpleOtelListener = null;
 
-// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console 
-if (builder.Configuration.GetValue("EnableOtelEventListeners",false))
+// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console
+if (builder.Configuration.GetValue("EnableOtelEventListeners", false))
 {
     otelListener = new OtelEventListener();
     simpleOtelListener = new SimpleOtelEventListener();
@@ -28,10 +28,13 @@ if (builder.Configuration.GetValue("EnableOtelEventListeners",false))
 builder.Services.AddControllersWithViews();
 builder.Services.AddHealthChecks();
 
+// OPTIONAL: clear loggers so only the OpenTelemetry logger is attached
+//builder.Logging.ClearProviders();
+
 var otelBuilder = builder.AddSimpleOpenTelemetry();
 
 // GCP Direct export requires bearer token authentication - default to sidecar if no endpoint set
-var otlpEndpoint = builder.Configuration.GetValue("OTEL_EXPORTER_OTLP_ENDPOINT","")?.TrimEnd('/') ?? "https://telemetry.googleapis.com";
+var otlpEndpoint = builder.Configuration.GetValue("OTEL_EXPORTER_OTLP_ENDPOINT", "")?.TrimEnd('/') ?? "https://telemetry.googleapis.com";
 if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.InvariantCultureIgnoreCase))
 {
     var bearerTokenProvider = new GoogleCloudBearerTokenProvider();
@@ -53,11 +56,12 @@ if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.I
         )
         .WithMetrics(metrics => metrics.AddOtlpExporter(options =>
        {
-            options.Protocol = protocol;
-            options.Endpoint = new Uri(otlpEndpoint + "/v1/metrics");
-            options.HttpClientFactory = bearerTokenProvider.CreateHttpClientFactory();
-        }))
-        .WithLogging(logging => logging.AddOtlpExporter(options => {
+           options.Protocol = protocol;
+           options.Endpoint = new Uri(otlpEndpoint + "/v1/metrics");
+           options.HttpClientFactory = bearerTokenProvider.CreateHttpClientFactory();
+       }))
+        .WithLogging(logging => logging.AddOtlpExporter(options =>
+        {
             options.Protocol = protocol;
             options.Endpoint = new Uri(otlpEndpoint + "/v1/logs");
             options.HttpClientFactory = bearerTokenProvider.CreateHttpClientFactory();
@@ -74,12 +78,12 @@ if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.I
     if (instanceId != null)
     {
         otelBuilder.ConfigureResource(r => r.AddAttributes(new Dictionary<string, object>
-            {
-                ["faas.instance"] = instanceId,
-                // Set the 'norm' for otel data instance id. this is done by the example collector transforms 
-                // in otel-collector-config
-                ["service.instance.id"] = instanceId 
-            })
+        {
+            ["faas.instance"] = instanceId,
+            // Set the 'norm' for otel data instance id. this is done by the example collector transforms
+            // in otel-collector-config
+            ["service.instance.id"] = instanceId
+        })
         );
     }
 }
@@ -88,13 +92,13 @@ if (otlpEndpoint.Contains("https://telemetry.googleapis.com", StringComparison.I
 // will stop the issue introduced by Cloud Run injecting a parent span / making sampling decisions
 // which affect trace settings / sampling settings in app configuration.
 // IMPORTANT: this is just for demonstration purposes, it only solves a simple app trace and doesn't solve
-// cases like app to api or client side app to api parent based tracing. Using a different sampler with a 
+// cases like app to api or client side app to api parent based tracing. Using a different sampler with a
 // ratio and potentially tail sampling  is a better PRODUCTIOn way to handle all cases.
-// Allowing configuration or turning off this CloudRun 'feature' is the proper way to resolve. 
+// Allowing configuration or turning off this CloudRun 'feature' is the proper way to resolve.
 // see: https://issuetracker.google.com/issues/363032992
 // https://cloud.google.com/run/docs/trace
 // https://discuss.google.dev/t/google-cloud-trace-is-missing-all-spans-from-cloud-load-balancer/147087
-if (builder.Configuration.GetValue("IgnoreInboundTraceRules",false))
+if (builder.Configuration.GetValue("IgnoreInboundTraceRules", false))
 {
     builder.Services.Replace( // There is also another demonstration RenamedHeaderPropagator you can try here
         ServiceDescriptor.Singleton<DistributedContextPropagator, IgnoreInboundContextPropagator>());

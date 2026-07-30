@@ -15,7 +15,7 @@ public class HomeController : Controller
 
     private readonly IConfiguration _configuration;
 
-    public HomeController(ILogger<HomeController> logger, 
+    public HomeController(ILogger<HomeController> logger,
         IConfiguration configuration, AppDbContext? context = null)
     {
         _logger = logger;
@@ -30,17 +30,20 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        // 1. DEMO calls to view in Grafana Loki and Tempo queries and Jaeger
-        _logger.LogInformation("Test log message from HomeController.Index");
-        _logger.LogTrace("Test trace message from HomeController.Index");
-        _logger.LogDebug("Test debug message from HomeController.Index");
-        _logger.LogWarning("Test warning message from HomeController.Index");
-        _logger.LogError("Test error message from HomeController.Index");
-        _logger.LogCritical("Test critical message from HomeController.Index");
+        var controller = "HomeController";
+        var action = "Index";
+        // Test with message formatting covered in the OTEL log settings 'IncludeFormattedMessage'
+        _logger.LogTrace("Test trace message from {Controller}.{Action}", controller, action);
+        _logger.LogDebug("Test debug message from {Controller}.{Action}", controller, action);
+        _logger.LogInformation("Test information message from {Controller}.{Action}", controller, action);
+        _logger.LogWarning("Test warning message from {Controller}.{Action}", controller, action);
+        _logger.LogError("Test error message from {Controller}.{Action}", controller, action);
+        _logger.LogCritical("Test critical message from {Controller}.{Action}", controller, action);
 
-        // 2. SPAN → goes to Tempo
         using (var activity = _activitySource.StartActivity("DoSomeWork"))
         {
+            _logger.LogInformation("Test information message in Trace: DoSomeWork from {Controller}.{Action}", controller, action);
+
             if (activity != null && activity.IsAllDataRequested == true)
             {
                 activity.SetTag("custom.tag", "hello");
@@ -51,7 +54,7 @@ public class HomeController : Controller
         }
 
         // 3. If enabled Use EF traces with the EFCore + SqlClient instrumentations
-        if(_configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
+        if (_configuration.GetValue<string>("UseSqlEfCore")?.ToLower() == "true")
         {
             using (var efActivity = _activitySource.StartActivity("GetProducts"))
             {

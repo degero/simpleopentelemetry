@@ -1,9 +1,19 @@
 {
+  "Logging": {
+    "LogLevel": {
+      "Default": "Trace", // Switch to Information for PROD
+      "Microsoft.AspNetCore": "Warning",
+      // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
+      "Microsoft.Hosting.Lifetime": "Warning",
+      // Avoid logging Host internal events
+      "Microsoft.Extensions.Hosting.Internal.Host": "Warning"
+    }
+  },
   "EnableOtelEventListeners": "true",
   "OTEL_SERVICE_NAME": "soteltestazure",
   "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
   "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",
-  "OTEL_TRACES_SAMPLER_ARG": "1.0", 
+  "OTEL_TRACES_SAMPLER_ARG": "1.0",
   "SimpleOpenTelemetry": {
     "ExporterOptions": {
       "AzureMonitor": {
@@ -13,7 +23,11 @@
       }
     },
     "Trace": {
-      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Exporters": [
+        {
+          "type": "AzureMonitor"
+        }
+      ],
       "Instrumentations": [
         "HttpClient",
         "AspNetCore"
@@ -21,23 +35,35 @@
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [ "soteltestazure.*" ]
+      "Sources": [
+        "soteltestazure.*"
+      ]
     },
     "Metric": {
-      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Exporters": [
+        {
+          "type": "AzureMonitor"
+        }
+      ],
       "Instrumentations": [
         "HttpClient",
         "AspNetCore"
       ]
     },
     "Log": {
-      "Exporters": [ { "type": "AzureMonitor" } ],
+      "Exporters": [
+        {
+          "type": "AzureMonitor"
+        }
+      ],
       "Settings": {
         "IncludeFormattedMessage": true
       }
     },
     "Resource": {
-      "Detectors": [ "azure" ]
+      "Detectors": [
+        "azure"
+      ]
     }
   }
 }

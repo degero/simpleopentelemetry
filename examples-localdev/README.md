@@ -62,7 +62,7 @@ To enable EFCore and SqlClient instrumentation / logging, With a mssql localdb r
 To run:  
 
 ```
-cd ./examples/aspnetcore
+cd ./examples-localdev/aspnetcore
 ..setup the config file...
 dotnet run
 ```
@@ -83,7 +83,7 @@ This example will run some http calls and traces you can view in your local tele
 To run:  
 
 ```
-cd ./examples/console
+cd ./examples-localdev/console
 ..setup the config file...
 dotnet run
 ```

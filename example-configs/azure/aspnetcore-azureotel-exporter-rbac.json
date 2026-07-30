@@ -1,4 +1,14 @@
 {
+  "Logging": {
+    "LogLevel": {
+      "Default": "Trace", // Switch to Information for PROD
+      "Microsoft.AspNetCore": "Warning",
+      // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
+      "Microsoft.Hosting.Lifetime": "Warning",
+      // Avoid logging Host internal events
+      "Microsoft.Extensions.Hosting.Internal.Host": "Warning"
+    }
+  },
   "OTEL_SERVICE_NAME": "yourappname",
   "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yournamespace,deployment.environment.name=dev",
   "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",

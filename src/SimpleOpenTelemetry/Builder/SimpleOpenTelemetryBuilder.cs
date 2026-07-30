@@ -196,12 +196,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             if (_options.Metric.CustomMeters is not null)
                 metrics.AddMeter(_options.Metric.CustomMeters.ToArray());
 
-            // add exporters
-            _exporterLoader.ConfigureExporters(metrics, _options);
-
             // add extensions
             _extensionLoader.AddMetricExtensions(metrics, _options.Metric);
 
+            // add exporters
+            _exporterLoader.ConfigureExporters(metrics, _options);
         });
     }
 
@@ -228,11 +227,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // add integration tests to verify this doesnt break resourcebuilder config
             _samplerLoader.SetSampler(tracing, _options);
 
-            // add exporters
-            _exporterLoader.ConfigureExporters(tracing, _options);
-
             // add extensions
             _extensionLoader.AddTraceExtensions(tracing, _options.Trace);
+
+            // add exporters
+            _exporterLoader.ConfigureExporters(tracing, _options);
         });
         
         // Add propagators
@@ -247,11 +246,11 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _otelBuilder.WithLogging(
             logging =>
             {
-                // Iterate over exporters for this montioring type and add them
-                _exporterLoader.ConfigureExporters(logging, _options);
-                
                 // add extensions
                 _extensionLoader.AddLogExtensions(logging, _options.Log);
+
+                // Iterate over exporters for this montioring type and add them
+                _exporterLoader.ConfigureExporters(logging, _options);
             }, 
             options =>
             {

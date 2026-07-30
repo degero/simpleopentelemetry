@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 OtelEventListener? otelListener = null;
 SimpleOtelEventListener? simpleOtelListener = null;
 
-// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console 
-if (builder.Configuration.GetValue("EnableOtelEventListeners",false))
+// FOR DEMO/DEBUG PURPOSES - Add Event listeners outputing to console
+if (builder.Configuration.GetValue("EnableOtelEventListeners", false))
 {
     otelListener = new OtelEventListener();
     simpleOtelListener = new SimpleOtelEventListener();
@@ -15,13 +15,8 @@ if (builder.Configuration.GetValue("EnableOtelEventListeners",false))
 
 var otelBuilder = builder.AddSimpleOpenTelemetry();
 
-// var serviceName = Environment.GetEnvironmentVariable("OTEL_SERVICE_NAME");
-// if (!string.IsNullOrEmpty(serviceName)) {
-//     otelBuilder.ConfigureResource(r => r.AddAttributes(new Dictionary<string, object>
-//     {
-//         ["service.name"] = serviceName
-//     }));
-// }
+// OPTIONAL: clear loggers so only the OpenTelemetry logger is attached
+//builder.Logging.ClearProviders();
 
 builder.Services.AddControllersWithViews();
 

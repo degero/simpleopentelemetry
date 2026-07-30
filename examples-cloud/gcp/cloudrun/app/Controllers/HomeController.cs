@@ -17,8 +17,9 @@ public class HomeController : Controller
 
     public IActionResult Index()
     {
-        var controller = "HomeController"; 
-        var action="Index";
+        var controller = "HomeController";
+        var action = "Index";
+        // Test with message formatting covered in the OTEL log settings 'IncludeFormattedMessage'
         _logger.LogTrace("Test trace message from {Controller}.{Action}", controller, action);
         _logger.LogDebug("Test debug message from {Controller}.{Action}", controller, action);
         _logger.LogInformation("Test information message from {Controller}.{Action}", controller, action);

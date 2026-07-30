@@ -2,7 +2,7 @@
 
 These configs only support gRPC OTLP receivers as to work with manual opentelemetry app instrumentation and not AWS SDK telemetry like the xray library. They are designed for PRODUCTION use with trace filters, memory limit, collector telemetry (core signals for alerting) and tail sampling to reduce load/cost of telemetry.
 
-ECS configs in (Github aws-observability/aws-otel-collector)[https://github.com/aws-observability/aws-otel-collector/tree/main/config/ecs] and OpenTelemetry Exporters to Cloudwatch OTLP endpoints (Collector config examples) [https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPSimplesetup.html] were used as guides for these configs.
+ECS configs in [Github aws-observability/aws-otel-collector](https://github.com/aws-observability/aws-otel-collector/tree/main/config/ecs) and OpenTelemetry Exporters to Cloudwatch OTLP endpoints (Collector config examples) [https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPSimplesetup.html] were used as guides for these configs.
 
 ## Env vars
 
