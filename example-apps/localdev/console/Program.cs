@@ -15,11 +15,13 @@ using SimpleOpenTelemetry.Extensions;
 using var otelListener = new OtelEventListener();
 using var simpleOtelListener = new SimpleOtelEventListener();
 
+var env = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
+
 // Needed to pass in SimpleOpenTelemetry configuration for standaldone app (a HostApplicationBuilder does this by default)
 var config = new ConfigurationBuilder()
     .SetBasePath(AppContext.BaseDirectory)
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
-    .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: false)
+    .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false)
     .Build();
 
 if ((config.GetValue<string>("UseGenericHost") ?? "").ToLower() == "true")
