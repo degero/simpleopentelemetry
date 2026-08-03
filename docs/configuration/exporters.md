@@ -8,7 +8,7 @@ You can set exporter options for all signals in `SimpleOpenTelemetry:ExporterOpt
 
 For a full list of all the supported exporters see [TraceExporterEnum / MetricExporterEnum / LogExporterEnum](./src/SimpleOpenTelemetry/Exporter/ExporterAssemblies.cs)
 
-For examples listing all possible options (in their current default) see the [example-config-snippets/exporter folder](./example-config-snippets/exporter/)
+For examples listing all possible options (in their current default) see the [snippets/exporter folder](./snippets/exporter/)
 
 Available exporters are:
 
@@ -32,7 +32,7 @@ SimpleOpenTelemetry:<SignalType>:Exporters[] json:
 { "type": "otlp", "options": { ... } }
 ```
 
-For supported configurable options see [example-config-snippets/exporter/otlp.json](./example-config-snippets/exporter/otlp.json)
+For supported configurable options see [snippets/exporter/otlp.json](./snippets/exporter/otlp.json)
 
 There are unsupported configuration options such as HttpFactory. If you wish to utilise these, the exporter will need to be configured by code, see [OtlpExporterOptions.cs)](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs))
 
@@ -77,7 +77,7 @@ SimpleOpenTelemetry:Metric:Exporters[] json:
 { "type": "prometheushttplistener", "options": {...} }
 ```
 
-For supported configurable options see [example-config-snippets/exporter/prometheushttplistener.json](./example-config-snippets/exporter/prometheushttplistener.json.json)
+For supported configurable options see [snippets/exporter/prometheushttplistener.json](./snippets/exporter/prometheushttplistener.json)
 
 
 ## Prometheus AspNetCore Exporter
@@ -102,7 +102,7 @@ SimpleOpenTelemetry:Metric:Exporters[] json:
 ```
 
 
-For supported configurable options see [example-config-snippets/exporter/prometheusaspnetcore.json](./example-config-snippets/exporter/prometheusaspnetcore.json)
+For supported configurable options see [snippets/exporter/prometheusaspnetcore.json](./snippets/exporter/prometheusaspnetcore.json)
 
 
 Additional setup needed:
@@ -157,7 +157,7 @@ SimpleOpenTelemetry:<SignalType>:Exporters[] json:
  { "type": "AzureMonitor", "options": {...} }
  ```
 
-For supported configurable options see [example-config-snippets/exporter/azuremonitor.json](./example-config-snippets/exporter/azuremonitor.json)
+For supported configurable options see [snippets/exporter/azuremonitor.json](./snippets/exporter/azuremonitor.json)
 
 
 

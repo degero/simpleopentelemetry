@@ -20,4 +20,5 @@
     "Log": {
        "Exporters": [ { "type": "Otlp" } ]
     }
+  }
 }

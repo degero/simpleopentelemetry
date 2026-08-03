@@ -26,7 +26,7 @@ SimpleOpenTelemetry:BuilderExtensions[] json:
  { "Type": "AzureMonitorExporter", "Options": {...} }
  ```
 
-For supported configurable options see [example-config-snippets/extensions/azuremonitorexporter.json](./example-config-snippets/extensions/azuremonitorexporter.json)
+For supported configurable options see [snippets/extensions/azuremonitorexporter.json](./snippets/extensions/azuremonitorexporter.json)
 
 
 

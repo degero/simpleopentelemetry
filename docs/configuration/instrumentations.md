@@ -67,7 +67,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
  "AWS"
 ```
 
-For supported configurable options see [example-config-snippets/instrumentations/aws.json](./example-config-snippets/instrumentations/aws.json)
+For supported configurable options see [snippets/instrumentations/aws.json](./snippets/instrumentations/aws.json)
 
 
 ## AWS Lambda
@@ -88,7 +88,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
  "AWSLambda"
 ```
 
-For supported configurable options see [example-config-snippets/instrumentations/awslambda.json](./example-config-snippets/instrumentations/awslambda.json)
+For supported configurable options see [snippets/instrumentations/awslambda.json](./snippets/instrumentations/awslambda.json)
 
 
 ## Sql Client

@@ -80,7 +80,7 @@ To get started, add a "SimpleOpenTelemetry" section to the root of your appsetti
 
 Similarly for the subsections "Metric/Trace/Log", OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and  subsequent exports etc) when the corresponding section exists. If at least on is not set it will not run AddOpenTelemetry() with your application.
 
-For a json configuration file, you can start with a full pre-built configuration in [example-configs](./example-configs/) or add in using snippets in [example-config-snippets](./example-config-snippets) or setup the top level config items and follow the next sections covering the items you can add:
+For a json configuration file, you can start with a full pre-built configuration in [example-configs](./example-configs/) or add in using [snippets](./snippets) or setup the top level config items and follow the next sections covering the items you can add:
 
 
 ```json

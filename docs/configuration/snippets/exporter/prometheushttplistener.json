@@ -7,7 +7,7 @@
           "options": {
             "ScrapeEndpointPath": "prometheus",
             "DisableTotalNameSuffixForCounters": "true",
-            "UriPrefixes": [ "http://127.0.0.1:9090/" ],
+            "UriPrefixes": [ "http://127.0.0.1:9090/" ]
           }
         }
       ]

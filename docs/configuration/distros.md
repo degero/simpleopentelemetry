@@ -8,7 +8,7 @@ In the case of SimpleOpenTelemetry, it is a library that will set up all signal 
 
 **IMPORTANT**: ⚠️ *Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry or OpenTelemetry 'OTEL_' settings.* ⚠️
 
-For examples listing all possible options (in their current default) see the [example-config-snippets/distro folder](./example-config-snippets/distro/)
+For examples listing all possible options (in their current default) see the [snippets/distro folder](./snippets/distro/)
 
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](
 https://opentelemetry.io/ecosystem/distributions/)
@@ -22,7 +22,7 @@ Available distros are:
 
 This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry.
 
-For supported configurable options see [example-config-snippets/distro/azuremonitoraspnetcore.json](./example-config-snippets/distro/azuremonitoraspnetcore.json). For a full configuration file see [example-configs/azure/aspnetcore-azureotel-distro-rbac.json](../../example-configs/azure/aspnetcore-azureotel-distro-rbac.json)
+For supported configurable options see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json). For a full configuration file see [example-configs/azure/aspnetcore-azureotel-distro-rbac.json](../../example-configs/azure/aspnetcore-azureotel-distro-rbac.json)
 
 If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter) or for all signals [Azure Monitor Exporter extension](#azure-monitor-exporter-1). Note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
 

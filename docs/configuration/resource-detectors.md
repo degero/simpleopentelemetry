@@ -122,7 +122,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
  "aws"
  ```
 
-For supported configurable options see [example-config-snippets/resourcedetectors/aws.json](./example-config-snippets/resourcedetectors/aws.json)
+For supported configurable options see [snippets/resourcedetectors/aws.json](./snippets/resourcedetectors/aws.json)
 
 
 ## Azure
