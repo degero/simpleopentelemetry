@@ -4,7 +4,7 @@
 
 This example contains a low-complexity Azure App Service demo app that shows how to use SimpleOpenTelemetry with Azure Monitor / Application Insights.
 
-- Two main folders: `app/` for the ASP.NET Core app and `simpleopentelemetry-config/` for OpenTelemetry config templates.
+- Two main folders: [app/](./app/) for the ASP.NET Core app and [simpleopentelemetry-config/](./simpleopentelemetry-config/) for OpenTelemetry config templates.
 - Three sample config files are provided:
   - `aspnetcore-azureotel-distro-rbac.json` — (Recommended) Azure Monitor AspNetCore distro library config. Feature rich with livemetrics offline storage etc.
   - `aspnetcore-azureotel-exporter-rbac.json` — Azure Monitor exporter library with RBAC auth to app insights config.
@@ -48,9 +48,9 @@ az account set --subscription "<subscription-id>"
 In `example-apps/cloud/azure/appservice/app/`:
 
 1. Copy one of the sample configs to `appsettings.Development.json` or (for deployment to appservice) `appsettings.Production.json`:
-   - `../simpleopentelemetry-config/aspnetcore-azureotel-exporter-rbac.json`
-   - `../simpleopentelemetry-config/aspnetcore-azureotel-exporter-by-signal-rbac.json`
-   - `../simpleopentelemetry-config/aspnetcore-azureotel-distro-rbac.json`
+   - `simpleopentelemetry-config/aspnetcore-azureotel-exporter-rbac.json`
+   - `simpleopentelemetry-config/aspnetcore-azureotel-exporter-by-signal-rbac.json`
+   - `simpleopentelemetry-config/aspnetcore-azureotel-distro-rbac.json`
 
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 

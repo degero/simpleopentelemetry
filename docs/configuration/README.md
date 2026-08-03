@@ -29,7 +29,7 @@ As SimpleOpenTelemetry uses dotnet's IConfiguration concepts and abstractions, i
 
 The configuration system also means you can also [add in other configuration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration) before calling AddSimpleOpenTelemetry(). These are particularly useful for loading in sensitive values (keys, secrets etc).
 
-As the IConfigurationProvider for environment variables is enabled by default, you can define all SimpleOpenTelemetry settings and OTEL_ env vars in environment variables or in the appsettings.json file .
+As the IConfigurationProvider for environment variables is enabled by default, you can define all SimpleOpenTelemetry settings and OTEL_ env vars in environment variables or in the appsettings.json file. You can also put the "SimpleOpenTelemetry" section and OTEL_ settings in its own file instead of appsettings.json if you wish with some extra configration before calling AddSimpleOpenTelemetry(). See https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#file-configuration-provider
 
 For local development with sensitive values, it is recommended to take advantage of [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). This can be used for any configuration below or
 
@@ -43,7 +43,10 @@ When setting SimpleOpenTelemetry configuration as Environment variables use the 
 
 The OpenTelemetry OTEL_* environment variables / json config are partially supported (see details further below) and load in by default (as this is done by the underlying OpenTelemetry SDK registration) but for many components those settings can be defined explicitly for their signal type/functionality in the configuration file or in code using the OpenTelemetryBuilder returned from SimpleOpenTelemetry.
 
-Some core and critical OTEL_ environment variables you can set in Env var or root appsettings.json value (* indicates a recommended setting to set):
+
+## OpenTelemetry environment variables
+
+Some required and core OTEL_ environment variables you can set in Env vars or appsettings.ENV.json value. See [Configuration file setup](#configuration-file-setup) for a template of what the required setttings should be (* indicates a required setting):
 
 
 - [*OTEL_SERVICE_NAME](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
@@ -68,14 +71,16 @@ Some core and critical OTEL_ environment variables you can set in Env var or roo
 
 ## Configuration testing, debugging and deployment
 
-Rather than building a configuration from scratch, you may want to start with one of the [example configs](./examples/) to find the configuration that is closest to your needs. For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and deploy to you cloud provider.
+Rather than building a configuration from scratch, you may want to start with one of the [example configs](./examples/) to find the configuration that is closest to your needs.
+
+For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local Grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and connect to / deploy to you cloud provider.
 
 
 ## Configuration file setup
 
 **IMPORTANT**: ⚠️ *SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured.* ⚠️
 
-To get started, add a "SimpleOpenTelemetry" section to the root of your appsettings.json / appsettings.{Environment}.json file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application.
+To get started, add the "OTEL_" settings and "SimpleOpenTelemetry" section to the root of your appsettings.json / appsettings.{Environment}.json file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application.
 
 Similarly for the subsections "Metric/Trace/Log", OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and  subsequent exports etc) when the corresponding section exists. If at least on is not set it will not run AddOpenTelemetry() with your application.
 
@@ -83,36 +88,40 @@ For a json configuration file, you can start with a full pre-built configuration
 
 
 ```json
-"SimpleOpenTelemetry": {
-    "Distro": "",
-    "DistroOptions": {},
-    "Trace": {
-      "Instrumentations": [],
-      "InstrumentationConfig": {},
-      "Sources": [],
-      "Exporters": [],
-      "Extensions": [],
-      "Propagators": [],
-      "Settings": {}
-    },
-    "Metric": {
-      "Instrumentations": [],
-      "InstrumentationConfig": {},
-      "Exporters": [],
-      "Settings": {},
-      "CustomMeters": []
-    },
-    "Log": {
-      "Exporters": [],
-      "Settings": {}
-    },
-    "ExporterOptions": {},
-    "Resource": {
-      "Detectors": [ ],
-      "DetectorConfig": {}
-    },
-    "Sampler": "",
-    "BuilderExtensions": []
+{
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=unknown,deployment.environment.name=dev",
+  "SimpleOpenTelemetry": {
+      "Distro": "",
+      "DistroOptions": {},
+      "Trace": {
+        "Instrumentations": [],
+        "InstrumentationConfig": {},
+        "Sources": [],
+        "Exporters": [],
+        "Extensions": [],
+        "Propagators": [],
+        "Settings": {}
+      },
+      "Metric": {
+        "Instrumentations": [],
+        "InstrumentationConfig": {},
+        "Exporters": [],
+        "Settings": {},
+        "CustomMeters": []
+      },
+      "Log": {
+        "Exporters": [],
+        "Settings": {}
+      },
+      "ExporterOptions": {},
+      "Resource": {
+        "Detectors": [ ],
+        "DetectorConfig": {}
+      },
+      "Sampler": "",
+      "BuilderExtensions": []
+  }
 }
 
 ```
@@ -128,7 +137,7 @@ OpenTelemetry signal handling is enabled via setting `SimpleOpenTelemetry:[Metri
 
 Normally you will want to add other components for each signal, most importantly an exporter like OTLP. These are covered in the [configuration-component-details](#configuration-component-details)
 
-Below covers information about each signal collection settings and documentation.
+Below covers information about each signal collection settings and documentation. See [Instrumenting your apps](../README.md#instrumenting-your-apps) for guidance on what to set these to.
 
 
 ## Logging
@@ -182,7 +191,7 @@ OpenTelemetry Documentation: [opentelemetry.io traces reporting exceptions](http
 ## Configuration component details
 
 
-While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib) distros, and vendor implementations of components *could* be loaded using SimpleOpenTelemetry's configuration syntax, these are gated through registered assembly sets in the below folders to ensure those configurations have been tested in this repo:
+While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib) distros, and vendor implementations of components *could* be loaded using SimpleOpenTelemetry's configuration syntax, these are gated through registered assembly sets in the below folders to ensure those configurations have been tested with this library:
 
 - [Distros](./src/SimpleOpenTelemetry/OtelComponents/Distro/DistroAssemblies.cs)
 - [Exporters](./src/SimpleOpenTelemetry/OtelComponents/Exporter/ExporterAssemblies.cs)
@@ -205,37 +214,11 @@ The next sections cover setting up the subsections of your "SimpleOpenTelemetry"
 - [Extensions](./extensions.md)
 
 
----
-
-
-## If a component isn't available/configurable
-
-
-If a component type (eg. Processors), extension or setting isn't available to configure you can load/configure it in code using the OpenTelemetryBuilder returned from AddSimpleOpenTelemetry(). To search for a component check the [OpenTelemetry Registry](https://OpenTelemetry.io/ecosystem/registry/).
+If a component type (eg. Processors), extension or setting isn't available to configure you can load/configure it in code using the OpenTelemetryBuilder returned from `AddSimpleOpenTelemetry()`. To search for a component check the [OpenTelemetry Registry](https://OpenTelemetry.io/ecosystem/registry/).
 
 If what you need isn't available there, you can build your own following the OpenTelemetry guidelines for extending [traces](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/docs/trace/extending-the-sdk/README.md) [logs](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/docs/logs/extending-the-sdk/README.md) and [metrics](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/docs/metrics/extending-the-sdk/README.md).
 
-If there is a registy component you would like added, feel free to raise a PR, or [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new).
+If there is a registry component you would like added, feel free to raise a PR, or [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new).
 
 
 ---
-
-
-## Production use tips
-
-
-- If you are not sending telemetry to an OpenTelemetry Collector with some sampling in place, ensure you have a optimised sampler set in *OTEL_TRACES_SAMPLER* with a *OTEL_TRACES_SAMPLER_ARG* or code, as traces can be costly. See [OpenTelemetry - Sampling production guidance  ](https://opentelemetry.io/docs/languages/dotnet/sampling/#production-guidance)
-
-- *OTEL_SERVICE_NAME* and *OTEL_RESOURCE_ATTRIBUTES* should always be set. This is best as Env vars for your deployed environments.
-
-- Review the OpenTelemetry Best Practices doco for [Traces](https://opentelemetry.io/docs/languages/dotnet/traces/best-practices/), [Logs](https://opentelemetry.io/docs/languages/dotnet/logs/best-practices/) and [Metrics](https://opentelemetry.io/docs/languages/dotnet/metrics/best-practices/)
-
-- Review the OpenTelemetry dotnet doco for best practices [Tracesw](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
-
-
----
-
-
-## Best practices and Troubleshooting
-
-Best practices and troubleshooting your configuration can be found in the main [README.md](../../README.md)

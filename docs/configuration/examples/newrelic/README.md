@@ -48,7 +48,7 @@ dotnet add package OpenTelemetry.Instrumentation.Http
 
 ```
 
-## When using an opentelemetry collector sidecar
+## When using an OpenTelemetry collector sidecar
 
 You can check the following guides to configure an open telemetry sidecar with a local docker compose or on your
 

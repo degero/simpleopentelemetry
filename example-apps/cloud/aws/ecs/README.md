@@ -2,7 +2,7 @@
 
 ## Overview
 
-This setup is focused on manual application instrumentation push exporting to the [ADOT (Aws Distro of OpenTelemetry) Collector](https://github.com/aws-observability/aws-otel-collector) and does not cover using the [AWS ADOT autoinstrumentation](https://aws-otel.github.io/docs/getting-started/dotnet-sdk/auto-instr) nor the [AWS Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) or [Cloudwatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for host/platform level telemetry.
+This setup is focused on code-based application instrumentation push exporting to the [ADOT (Aws Distro of OpenTelemetry) Collector](https://github.com/aws-observability/aws-otel-collector) and does not cover using the [AWS ADOT autoinstrumentation](https://aws-otel.github.io/docs/getting-started/dotnet-sdk/auto-instr) nor the [AWS Container Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights.html) or [Cloudwatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for host/platform level telemetry.
 
 For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html). The sample collector yml configs can be adapted for use with the cloudwatch agent which now supports OTLP endpoints if you need the full set of telemetry from host and app.
 
@@ -85,7 +85,7 @@ This sampler on the OpenTelemetry SDK is currently in Alpha at the time of writi
 
 ## Run locally and send telemetry directly to AWS
 
-The configuration 'simpleopentelemetry-config/appsettings.DirectExport.json' allows for a simplified quick way to run apps locally or in lower AWS envs and confirm/use telemetry in AWS Cloudwatch. It is not recommended for PRODUCTION due to no offline storage / batching amongst other reasons.
+The configuration [simpleopentelemetry-config/appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) allows for a simplified quick way to run apps locally or in lower AWS envs and confirm/use telemetry in AWS Cloudwatch. It is not recommended for PRODUCTION due to no offline storage / batching amongst other reasons.
 
 1. Create a log group and logstream in the loggroup (Cloudwatch > Log Management) matching your AWS_LOG_GROUP_NAME setting and AWS_LOG_STREAM_NAME (adjust names if necessary)
 
@@ -104,7 +104,7 @@ The configuration 'simpleopentelemetry-config/appsettings.DirectExport.json' all
 
 Note: the 'AWSSDK*' packages are not needed for this type of app, it is only for direct export example above and can be removed with the code in Program.cs to reduce the app footprint.
 
-The configuration 'simpleopentelemetry-config/appsettings.OtelCollector.json' requires either running the app and collector in the /localdev-docker/ or you can debug the app locally and remove the app service from the docker-compose.yml.
+The configuration [simpleopentelemetry-config/appsettings.OtelCollector.json](./simpleopentelemetry-config/appsettings.OtelCollector.json) requires either running the app and collector in the /localdev-docker/ or you can debug the app locally and remove the app service from the docker-compose.yml.
 
 1. Create a log group and logstream in the loggroup (Cloudwatch > Log Management) matching your log_group_name setting and log_stream_name to match what is in /localdev-docker/.env, adjust names if you want something different.
 

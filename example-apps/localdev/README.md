@@ -14,7 +14,7 @@ It collects:
 
 The hooks to SimpleOpenTelemetry to configure OpenTelemetry are 'AddSimpleOpenTelemetry()' and after build (the option to check your config has core settings correct) 'SimpleOpenTelemetryValidate()' in [Program.cs](./aspnetcore/Program.cs).
 
-There are also EventListeners for OpenTelemetry and SimpleOpentelemetry events setup in the Program.cs of the examples. You can view any warnings or errors with your configuration from these outputs. as `[OTel/<level>] [OpenTelemetry-Sdk]` and `[S-Otel/<level>] [SimpleOpenTelemetry-Core]` for opentelemetry and simpleopentelemetry respectively
+There are also EventListeners for OpenTelemetry and SimpleOpentelemetry events setup in the Program.cs of the examples. You can view any warnings or errors with your configuration from these outputs. as `[OTel/<level>] [OpenTelemetry-Sdk]` and `[S-Otel/<level>] [SimpleOpenTelemetry-Core]` for OpenTelemetry and SimpleOpenTelemetry respectively
 
 To reduce console noise, event listeners can be commented out in Program.cs and the "console" exporter entries in the appsettings.Development.json removed.
 

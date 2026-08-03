@@ -9,10 +9,10 @@ A lightweight, low-code .NET library for configuring OpenTelemetry via IConfigur
 
 
 ```
-dotnet add package --prerelease SimpleOpenTelemetry
+dotnet add package SimpleOpenTelemetry
 ```
 
-Add a `"SimpleOpenTelemetry": {}` section to the root of your `appsettings.{environment}.json`.
+Add `"OTEL_SERVICE_NAME": ""`, `"OTEL_RESOURCE_ATTRIBUTES": ""` and `"SimpleOpenTelemetry": {}` section to the root of your `appsettings.{environment}.json`.
 
 **Generic Host apps** (aspnetcore, or any app using `WebApplicationBuilder`/`HostApplicationBuilder`):
 
