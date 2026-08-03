@@ -10,7 +10,7 @@ This example contains a low-complexity Azure App Service demo app that shows how
   - `aspnetcore-azureotel-exporter-rbac.json` — Azure Monitor exporter library with RBAC auth to app insights config.
   - `aspnetcore-azureotel-exporter-by-signal-rbac.json` —  Azure Monitor exporter library with explicit trace/metric/log exporter config.
 - The sample app uses `builder.AddSimpleOpenTelemetry()` and the Azure resource detector.
-- For more Azure-specific config guidance and package notes, see `simpleopentelemetry-config/README.md`.
+- For more Azure-specific config guidance and package notes, see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md).
 - OpenTelemetry/SimpleOpenTelemetry events to console via `EnableOtelEventListeners` app setting
 - Trace/Metrics for AspNetCore and HttpClient (distro includes httpclient, sqlclient automatically)
 
@@ -21,7 +21,7 @@ This example contains a low-complexity Azure App Service demo app that shows how
 - Azure subscription
 - Azure Application Insights resource or Azure RBAC with `DefaultAzureCredential`
 - Optional: App Service if deploying to Azure
-- If using RBAC locally, assign your Azure user the required Azure Monitor roles as described in `example-configs/azure/README.md`.
+- If using RBAC locally, assign your Azure user the required Azure Monitor roles as described in [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md).
 
 ## Azure observability environment setup and configuration
 
@@ -87,7 +87,7 @@ az monitor app-insights component show `
   --query connectionString -o tsv
 ```
 
-1. If using RBAC (default), follow `example-configs/azure/README.md` for role assignment and Azure RBAC setup.
+1. If using RBAC (default), follow [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md) for role assignment and Azure RBAC setup.
 
 
 1. Add debug logging at the top of `appsettings.Development.json`:
@@ -253,4 +253,4 @@ The app settings are configured in `app/appservicesettings.json` and automatical
 
 ## Production use and other documentation
 
-For production templates and Doco see [example-configs/azure/README.md](../../../example-configs/azure/README.md)
+For production templates and Doco see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md)

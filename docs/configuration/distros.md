@@ -22,7 +22,7 @@ Available distros are:
 
 This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry.
 
-For supported configurable options see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json). For a full configuration file see [example-configs/azure/aspnetcore-azureotel-distro-rbac.json](../../example-configs/azure/aspnetcore-azureotel-distro-rbac.json)
+For supported configurable options see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json). For a full configuration file see [examples/azure/aspnetcore-azureotel-distro-rbac.json](./examples/azure/aspnetcore-azureotel-distro-rbac.json)
 
 If you wish to setup for Azure Monitor in a Standalone app, configure to use the [Azure Monitor Exporter](#azure-monitor-exporter) or for all signals [Azure Monitor Exporter extension](#azure-monitor-exporter-1). Note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
 

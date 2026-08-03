@@ -13,7 +13,7 @@ You can use one of the [localdev example applications](./example-apps/localdev/R
 ### With a new / existing dotnet app
 
 - Add the SimpleOpenTelemetry nupkg: `dotnet add package --prerelease SimpleOpenTelemetry`
-- Add a "OTEL_SERVICE_NAME", "OTEL_RESOURCE_ATTRIBUTES" and "SimpleOpenTelemetry": {} to the root of your appsettings.{environment}.json and read the next sections or [example configrations](../example-configs/) to setup.
+- Add a "OTEL_SERVICE_NAME", "OTEL_RESOURCE_ATTRIBUTES" and "SimpleOpenTelemetry": {} to the root of your appsettings.{environment}.json and read the next sections or [example configrations](./configuration/examples/) to setup.
 - Add boostrapping code:
 
 
@@ -60,7 +60,7 @@ For more detail on OpenTelemetry's two methods of initialisation see:
 
 ## Configuration
 
-If you wish to skip reading the configuration information for now see [example configs](./example-configs/) to find the configuration that closest suits your needs. You may wish to check this later to find any other instrumentation features you can make use of.
+If you wish to skip reading the configuration information for now see [example configs](./configuration/examples/) to find the configuration that closest suits your needs. You may wish to check this later to find any other instrumentation features you can make use of.
 
 See [configuration/README.md](./configuration/README.md) for full details of each configuration area.
 

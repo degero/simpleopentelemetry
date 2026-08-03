@@ -112,7 +112,7 @@ You can view the telemetry collected on your [local grafana server](http://local
 
 For viewing all telemetry at a high level, navigate to Connections > Data Sources and you can hit the 'Explore data' on each of the service types or just Explore.
 
-On the data explorer pages click 'Go queryless' to get a quick glance at the data comingh through.
+On the data explorer pages click 'Go queryless' to get a quick glance at the data coming through.
 
 To examine the traces that are generated in HomeController.cs, go to the Explore section -> Select tempo in the top left -> set query type 'search' -> set span name = 'DoSomeWork' you can view the demo trace information sent. This includes span attributes (tag) and events as pictured.
 
@@ -131,7 +131,7 @@ If you enable EFCore as mentioned before, you will see Entity framework and SqlC
 
 ## Using the sample with Azure
 
-You can deploy this app to Azure by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/azure/) and following setup instructions there. Ensure you have an "UseSqlEfCore": "false" item and the "Sources": [] entry the same as the appsettings.Example.json entry.
+You can deploy this app to Azure by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/azure/) and following setup instructions there. Ensure you have an "UseSqlEfCore": "false" item and the "Sources": [] entry the same as the appsettings.Example.json entry.
 
 - Go to your Application Insights resource in Azure Portal
 - Verify data is flowing using this KQL [Azure monitor exporter] (../README.md#azure-monitor-aspnetcore)
@@ -139,15 +139,15 @@ You can deploy this app to Azure by setting an appsettings.Production.json with 
 
 ## Using the sample with AWS
 
-You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [example-apps/cloud/aws/ecs/README.md](../cloud/aws/ecs/README.md).
+You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [example-apps/cloud/aws/ecs/README.md](../cloud/aws/ecs/README.md).
 
 
 ## Using the sample with GCP
 
-You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [example-apps/cloud/gcp/cloudrun/README.md](../cloud/gcp/cloudrun/README.md).
+You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [example-apps/cloud/gcp/cloudrun/README.md](../cloud/gcp/cloudrun/README.md).
 
 
 ## Using the sample with New Relic
 
 
-You can deploy this app to New Relic by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry example-configs](../example-configs/newrelic/) and following setup instructions and telemetry verification there.
+You can deploy this app to New Relic by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/newrelic/) and following setup instructions and telemetry verification there.

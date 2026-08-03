@@ -34,7 +34,7 @@ SimpleOpenTelemetry handles configuration when using manual code-based OpenTelem
 ## Features
 
 - Pluggable components by adding config entry and NuGet package to your app for telemetry features you need
-- Pre-tested example configuration files for common app / cloud platform / 3rd party telemetry service scenarios [example-configs](./example-configs/)
+- Pre-tested example configuration files for common app / cloud platform / 3rd party telemetry service scenarios [docs/configuration/examples](./docs/configuration/examples/)
 - Component snippets so you can quickly add in extra otel components [docs/configuration/snippets](./docs/configuration/snippets/)
 - Cloud examples for AWS, Azure and GCP in [example-apps/cloud/](./example-apps/cloud/)
 - Key Configuration validation via `SimpleOpenTelemetryValidate()` extension method

@@ -69,7 +69,7 @@ Some core and critical OTEL_ environment variables you can set in Env var or roo
 
 ## Configuration testing, debugging and deployment
 
-Rather than building a configuration from scratch, you may want to start with one of the [example configs](./example-configs/) to find the configuration that is closest to your needs. For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and deploy to you cloud provider.
+Rather than building a configuration from scratch, you may want to start with one of the [example configs](./examples/) to find the configuration that is closest to your needs. For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and deploy to you cloud provider.
 
 
 ## Configuration file setup
@@ -80,7 +80,7 @@ To get started, add a "SimpleOpenTelemetry" section to the root of your appsetti
 
 Similarly for the subsections "Metric/Trace/Log", OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and  subsequent exports etc) when the corresponding section exists. If at least on is not set it will not run AddOpenTelemetry() with your application.
 
-For a json configuration file, you can start with a full pre-built configuration in [example-configs](./example-configs/) or add in using [snippets](./snippets) or setup the top level config items and follow the next sections covering the items you can add:
+For a json configuration file, you can start with a full pre-built configuration in [examples](./examples/) or add in using [snippets](./snippets) or setup the top level config items and follow the next sections covering the items you can add:
 
 
 ```json
