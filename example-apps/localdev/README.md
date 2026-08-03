@@ -54,6 +54,7 @@ $Env:SimpleOpenTelemetry__Trace__Settings__SetErrorStatusOnException = "true"
 
 Make adjustments to these files / env vars based on the different examples below.
 
+
 ## Using the AspNetCore example
 
 This uses a WebApplicationBuilder generic host setup.

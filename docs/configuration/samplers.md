@@ -1,0 +1,35 @@
+
+
+# Samplers
+
+Set Trace samplers in the configuration `SimpleOpenTelemetry:Trace:Sampler` string field.
+
+The below allow vendor sampler configuration as an alternative to OpenTelemetry's [built-in samplers](https://OpenTelemetry.io/docs/specs/otel/trace/sdk/#built-in-samplers). Builtin samplers can be set in OTEL_TRACES_SAMPLER of the root json configuration or env var. Some requires values in OTEL_TRACES_SAMPLER_ARG. The sampler defaults to 'parentbased_always_on'.
+
+For a full list of all the additional supported samplers see [SamplerEnum](./src/SimpleOpenTelemetry/Sampler/SamplerAssemblies.cs)
+
+For Azure users, sampling is built into the exporter setup/options.
+
+Available samplers are:
+
+
+## AWS X-Ray Remote Sampler
+
+Stability: Alpha (as of July 2026)
+
+Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. Requires setup in CloudWatch to support xray sampler settings
+
+Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
+
+Nuget Package:
+`dotnet add package OpenTelemetry.Sampler.AWS --prerelease`
+
+SimpleOpenTelemetry:Trace:Sampler json:
+
+```json
+ "aws"
+```
+
+
+---
+
