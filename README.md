@@ -52,7 +52,7 @@ SimpleOpenTelemetry handles configuration when using manual code-based OpenTelem
 
 ## Quickstart
 
-To test out SimpleOpenTelemetry locally with Grafana LGTM running in docker to view telemetry, run the aspnetcore example app guide in [example-apps/localdev/README.md](./example-apps/localdev/README.md). This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
+Run the aspnetcore example app guide in [example-apps/localdev/README.md](./example-apps/localdev/README.md) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
 
 
 ## Documentation

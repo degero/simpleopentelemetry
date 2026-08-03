@@ -41,7 +41,6 @@ For local development with sensitive values, it is recommended to take advantage
 
 When setting SimpleOpenTelemetry configuration as Environment variables use the __ seperator for the hierarchical structure eg SimpleOpenTelemetry:Trace:Options as SimpleOpenTelemetry__Trace__Options. See [MSLearn - configuration-keys-and-values](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#configuration-keys-and-values).
 
-
 The OpenTelemetry OTEL_* environment variables / json config are partially supported (see details further below) and load in by default (as this is done by the underlying OpenTelemetry SDK registration) but for many components those settings can be defined explicitly for their signal type/functionality in the configuration file or in code using the OpenTelemetryBuilder returned from SimpleOpenTelemetry.
 
 Some core and critical OTEL_ environment variables you can set in Env var or root appsettings.json value (* indicates a recommended setting to set):
