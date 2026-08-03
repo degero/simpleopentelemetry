@@ -19,6 +19,14 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.nuget.md" Pack="true" PackagePath="README.md" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="SimpleOpenTelemetry.Tests" />
     <InternalsVisibleTo Include="SimpleOpenTelemetry.IntegrationTests" />
