@@ -18,7 +18,7 @@ Available distros are:
 
 ## Azure Monitor AspNetCore
 
-**IMPORTANT**: ⚠️ *This Distro only supports use with generic host WebApplication (does not support using with StandaloneApp.AddSimpleOpenTelemetry()).* ⚠️
+**IMPORTANT**: ⚠️ *This Distro only supports use with generic host WebApplication (does not support using with SimpleOpenTelemetryBootstrap.Add()).* ⚠️
 
 This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry.
 

@@ -15,7 +15,7 @@ Signal: All
 
 Documentation: [Azure Monitor Exporter client library for .NET - Add the Exporter for all signals]https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter#add-the-exporter-for-all-signals)
 
-Notes: This is the same underlying exporter as [Azure Monitor exporter](#azure-monitor-exporter) with one crucial difference supporting Live Metrics (on by default, only configurable using this extension). Live metrics will only work with a Generic host application and will not work with StandaloneApp.AddSimpleOpenTelemetry(). It also simplifies your config if you want exports for all signals with all the same settings.
+Notes: This is the same underlying exporter as [Azure Monitor exporter](#azure-monitor-exporter) with one crucial difference supporting Live Metrics (on by default, only configurable using this extension). Live metrics will only work with a Generic host application and will not work with SimpleOpenTelemetryBootstrap.Add(). It also simplifies your config if you want exports for all signals with all the same settings.
 
 Nuget Package:
 `dotnet add package Azure.Monitor.OpenTelemetry.Exporter`

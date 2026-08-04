@@ -10,11 +10,11 @@ using Xunit;
 
 namespace SimpleOpenTelemetryIntegrationTests;
 
-[CollectionDefinition("StandaloneAppTests", DisableParallelization = true)]
-public class StandaloneAppTestsCollection { }
+[CollectionDefinition("SimpleOpenTelemetryBootstrapTests", DisableParallelization = true)]
+public class SimpleOpenTelemetryBootstrapTestsCollection { }
 
-[Collection("StandaloneAppTests")]
-public class StandaloneAppTests
+[Collection("SimpleOpenTelemetryBootstrapTests")]
+public class SimpleOpenTelemetryBootstrapTests
 {
     [Fact]
     public void AddSimpleOpenTelemetry_StandaloneApp_ShouldInitializeWithConfigDictionary()
@@ -34,8 +34,8 @@ public class StandaloneAppTests
             .AddEnvironmentVariables()
             .Build();
 
-        // ACT - Call StandaloneApp.AddSimpleOpenTelemetry() which is the UoT (Unit of Test)
-        var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+        // ACT - Call SimpleOpenTelemetryBootstrap.Add() which is the UoT (Unit of Test)
+        var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
         try
         {
@@ -47,7 +47,7 @@ public class StandaloneAppTests
             Assert.NotNull(loggerFactory);
 
             // Create a typed logger and verify it works
-            var logger = loggerFactory.CreateLogger<StandaloneAppTests>();
+            var logger = loggerFactory.CreateLogger<SimpleOpenTelemetryBootstrapTests>();
             Assert.NotNull(logger);
 
             // Verify we can log messages without exceptions

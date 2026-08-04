@@ -8,9 +8,9 @@ namespace SimpleOpenTelemetry;
 /// <summary>
 /// OpenTelemetry setup for applications that don't support IHostApplicationBuilder Generic Host
 /// </summary>
-public static class StandaloneApp
+public static class SimpleOpenTelemetryBootstrap
 {
-    public static OpenTelemetrySdk? Sdk {get; private set;}
+    public static OpenTelemetrySdk? Sdk { get; private set; }
 
     /// <summary>
     /// Runs SimpleOpenTelemetryBuilder to initialise OpenTelemetry and process custom
@@ -19,7 +19,7 @@ public static class StandaloneApp
     /// </summary>
     /// <param name="configuration"></param>
     /// <returns>OpenTelemetrySdk for any additional code based configuration</returns>
-    public static OpenTelemetrySdk AddSimpleOpenTelemetry(
+    public static OpenTelemetrySdk Add(
         IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -28,7 +28,7 @@ public static class StandaloneApp
         // to not disrupt any custom code dependencies in app
         var sdk = OpenTelemetrySdk.Create(otelBuilder =>
         {
-            // This is needed for the OpenTelemetry SDK to pick up 
+            // This is needed for the OpenTelemetry SDK to pick up
             // configuration from the appsettings.json IConfiguration
             // setting values in env vars will override these. As it cannot be assumed it has been done
             // in end user code.
@@ -53,13 +53,13 @@ public static class StandaloneApp
     }
 
     /// <summary>
-    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
+    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one
     /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
     /// Writes errors via EventSource for any misconfiguration issues found.
     /// </summary>
     /// <remarks>
     /// For validation to pass, set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
-    /// 
+    ///
     /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
@@ -67,7 +67,7 @@ public static class StandaloneApp
     /// <returns>True if valid</returns>
     public static bool SimpleOpenTelemetryValidate(OpenTelemetrySdk? sdk = null)
     {
-        var sdkToVerify = sdk ?? StandaloneApp.Sdk;
+        var sdkToVerify = sdk ?? SimpleOpenTelemetryBootstrap.Sdk;
 
         // If OpenTelemetrySdk.Create() is called these are always initialized as empty
         var resource = new[]
@@ -80,7 +80,7 @@ public static class StandaloneApp
 
         return SimpleOpenTelemetryValidator.Validate(sdkToVerify, resource);
     }
-    
+
     internal static void Shutdown()
     {
         Sdk?.Dispose();

@@ -12,13 +12,13 @@ using Xunit;
 
 namespace SimpleOpenTelemetryTests;
 
-[Collection("StandaloneAppTests")]
-public class StandaloneAppTests : IDisposable
+[Collection("SimpleOpenTelemetryBootstrapTests")]
+public class SimpleOpenTelemetryBootstrapTests : IDisposable
 {
 
     private readonly TestEventListener _listener;
 
-    public StandaloneAppTests()
+    public SimpleOpenTelemetryBootstrapTests()
     {
         _listener = new();
     }
@@ -26,7 +26,7 @@ public class StandaloneAppTests : IDisposable
     public void Dispose()
     {
         _listener.Dispose();
-        StandaloneApp.Shutdown();
+        SimpleOpenTelemetryBootstrap.Shutdown();
     }
 
     private void ClearOTELEnvVars()
@@ -51,17 +51,17 @@ public class StandaloneAppTests : IDisposable
             var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
 
             // ACT
-            StandaloneApp.AddSimpleOpenTelemetry(config);
+            SimpleOpenTelemetryBootstrap.Add(config);
 
             // ASSERT
             Assert.Equal(serviceName, Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME));
             Assert.Equal(resourceAttributes, Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES));
-        
+
         }
         finally
         {
             ClearOTELEnvVars();
-            
+
         }
     }
 
@@ -77,16 +77,17 @@ public class StandaloneAppTests : IDisposable
         {
             const string serviceName = "test-service";
             const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
-            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new()
+            {
                 [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:0"] = "B3",
                 [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Propagators:1"] = "Baggage"
             });
 
             // ACT
-            StandaloneApp.AddSimpleOpenTelemetry(config);
+            SimpleOpenTelemetryBootstrap.Add(config);
 
             // ASSERT
-            // Assert - not ideal but cant verify by mocked / injected services due to extension method calling 
+            // Assert - not ideal but cant verify by mocked / injected services due to extension method calling
             // AddOpenTelemetry extension method and creating a new SimpleOpenTelemetryBuilder
             var propagator = Propagators.DefaultTextMapPropagator;
             Assert.IsType<CompositeTextMapPropagator>(propagator);
@@ -100,11 +101,11 @@ public class StandaloneAppTests : IDisposable
         {
             Sdk.SetDefaultTextMapPropagator(originalPropagator);
             ClearOTELEnvVars();
-            
+
         }
     }
-    
-    
+
+
     [Fact]
     public void AddSimpleOpenTelemetry_Should_LogErrorWhen_UsingUnsupportedDistro()
     {
@@ -118,12 +119,13 @@ public class StandaloneAppTests : IDisposable
             var distroName = DistroEnum.AzureMonitorAspNetCore.ToString();
             const string serviceName = "test-service";
             const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
-            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new () {
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes, new()
+            {
                 [$"{SimpleOpenTelemetryOptions.SectionName}:Distro"] = distroName,
             });
 
             // ACT
-            StandaloneApp.AddSimpleOpenTelemetry(config);
+            SimpleOpenTelemetryBootstrap.Add(config);
 
             // ASSERT
             var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
@@ -156,11 +158,11 @@ public class StandaloneAppTests : IDisposable
             sdk = OpenTelemetrySdk.Create(x => x.WithLogging(z => z.ConfigureResource(c => c.AddAttributes(dict))));
 
             // ACT
-            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+            var result = SimpleOpenTelemetryBootstrap.SimpleOpenTelemetryValidate(sdk);
 
             // ASSERT
             Assert.True(result);
-        
+
         }
         finally
         {
@@ -173,9 +175,9 @@ public class StandaloneAppTests : IDisposable
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        
+
         // ACT
-        var result = StandaloneApp.SimpleOpenTelemetryValidate(null);
+        var result = SimpleOpenTelemetryBootstrap.SimpleOpenTelemetryValidate(null);
 
         // ASSERT
         Assert.False(result);
@@ -183,9 +185,9 @@ public class StandaloneAppTests : IDisposable
             r.Payload is not null &&
             r.Payload.Any(x => x.ToString().Contains($"OpenTelemetry has not been registered")));
         Assert.NotNull(errorEvent);
-        
+
     }
-    
+
     [Fact]
     public void SimpleOpenTelemetryValidate_Should_ReturnFalse_When_NoSignalProvidersRegistered()
     {
@@ -195,10 +197,10 @@ public class StandaloneAppTests : IDisposable
 
         try
         {
-            sdk = OpenTelemetrySdk.Create(t => {});
+            sdk = OpenTelemetrySdk.Create(t => { });
 
             // ACT
-            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+            var result = SimpleOpenTelemetryBootstrap.SimpleOpenTelemetryValidate(sdk);
 
             // ASSERT
             Assert.False(result);
@@ -206,7 +208,7 @@ public class StandaloneAppTests : IDisposable
                 r.Payload is not null &&
                 r.Payload.Any(x => x.ToString().Contains($"No OpenTelemetry signal providers have been registered.")));
             Assert.NotNull(errorEvent);
-        
+
         }
         finally
         {
@@ -227,9 +229,9 @@ public class StandaloneAppTests : IDisposable
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        
+
         var dict = CreateResourceAttributeDict(serviceName, resourceAttributes);
-        
+
         OpenTelemetrySdk? sdk = null;
 
         try
@@ -237,7 +239,7 @@ public class StandaloneAppTests : IDisposable
             sdk = OpenTelemetrySdk.Create(x => x.WithLogging(z => z.ConfigureResource(c => c.AddAttributes(dict))));
 
             // ACT
-            var result = StandaloneApp.SimpleOpenTelemetryValidate(sdk);
+            var result = SimpleOpenTelemetryBootstrap.SimpleOpenTelemetryValidate(sdk);
 
             // ASSERT
             if (valid)
@@ -251,17 +253,17 @@ public class StandaloneAppTests : IDisposable
                 var error = Assert.Single(_listener.Events, e => e.Level == EventLevel.Error);
                 Assert.Contains("Missing required OpenTelemetry resource attributes", MessageOf(error));
             }
-        
+
         }
         finally
         {
             ClearOTELEnvVars();
-            
+
         }
     }
 
     private IConfiguration BuildConfigWithOtelValues(
-            string otelServiceName, string otelResourceAttributes, 
+            string otelServiceName, string otelResourceAttributes,
             Dictionary<string, string?>? otherValues = null) =>
         new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>

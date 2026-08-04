@@ -102,12 +102,12 @@ else
 
     var sw = Stopwatch.StartNew();
 
-    var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+    var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
-    Console.WriteLine($"[Demo] AddSimpleOpenTelemetry() took: {sw.ElapsedMilliseconds}ms");
+    Console.WriteLine($"[Demo] SimpleOpenTelemetryBootstrap.Add() took: {sw.ElapsedMilliseconds}ms");
 
     // OPTIONAL: Validate OpenTelemetry using SimpleOpentelemetry extension method
-    var valid = StandaloneApp.SimpleOpenTelemetryValidate();
+    var valid = SimpleOpenTelemetryBootstrap.SimpleOpenTelemetryValidate();
 
     Console.WriteLine($"\n[Demo] SimpleOpenTelemetryValidate result: {valid}");
 

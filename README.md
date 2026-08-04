@@ -33,7 +33,7 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 
 ## Features
 
-- One line OpenTelemetry initialisation via `builder.AddSimpleOpenTelemetry()` or `StandaloneApp.AddSimpleOpenTelemetry()` for non-generic host applications.
+- One line OpenTelemetry initialisation via `builder.AddSimpleOpenTelemetry()` or `SimpleOpenTelemetryBootstrap.Add()` for non-generic host applications.
 - Plug in OpenTelemetry components by adding a config entry and NuGet package to your app for telemetry features you need (eg Instrumentation, Resource detectors etc)
 - Pre-tested example configuration files for common app / cloud platform / 3rd party telemetry service scenarios [docs/configuration/examples](./docs/configuration/examples/)
 - Component snippets so you can quickly add in extra otel components [docs/configuration/snippets](./docs/configuration/snippets/)

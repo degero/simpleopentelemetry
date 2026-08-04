@@ -35,7 +35,7 @@ using var loggerFactory = LoggerFactory.Create(builder =>
     builder.AddOpenTelemetry();
 });
 
-var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
 // on shutdown, to flush telemetry before closing
 sdk.Dispose();

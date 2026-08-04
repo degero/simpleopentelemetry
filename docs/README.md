@@ -35,14 +35,14 @@ You can use one of the [localdev example applications](./example-apps/localdev/R
         // You may want to set log levels using builder.AddConfiguration()
     });
 
-    var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);
+    var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
-    // on shutdown to push telemetry before closing - you can also access this via StandaloneApp.Sdk
+    // on shutdown to push telemetry before closing - you can also access this via Bootstrap.Sdk
     sdk.Dispose();
 
     ```
 
-  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();`  after `var sdk = StandaloneApp.AddSimpleOpenTelemetry(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
+  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();`  after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
 
 ## How SimpleOpenTelemtry initialises OpenTelemetry
