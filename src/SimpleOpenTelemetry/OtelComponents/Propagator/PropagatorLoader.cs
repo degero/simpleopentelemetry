@@ -38,7 +38,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
 
             if (propagators is null || !propagators.Any())
             {
-                // Leave as the default created by the SDK initialisation - CompositeTextMapPropagator: 'tracestate','traceparent','baggage' 
+                // Leave as the default created by the SDK initialisation - CompositeTextMapPropagator: 'tracestate','traceparent','baggage'
                 return;
             }
 
@@ -60,20 +60,20 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
 
                 if (TryParseKnown<PropagatorEnum>(item, out var matchedPropagator))
                 {
-                    if (TryGetDescriptor<PropagatorEnum, TextMapPropagator>(item, 
-                            PropagatorAssemblies.KnownPropagators, 
-                            out var descriptor, 
+                    if (TryGetDescriptor<PropagatorEnum, TextMapPropagator>(item,
+                            PropagatorAssemblies.KnownPropagators,
+                            out var descriptor,
                             out var matchedEnum))
                     {
                         // If any fail the whoe propagator set is aborted
                         var propagatorInstance = CreatePropagator(descriptor);
                         if (propagatorInstance is not null)
-                            propagatorsList.Add(propagatorInstance);   
+                            propagatorsList.Add(propagatorInstance);
                     }
-                    else 
-                        throw new Exception("Could not get descriptor for OpenTelemetry Propagator 'item'");
+                    else
+                        throw new Exception($"Could not get descriptor for OpenTelemetry Propagator '{item}'");
                 }
-                else 
+                else
                 {
                     throw new InvalidOperationException($"Unsupported OpenTelemetry Propagator '{item}'. Please check your SimpleOpenTelemetry configuration.");
                 }
@@ -98,7 +98,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
     private TextMapPropagator CreatePropagator(
         AssemblyDescriptor descriptor)
     {
-       
+
         var (assemblyName, typeName, _, _, _) = descriptor;
 
         // Dont need to load using AssemblyExec lib if OpenTelemetrySDK propagator
@@ -109,7 +109,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
 
         var instance = Activator.CreateInstance(type, nonPublic: true)
             ?? throw new InvalidOperationException($"Failed to create instance of type '{typeName}'");
-        
+
         return (TextMapPropagator)instance;
     }
 

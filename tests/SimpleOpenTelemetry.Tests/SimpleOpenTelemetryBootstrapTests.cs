@@ -65,6 +65,37 @@ public class SimpleOpenTelemetryBootstrapTests : IDisposable
         }
     }
 
+
+    [Fact]
+    public void AddSimpleOpenTelemetry_ShouldNotOverride_OTEL_EnvVars_FromConfigurationLoading()
+    {
+        Assert.Empty(_listener.Events);
+
+        try
+        {
+            // ARRANGE
+            const string serviceName = "test-service";
+            const string resourceAttributes = "service.version=1.2.3,deployment.environment.name=dev";
+            var config = BuildConfigWithOtelValues(serviceName, resourceAttributes);
+
+            Environment.SetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, "the-real-servicename");
+            Environment.SetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES, "the-real-attributes");
+
+            // ACT
+            SimpleOpenTelemetryBootstrap.Add(config);
+
+            // ASSERT
+            Assert.Equal("the-real-servicename", Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME));
+            Assert.Equal("the-real-attributes", Environment.GetEnvironmentVariable(OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES));
+
+        }
+        finally
+        {
+            ClearOTELEnvVars();
+
+        }
+    }
+
     [Fact]
     public void AddSimpleOpenTelemetry_Should_CallOpenTelemetryBuilder_Configure()
     {

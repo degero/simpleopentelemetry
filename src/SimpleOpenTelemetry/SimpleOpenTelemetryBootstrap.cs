@@ -37,7 +37,8 @@ public static class SimpleOpenTelemetryBootstrap
                         kvp.Key.StartsWith("OTEL_") &&         // ONLY OTEL_ settings
                         !kvp.Key.Contains(':'))) // top-level only (no nested keys)
             {
-                Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
+                if (Environment.GetEnvironmentVariable(kvp.Key) is null)
+                    Environment.SetEnvironmentVariable(kvp.Key, kvp.Value);
             }
 
             // Only run SimpleOpenTelemetryBuilder if basic config fields set. Error Events logged if not set

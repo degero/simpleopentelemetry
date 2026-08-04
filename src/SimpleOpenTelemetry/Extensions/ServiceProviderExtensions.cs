@@ -17,13 +17,13 @@ public static class ServiceProviderExtensions
     private const string EventCategory = nameof(SimpleOpenTelemetryValidate);
 
     /// <summary>
-    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
+    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one
     /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
     /// Writes errors via EventSource for any misconfiguration issues found.
     /// </summary>
     /// <remarks>
     /// For validation to pass, set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
-    /// 
+    ///
     /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.
@@ -40,7 +40,7 @@ public static class ServiceProviderExtensions
 
         // Check opentelemetry registered
         var hostedServices = services.GetServices<IHostedService>();
-        var telemetryHost = hostedServices.Count() > 0 ? hostedServices.First(r => r.GetType().Name.Contains("TelemetryHostedService")) : null;
+        var telemetryHost = hostedServices.Count() > 0 ? hostedServices.FirstOrDefault(r => r.GetType().Name.Contains("TelemetryHostedService")) : null;
 
         // Check at least one signal output by getting resource from available providers (TracerProvider, MeterProvider, or LoggerProvider)
         var resource = GetResourceFromProviders(services);

@@ -12,17 +12,17 @@ services:
       - LOG_RETENTION_DAYS=${LOG_RETENTION_DAYS}
       - METRIC_RETENTION_DAYS=${METRIC_RETENTION_DAYS}
       - COLLECTOR_MEM_LIMIT_MB=${COLLECTOR_MEM_LIMIT_MB}
-      - COLLECTOR_SPIKE_LIMIT_MB=#{COLLECTOR_SPIKE_LIMIT_MB}
+      - COLLECTOR_SPIKE_LIMIT_MB=${COLLECTOR_SPIKE_LIMIT_MB}
       - GOMEMLIMIT=${GOMEMLIMIT}
     ports:
       - '4317:4317'
       - '2000:2000'
 
   app:
-    build: 
+    build:
       context: ../
       dockerfile: Dockerfile
-    environment: 
+    environment:
       - UseXraySampler=${USE_XRAY_SAMPLER}
       - OTEL_AWS_APPLICATION_SIGNALS_ENABLED=false # Disable Application Signals to avoid duplicates/costs
       - AWS_REGION=${AWS_REGION}
@@ -33,6 +33,6 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - '8080:8080'     
+      - '8080:8080'
     volumes:
       - ~/.aws:/root/.aws:ro
