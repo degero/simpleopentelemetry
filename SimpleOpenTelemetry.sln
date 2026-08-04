@@ -27,67 +27,67 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example-configs", "example-configs", "{5C985702-B701-4E5A-A182-3C2D04E2FD6D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{5C985702-B701-4E5A-A182-3C2D04E2FD6D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{1372D88F-57B2-4049-AE03-126D979770D1}"
 	ProjectSection(SolutionItems) = preProject
-		example-configs\aws\aspnetcore-ecs-otelcollector.json = example-configs\aws\aspnetcore-ecs-otelcollector.json
-		example-configs\aws\README.md = example-configs\aws\README.md
+		docs\configuration\examples\aws\aspnetcore-ecs-otelcollector.json = docs\configuration\examples\aws\aspnetcore-ecs-otelcollector.json
+		docs\configuration\examples\aws\README.md = docs\configuration\examples\aws\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "gcp", "gcp", "{04A6C38A-CEC3-491C-8EE3-DD7A0A08D4E4}"
 	ProjectSection(SolutionItems) = preProject
-		example-configs\gcp\aspnetcore-cloudrun-collectorsidecar.json = example-configs\gcp\aspnetcore-cloudrun-collectorsidecar.json
-		example-configs\gcp\README.md = example-configs\gcp\README.md
+		docs\configuration\examples\gcp\aspnetcore-cloudrun-collectorsidecar.json = docs\configuration\examples\gcp\aspnetcore-cloudrun-collectorsidecar.json
+		docs\configuration\examples\gcp\README.md = docs\configuration\examples\gcp\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure", "azure", "{DE20A8D8-5D24-4C96-9C84-AD9D7FF6D910}"
 	ProjectSection(SolutionItems) = preProject
-		example-configs\azure\aspnetcore-azureotel-distro-rbac.json = example-configs\azure\aspnetcore-azureotel-distro-rbac.json
-		example-configs\azure\aspnetcore-azureotel-exporter-by-signal-rbac.json = example-configs\azure\aspnetcore-azureotel-exporter-by-signal-rbac.json
-		example-configs\azure\aspnetcore-azureotel-exporter-rbac.json = example-configs\azure\aspnetcore-azureotel-exporter-rbac.json
-		example-configs\azure\README.md = example-configs\azure\README.md
+		docs\configuration\examples\azure\aspnetcore-azureotel-distro-rbac.json = docs\configuration\examples\azure\aspnetcore-azureotel-distro-rbac.json
+		docs\configuration\examples\azure\aspnetcore-azureotel-exporter-by-signal-rbac.json = docs\configuration\examples\azure\aspnetcore-azureotel-exporter-by-signal-rbac.json
+		docs\configuration\examples\azure\aspnetcore-azureotel-exporter-rbac.json = docs\configuration\examples\azure\aspnetcore-azureotel-exporter-rbac.json
+		docs\configuration\examples\azure\README.md = docs\configuration\examples\azure\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "newrelic", "newrelic", "{78632826-F737-4EFE-A515-84A9D8273F9E}"
 	ProjectSection(SolutionItems) = preProject
-		example-configs\newrelic\aspnetcore-newrelic-directexport.json = example-configs\newrelic\aspnetcore-newrelic-directexport.json
-		example-configs\newrelic\aspnetcore-newrelic-otelcollector.json = example-configs\newrelic\aspnetcore-newrelic-otelcollector.json
-		example-configs\newrelic\README.md = example-configs\newrelic\README.md
+		docs\configuration\examples\newrelic\aspnetcore-newrelic-directexport.json = docs\configuration\examples\newrelic\aspnetcore-newrelic-directexport.json
+		docs\configuration\examples\newrelic\aspnetcore-newrelic-otelcollector.json = docs\configuration\examples\newrelic\aspnetcore-newrelic-otelcollector.json
+		docs\configuration\examples\newrelic\README.md = docs\configuration\examples\newrelic\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example-config-snippets", "example-config-snippets", "{528F4E63-CB34-4253-8776-61CAA111F0D7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "snippets", "snippets", "{528F4E63-CB34-4253-8776-61CAA111F0D7}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\README.md = example-config-snippets\README.md
+		docs\configuration\snippets\README.md = docs\configuration\snippets\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "distro", "distro", "{9E7EF8FA-9E35-451A-BF16-7454A007A310}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\distro\azuremonitoraspnetcore.json = example-config-snippets\distro\azuremonitoraspnetcore.json
+		docs\configuration\snippets\distro\azuremonitoraspnetcore.json = docs\configuration\snippets\distro\azuremonitoraspnetcore.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "exporter", "exporter", "{699F5E62-9689-479B-836C-52649B206F58}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\exporter\azuremonitor.json = example-config-snippets\exporter\azuremonitor.json
-		example-config-snippets\exporter\otlp.json = example-config-snippets\exporter\otlp.json
-		example-config-snippets\exporter\prometheusaspnetcore.json = example-config-snippets\exporter\prometheusaspnetcore.json
-		example-config-snippets\exporter\prometheushttplistener.json = example-config-snippets\exporter\prometheushttplistener.json
+		docs\configuration\snippets\exporter\azuremonitor.json = docs\configuration\snippets\exporter\azuremonitor.json
+		docs\configuration\snippets\exporter\otlp.json = docs\configuration\snippets\exporter\otlp.json
+		docs\configuration\snippets\exporter\prometheusaspnetcore.json = docs\configuration\snippets\exporter\prometheusaspnetcore.json
+		docs\configuration\snippets\exporter\prometheushttplistener.json = docs\configuration\snippets\exporter\prometheushttplistener.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{EEEA3893-43E0-4215-836D-47803B93E09E}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\extensions\azuremonitorexporter.json = example-config-snippets\extensions\azuremonitorexporter.json
+		docs\configuration\snippets\extensions\azuremonitorexporter.json = docs\configuration\snippets\extensions\azuremonitorexporter.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "instrumentations", "instrumentations", "{B44F8B0F-97EC-4448-BAB6-FC0EBDDAB7AA}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\instrumentations\aws.json = example-config-snippets\instrumentations\aws.json
-		example-config-snippets\instrumentations\awslambda.json = example-config-snippets\instrumentations\awslambda.json
+		docs\configuration\snippets\instrumentations\aws.json = docs\configuration\snippets\instrumentations\aws.json
+		docs\configuration\snippets\instrumentations\awslambda.json = docs\configuration\snippets\instrumentations\awslambda.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "resourcedetectors", "resourcedetectors", "{DD44ECB4-DC93-40B2-8CD2-9FC824C3E171}"
 	ProjectSection(SolutionItems) = preProject
-		example-config-snippets\resourcedetectors\aws.json = example-config-snippets\resourcedetectors\aws.json
+		docs\configuration\snippets\resourcedetectors\aws.json = docs\configuration\snippets\resourcedetectors\aws.json
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4C5B3160-F5E4-4C2E-A0E2-55666BE7A11C}"
@@ -116,6 +116,23 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "soteltestgcp", "example-apps\cloud\gcp\cloudrun\app\soteltestgcp.csproj", "{05A6EC93-E1BE-075A-F7F6-EB59D1BB344D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "example-apps", "example-apps", "{6CA5258E-4499-4B20-AF5C-707C7C180A98}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{35C1454D-6DAA-4E1B-8076-05227E184BCF}"
+	ProjectSection(SolutionItems) = preProject
+		docs\README.md = docs\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "configuration", "configuration", "{94B9FE49-7874-4D81-B245-EACFB70D87EF}"
+	ProjectSection(SolutionItems) = preProject
+		docs\configuration\distros.md = docs\configuration\distros.md
+		docs\configuration\exporters.md = docs\configuration\exporters.md
+		docs\configuration\extensions.md = docs\configuration\extensions.md
+		docs\configuration\instrumentations.md = docs\configuration\instrumentations.md
+		docs\configuration\propagators.md = docs\configuration\propagators.md
+		docs\configuration\README.md = docs\configuration\README.md
+		docs\configuration\resource-detectors.md = docs\configuration\resource-detectors.md
+		docs\configuration\samplers.md = docs\configuration\samplers.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -247,10 +264,12 @@ Global
 		{CD26694E-037B-40BF-BEAD-6FBED597D245} = {95C8B8C9-E3D5-4BFB-8727-702038E77D82}
 		{C17F748C-74B7-4B66-EDCB-FD378D75D3A1} = {34B0BD7D-84E0-4AC2-9F98-03C747EB80A9}
 		{F4913D4D-654D-4447-9B48-D3B49874A430} = {95C8B8C9-E3D5-4BFB-8727-702038E77D82}
+		{5C985702-B701-4E5A-A182-3C2D04E2FD6D} = {94B9FE49-7874-4D81-B245-EACFB70D87EF}
 		{1372D88F-57B2-4049-AE03-126D979770D1} = {5C985702-B701-4E5A-A182-3C2D04E2FD6D}
 		{04A6C38A-CEC3-491C-8EE3-DD7A0A08D4E4} = {5C985702-B701-4E5A-A182-3C2D04E2FD6D}
 		{DE20A8D8-5D24-4C96-9C84-AD9D7FF6D910} = {5C985702-B701-4E5A-A182-3C2D04E2FD6D}
 		{78632826-F737-4EFE-A515-84A9D8273F9E} = {5C985702-B701-4E5A-A182-3C2D04E2FD6D}
+		{528F4E63-CB34-4253-8776-61CAA111F0D7} = {94B9FE49-7874-4D81-B245-EACFB70D87EF}
 		{9E7EF8FA-9E35-451A-BF16-7454A007A310} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
 		{699F5E62-9689-479B-836C-52649B206F58} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
 		{EEEA3893-43E0-4215-836D-47803B93E09E} = {528F4E63-CB34-4253-8776-61CAA111F0D7}
@@ -263,6 +282,7 @@ Global
 		{9A3241B8-C000-435E-8D30-BB1570980F47} = {E46EFEB5-A302-426C-A99F-4050C051BB7C}
 		{54ECAF4A-F5D8-4883-8271-FB49AA88CBE3} = {865745A1-BD48-45EB-96C8-580997C50BCD}
 		{05A6EC93-E1BE-075A-F7F6-EB59D1BB344D} = {9A3241B8-C000-435E-8D30-BB1570980F47}
+		{94B9FE49-7874-4D81-B245-EACFB70D87EF} = {35C1454D-6DAA-4E1B-8076-05227E184BCF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C48E00CB-A478-4D8B-BDD2-D3F07611DE84}

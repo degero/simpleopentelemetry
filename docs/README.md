@@ -7,7 +7,7 @@ SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotn
 
 ### With an example app
 
-You can use one of the [localdev example applications](./example-apps/localdev/README.md) or [cloud specific example apps](../example-apps/cloud/) (that can be deployed to the cloud, some can be run locally) with all the below code / configuration setup done.
+You can use one of the [localdev example applications](../example-apps/localdev/README.md) or [cloud specific example apps](../example-apps/cloud/) (that can be deployed to the cloud, some can be run locally) with all the below code / configuration setup done.
 
 
 ### With a new / existing dotnet app

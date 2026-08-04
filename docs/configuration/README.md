@@ -49,8 +49,8 @@ The OpenTelemetry OTEL_* environment variables / json config are partially suppo
 Some required and core OTEL_ environment variables you can set in Env vars or appsettings.ENV.json value. See [Configuration file setup](#configuration-file-setup) for a template of what the required setttings should be (* indicates a required setting):
 
 
-- [*OTEL_SERVICE_NAME](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
-- [*OTEL_RESOURCE_ATTRIBUTES](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
+- [OTEL_SERVICE_NAME](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)*
+- [OTEL_RESOURCE_ATTRIBUTES](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)*
 - [OTEL_TRACES_SAMPLER, OTEL_TRACES_SAMPLER_ARG](https://opentelemetry.io/docs/languages/dotnet/sampling/#environment-variable-configuration)
 - [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) (contrary to spec, examplars are off by default due to performance cost.)
 - [OTEL_SDK_DISABLED](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
@@ -78,7 +78,7 @@ For initial file setup and testing you can use a [example-apps/localdev/](../../
 
 ## Configuration file setup
 
-**IMPORTANT**: ⚠️ *SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured.* ⚠️
+**IMPORTANT**: ⚠️ *SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured. See [Error handling and diagnsotics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)* ⚠️
 
 To get started, add the "OTEL_" settings and "SimpleOpenTelemetry" section to the root of your appsettings.json / appsettings.{Environment}.json file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application.
 
