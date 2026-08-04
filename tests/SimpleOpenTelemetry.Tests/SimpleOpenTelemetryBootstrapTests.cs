@@ -161,7 +161,7 @@ public class SimpleOpenTelemetryBootstrapTests : IDisposable
             // ASSERT
             var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
                 r.Payload is not null &&
-                r.Payload.Any(x => x.ToString().Contains($"Unsupported OpenTelemetry Distro '{distroName}'. This Distro can not be used with OpenTelemetrySDKBuilder.")));
+                r.Payload.Any(x => x?.ToString()?.Contains($"Unsupported OpenTelemetry Distro '{distroName}'. This Distro can not be used with OpenTelemetrySDKBuilder.") ?? false));
             Assert.NotNull(errorEvent);
 
         }
@@ -214,7 +214,7 @@ public class SimpleOpenTelemetryBootstrapTests : IDisposable
         Assert.False(result);
         var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == System.Diagnostics.Tracing.EventLevel.Error &&
             r.Payload is not null &&
-            r.Payload.Any(x => x.ToString().Contains($"OpenTelemetry has not been registered")));
+            r.Payload.Any(x => x?.ToString()?.Contains($"OpenTelemetry has not been registered") ?? false));
         Assert.NotNull(errorEvent);
 
     }
@@ -237,14 +237,14 @@ public class SimpleOpenTelemetryBootstrapTests : IDisposable
             Assert.False(result);
             var errorEvent = _listener.Events.FirstOrDefault(r => r.Level == EventLevel.Error &&
                 r.Payload is not null &&
-                r.Payload.Any(x => x.ToString().Contains($"No OpenTelemetry signal providers have been registered.")));
+                r.Payload.Any(x => x?.ToString()?.Contains($"No OpenTelemetry signal providers have been registered.") ?? false));
             Assert.NotNull(errorEvent);
 
         }
         finally
         {
             ClearOTELEnvVars();
-            sdk.Dispose();
+            sdk?.Dispose();
         }
     }
 
@@ -309,7 +309,7 @@ public class SimpleOpenTelemetryBootstrapTests : IDisposable
     private string? MessageOf(EventWrittenEventArgs e) =>
         e.Payload?.Count > 1 ? e.Payload[1]?.ToString() : null;
 
-    private Dictionary<string, object> CreateResourceAttributeDict(string serviceName, string resourceAttributes)
+    private Dictionary<string, object> CreateResourceAttributeDict(string? serviceName, string? resourceAttributes)
     {
         var dict = new Dictionary<string, object>();
         if (serviceName is not null)

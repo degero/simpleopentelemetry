@@ -14,7 +14,7 @@ using Xunit;
 namespace SimpleOpenTelemetryTests.OtelComponents.Instrumentation;
 
 [CollectionDefinition("InstrumentationLoaderTests", DisableParallelization = true)]
-public class InstrumentationLoaderTestsCollection {}
+public class InstrumentationLoaderTestsCollection { }
 
 [Collection("InstrumentationLoaderTests")]
 public class InstrumentationLoaderTests : IDisposable
@@ -53,7 +53,7 @@ public class InstrumentationLoaderTests : IDisposable
                     $"Cannot load assembly '{assemblyName}'. Ensure you have added the required nuget package to your project."));
         }
 
-        
+
         var target = new InstrumentationLoader(packageInstalled ? _assemblyExec : mockAssemblyExec.Object);
         var services = new ServiceCollection();
 
@@ -62,7 +62,7 @@ public class InstrumentationLoaderTests : IDisposable
         {
             target.AddTracingInstrumentations(t, new SimpleOpenTelemetryOptions
             {
-                Trace = new() { Instrumentations = [ instrumentation.ToString() ]}
+                Trace = new() { Instrumentations = [instrumentation.ToString()] }
             });
         });
 
@@ -87,7 +87,7 @@ public class InstrumentationLoaderTests : IDisposable
         }
     }
 
-    
+
     [Theory]
     [MemberData(nameof(GetAllTraceInstrumentationsWithOptions))]
     public void AddTracingInstrumentations_WithKnownEnum_AndOptionsClassConfig_CallsInvokeWithAction(
@@ -96,21 +96,25 @@ public class InstrumentationLoaderTests : IDisposable
         string optionsClassName)
     {
         // ARRANGE
+        Assert.NotNull(assemblyName);
+        Assert.NotNull(optionsClassName);
         Assert.Empty(_listener.Events);
-        
-        var assemblyExec = new Mock<AssemblyExecution>{ CallBase = true};
+
+        var assemblyExec = new Mock<AssemblyExecution> { CallBase = true };
 
         var target = new InstrumentationLoader(assemblyExec.Object);
         var services = new ServiceCollection();
         var descriptor = InstrumentationAssemblies.KnownTraceInstrumentations[instrumentation];
 
-      
+
         // ACT
         services.AddOpenTelemetry().WithTracing(t =>
         {
             target.AddTracingInstrumentations(t, new SimpleOpenTelemetryOptions
             {
-                Trace = new() { Instrumentations = [ instrumentation.ToString() ], 
+                Trace = new()
+                {
+                    Instrumentations = [instrumentation.ToString()],
                     InstrumentationConfig = GetDescriptorOptionsClassConfig(descriptor, instrumentation)
                 }
             });
@@ -121,9 +125,9 @@ public class InstrumentationLoaderTests : IDisposable
             e.Level == EventLevel.Verbose &&
             (e.Payload?.Any(p => p?.ToString()?.Contains(
                 $"Registered OpenTelemetry Instrumentation '{instrumentation}' for builder 'TracerProviderBuilder'") ?? false) ?? false));
-        
+
         Assert.NotNull(successEvent);
-        assemblyExec.Verify(r => r.InvokeWithAction(It.IsAny<MethodInfo>(), It.IsAny<object>(), 
+        assemblyExec.Verify(r => r.InvokeWithAction(It.IsAny<MethodInfo>(), It.IsAny<object>(),
             It.IsAny<IConfiguration>()),
             Times.Exactly(1));
     }
@@ -138,7 +142,7 @@ public class InstrumentationLoaderTests : IDisposable
     {
         // ARRANGE
         Assert.Empty(_listener.Events);
-        
+
         var mockAssemblyExec = new Mock<IAssemblyExecution>();
         if (!packageInstalled)
         {
@@ -156,7 +160,7 @@ public class InstrumentationLoaderTests : IDisposable
         {
             target.AddMetricsInstrumentations(m, new SimpleOpenTelemetryOptions
             {
-                Metric = new() { Instrumentations = [ instrumentation.ToString() ]}
+                Metric = new() { Instrumentations = [instrumentation.ToString()] }
             });
         });
 
@@ -186,9 +190,9 @@ public class InstrumentationLoaderTests : IDisposable
     [Fact]
     public void AddTracingInstrumentations_LogsErrorEvent_ForInvalidEnumValue()
     {
-         // ARRANGE
+        // ARRANGE
         Assert.Empty(_listener.Events);
-        
+
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -211,9 +215,9 @@ public class InstrumentationLoaderTests : IDisposable
     [Fact]
     public void AddMetricInstrumentations_LogsErrorEvent_ForInvalidEnumValue()
     {
-         // ARRANGE
+        // ARRANGE
         Assert.Empty(_listener.Events);
-        
+
         var config = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
             {
@@ -240,12 +244,16 @@ public class InstrumentationLoaderTests : IDisposable
             yield return new object[] { instrumentation.Key, instrumentation.Value.AssemblyName, packageInstalled };
         }
     }
-    
+
     public static IEnumerable<object[]> GetAllTraceInstrumentationsWithOptions()
     {
-        foreach (var instrumentation in InstrumentationAssemblies.KnownTraceInstrumentations.Where(r => r.Value.OptionsClassName is not null))
+        foreach (var instrumentation in InstrumentationAssemblies.KnownTraceInstrumentations)
         {
-            yield return new object[] { instrumentation.Key, instrumentation.Value.AssemblyName, instrumentation.Value.OptionsClassName };
+            var descriptor = instrumentation.Value;
+            if (descriptor?.OptionsClassName is not null)
+            {
+                yield return new object[] { instrumentation.Key, descriptor.AssemblyName!, descriptor.OptionsClassName! };
+            }
         }
     }
 
@@ -260,9 +268,9 @@ public class InstrumentationLoaderTests : IDisposable
     private IConfigurationSection GetDescriptorOptionsClassConfig<TEnum>(AssemblyDescriptor descriptor,
         TEnum instrumentation)
     {
-        
-        var optionsClassConfigSection = TestHelpers.GetComponentConfigurationSection(_assemblyExec, 
-            descriptor, instrumentation.ToString());
+
+        var optionsClassConfigSection = TestHelpers.GetComponentConfigurationSection(_assemblyExec,
+            descriptor, instrumentation?.ToString());
 
         var wrappedData = optionsClassConfigSection!
             .AsEnumerable()
@@ -272,7 +280,7 @@ public class InstrumentationLoaderTests : IDisposable
                 kvp => kvp.Value
             );
 
-          // Build the final config with the wrapped section
+        // Build the final config with the wrapped section
         var ConfigurationBuilder = new ConfigurationBuilder()
             .AddInMemoryCollection(wrappedData)
             .Build();
