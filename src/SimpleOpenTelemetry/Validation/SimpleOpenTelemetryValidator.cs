@@ -3,18 +3,21 @@ using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSour
 
 namespace SimpleOpenTelemetry.Validation;
 
+/// <summary>
+/// Validates that SimpleOpenTelemetry has been configured with the required resource attributes.
+/// </summary>
 public static class SimpleOpenTelemetryValidator
 {
     private const string EventCategory = nameof(SimpleOpenTelemetryValidator);
 
-     /// <summary>
-    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one 
+    /// <summary>
+    /// Validates that all key OpenTelemetry resource attributes and servicename are configured and at least one
     /// signal type (trace/log/metric) OpenTelemetry provider has been set via SimpleOpenTelemetry configuration.
     /// Writes errors via EventSource for any misconfiguration issues found.
     /// </summary>
     /// <remarks>
     /// For validation to pass, set values via OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES environment variables / appsettings.json.
-    /// 
+    ///
     /// Required OTEL_RESOURCE_ATTRIBUTES: service.version, service.namespace, deployment.environment.name
     /// This method checks TracerProvider, MeterProvider, and LoggerProvider for the resource.
     /// At least one of these providers must be registered and contain valid resource attributes.

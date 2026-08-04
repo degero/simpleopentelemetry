@@ -108,7 +108,8 @@ public class AssemblyExecutionTests
             types: [typeof(FakeBuilder)],
             modifiers: null);
 
-        var result = target.InvokeParameterless(methodInfo, builder);
+        Assert.NotNull(methodInfo);
+        var result = target.InvokeParameterless(methodInfo!, builder);
 
         Assert.Same(builder, result);
         Assert.True(builder.Called);

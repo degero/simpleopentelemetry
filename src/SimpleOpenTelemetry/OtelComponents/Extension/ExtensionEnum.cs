@@ -19,7 +19,7 @@ public enum MetricExtensionsEnum
     /// <summary>
     /// No metric extension.
     /// </summary>
-    None /* Placeholder for future use */    
+    None /* Placeholder for future use */
 }
 
 /// <summary>
@@ -30,7 +30,7 @@ public enum LogExtensionsEnum
     /// <summary>
     /// No log extension.
     /// </summary>
-    None /* Placeholder for future use */    
+    None /* Placeholder for future use */
 }
 
 
@@ -39,5 +39,8 @@ public enum LogExtensionsEnum
 /// </summary>
 public enum BuilderExtensionsEnum
 {
+    /// <summary>
+    /// Azure Monitor exporter extension.
+    /// </summary>
     AzureMonitorExporter
 }

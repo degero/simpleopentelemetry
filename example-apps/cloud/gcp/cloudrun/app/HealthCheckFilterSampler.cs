@@ -15,7 +15,7 @@ public class HealthCheckFilteringSampler : Sampler
 
     public override SamplingResult ShouldSample(in SamplingParameters samplingParameters)
     {
-        foreach (var tag in samplingParameters.Tags ?? Enumerable.Empty<KeyValuePair<string, object>>())
+        foreach (var tag in samplingParameters.Tags ?? Enumerable.Empty<KeyValuePair<string, object?>>())
         {
             if ((tag.Key == "url.full" || tag.Key == "http.route" || tag.Key == "http.url")
                 && tag.Value is string value

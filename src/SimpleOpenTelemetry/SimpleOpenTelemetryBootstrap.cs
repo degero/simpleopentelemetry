@@ -10,6 +10,9 @@ namespace SimpleOpenTelemetry;
 /// </summary>
 public static class SimpleOpenTelemetryBootstrap
 {
+    /// <summary>
+    /// Gets the currently initialized OpenTelemetry SDK instance.
+    /// </summary>
     public static OpenTelemetrySdk? Sdk { get; private set; }
 
     /// <summary>

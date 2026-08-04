@@ -2,9 +2,9 @@ namespace SimpleOpenTelemetry.Examples.Shared;
 
 public static class Utils
 {
-    public static string SafeFormat(string message, object[] args)
+    public static string SafeFormat(string message, object?[]? args)
     {
-        if (args == null || args.Length == 0)
+        if (args is null || args.Length == 0)
             return message;
 
         try
@@ -14,7 +14,7 @@ public static class Utils
         catch (FormatException)
         {
             // Last resort: just join them manually
-            return message + " | " + string.Join(", ", args);
+            return message + " | " + string.Join(", ", args.Select(arg => arg?.ToString() ?? "<null>"));
         }
     }
 }

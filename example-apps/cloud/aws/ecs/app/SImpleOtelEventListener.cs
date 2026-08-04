@@ -16,15 +16,15 @@ public class SimpleOtelEventListener : EventListener
     protected override void OnEventWritten(EventWrittenEventArgs eventData)
     {
         var message = eventData.Message != null && eventData.Payload?.Count > 0
-            ? SafeFormat(eventData.Message, eventData.Payload.ToArray())
+            ? SafeFormat(eventData.Message, eventData.Payload?.ToArray())
             : eventData.Message ?? eventData.EventName;
-        
+
         Console.WriteLine($"[S-Otel/{eventData.Level}] [{eventData.EventSource.Name}] {message}");
     }
 
-    
-     
-    private string SafeFormat(string message, object[] args)
+
+
+    private string SafeFormat(string message, object?[]? args)
     {
         if (args == null || args.Length == 0)
             return message;
