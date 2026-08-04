@@ -1,1 +1,0 @@
-rmdir -Recurse -Force .\coverage\ && dotnet test SimpleOpenTelemetry.sln --collect:"XPlat Code Coverage" --results-directory ./coverage && reportgenerator  -reports:"./coverage/**/coverage.cobertura.xml"  -targetdir:"./coverage/report" -reporttypes:"TextSummary"
