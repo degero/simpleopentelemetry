@@ -20,13 +20,24 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 [![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
 
 
+## Dependencies
+
+| Package | Version | Notes |
+|---|---|---|
+| [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry) | `1.16.0` | Core SDK |
+| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting) | `1.16.0` | `IHostBuilder` / DI integration |
+| [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter |
+
+These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
+These dependencies are included in the SimpleOpenTelemetry nuget package.
+
+
 ## Goal
 
 *To make OpenTelemetry code-based instrumentation as convenient as possible so developers can focus on their apps*
 
 
 ## Overview
-
 
 SimpleOpenTelemetry handles configuration via IConfiguration rather than code calling OpenTelemetry's fluent api when using code-based instrumentation. Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumenation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
 
@@ -43,7 +54,6 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 - 'All signal' exporter options overridable at the signal level for exporter type
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin SimpleOpenTelemetry ResourceDetector 'AssemblyVersion' (see [AssemblyVersion](#assemblyversion)). Overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
 - Essential Otel Resource Attribute / Service name validation via `SimpleOpenTelemetryValidate()` extension method [SimpleOpenTelemetryValidator.cs](./src//SimpleOpenTelemetry/Validation/SimpleOpenTelemetryValidator.cs)
-- `OpenTelemetry`, `OpenTelemetry.Extensions.Hosting` and `OpenTelemetry.Exporter.OpenTelemetryProtocol` packages are included in this lib. Making Generic host registration and OTLP export available immediately.
 
 
 ## Limitations

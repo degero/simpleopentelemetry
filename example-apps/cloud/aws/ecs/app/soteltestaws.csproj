@@ -7,17 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.CloudWatch" Version="4.0.10.6" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="4.0.25.2" />
-    <PackageReference Include="AWSSDK.Core" Version="4.0.7.4" />
-    <PackageReference Include="AWSSDK.XRay" Version="4.0.3.32" />
-    <PackageReference Include="AwsSignatureVersion4" Version="5.2.0-beta.1" />
-    <PackageReference Include="OpenTelemetry.Extensions.AWS" Version="1.15.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.AWS" Version="1.15.1" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.15.1" />
-    <PackageReference Include="OpenTelemetry.Resources.AWS" Version="1.15.1" />
-    <PackageReference Include="OpenTelemetry.Sampler.AWS" Version="0.1.0-alpha.9" />
+    <PackageReference Include="AWSSDK.CloudWatch" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" />
+    <PackageReference Include="AWSSDK.Core" />
+    <PackageReference Include="AWSSDK.XRay" />
+    <PackageReference Include="AwsSignatureVersion4" />
+    <PackageReference Include="OpenTelemetry.Extensions.AWS" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AWS" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+    <PackageReference Include="OpenTelemetry.Resources.AWS" />
+    <PackageReference Include="OpenTelemetry.Sampler.AWS" />
   </ItemGroup>
 
   <ItemGroup>
