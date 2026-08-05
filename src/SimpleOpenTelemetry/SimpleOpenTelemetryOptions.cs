@@ -4,22 +4,6 @@ using SimpleOpenTelemetry.OtelComponents.Exporter;
 namespace SimpleOpenTelemetry;
 
 /// <summary>
-/// 
-/// </summary>
-public enum SimpleOpenTelemetryExporterProtocol
-{
-    /// <summary>
-    /// gRPC protocol for exporting telemetry.
-    /// </summary>
-    Grpc,
-    /// <summary>
-    /// HTTP protocol for exporting telemetry.
-    /// </summary>
-    Http
-}
-
-
-/// <summary>
 /// Configuration options for SimpleOpenTelemetry
 /// </summary>
 internal class SimpleOpenTelemetryOptions
@@ -58,7 +42,7 @@ internal class SimpleOpenTelemetryOptions
     /// </summary>
     public ResourceOptions? Resource { get; set; }
 
-    public BuilderExtensionConfig[]? BuilderExtensions{ get; set; }
+    public BuilderExtensionConfig[]? BuilderExtensions { get; set; }
 
 }
 
@@ -91,7 +75,7 @@ internal class SimpleOpenTelemetryMetricOptions
     public string[]? Extensions { get; set; }
 
     public SimpleOpenTelemetryMeterProviderSettings? Settings { get; set; }
-    
+
     /// <summary>
     /// Namespace names for additional metrics sources.
     /// </summary>
@@ -104,7 +88,7 @@ internal class SimpleOpenTelemetryMeterProviderSettings
     public int? MetricLimit { get; set; }
 }
 
-internal class SimpleOpenTelemetryTraceOptions 
+internal class SimpleOpenTelemetryTraceOptions
 {
     public string[]? Instrumentations { get; set; }
 
@@ -123,9 +107,9 @@ internal class SimpleOpenTelemetryTraceOptions
 
     public string[]? Propagators { get; set; }
 
-    
+
     /// <summary>
-    /// Register a vendor sampler from the availble enum set 
+    /// Register a vendor sampler from the availble enum set
     /// </summary>
     public string? Sampler { get; set; }
 }
@@ -135,7 +119,7 @@ internal class SimpleOpenTelemetryTraceProviderSettings
     public bool? SetErrorStatusOnException { get; set; }
 }
 
-internal class SimpleOpenTelemetryLogOptions 
+internal class SimpleOpenTelemetryLogOptions
 {
     /// <summary>
     /// Defines which exporters to use for logs.
@@ -146,7 +130,7 @@ internal class SimpleOpenTelemetryLogOptions
 
     public string[]? Extensions { get; set; }
 
-    public SimpleOpenTelemetryLogProviderSettings? Settings { get;set; }
+    public SimpleOpenTelemetryLogProviderSettings? Settings { get; set; }
 }
 
 internal class SimpleOpenTelemetryLogProviderSettings
@@ -154,13 +138,12 @@ internal class SimpleOpenTelemetryLogProviderSettings
     public bool? IncludeFormattedMessage { get; set; }
 
     public bool? IncludeScopes { get; set; }
-    
+
     public bool? ParseStateValues { get; set; }
 }
 
 internal class ResourceOptions
 {
-    
     /// <summary>
     /// Register resource detectors set by resource type name eg: aws, azure etc
     /// </summary>

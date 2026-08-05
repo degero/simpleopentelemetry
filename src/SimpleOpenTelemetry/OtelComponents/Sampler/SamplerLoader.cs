@@ -79,6 +79,9 @@ internal class SamplerLoader : LoaderBase, ISamplerLoader
         var type = assembly.GetType(typeName)
             ?? throw new InvalidOperationException($"Type '{typeName}' not found in {assembly.GetName().Name}.");
 
+        if (methodNames is null || methodNames[0] is null)
+            throw new Exception($"No method defined for sampler: {descriptor.TypeName}.");
+
         var method = type.GetMethod(methodNames[0], BindingFlags.Static | BindingFlags.Public);
 
         var instance = method?.Invoke(null, []);

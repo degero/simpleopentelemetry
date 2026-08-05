@@ -114,9 +114,9 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <param name="builder">The builder instance to pass as argument.</param>
     /// <returns>The method's return value.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the method is not found.</exception>
-   public virtual object InvokeParameterless(
-    MethodInfo methodInfo,
-    object builder)
+    public virtual object InvokeParameterless(
+     MethodInfo methodInfo,
+     object builder)
     {
         var paramsToInvoke = new List<object?> { builder };
         methodInfo.GetParameters()
@@ -216,7 +216,7 @@ internal class AssemblyExecution : IAssemblyExecution
 
         foreach (IConfigurationSection child in section.GetChildren())
         {
-            PropertyInfo prop = type.GetProperty(child.Key,
+            PropertyInfo? prop = type.GetProperty(child.Key,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
             if (prop == null || !prop.CanWrite) continue;
@@ -225,9 +225,9 @@ internal class AssemblyExecution : IAssemblyExecution
 
             if (IsComplexType(propType) && !string.IsNullOrWhiteSpace(child.Value))
             {
-                try 
+                try
                 {
-                    Type instanceType = Type.GetType(child.Value!, throwOnError: false, ignoreCase: true);
+                    Type? instanceType = Type.GetType(child.Value, throwOnError: false, ignoreCase: true);
                     if (instanceType is null)
                     {
                         string fullTypeName = child.Value.Trim();
@@ -236,13 +236,15 @@ internal class AssemblyExecution : IAssemblyExecution
                         string typeName = fullTypeName; // GetType needs the full name including namespace
 
                         var assembly = GetAssembly(assemblyName);
-                        instanceType = assembly.GetType(typeName);
+                        instanceType = assembly!.GetType(typeName);
                     }
-                    object nestedInstance = Activator.CreateInstance(instanceType!, 
+                    object? nestedInstance = Activator.CreateInstance(instanceType!,
                         BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
                         null,
                         Array.Empty<object>(),
                         null);
+                    if (nestedInstance is null)
+                        throw new Exception("nestedInstance is null");
                     prop.SetValue(config, nestedInstance);
                 }
                 catch (Exception ex)

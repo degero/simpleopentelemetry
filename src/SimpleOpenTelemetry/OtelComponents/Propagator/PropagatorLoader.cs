@@ -66,7 +66,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
                             out var matchedEnum))
                     {
                         // If any fail the whoe propagator set is aborted
-                        var propagatorInstance = CreatePropagator(descriptor);
+                        var propagatorInstance = CreatePropagator(descriptor!);
                         if (propagatorInstance is not null)
                             propagatorsList.Add(propagatorInstance);
                     }

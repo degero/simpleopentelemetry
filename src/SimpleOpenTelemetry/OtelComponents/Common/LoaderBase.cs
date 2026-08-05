@@ -14,21 +14,21 @@ internal abstract class LoaderBase
     {
         _assemblyExec = assemblyExec;
     }
-    
+
     protected bool TryInvokeComponents<TEnum, TBuilder>(
-        string?[] componentNames,
+        string?[]? componentNames,
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null)
         where TEnum : struct, Enum
     {
         var result = true;
         if (componentNames is not null)
         {
-            foreach(var componentName in componentNames)
+            foreach (var componentName in componentNames)
             {
-                if(!TryInvokeComponent(componentName, builder, descriptors, options, getConfiguration))
+                if (!TryInvokeComponent(componentName, builder, descriptors, options, getConfiguration))
                     result = false;
             }
         }
@@ -40,14 +40,14 @@ internal abstract class LoaderBase
         TBuilder builder,
         Dictionary<TEnum, AssemblyDescriptor> descriptors,
         SimpleOpenTelemetryOptions? options = null,
-        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null) 
+        Func<AssemblyDescriptor, SimpleOpenTelemetryOptions, string, IConfiguration?>? getConfiguration = null)
         where TEnum : struct, Enum
     {
         if (!string.IsNullOrWhiteSpace(componentName))
         {
             if (TryGetDescriptor<TEnum, TBuilder>(componentName, descriptors, out var descriptor, out var matchedEnum))
             {
-                IConfiguration? config = getConfiguration is not null ? getConfiguration(descriptor!, options!, matchedEnum.ToString()) : null;
+                IConfiguration? config = getConfiguration is not null ? getConfiguration(descriptor!, options!, matchedEnum.ToString()!) : null;
                 return TryInvokeDescriptor(componentName, builder, descriptor!, config);
             }
         }
@@ -68,7 +68,7 @@ internal abstract class LoaderBase
             {
                 EventSource.Log.ErrorEvent(ComponentKind,
                     $"OpenTelemetry {ComponentKind} {typeof(TEnum).Name} type '{matchedComponent}' for builder '{builderName}' not found to initialise. Please check your SimpleOpenTelemetry configuration.");
-                return false;                
+                return false;
             }
             return true;
         }
@@ -77,7 +77,7 @@ internal abstract class LoaderBase
             matchedEnum = null;
             EventSource.Log.ErrorEvent(ComponentKind, $"Unsupported OpenTelemetry {ComponentKind} '{componentName}' for builder '{builderName}'. Please check your SimpleOpenTelemetry configuration.");
             descriptor = null;
-            return false;                
+            return false;
         }
     }
 
@@ -88,7 +88,7 @@ internal abstract class LoaderBase
         IConfiguration? optionsSection)
     {
         var builderName = typeof(TBuilder).Name;
-        
+
         try
         {
             InvokeBuilderExtension(
@@ -118,7 +118,7 @@ internal abstract class LoaderBase
         IConfiguration? optionsSection,
         string componentKind)
     {
-        var (assemblyName, typeName, methodNames, optionsClassName, optionsRequired ) = descriptor;
+        var (assemblyName, typeName, methodNames, optionsClassName, optionsRequired) = descriptor;
 
         var assembly = assemblyExecution.GetAssembly(assemblyName);
         var builderType = typeof(TBuilder);

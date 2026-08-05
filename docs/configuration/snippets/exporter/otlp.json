@@ -5,7 +5,7 @@
         "Headers": null,
         "TimeoutMilliseconds": 10000,
         "Endpoint": "http://localhost:4317",
-        "Protocol": "Grpc",
+        "Protocol": "Grpc", // or "HttpProtobuf"
         "Compression": "None",
         "UserAgentProductIdentifier": "",
         "ExportProcessorType": "Batch"

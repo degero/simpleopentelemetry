@@ -114,8 +114,6 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
 
         foreach (var item in otlpExporters)
         {
-            var rawType = item.Type.ToString();
-
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
             var config = GetCustomExporterConfig(options, item);
@@ -125,10 +123,10 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
 
         foreach (var item in otherExporters)
         {
-            if (TryGetDescriptor<TEnum, TBuilder>(item.Type, descriptors, out var descriptor, out var matchedEnum))
+            if (TryGetDescriptor<TEnum, TBuilder>(item.Type!, descriptors, out var descriptor, out var matchedEnum))
             {
                 var config = descriptor!.OptionsClassName is not null ? GetCustomExporterConfig(options, item) : null;
-                TryInvokeDescriptor<TBuilder>(item.Type, builder, descriptor, config);
+                TryInvokeDescriptor<TBuilder>(item.Type!, builder, descriptor, config);
             }
         }
     }
@@ -139,19 +137,19 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
         object? exporters = typeof(TEnum) switch
         {
             var t when t == typeof(MetricExporterEnum) => options.Metric.Exporters,
-            var t when t == typeof(TraceExporterEnum)  => options.Trace.Exporters,
-            _                                          => options.Log.Exporters
+            var t when t == typeof(TraceExporterEnum) => options.Trace.Exporters,
+            _ => options.Log.Exporters
         };
 
         return (List<SimpleOpenTelemetryExporterConfig<TEnum>>?)exporters ?? new();
     }
 
-    private void AddOTLPExporter<TEnum,TBuilder>(Action<string, Action<OtlpExporterOptions>> addExporter, 
+    private void AddOTLPExporter<TEnum, TBuilder>(Action<string, Action<OtlpExporterOptions>> addExporter,
         IConfiguration? options,
         string exporterName)
     {
         var builderName = typeof(TBuilder).Name;
-        try 
+        try
         {
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
@@ -180,7 +178,7 @@ internal class ExporterLoader : LoaderBase, IExporterLoader
         {
             // If not set in this configsection, set through either the OpenTelemetry Env vars
             // or Configuration json that OpenTelemetry lib loads under a root "OpenTelemetryOTLPExporter" config section
-            return opts => {};
+            return opts => { };
         }
     }
 }
