@@ -62,6 +62,13 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 - Not all of [opentelemetry-dotnet-contrib](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) components are supported. You can use SimpleOpenTelemetry and add any via code or raise a PR / [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new) to have it added.
 
 
+## Supported OpenTelemetry components
+
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](./docs/otel-component-versions.md).
+
+⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
+
+
 ## Quickstart
 
 Run the aspnetcore example app guide in [example-apps/localdev/README.md](./example-apps/localdev/README.md) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)

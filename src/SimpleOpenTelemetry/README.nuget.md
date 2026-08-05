@@ -9,11 +9,18 @@ A lightweight, low-code .NET library for configuring OpenTelemetry via IConfigur
 
 ## Compatibility
 
-| SimpleOpenTelemetry | OpenTelemetry SDK family | Microsoft.Extensions.Logging |
-|---|---|---|
-| 0.1.0 | 1.16.x | 10.0.x |
+| SimpleOpenTelemetry | OpenTelemetry SDK family |
+|---|---|
+| 0.1.0 | 1.16.x |
 
 These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
+
+
+## Supported OpenTelemetry components
+
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/main/docs/otel-component-versions.md).
+
+⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
 
 
 ## Quickstart
