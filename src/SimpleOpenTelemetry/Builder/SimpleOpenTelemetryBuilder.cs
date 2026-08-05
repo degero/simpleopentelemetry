@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.OtelComponents.Distro;
 using SimpleOpenTelemetry.OtelComponents.Exporter;
@@ -15,7 +14,6 @@ using SimpleOpenTelemetry.OtelComponents.Propagator;
 using SimpleOpenTelemetry.OtelComponents.Resource;
 using SimpleOpenTelemetry.OtelComponents.Sampler;
 using SimpleOpenTelemetry.Reflection;
-using SimpleOpenTelemetry.Utils;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 /// <summary>

@@ -1,5 +1,4 @@
 using OpenTelemetry.Resources;
-using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.OtelComponents.Resource;
 

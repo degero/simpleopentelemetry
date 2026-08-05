@@ -1,7 +1,6 @@
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.OtelComponents.Exporter;
 

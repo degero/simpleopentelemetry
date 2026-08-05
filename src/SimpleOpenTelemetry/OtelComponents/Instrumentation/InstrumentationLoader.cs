@@ -1,10 +1,6 @@
-using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
-using SimpleOpenTelemetry.Utils;
-using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Instrumentation;
 

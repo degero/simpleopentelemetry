@@ -1,5 +1,4 @@
 using OpenTelemetry.Trace;
-using SimpleOpenTelemetry.Builder;
 
 namespace SimpleOpenTelemetry.OtelComponents.Sampler;
 

@@ -1,7 +1,7 @@
-using System.Reflection;
 using OpenTelemetry.Trace;
 using SimpleOpenTelemetry.OtelComponents.Common;
 using SimpleOpenTelemetry.Reflection;
+using System.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Sampler;

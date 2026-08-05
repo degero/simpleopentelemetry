@@ -1,7 +1,7 @@
 
-using System.Reflection;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Utils;
+using System.Reflection;
 using OtelResource = OpenTelemetry.Resources.Resource;
 
 namespace SimpleOpenTelemetry.OtelComponents.Resource;

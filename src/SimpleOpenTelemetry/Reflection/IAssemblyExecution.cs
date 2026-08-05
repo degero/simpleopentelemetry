@@ -1,6 +1,6 @@
 
-using System.Reflection;
 using Microsoft.Extensions.Configuration;
+using System.Reflection;
 
 namespace SimpleOpenTelemetry.Reflection;
 
