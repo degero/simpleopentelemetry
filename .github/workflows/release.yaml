@@ -8,22 +8,9 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # MinVer needs full history to find the tag for versioning
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: "10.0.x"
-
-      - name: Build
-        run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental
-
-      - name: Test
-        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --verbosity normal
+    uses: ./.github/workflows/dotnet-build-test.yml
+    with:
+      fetch-depth: 0 # MinVer needs full history to find the tag for versioning
 
   pack:
     needs: build-and-test

@@ -1,0 +1,179 @@
+{
+  "version": 2,
+  "dependencies": {
+    "net10.0": {
+      "AWSSDK.CloudWatch": {
+        "type": "Direct",
+        "requested": "[4.0.10.6, )",
+        "resolved": "4.0.10.6",
+        "contentHash": "pIaAuYLEJcjZGSCUqLC9NwDFx11FPT8xEnoe7ow0L+fu+CEnNR2VZz49rDREOvET8537gU1IZM7m6PPSIxKZmg==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.7.4, 5.0.0)",
+          "AWSSDK.Extensions.CborProtocol": "[4.0.0.44, 5.0.0)"
+        }
+      },
+      "AWSSDK.CloudWatchLogs": {
+        "type": "Direct",
+        "requested": "[4.0.25.2, )",
+        "resolved": "4.0.25.2",
+        "contentHash": "MyOwnRehVbqDEM7z9+xZAZGkLlwrU2SzvaGRpAL83Ku20ZJuTIx3yjWb1BcTurbQVCovGNu+wrug8aYGzs2F1g==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
+        }
+      },
+      "AWSSDK.Core": {
+        "type": "Direct",
+        "requested": "[4.0.7.4, )",
+        "resolved": "4.0.7.4",
+        "contentHash": "qNlzH2ygJ6JG8uefpvws782PnJlkVEwqRD5vz4fR8wFfwWU3ttyAjiwEOPEYcxl84mhQdYGI9gR+kroGFI2+wA=="
+      },
+      "AWSSDK.XRay": {
+        "type": "Direct",
+        "requested": "[4.0.3.32, )",
+        "resolved": "4.0.3.32",
+        "contentHash": "tot0xIdO9YIBuRYnjaAQi4GGFyMPTXUE2rRu8DOeU8GTRi/6Fqt8NdBYzlngqmUXu8tL47PKQR/Kn+OvfshQ7g==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.7.4, 5.0.0)"
+        }
+      },
+      "AwsSignatureVersion4": {
+        "type": "Direct",
+        "requested": "[5.2.0-beta.1, )",
+        "resolved": "5.2.0-beta.1",
+        "contentHash": "PbJs2W+5qQ1nTf03nkKC2jWMHvqrpiIBIlkGeBOEaykbmXxUpvsnY04paGCcVwk01mpLa+g3W69f//oifmr0uw==",
+        "dependencies": {
+          "AWSSDK.Core": "3.7.400.64"
+        }
+      },
+      "OpenTelemetry.Extensions.AWS": {
+        "type": "Direct",
+        "requested": "[1.15.1, 1.15.1]",
+        "resolved": "1.15.1",
+        "contentHash": "T+Vrhlv79PyG+fK6XnEtdJW9VtYp5WxSsVajplnkbuY0Q3gTyFNiLPP8tyu1qmEL19bKc9i6Wgp4JqhvupqirA==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.3, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.AspNetCore": {
+        "type": "Direct",
+        "requested": "[1.15.2, 1.15.2]",
+        "resolved": "1.15.2",
+        "contentHash": "2nPd7r0ug/gd6/CNFL6Rlu+RSQ9WYGSGHAYQ1ssbSqyzKJpqTunfx2I/1O0WB5k+L0cyXbG4XVZpoSoUc3M7wg==",
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Instrumentation.AWS": {
+        "type": "Direct",
+        "requested": "[1.15.1, 1.15.1]",
+        "resolved": "1.15.1",
+        "contentHash": "JQ8SzCNeLOR8a88v4hE1HUXfbA9QkGyZzVjxbOYCP3BLVYyXPdNp+rmGCOGJ26DcRuqLsPoaBmEV/1ElwfVKDw==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)",
+          "AWSSDK.SQS": "[4.0.2.5, 5.0.0)",
+          "AWSSDK.SimpleNotificationService": "[4.0.2.7, 5.0.0)",
+          "OpenTelemetry.Extensions.AWS": "1.15.1"
+        }
+      },
+      "OpenTelemetry.Instrumentation.Http": {
+        "type": "Direct",
+        "requested": "[1.15.1, 1.15.1]",
+        "resolved": "1.15.1",
+        "contentHash": "vFO4Fj/dXkoVNGo/nhoGpO2zYQmZwr4jTID7oRGo+XlQ8LqksyZjUXQ4p39RfUvTID7IzzL8Qe71tW7CcAFymA==",
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Resources.AWS": {
+        "type": "Direct",
+        "requested": "[1.15.1, 1.15.1]",
+        "resolved": "1.15.1",
+        "contentHash": "V+i3n8UWMIyC6x6WlhujBQdLNG3KUcIct5m0/s0EN3ahdm9+gP94iQLnkw7NXhGwB97U/s4HISaOjlMXq9LC4Q==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.3, 2.0.0)"
+        }
+      },
+      "OpenTelemetry.Sampler.AWS": {
+        "type": "Direct",
+        "requested": "[0.1.0-alpha.9, 0.1.0-alpha.9]",
+        "resolved": "0.1.0-alpha.9",
+        "contentHash": "U5nVi4ZL77lxd0SYCou8MA0Euf9SlyA2byDXf9H/umsgKaBFlsdcNcPzUlJCzyxZDV5XfHWdjc9xgJcVvmWFWA==",
+        "dependencies": {
+          "OpenTelemetry": "[1.15.3, 2.0.0)"
+        }
+      },
+      "AWSSDK.Extensions.CborProtocol": {
+        "type": "Transitive",
+        "resolved": "4.0.0.44",
+        "contentHash": "K4d0KwMcUN+RiaZ3k3oAtabS4OJL66l1F57M0sRcOIVhTSCZsZkOT/YeZkYcvdUzJyrJpVt9KLT4N9wdPTVf8g==",
+        "dependencies": {
+          "AWSSDK.Core": "4.0.7.4"
+        }
+      },
+      "AWSSDK.SimpleNotificationService": {
+        "type": "Transitive",
+        "resolved": "4.0.2.7",
+        "contentHash": "WO0xjj2demSh3hPKQtSS3XyncITIUlENCeLv/FZsteMJh4HpfGwxp1dbq8YnaR90ddzvyPU6uj675WGuMf6zgg==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)"
+        }
+      },
+      "AWSSDK.SQS": {
+        "type": "Transitive",
+        "resolved": "4.0.2.5",
+        "contentHash": "bHA9m/2RZHNKt6NGvQ56rfEDj/pfUlcwPeCg2HmPJ3jZPyoerBuEsYvFkMP3YJNv3aoycNWZoiDk0/ULP0tEyA==",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.3.3, 5.0.0)"
+        }
+      },
+      "OpenTelemetry.Api": {
+        "type": "Transitive",
+        "resolved": "1.16.0",
+        "contentHash": "WZP8Eb6vZTeNqeV+fjBitc7iefBoTHIhaWorqg/h/YiQBlcQJu0bICuTqKV0XRyjiE0eWs80yLlnUtHAFSkFWA=="
+      },
+      "OpenTelemetry.Api.ProviderBuilderExtensions": {
+        "type": "Transitive",
+        "resolved": "1.16.0",
+        "contentHash": "hZwaHAkXvUNn9+cS+vEvYBgIrIQOQRz2cIRUODZ5gxHsDsLeNCueLgZFkybopjE0jUhLut6lm5eL3LTqbW0hMg==",
+        "dependencies": {
+          "OpenTelemetry.Api": "1.16.0"
+        }
+      },
+      "simpleopentelemetry": {
+        "type": "Project",
+        "dependencies": {
+          "OpenTelemetry": "[1.16.0, 1.16.0]",
+          "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.16.0, 1.16.0]",
+          "OpenTelemetry.Extensions.Hosting": "[1.16.0, 1.16.0]"
+        }
+      },
+      "OpenTelemetry": {
+        "type": "CentralTransitive",
+        "requested": "[1.16.0, 1.16.0]",
+        "resolved": "1.16.0",
+        "contentHash": "nE/Px3MUvQC8c0UG0DOP5OJE7vMtiMaPYi/6TkSS/o/O0s/oPq+8WaPYTVEPzb7lwu/QyLgknc+sFm2FjPXe2A==",
+        "dependencies": {
+          "OpenTelemetry.Api.ProviderBuilderExtensions": "1.16.0"
+        }
+      },
+      "OpenTelemetry.Exporter.OpenTelemetryProtocol": {
+        "type": "CentralTransitive",
+        "requested": "[1.16.0, 1.16.0]",
+        "resolved": "1.16.0",
+        "contentHash": "gzYLY8sVDY5FYtVlCYSzBYX53xslRlvBLxwFYOdNIhc76SgKdFYUoDQXOeQI3WPBCrZp51QNcP6fZHh1+HtpIQ==",
+        "dependencies": {
+          "OpenTelemetry": "1.16.0"
+        }
+      },
+      "OpenTelemetry.Extensions.Hosting": {
+        "type": "CentralTransitive",
+        "requested": "[1.16.0, 1.16.0]",
+        "resolved": "1.16.0",
+        "contentHash": "/YfrO5MRaA156vhNanYGPX2JjOwKUrA0+Jf7ltT2eD3VkfHqXcEJY5Oxt/nWH8lqBOTc1nJpn2soBtD5Cml8Dg==",
+        "dependencies": {
+          "OpenTelemetry": "1.16.0"
+        }
+      }
+    }
+  }
+}
