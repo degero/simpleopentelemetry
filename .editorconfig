@@ -7,9 +7,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-# C# — 4 spaces
 [*.cs]
-end_of_line = lf
 indent_size = 4
 
 # YAML, JSON etc — 2 spaces

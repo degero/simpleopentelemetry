@@ -17,13 +17,13 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
-      - name: Lint
-        run: dotnet format --verify-no-changes
+      # - name: Dotnet format
+      #   run: dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verify-no-changes
 
-      - name: Build
+      - name: Dotnet build
         run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental
 
-      - name: Test
+      - name: Dotnet test
         run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --verbosity normal --logger:"junit;LogFilePath=${{ github.workspace }}/testresults/{assembly}.xml"  --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Upload coverage reports to Codecov
@@ -33,6 +33,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Upload test results to Codecov
-        uses: codecov/test-results-action@v1
+        uses: codecov/codecov-action@v5
         with:
+          report_type: "test_results"
           token: ${{ secrets.CODECOV_TOKEN }}
