@@ -26,16 +26,16 @@ For a full working application and infrastructure example, see: [example-apps/cl
 
 Run these in your app project folder:
 
-```
+```powershell
 dotnet add package SimpleOpenTelemetry
-dotnet add package OpenTelemetry.Instrumentation.AWS
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore
-dotnet add package OpenTelemetry.Instrumentation.Http
-dotnet add package OpenTelemetry.Extensions.AWS
-dotnet add package OpenTelemetry.Resources.AWS
+dotnet add package OpenTelemetry.Instrumentation.AWS --version 1.15.1
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
+dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
+dotnet add package OpenTelemetry.Extensions.AWS --version 1.15.1
+dotnet add package OpenTelemetry.Resources.AWS --version 1.15.1
 ```
 
-## X-Ray note (important)
+## X-Ray Remote Sampling
 
 X-Ray remote sampling cannot be enabled by JSON config in SimpleOpenTelemetry.
 
@@ -46,13 +46,13 @@ Why:
 
 To enable in code, see:
 
-- `example-apps/cloud/aws/ecs/README.md` (X-Ray Remote Sampling section)
-- `example-apps/cloud/aws/ecs/app/Program.cs` (the `UseXraySampler` code path)
+- [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/example-apps/cloud/aws/ecs/README.md) (X-Ray Remote Sampling section)
+
 
 If you also implement the optional code-only X-Ray remote sampler path shown in that example, add:
 
 ```powershell
-dotnet add package OpenTelemetry.Sampler.AWS --prerelease
+dotnet add package OpenTelemetry.Sampler.AWS --prerelease --version 0.1.0-alpha.9
 ```
 
 ## Configuration notes

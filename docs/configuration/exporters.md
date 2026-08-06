@@ -47,7 +47,8 @@ Documentation: [OpenTelemetry Console Exporter README.md](https://github.com/ope
 
 Options: none (unsupported, see above readme for supported OTEL_* environment variables/json config)
 
-Nuget Package: none (builtin to OpenTelemetry .net lib)
+Nuget Package:
+`dotnet add package OpenTelemetry.Exporter.Console --version 1.16.0`
 
 SimpleOpenTelemetry:<SignalType>:Exporters[] json:
 
@@ -69,7 +70,7 @@ Options: optional (see [PrometheusHttpListenerOptions.cs](https://github.com/ope
 Notes: This is only for dev use. It is never intended for prod. Defaults to host prometheus scrape endpoint on http://localhost:9464/metrics. Not recommended for aspnetcore apps, instead use [Prometheus AspNetCore Exporter](#prometheus-aspnetcore-exporter-prerelease)
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.HttpListener`
+`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.HttpListener --version 1.15.3-beta.1`
 
 SimpleOpenTelemetry:Metric:Exporters[] json:
 
@@ -93,7 +94,7 @@ Options: optional, the documentation doesn't appear to mention, but you can set 
 Notes: For AspNetCore apps only. Hosts prometheus scrape endpoint defaulted on http://apphost:port/metrics.
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.AspNetCore`
+`dotnet add package --prerelease OpenTelemetry.Exporter.Prometheus.AspNetCore --version 1.15.3-beta.1`
 
 SimpleOpenTelemetry:Metric:Exporters[] json:
 
@@ -148,7 +149,7 @@ union requests, dependencies, traces, exceptions, customMetrics
 
 
 Nuget Package:
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version 1.8.1`
 `dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
 
 SimpleOpenTelemetry:<SignalType>:Exporters[] json:

@@ -77,9 +77,12 @@ Guides:
 
 ## X-Ray Remote Sampling
 
-This sampler on the OpenTelemetry SDK is currently in Alpha at the time of writing, is only supported through the AWS autoinstrumentation lib or the aws-otel-collector. This example will enable it in code if you appsettings.OtelCollector.json file. It is not supported in SimpleOpenTelemetry configuration due to a poor pattern requiring a pre-built resource provider and no ability to sign http requests. To setup X-Ray Sampling in your AWS env see:
+This sampler on the OpenTelemetry SDK is currently in Alpha at the time of writing, is only supported through the AWS autoinstrumentation lib or the aws-otel-collector. This example will enable it in code if you use the appsettings.OtelCollector.json file. It is not supported in SimpleOpenTelemetry configuration due to a poor pattern requiring a pre-built resource provider and no ability to sign http requests.
 
-[](https://docs.aws.amazon.com/xray/latest/devguide/xray-console-sampling.html#xray-console-custom)
+You can see the setup of this in [Program.cs)](./app/Program.cs) (the `UseXraySampler` code path)
+
+For Documentation to setup X-Ray Sampling and sampling rules in your AWS env see:
+
 [XRay Remote Sampling getting started](https://aws-otel.github.io/docs/getting-started/remote-sampling)
 
 

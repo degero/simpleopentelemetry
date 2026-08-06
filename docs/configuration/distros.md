@@ -35,7 +35,7 @@ Documentation:
 
 
 Nuget Package:
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore`
+`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version 1.5.0`
 `dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
 
 SimpleOpenTelemetry:Distro json:

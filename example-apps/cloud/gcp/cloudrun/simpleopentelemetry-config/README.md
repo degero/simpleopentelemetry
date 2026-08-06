@@ -10,8 +10,8 @@ This is designed for use running an aspnetcore app containerised with a otel col
 
 ```
 SimpleOpenTelemetry
-OpenTelemetry.Instrumentation.AspNetCore
-OpenTelemetry.Instrumentation.Http
+OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
+OpenTelemetry.Instrumentation.Http --version 1.15.1
 ```
 
 # appsettings.DirectExport.json
@@ -20,12 +20,12 @@ This is designed for use running an aspnetcore app with no collector and exports
 It requires the following nuget packages:
 
 
-```
+```powershell
 SimpleOpenTelemetry
 Google.Apis.Auth
-OpenTelemetry.Instrumentation.AspNetCore
-OpenTelemetry.Instrumentation.Http
-OpenTelemetry.Resources.Gcp
+OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
+OpenTelemetry.Instrumentation.Http --version 1.15.1
+OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1
 ```
 
 

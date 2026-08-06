@@ -8,7 +8,7 @@ Set trace propagators in the configuration `SimpleOpenTelemetry:Trace:Propagator
 
 **Nuget Packages**
 
-OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) so dont require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators`
+OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) so dont require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators --version 1.16.0`
 
 **Available Propagators in SimpleOpenTelemetry**
 
@@ -44,7 +44,7 @@ Stability: Stable
 Documentation: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Extensions.AWS`
+`dotnet add package OpenTelemetry.Extensions.AWS  --version 1.15.1`
 
 SimpleOpenTelemetry:Trace:Propagators[] json:
 

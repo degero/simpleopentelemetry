@@ -18,8 +18,8 @@ If running with RBAC locally (the default of these configs) you will need to ass
 Adjust your config related to the optional instrumentations
 
 **optional**
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore`
-`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore`
+`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore  --version 1.5.0`
+`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version 1.15.1-beta.1`
 
 *IMPORTANT*
 
@@ -30,13 +30,13 @@ If you add package `OpenTelemetry.Instrumentation.SqlClient` you will need to co
 
 These are the core packages as distro uses, adjust your config related to the optional instrumentations
 
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
-`dotnet add package OpenTelemetry.Instrumentation.Http`
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version 1.8.1`
+`dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1`
 
 **optional**
-`dotnet add package OpenTelemetry.Instrumentation.AspNetCore`
-`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore`
-`dotnet add package OpenTelemetry.Instrumentation.SqlClient`
+`dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2`
+`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Instrumentation.SqlClient --version 1.15.2`
 
 
 ## Appsettings file

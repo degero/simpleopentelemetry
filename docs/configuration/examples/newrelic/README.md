@@ -43,8 +43,8 @@ Run these in your app project folder:
 
 ```
 dotnet add package SimpleOpenTelemetry
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore
-dotnet add package OpenTelemetry.Instrumentation.Http
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
+dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
 
 ```
 

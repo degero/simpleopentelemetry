@@ -13,16 +13,16 @@ For Azure users, sampling is built into the exporter setup/options.
 Available samplers are:
 
 
-## AWS X-Ray Remote Sampler
+## AWS X-Ray Remote Sampler (Unsupported)
 
 Stability: Alpha (as of July 2026)
 
-Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. Requires setup in CloudWatch to support xray sampler settings
+Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. See [example-apps/cloud/aws/ecs](../../example-apps/cloud/aws/ecs/README.md#x-ray-remote-sampling) for using this via code.
 
 Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Sampler.AWS --prerelease`
+`dotnet add package OpenTelemetry.Sampler.AWS --prerelease --version 0.1.0-alpha.9`
 
 SimpleOpenTelemetry:Trace:Sampler json:
 

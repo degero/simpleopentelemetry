@@ -18,7 +18,7 @@ Documentation: [Azure Monitor Exporter client library for .NET - Add the Exporte
 Notes: This is the same underlying exporter as [Azure Monitor exporter](#azure-monitor-exporter) with one crucial difference supporting Live Metrics (on by default, only configurable using this extension). Live metrics will only work with a Generic host application and will not work with SimpleOpenTelemetryBootstrap.Add(). It also simplifies your config if you want exports for all signals with all the same settings.
 
 Nuget Package:
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter`
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version 1.8.1`
 
 SimpleOpenTelemetry:BuilderExtensions[] json:
 
@@ -41,7 +41,7 @@ Documentation: [Tracing with AWS Distro for OpenTelemetry .Net SDK](https://gith
 Notes: This is commonly used with the AWS Xray Propagator as mentioned in README.md above.
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Extensions.AWS`
+`dotnet add package OpenTelemetry.Extensions.AWS  --version 1.15.1`
 
 SimpleOpenTelemetry:Trace.Extensions[] json:
 

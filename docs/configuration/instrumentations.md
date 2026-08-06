@@ -21,7 +21,7 @@ Signals: trace, metric
 
 Options: [AspNetCoreTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/AspNetCoreTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AspNetCore`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -40,7 +40,7 @@ Signals: trace, metric
 
 Options: unsupported [HttpClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/HttpClientTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Http`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -59,7 +59,7 @@ Signals: trace, metric
 
 Options:  [AWSClientInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/AWSClientInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWS`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWS --version 1.15.1`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -80,7 +80,7 @@ Signals: trace
 
 Options: [AWSLambdaInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/AWSLambdaInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWSLambda`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWSLambda --version 1.15.1`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -101,7 +101,7 @@ Signals: trace, metric
 
 Options: [SqlClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/SqlClientTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.SqlClient`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.SqlClient --version 1.15.2`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -120,7 +120,7 @@ Signals: trace
 
 Options: unsupported [EntityFrameworkInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/EntityFrameworkInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -139,7 +139,7 @@ Signals: trace
 
 Options: [WcfInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/WcfInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Wcf --prerelease`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Wcf --prerelease --version 1.15.1-beta.2`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -158,7 +158,7 @@ Signals: metric
 
 Options: [RuntimeInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/RuntimeInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Runtime`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Runtime --version 1.15.1`
 
 SimpleOpenTelemetry:Metric:Instrumentations[] json:
 
@@ -177,7 +177,7 @@ Signals: metric
 
 Options: none
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Process --prerelease`
+Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Process --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Metric:Instrumentations[] json:
 

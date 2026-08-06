@@ -29,12 +29,12 @@ If you don't need aspnetcore or httpclient metrics / traces, remove from your Si
 
 Run these in your app project folder:
 
-```
+```powershell
 dotnet add package SimpleOpenTelemetry
 dotnet add package Google.Apis.Auth
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore
-dotnet add package OpenTelemetry.Instrumentation.Http
-dotnet add package OpenTelemetry.Resources.Gcp
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
+dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
+dotnet add package OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1
 ```
 
 

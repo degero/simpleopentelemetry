@@ -32,7 +32,7 @@ Stability: Beta (as of july 2026)
 Documentation: [Resource Host Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Host/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Host --prerelease`
+`dotnet add package OpenTelemetry.Resources.Host --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -48,7 +48,7 @@ Stability: Beta (as of july 2026)
 Documentation: [Container Resource Detector README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Container/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Container --prerelease`
+`dotnet add package OpenTelemetry.Resources.Container --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -64,7 +64,7 @@ Stability: Alpha (as of july 2026)
 Documentation: [Operating System Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.OperatingSystem/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.OperatingSystem --prerelease`
+`dotnet add package OpenTelemetry.Resources.OperatingSystem --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -80,7 +80,7 @@ Stability: Beta (as of july 2026)
 Documentation: [Process Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Process/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Process --prerelease`
+`dotnet add package OpenTelemetry.Resources.Process --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -96,7 +96,7 @@ Stability: Beta (as of july 2026)
 Documentation: [Process Runtime Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.ProcessRuntime/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.ProcessRuntime --prerelease`
+`dotnet add package OpenTelemetry.Resources.ProcessRuntime --prerelease --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -114,7 +114,7 @@ Stability: Stable
 Documentation: [AWS Resource Detectors](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.AWS`
+`dotnet add package OpenTelemetry.Resources.AWS --version 1.15.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -132,7 +132,7 @@ Stability: Beta (as of July 2026)
 Documentation: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Resources.Azure`
+`dotnet add package --prerelease OpenTelemetry.Resources.Azure --version 1.15.1-beta.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -173,7 +173,7 @@ Stability: Alpha (as of July 2026)
 Documentation: [Resource Detectors for Google Cloud Platform](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Gcp/README.md)
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Resources.Gcp`
+`dotnet add package --prerelease OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
