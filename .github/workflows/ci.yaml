@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: ./.github/workflows/build-and-test.yml
+    uses: ./.github/workflows/build-and-test.yaml
     with:
       upload-coverage: true
     secrets:

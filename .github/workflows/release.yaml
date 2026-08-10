@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: ./.github/workflows/dotnet-build-test.yml
+    uses: ./.github/workflows/build-and-test.yaml
     with:
       fetch-depth: 0 # MinVer needs full history to find the tag for versioning
 
