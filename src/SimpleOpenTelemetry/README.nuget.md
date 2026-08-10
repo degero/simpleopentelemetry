@@ -2,11 +2,13 @@
 
 A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
 
+**Supported Frameworks:** .NET 10.0, .NET 8.0
+
+**Supported .Net App Host Patterns:** WebApplication Host / .Net Generic Host / Non generic host.
+
+**License:** MIT
+
 [CHANGELOG.md](./CHANGELOG.md)
-
-## Requirements
-
-- .NET (8.0, 10.0)
 
 
 ## Compatibility
@@ -18,11 +20,9 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
 
 
-## Supported OpenTelemetry components
+## Requirements
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
-
-⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
+None. You can choose components to 'plug-in' below.
 
 
 ## Quickstart
@@ -65,6 +65,13 @@ sdk.Dispose();
 ## Documentation
 
 For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md) and [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
+
+
+## Supported OpenTelemetry components
+
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
+
+⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
 
 
 ## License

@@ -11,7 +11,7 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 | Status | |
 | ------ | --- |
-| Stability | Alpha |
+| Stability | Beta |
 | Code Owners | [@degero](https://github.com/degero) |
 
 
