@@ -32,9 +32,16 @@ These dependencies are included in the package. There are also Microsoft.* are t
 These dependencies are included in the SimpleOpenTelemetry nuget package.
 
 
+## Compatibility
+
+| SimpleOpenTelemetry | OpenTelemetry SDK family |
+|---|---|
+| 0.1.0 | 1.16.x |
+
+
 ## Goal
 
-*To make OpenTelemetry code-based instrumentation as convenient as possible so developers can focus on their apps*
+*To make OpenTelemetry code-based instrumentation as simple as possible so developers can focus on their apps*
 
 
 ## Overview
@@ -84,8 +91,13 @@ Documentation for setting up SimpleOpenTelemetry can be found in [docs/README.md
 MIT License - see [LICENSE](./LICENSE) file for details.
 
 
+## Feedback
+
+For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new)
+
+
 ## Contributing
 
-Issues, feature requests, or contributions are most welcome.
+Contributions are most welcome.
 
 [CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING)

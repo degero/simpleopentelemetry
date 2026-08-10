@@ -1,10 +1,11 @@
 # SimpleOpenTelemetry
 
-A lightweight, low-code .NET library for configuring OpenTelemetry via IConfiguration, supporting both generic-host and standalone apps. Example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
+A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
+
 
 ## Requirements
 
-- .NET 8.0, 10.0
+- .NET (8.0, 10.0)
 
 
 ## Compatibility
@@ -70,8 +71,13 @@ For configuration reference, example configs/snippets, cloud examples, and troub
 MIT License - see [LICENSE](https://github.com/degero/simpleopentelemetry/blob/main/LICENSE) file for details.
 
 
+## Feedback
+
+For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new)
+
+
 ## Contributing
 
-Issues, feature requests, or contributions are most welcome.
+Contributions are most welcome.
 
 [CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING)
