@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-test:
-    uses: ./.github/workflows/dotnet-build-test.yml
+    uses: ./.github/workflows/build-and-test.yml
     with:
       upload-coverage: true
     secrets:

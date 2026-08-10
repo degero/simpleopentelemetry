@@ -20,6 +20,8 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 [![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
 
 
+[CHANGELOG.md](./CHANGELOG.md)
+
 ## Dependencies
 
 | Package | Version | Notes |
