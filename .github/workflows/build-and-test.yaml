@@ -29,7 +29,9 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: |
+            8.0.x
+            10.0.x
 
       - name: Dotnet restore (lockfile)
         run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
@@ -38,12 +40,13 @@ jobs:
         run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental --no-restore
 
       - name: Dotnet test
-        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --no-restore --verbosity normal --logger:"junit;LogFilePath=${{ github.workspace }}/testresults/{assembly}.xml" --collect:"XPlat Code Coverage" --results-directory ./coverage
+        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --no-restore --verbosity normal --logger:"junit;LogFilePath=${{ github.workspace }}/testresults/{assembly}-{framework}.xml" --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Upload coverage reports to Codecov
         if: inputs.upload-coverage
         uses: codecov/codecov-action@v5
         with:
+          fail_ci_if_error: true
           files: ./coverage/**/coverage.cobertura.xml
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -51,5 +54,6 @@ jobs:
         if: inputs.upload-coverage
         uses: codecov/codecov-action@v5
         with:
+          fail_ci_if_error: true
           report_type: "test_results"
           token: ${{ secrets.CODECOV_TOKEN }}

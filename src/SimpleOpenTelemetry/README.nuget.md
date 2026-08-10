@@ -18,7 +18,7 @@ These dependencies are included in the package. There are also Microsoft.* are t
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/main/docs/otel-component-versions.md).
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
 
 ⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
 
@@ -62,15 +62,16 @@ sdk.Dispose();
 
 ## Documentation
 
-For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [README.md](https://github.com/degero/simpleopentelemetry/blob/main/README.md) and [docs](https://github.com/degero/simpleopentelemetry/blob/main/docs/README.md)
+For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md) and [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
 
 
 ## License
 
-MIT License - see [LICENSE](./LICENSE) file for details.
+MIT License - see [LICENSE](https://github.com/degero/simpleopentelemetry/blob/main/LICENSE) file for details.
 
 
-## Feedback
+## Contributing
 
-For issues, feature requests, or contributions, visit:
-https://github.com/degero/SimpleOpenTelemetry
+Issues, feature requests, or contributions are most welcome.
+
+[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING)

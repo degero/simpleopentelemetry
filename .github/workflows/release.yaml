@@ -23,7 +23,17 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Pin README links to release tag
+        run: |
+          if [[ "${{ github.ref_type }}" != "tag" ]]; then
+            echo "::error::Release workflow must run against a tag ref, got ${{ github.ref_type }}:${{ github.ref_name }}"
+            exit 1
+          fi
+          sed -i "s/{{TAG}}/${{ github.ref_name }}/g" src/SimpleOpenTelemetry/README.nuget.md
 
       - name: Pack
         run: |
@@ -34,7 +44,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
-          path: nupkgs/*.nupkg
+          path: |
+            nupkgs/*.nupkg
+            nupkgs/*.snupkg
 
   push-to-nuget:
     needs: pack

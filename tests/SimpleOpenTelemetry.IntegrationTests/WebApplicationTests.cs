@@ -31,7 +31,6 @@ public class WebApplicationTests : IDisposable
     List<Metric> _exportedMetrics;
     List<LogRecord> _exportedLogs;
     List<Activity> _exportedTraces;
-    
 
 
     public WebApplicationTests()
@@ -84,7 +83,6 @@ public class WebApplicationTests : IDisposable
             // Verify app can function and handle HTTP requests (via health check)
             using var httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri("http://localhost:5000");
-            
             var healthResponse = await httpClient.GetAsync("/health");
             Assert.Equal(HttpStatusCode.OK, healthResponse.StatusCode);
 
@@ -95,7 +93,7 @@ public class WebApplicationTests : IDisposable
 
             // Verify we can get a logger and use it to check exported logs
             var logger = app.Services.GetRequiredService<ILogger<WebApplicationTests>>();
-            Assert.NotNull(logger); 
+            Assert.NotNull(logger);
             logger.LogInformation("Test information message");
             logger.LogDebug("Test debug message");
             logger.LogWarning("Test warning message");
@@ -121,13 +119,13 @@ public class WebApplicationTests : IDisposable
             // Clean up - stop the app
             await app.StopAsync();
             await appTask;
-
+            await app.DisposeAsync();
         }
     }
 
     private void AssertNoErrorEvents(IReadOnlyList<EventWrittenEventArgs> events)
     {
-        var errorEvents = events.Where(x => 
+        var errorEvents = events.Where(x =>
             x.Level == EventLevel.Error || x.Level == EventLevel.Critical);
 
         Assert.Empty(errorEvents);
@@ -137,9 +135,9 @@ public class WebApplicationTests : IDisposable
 
     private WebApplication GetWebApplication(Dictionary<string, string?> configDict)
     {
-        
+
         var builder = WebApplication.CreateBuilder();
-        
+
         // Add the config dictionary to the builder's configuration
         builder.Configuration.AddInMemoryCollection(configDict);
         builder.Configuration.AddEnvironmentVariables();

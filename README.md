@@ -84,6 +84,8 @@ Documentation for setting up SimpleOpenTelemetry can be found in [docs/README.md
 MIT License - see [LICENSE](./LICENSE) file for details.
 
 
-## Contribution
+## Contributing
 
 Issues, feature requests, or contributions are most welcome.
+
+[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING)
