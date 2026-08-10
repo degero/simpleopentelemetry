@@ -15,9 +15,6 @@ on:
       CODECOV_TOKEN:
         required: false
 
-env:
-  ContinuousIntegrationBuild: "true"
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

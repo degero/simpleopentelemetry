@@ -11,6 +11,9 @@ jobs:
     uses: ./.github/workflows/build-and-test.yaml
     with:
       fetch-depth: 0 # MinVer needs full history to find the tag for versioning
+      upload-coverage: true
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   pack:
     needs: build-and-test

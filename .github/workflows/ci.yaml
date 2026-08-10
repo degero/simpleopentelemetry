@@ -10,6 +10,6 @@ jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yaml
     with:
-      upload-coverage: true
+      upload-coverage: ${{ github.event_name == 'push' }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

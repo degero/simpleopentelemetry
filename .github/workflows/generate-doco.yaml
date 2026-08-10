@@ -21,7 +21,7 @@ jobs:
 
       - name: Generate doco
         run: |
-          chmod +x scripts/generate-tested-plugins.sh
+          chmod +x scripts/generate-doco.sh
           ./scripts/generate-doco.sh
 
       - name: Commit and push if docs/otel-component-versions.md changed

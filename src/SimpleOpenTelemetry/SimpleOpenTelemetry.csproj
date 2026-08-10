@@ -11,7 +11,7 @@
     <PackageId>SimpleOpenTelemetry</PackageId>
     <Authors>Chad Paynter</Authors>
     <Company></Company>
-    <Description>A lightweight, low-code .NET library for configuring OpenTelemetry via IConfiguration, supporting both generic-host and standalone apps. Example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.</Description>
+    <Description>A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.</Description>
     <PackageTags>opentelemetry;telemetry;monitoring;traces;observability</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright © Chad Paynter</Copyright>

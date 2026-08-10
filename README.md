@@ -27,7 +27,7 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | Package | Version | Notes |
 |---|---|---|
 | [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry) | `1.16.0` | Core SDK |
-| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting) | `1.16.0` | `IHostBuilder` / DI integration |
+| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting) | `1.16.0` | IHostBuilder / DI integration |
 | [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter |
 
 These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
