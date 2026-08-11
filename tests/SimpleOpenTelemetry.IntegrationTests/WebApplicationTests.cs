@@ -3,6 +3,9 @@ using System.Diagnostics.Tracing;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -60,10 +63,17 @@ public class WebApplicationTests : IDisposable
         // Start the app in a background task
         var appTask = app.RunAsync();
 
+
         try
         {
             // Give the app a moment to start
             await Task.Delay(500);
+
+            var addressFeature = app.Services
+                .GetRequiredService<IServer>()
+                .Features.Get<IServerAddressesFeature>();
+
+            var baseAddress = addressFeature!.Addresses.First();
 
             // ASSERT - Verify OpenTelemetry services are registered and configured
             var tracerProvider = app.Services.GetRequiredService<TracerProvider>();
@@ -82,7 +92,7 @@ public class WebApplicationTests : IDisposable
 
             // Verify app can function and handle HTTP requests (via health check)
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:5000");
+            httpClient.BaseAddress = new Uri(baseAddress);
             var healthResponse = await httpClient.GetAsync("/health");
             Assert.Equal(HttpStatusCode.OK, healthResponse.StatusCode);
 
@@ -111,7 +121,7 @@ public class WebApplicationTests : IDisposable
             meterProvider.ForceFlush();
 
             await Task.Delay(500);
-            VerifyTelemetryExport();
+            VerifyTelemetryExport(baseAddress);
 
         }
         finally
@@ -137,6 +147,7 @@ public class WebApplicationTests : IDisposable
     {
 
         var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseUrls("http://127.0.0.1:0");
 
         // Add the config dictionary to the builder's configuration
         builder.Configuration.AddInMemoryCollection(configDict);
@@ -178,15 +189,15 @@ public class WebApplicationTests : IDisposable
         };
     }
 
-    private void VerifyTelemetryExport()
+    private void VerifyTelemetryExport(string baseAddress)
     {
         foreach (var signal in new[] { "trace", "information", "critical", "warning", "debug" })
             Assert.Contains(_exportedLogs, r => r.FormattedMessage!.Contains($"Test {signal} message"));
 
         Assert.NotEmpty(_exportedMetrics.Where(r => r.Name.StartsWith("process.")).AsEnumerable());
 
-        Assert.Equal(2, _exportedTraces.Count(r => r.TagObjects.Any(t => t.Key == "url.full" && (t.Value?.ToString() == "http://localhost:5000/echo/test" ||
-            t.Value?.ToString() == "http://localhost:5000/health"))));
+        Assert.Equal(2, _exportedTraces.Count(r => r.TagObjects.Any(t => t.Key == "url.full" && (t.Value?.ToString() == $"{baseAddress}/echo/test" ||
+            t.Value?.ToString() == $"{baseAddress}/health"))));
 
     }
 }
