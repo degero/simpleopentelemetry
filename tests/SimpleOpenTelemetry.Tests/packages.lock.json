@@ -809,6 +809,9 @@
       "simpleopentelemetry": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "[10.0.0, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.0.0, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.0.0, )",
           "OpenTelemetry": "[1.16.0, 1.16.0]",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.16.0, 1.16.0]",
           "OpenTelemetry.Extensions.Hosting": "[1.16.0, 1.16.0]"
@@ -1780,6 +1783,9 @@
       "simpleopentelemetry": {
         "type": "Project",
         "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "[8.0.0, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.0, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[8.0.0, )",
           "OpenTelemetry": "[1.16.0, 1.16.0]",
           "OpenTelemetry.Exporter.OpenTelemetryProtocol": "[1.16.0, 1.16.0]",
           "OpenTelemetry.Extensions.Hosting": "[1.16.0, 1.16.0]"
