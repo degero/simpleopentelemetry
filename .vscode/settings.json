@@ -1,19 +1,30 @@
 {
-  "security.workspace.trust.enabled": true,
   // Helps the C# extension pick the right solution when opening the repo root.
   "dotnet.defaultSolution": "SimpleOpenTelemetry.sln",
-  "[csharp]": {
-    "editor.codeActionsOnSave": {
-      "editor.defaultFormatter": "ms-dotnettools.csharp",
-      "source.removeUnusedImports": "explicit",
-      "source.organizeImports": "explicit",
-      "source.fixAll": "explicit"
-    }
-  },
   "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
   "editor.insertSpaces": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+  "yaml.format.enable": false,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.exclude": {
