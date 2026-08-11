@@ -9,7 +9,7 @@ public enum SamplerEnum
     /// No sampler.
     /// </summary>
     None,
-    
+
     /* opentelemetry-dotnet-contrib */
     // AWS
 }

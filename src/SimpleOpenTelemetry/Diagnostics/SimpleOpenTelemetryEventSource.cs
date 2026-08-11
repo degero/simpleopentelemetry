@@ -30,11 +30,11 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     /// </summary>
     public static readonly SimpleOpenTelemetryEventSource Log = new();
 
-    private const int CriticalId    = 1;
-    private const int ErrorId       = 2;
-    private const int WarnId        = 3;
-    private const int InfoId        = 4;
-    private const int VerboseId     = 5;
+    private const int CriticalId = 1;
+    private const int ErrorId = 2;
+    private const int WarnId = 3;
+    private const int InfoId = 4;
+    private const int VerboseId = 5;
 
     /// <summary>
     /// 

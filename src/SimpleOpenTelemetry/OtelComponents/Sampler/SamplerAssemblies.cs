@@ -10,7 +10,7 @@ internal static class SamplerAssemblies
     public static readonly Dictionary<SamplerEnum, AssemblyDescriptor>
         KnownSamplers = new()
         {
-            /* Contrib samplers */ 
+            /* Contrib samplers */
             // Disabled until this lib is corrected inline with Otels fluent builder 
             // (ie not needing a prebuilt resourceprovider)
             // [SamplerEnum.AWS] = new(

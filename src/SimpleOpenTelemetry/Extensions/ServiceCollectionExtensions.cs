@@ -27,7 +27,7 @@ internal static class ServiceCollectionExtensions
         // to not disrupt any custom code dependencies in app code
         var otelBuilder = services.AddOpenTelemetry();
 
-         // Only run SimpleOpenTelemetryBuilder if basic config fields set. Error Events logged if not set
+        // Only run SimpleOpenTelemetryBuilder if basic config fields set. Error Events logged if not set
         if (SimpleOpenTelemetryBuilder.ValidateConfigurationFormat(configuration))
         {
             // Initialize a builder and configure as a Generic host app would

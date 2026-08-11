@@ -15,20 +15,20 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
     /// <returns></returns>
     public OtelResource Detect()
     {
-       
-        try 
+
+        try
         {
             var version = Assembly.GetEntryAssembly()?
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion?.Split('+')[0];
 
             if (!string.IsNullOrWhiteSpace(version))
-                return new OtelResource(new List<KeyValuePair<string, object>>() { new (OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version) });
-            else 
+                return new OtelResource(new List<KeyValuePair<string, object>>() { new(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version) });
+            else
                 return OtelResource.Empty;
         }
         catch
-        {}
+        { }
 
         return OtelResource.Empty;
     }

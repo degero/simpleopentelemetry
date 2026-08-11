@@ -15,7 +15,7 @@ internal class DistroLoader : LoaderBase, IDistroLoader
     /// Initializes a new instance of the DistroLoader class.
     /// </summary>
     /// <param name="assemblyExecution">Handles loading and executing extensions.</param>
-    public DistroLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution) {}
+    public DistroLoader(IAssemblyExecution assemblyExecution) : base(assemblyExecution) { }
 
     /// <summary>
     /// Loads an opentelemetry distro. Returns false if none set
@@ -25,15 +25,15 @@ internal class DistroLoader : LoaderBase, IDistroLoader
     /// <returns>If a distro to load was specified in config</returns>
     public bool LoadDistro(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options)
     {
-        if (!string.IsNullOrWhiteSpace(options.Distro)) 
+        if (!string.IsNullOrWhiteSpace(options.Distro))
         {
             if (builder is not OpenTelemetryBuilder)
             {
                 EventSource.Log.ErrorEvent(ComponentKind, $"Unsupported OpenTelemetry Distro '{options.Distro}'. This Distro can not be used with OpenTelemetrySDKBuilder.");
                 return true; // found a distro but it cannot be used, this will skip any opentelemetry setup.
             }
-            TryInvokeComponent(options.Distro, (OpenTelemetryBuilder) builder, DistroAssemblies.KnownGenericHostDistros, 
-                options, (a,b,c) => options.DistroOptions);
+            TryInvokeComponent(options.Distro, (OpenTelemetryBuilder)builder, DistroAssemblies.KnownGenericHostDistros,
+                options, (a, b, c) => options.DistroOptions);
             return true; // return true regardless of distro invocation success as we wish to skip any opentelemetry setup
         }
         return false;

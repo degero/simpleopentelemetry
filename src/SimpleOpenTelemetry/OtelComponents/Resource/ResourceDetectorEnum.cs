@@ -19,7 +19,7 @@ public enum ResourceDetectorEnum
     /// <summary>
     /// Host resource detector.
     /// </summary>
-    Host, 
+    Host,
     /// <summary>
     /// Container resource detector.
     /// </summary>

@@ -8,7 +8,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Resource;
 internal static class ResourceDetectorAssemblies
 {
     public static readonly Dictionary<ResourceDetectorEnum, AssemblyDescriptor>
-       
+
         KnownResourceDetectors = new()
         {
             /* SimpleOpenTelemetry built-in */
@@ -47,14 +47,14 @@ internal static class ResourceDetectorAssemblies
                 "OpenTelemetry.Resources.ProcessRuntime",
                 "OpenTelemetry.Resources.ProcessRuntimeResourceBuilderExtensions",
                 ["AddProcessRuntimeDetector"]),
-                
+
 
             /* opentelemetry-dotnet-contrib platform specific */
             [ResourceDetectorEnum.Azure] = new(
                 "OpenTelemetry.Resources.Azure",
                 "OpenTelemetry.Resources.AzureResourceBuilderExtensions",
                 ["AddAzureAppServiceDetector", "AddAzureContainerAppsDetector", "AddAzureVMDetector"]),
-             
+
             [ResourceDetectorEnum.AWS] = new(
                 "OpenTelemetry.Resources.AWS",
                 "OpenTelemetry.Resources.AWSResourceBuilderExtensions",

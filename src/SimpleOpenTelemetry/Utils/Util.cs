@@ -11,11 +11,11 @@ public static class Util
     /// <typeparam name="TBuilder">The builder type.</typeparam>
     /// <returns>The signal name (trace, metric, or log).</returns>
     public static string GetSignalName<TBuilder>() => typeof(TBuilder).Name switch
-        {
-            "TracerProviderBuilder" => "trace",
-            "MeterProviderBuilder" => "metric",
-            "LoggerProviderBuilder" => "log",
-            _ => "Unknown"
-        };
+    {
+        "TracerProviderBuilder" => "trace",
+        "MeterProviderBuilder" => "metric",
+        "LoggerProviderBuilder" => "log",
+        _ => "Unknown"
+    };
 
 }

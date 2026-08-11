@@ -10,7 +10,7 @@ internal static class ExtensionAssemblies
             [TraceExtensionsEnum.AWSXRayTraceId] = new(
                 "OpenTelemetry.Extensions.AWS",
                 "OpenTelemetry.Trace.TracerProviderBuilderExtensions",
-                [ "AddXRayTraceId" ])
+                ["AddXRayTraceId"])
         };
 
     public static readonly Dictionary<MetricExtensionsEnum, AssemblyDescriptor>
@@ -25,7 +25,7 @@ internal static class ExtensionAssemblies
             [BuilderExtensionsEnum.AzureMonitorExporter] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.OpenTelemetryBuilderExtensions",
-                [ "UseAzureMonitorExporter" ],
+                ["UseAzureMonitorExporter"],
                 "AzureMonitorExporterOptions",
                 false)
         };

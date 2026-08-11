@@ -8,7 +8,7 @@ namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 internal static class PropagatorAssemblies
 {
     public static readonly Dictionary<PropagatorEnum, AssemblyDescriptor>
-       
+
         KnownPropagators = new()
         {
             /* opentelemetry-dotnet propagators */

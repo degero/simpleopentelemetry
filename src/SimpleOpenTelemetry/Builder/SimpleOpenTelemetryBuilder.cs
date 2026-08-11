@@ -111,7 +111,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         _distroLoader.LoadDistro(_otelBuilder, _options);
 
         ConfigureResourceAttributes();
-        
+
         ConfigureMetrics();
 
         ConfigureTracing();
@@ -148,7 +148,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             bool atLeastOneExists = section.GetSection("Log").Exists()
                 || section.GetSection("Metric").Exists()
                 || section.GetSection("Trace").Exists();
-                
+
             if (!atLeastOneExists)
             {
                 EventSource.Log.CriticalEvent(eventCategory, $"Missing signal configuration subsections in '{SimpleOpenTelemetryOptions.SectionName}'. Ensure defining at least one of Trace, Log or Metric subsection.");
@@ -156,7 +156,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             }
         }
         return true;
-        
+
     }
 
     private void BindConfigurationToSimpleOpenTelemetryOptions()
@@ -168,7 +168,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     }
 
     private void ConfigureResourceAttributes()
-    {   
+    {
         // 'EnvVar' detector only be needed if OpenTelemetry SDK changes to not include this by default
         _otelBuilder.ConfigureResource(r =>
         {
@@ -231,7 +231,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
             // add exporters
             _exporterLoader.ConfigureExporters(tracing, _options);
         });
-        
+
         // Add propagators
         _propagatorLoader.AddPropagators(_options);
     }
@@ -249,10 +249,10 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
                 // Iterate over exporters for this montioring type and add them
                 _exporterLoader.ConfigureExporters(logging, _options);
-            }, 
+            },
             options =>
             {
-                
+
                 if (_options.Log.Settings?.IncludeFormattedMessage is not null)
                     options.IncludeFormattedMessage = _options.Log.Settings.IncludeFormattedMessage.Value;
                 if (_options.Log.Settings?.IncludeScopes is not null)
@@ -260,7 +260,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
                 if (_options.Log.Settings?.ParseStateValues is not null)
                     options.ParseStateValues = _options.Log.Settings.ParseStateValues.Value;
             }
-           
+
         );
     }
 

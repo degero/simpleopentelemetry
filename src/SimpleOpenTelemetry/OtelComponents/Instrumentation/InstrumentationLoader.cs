@@ -37,9 +37,9 @@ internal class InstrumentationLoader : LoaderBase, IInstrumentationLoader
         SimpleOpenTelemetryOptions options
     )
     {
-        TryInvokeComponents(options.Trace.Instrumentations, builder, 
-            InstrumentationAssemblies.KnownTraceInstrumentations, 
-            options, 
+        TryInvokeComponents(options.Trace.Instrumentations, builder,
+            InstrumentationAssemblies.KnownTraceInstrumentations,
+            options,
             (descriptor, sotelOptions, componentName) =>
                 {
                     return descriptor.OptionsClassName is not null ? sotelOptions.Trace?.InstrumentationConfig?.GetSection(componentName!) : null;
@@ -61,13 +61,13 @@ internal class InstrumentationLoader : LoaderBase, IInstrumentationLoader
         SimpleOpenTelemetryOptions options
     )
     {
-         TryInvokeComponents(options.Metric.Instrumentations, builder, 
-            InstrumentationAssemblies.KnownMetricsInstrumentations, 
-            options, 
-            (descriptor, sotelOptions, componentName) =>
-                {
-                    return descriptor.OptionsClassName is not null ? sotelOptions.Metric?.InstrumentationConfig?.GetSection(componentName!) : null;
-                }
-        );
+        TryInvokeComponents(options.Metric.Instrumentations, builder,
+           InstrumentationAssemblies.KnownMetricsInstrumentations,
+           options,
+           (descriptor, sotelOptions, componentName) =>
+               {
+                   return descriptor.OptionsClassName is not null ? sotelOptions.Metric?.InstrumentationConfig?.GetSection(componentName!) : null;
+               }
+       );
     }
 }

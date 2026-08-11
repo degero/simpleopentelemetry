@@ -35,10 +35,10 @@ internal class ExtensionLoader : LoaderBase, IExtensionLoader
     /// </remarks>
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="options">Log provider options</param>
-    public void AddLogExtensions(LoggerProviderBuilder builder, SimpleOpenTelemetryLogOptions options) => 
+    public void AddLogExtensions(LoggerProviderBuilder builder, SimpleOpenTelemetryLogOptions options) =>
         TryInvokeComponents(options.Extensions, builder, ExtensionAssemblies.KnownLogExtensions);
 
-    
+
     /// <summary>
     /// Adds a trace extension to the provided TracerProviderBuilder.
     /// </summary>
@@ -49,7 +49,7 @@ internal class ExtensionLoader : LoaderBase, IExtensionLoader
     /// <param name="builder">The TracerProviderBuilder to configure.</param>
     /// <param name="options">Trace provider options</param>
     /// void AddMetricsExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options);
-    public void AddTraceExtensions(TracerProviderBuilder builder, SimpleOpenTelemetryTraceOptions options) => 
+    public void AddTraceExtensions(TracerProviderBuilder builder, SimpleOpenTelemetryTraceOptions options) =>
         TryInvokeComponents(options.Extensions, builder, ExtensionAssemblies.KnownTraceExtensions);
 
 
@@ -62,9 +62,9 @@ internal class ExtensionLoader : LoaderBase, IExtensionLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="options">Metric provider options</param>
-    public void AddMetricExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options) => 
+    public void AddMetricExtensions(MeterProviderBuilder builder, SimpleOpenTelemetryMetricOptions options) =>
         TryInvokeComponents(options.Extensions, builder, ExtensionAssemblies.KnownMetricExtensions);
-    
+
     /// <summary>
     /// Adds a OpenTelemetryBuilder extension.
     /// </summary>
@@ -74,9 +74,9 @@ internal class ExtensionLoader : LoaderBase, IExtensionLoader
     /// </remarks>
     /// <param name="builder">The MeterProviderBuilder to configure.</param>
     /// <param name="options">Metric provider options</param>
-    public void AddBuilderExtensions(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options) => 
-        options.BuilderExtensions?.ToList().ForEach(x => TryInvokeComponent(x.Type, 
-            builder, ExtensionAssemblies.KnownBuilderExtensions, options, (a,b,c) => x.Options)
+    public void AddBuilderExtensions(IOpenTelemetryBuilder builder, SimpleOpenTelemetryOptions options) =>
+        options.BuilderExtensions?.ToList().ForEach(x => TryInvokeComponent(x.Type,
+            builder, ExtensionAssemblies.KnownBuilderExtensions, options, (a, b, c) => x.Options)
         );
-    
+
 }

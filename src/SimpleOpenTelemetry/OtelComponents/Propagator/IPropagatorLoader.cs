@@ -1,6 +1,6 @@
 namespace SimpleOpenTelemetry.OtelComponents.Propagator;
 
-internal interface IPropagatorLoader 
+internal interface IPropagatorLoader
 {
-     void AddPropagators(SimpleOpenTelemetryOptions options);
+    void AddPropagators(SimpleOpenTelemetryOptions options);
 }

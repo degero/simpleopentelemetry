@@ -29,9 +29,9 @@ internal class ResourceDetectorLoader : LoaderBase, IResourceDetectorLoader
     public void AddResourceDetectors(ResourceBuilder builder,
         SimpleOpenTelemetryOptions options)
     {
-        TryInvokeComponents(options.Resource?.Detectors, 
-            builder, 
-            ResourceDetectorAssemblies.KnownResourceDetectors, 
+        TryInvokeComponents(options.Resource?.Detectors,
+            builder,
+            ResourceDetectorAssemblies.KnownResourceDetectors,
             options,
             (descriptor, options, component) =>
                 {

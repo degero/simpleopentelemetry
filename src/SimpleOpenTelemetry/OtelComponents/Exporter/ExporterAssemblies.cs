@@ -14,13 +14,13 @@ internal static class ExporterAssemblies
             [TraceExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Trace.ConsoleExporterHelperExtensions",
-                [ "AddConsoleExporter" ]),
-            
+                ["AddConsoleExporter"]),
+
             /* Vendor exporters */
             [TraceExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
-                [ "AddAzureMonitorTraceExporter" ],
+                ["AddAzureMonitorTraceExporter"],
                 "AzureMonitorExporterOptions"),
         };
 
@@ -31,25 +31,25 @@ internal static class ExporterAssemblies
             [MetricExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Metrics.ConsoleExporterMetricsExtensions",
-                [ "AddConsoleExporter" ]),
+                ["AddConsoleExporter"]),
 
             [MetricExporterEnum.PrometheusHttpListener] = new(
                 "OpenTelemetry.Exporter.Prometheus.HttpListener",
                 "OpenTelemetry.Metrics.PrometheusHttpListenerMeterProviderBuilderExtensions",
-                [ "AddPrometheusHttpListener" ],
+                ["AddPrometheusHttpListener"],
                 "PrometheusHttpListenerOptions"),
 
             [MetricExporterEnum.PrometheusAspNetCore] = new(
                 "OpenTelemetry.Exporter.Prometheus.AspNetCore",
                 "OpenTelemetry.Metrics.PrometheusExporterMeterProviderBuilderExtensions",
-                [ "AddPrometheusExporter" ],
+                ["AddPrometheusExporter"],
                 "PrometheusAspNetCoreOptions"),
 
             /* Vendor libraries */
             [MetricExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
-                [ "AddAzureMonitorMetricExporter" ],
+                ["AddAzureMonitorMetricExporter"],
                 "AzureMonitorExporterOptions"),
 
         };
@@ -61,13 +61,13 @@ internal static class ExporterAssemblies
             [LogExporterEnum.Console] = new(
                 "OpenTelemetry.Exporter.Console",
                 "OpenTelemetry.Logs.ConsoleExporterLoggingExtensions",
-                [ "AddConsoleExporter" ]), 
+                ["AddConsoleExporter"]),
 
             /* Vendor libraries */
             [LogExporterEnum.AzureMonitor] = new(
                 "Azure.Monitor.OpenTelemetry.Exporter",
                 "Azure.Monitor.OpenTelemetry.Exporter.AzureMonitorExporterExtensions",
-                [ "AddAzureMonitorLogExporter" ],
+                ["AddAzureMonitorLogExporter"],
                 "AzureMonitorExporterOptions"),
         };
 }
