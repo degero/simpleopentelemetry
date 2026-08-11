@@ -2,6 +2,8 @@
 
 Contributions to SimpleOpenTelemetry are most welcome!
 
+For maintainer-specific processes (releases, dependency bundling), see [MAINTAINING.md](./MAINTAINING.md).
+
 ## Table of Contents
 
 - [How Can I Contribute?](#how-can-i-contribute)
@@ -12,7 +14,7 @@ Contributions to SimpleOpenTelemetry are most welcome!
 
 ### Reporting bugs or requesting feature requests
 
-Please open a [GitHub issue](https://github.com/degero/SimpleOpenTelemetry/issues) and select the appropriate template.
+Please open a [GitHub issue](https://github.com/degero/simpleopentelemetry/issues) and select the appropriate template.
 
 ### Getting started
 
