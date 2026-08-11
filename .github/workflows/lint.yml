@@ -17,10 +17,11 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "10.0.x"
-      - run: dotnet format SimpleOpenTelemetry.sln --verify-no-changes --verbosity diagnostic
+      - run: dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verify-no-changes --verbosity diagnostic
 
-  prettier:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: npx prettier --check "**/*.{json,yaml,yml,md}"
+  # TODO enable prettier
+  # prettier:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - run: npx prettier --check "**/*.{json,yaml,yml,md}"

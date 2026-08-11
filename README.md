@@ -8,48 +8,41 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 **License:** MIT
 
-
-| Status | |
-| ------ | --- |
-| Stability | Beta |
+| Status      |                                      |
+| ----------- | ------------------------------------ |
+| Stability   | Beta                                 |
 | Code Owners | [@degero](https://github.com/degero) |
-
 
 [![NuGet version badge](https://img.shields.io/nuget/v/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 [![NuGet download count badge](https://img.shields.io/nuget/dt/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 [![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
 
-
 [CHANGELOG.md](./CHANGELOG.md)
 
 ## Dependencies
 
-| Package | Version | Notes |
-|---|---|---|
-| [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry) | `1.16.0` | Core SDK |
-| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting) | `1.16.0` | IHostBuilder / DI integration |
-| [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter |
+| Package                                                                                                                     | Version  | Notes                         |
+| --------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------- |
+| [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry)                                                               | `1.16.0` | Core SDK                      |
+| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting)                         | `1.16.0` | IHostBuilder / DI integration |
+| [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter                 |
 
-These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
+These dependencies are included in the package. There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
 These dependencies are included in the SimpleOpenTelemetry nuget package.
-
 
 ## Compatibility
 
 | SimpleOpenTelemetry | OpenTelemetry SDK family |
-|---|---|
-| 0.1.0 | 1.16.x |
-
+| ------------------- | ------------------------ |
+| 0.1.0               | 1.16.x                   |
 
 ## Goal
 
-*To make OpenTelemetry code-based instrumentation as simple as possible so developers can focus on their apps*
-
+_To make OpenTelemetry code-based instrumentation as simple as possible so developers can focus on their apps_
 
 ## Overview
 
 SimpleOpenTelemetry handles configuration via IConfiguration rather than code calling OpenTelemetry's fluent api when using code-based instrumentation. Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumenation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
-
 
 ## Features
 
@@ -64,12 +57,10 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 - Set telemetry attribute 'service.version' based on app assembly version when using builtin SimpleOpenTelemetry ResourceDetector 'AssemblyVersion' (see [AssemblyVersion](#assemblyversion)). Overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env var
 - Essential Otel Resource Attribute / Service name validation via `SimpleOpenTelemetryValidate()` extension method [SimpleOpenTelemetryValidator.cs](./src//SimpleOpenTelemetry/Validation/SimpleOpenTelemetryValidator.cs)
 
-
 ## Limitations
 
 - Complex types or Action<>/Func<>/etc on properties of component options (eg Instrumentation, exporters etc) are not supported which may limit your ability to control some telemetry (eg. AspNetCoreInstrumentation sending GET /health telemetry). These can components with complex options can still be set via code if needed.
 - Not all of [opentelemetry-dotnet-contrib](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) components are supported. You can use SimpleOpenTelemetry and add any via code or raise a PR / [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new) to have it added.
-
 
 ## Supported OpenTelemetry components
 
@@ -77,26 +68,21 @@ OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel compon
 
 ⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
 
-
 ## Quickstart
 
 Run the aspnetcore example app guide in [example-apps/localdev/README.md](./example-apps/localdev/README.md) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
-
 
 ## Documentation
 
 Documentation for setting up SimpleOpenTelemetry can be found in [docs/README.md](./docs/README.md)
 
-
 ## License
 
 MIT License - see [LICENSE](./LICENSE) file for details.
 
-
 ## Feedback
 
 For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new)
-
 
 ## Contributing
 

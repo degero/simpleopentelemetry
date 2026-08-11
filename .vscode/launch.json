@@ -29,7 +29,7 @@
         "args": "http://localhost:5056"
       },
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "checkForDevCert": false,
       "serverReadyAction": {
@@ -50,7 +50,7 @@
       "cwd": "${workspaceFolder}/example-apps/cloud/gcp/cloudrun/app",
       "stopAtEntry": false,
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "checkForDevCert": false,
       "serverReadyAction": {
@@ -68,7 +68,7 @@
       "cwd": "${workspaceFolder}/example-apps/cloud/azure/appservice/app",
       "stopAtEntry": false,
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "checkForDevCert": false,
       "serverReadyAction": {
@@ -86,7 +86,7 @@
       "cwd": "${workspaceFolder}/example-apps/cloud/aws/ecs/app",
       "stopAtEntry": false,
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "checkForDevCert": false,
       "serverReadyAction": {
