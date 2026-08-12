@@ -15,17 +15,6 @@
           "OpenTelemetry.Instrumentation.Http": "1.15.1"
         }
       },
-      "Azure.Monitor.OpenTelemetry.Exporter": {
-        "type": "Direct",
-        "requested": "[1.8.1, 1.8.1]",
-        "resolved": "1.8.1",
-        "contentHash": "vQl9VgaZg7eqpDXd4g/qD8UNaPFCwbAuYG5BuMk4qzTrgw6GcKipXRZDB8wodIsrIBMozVy3gxs/1lELdZFRfg==",
-        "dependencies": {
-          "Azure.Core": "1.56.0",
-          "OpenTelemetry.Extensions.Hosting": "1.15.3",
-          "OpenTelemetry.PersistentStorage.FileSystem": "1.0.3"
-        }
-      },
       "Microsoft.EntityFrameworkCore.SqlServer": {
         "type": "Direct",
         "requested": "[10.0.9, )",
@@ -155,13 +144,13 @@
       },
       "Azure.Core": {
         "type": "Transitive",
-        "resolved": "1.56.0",
-        "contentHash": "svezaU2Dz6kdgxunqWNZuLFctcAcwYESUnPoPAzhj6QCLwvSZzyQks+eSsh3JWTsD5tUvrVyz2o1J4ZAIwuEZw==",
+        "resolved": "1.54.0",
+        "contentHash": "m6hHbx1q9+GCBZ5A9ykzFylPdTwscX2APH7PlnqV+yu+DH3RRtuIDJMRqdU17cMyinv0hCPofpegoyQ6qWPW7g==",
         "dependencies": {
           "Microsoft.Bcl.AsyncInterfaces": "10.0.3",
           "Microsoft.Identity.Client": "4.83.1",
           "Microsoft.Identity.Client.Extensions.Msal": "4.83.1",
-          "System.ClientModel": "1.12.0",
+          "System.ClientModel": "1.10.0",
           "System.Memory.Data": "10.0.3"
         }
       },
@@ -428,8 +417,8 @@
       },
       "System.ClientModel": {
         "type": "Transitive",
-        "resolved": "1.12.0",
-        "contentHash": "Q1y42ycMycmeFth9WBly1cgG8rVlYivVtEry0Qri0dXDA3LiTcs7kE6nmcIQ7Nx0FAF9XepKXuT7iZnHHy1e/w==",
+        "resolved": "1.10.0",
+        "contentHash": "lBEWs54F5Y5pZ9hC+8z4S/X76957ex+DPk7WecRHlbIHtrPfbRMMlOgI3iDn4Jpb3bSxvBnKaaHoD59auFjlBA==",
         "dependencies": {
           "System.Memory.Data": "10.0.3"
         }
@@ -542,6 +531,17 @@
           "Azure.Core": "1.46.1",
           "Microsoft.Identity.Client": "4.73.1",
           "Microsoft.Identity.Client.Extensions.Msal": "4.73.1"
+        }
+      },
+      "Azure.Monitor.OpenTelemetry.Exporter": {
+        "type": "CentralTransitive",
+        "requested": "[1.8.1, 1.8.1]",
+        "resolved": "1.8.0",
+        "contentHash": "JbNUQIK7uZ7Mg2fZzdsjqC/eso3Ag/tMwCqYvGvedyE1fObe6JAwCaCSMZDMrhrAaFn8x8+ZaKJelfcEK5MCcg==",
+        "dependencies": {
+          "Azure.Core": "1.54.0",
+          "OpenTelemetry.Extensions.Hosting": "1.15.3",
+          "OpenTelemetry.PersistentStorage.FileSystem": "1.0.3"
         }
       },
       "OpenTelemetry": {

@@ -10,62 +10,56 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 [CHANGELOG.md](./CHANGELOG.md)
 
-
 ## Compatibility
 
 | SimpleOpenTelemetry | OpenTelemetry SDK family |
-|---|---|
-| 0.1.0 | 1.16.x |
+| ------------------- | ------------------------ |
+| 0.1.0               | 1.16.x                   |
 
-These dependencies are included in the package. There are also Microsoft.* are transitive deps from OpenTelemetry SDK Family.
-
+These dependencies are included in the package. There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
 
 ## Requirements
 
-None. You can choose components to 'plug-in' below.
-
+- Docker desktop (to get started with the quickstart)
 
 ## Quickstart
 
+In an empty directory:
 
 ```
+dotnet new mvc
 dotnet add package SimpleOpenTelemetry
 ```
 
-Add `"OTEL_SERVICE_NAME": ""`, `"OTEL_RESOURCE_ATTRIBUTES": ""` and `"SimpleOpenTelemetry": {}` section to the root of your `appsettings.{environment}.json`.
+Copy the example [aspnetcore-appsettings.json](https://github.com/degero/simpleopentelemetry/blob/main/docs/configuration/examples/localdev/aspnetcore-appsettings.json) to replace `appsettings.Development.json`
 
-**Generic Host apps** (aspnetcore, or any app using `WebApplicationBuilder`/`HostApplicationBuilder`):
+Copy the localdev dockercompose file [SimpleOpenTelemetry example jaeger-lgtm-otel-collector](https://github.com/degero/simpleopentelemetry/blob/main/example-apps/localdev/otel-servers/jaeger-lgtm-otel-collector/docker-compose.yaml) to a directory `docker\docker-compose.yaml`, in that directory run: `docker compose up`
+
+In the .csproj file:
+
+Add after the 'SimpleOpenTelemetry' package line, add the snippet lines [aspnetcore-csproj-snippet.xml](https://github.com/degero/simpleopentelemetry/blob/main/docs/configuration/examples/localdev/aspnetcore-csproj-snippet.xml)
+
+In Program.cs add:
 
 ```csharp
+// At the top of the file
 using SimpleOpenTelemetry.Extensions;
 
-// before builder.Build()
+// After WebApplication.CreateBuilder()
 builder.AddSimpleOpenTelemetry();
 ```
 
+In your app directory start the app: `dotnet run` (in another shell)
 
-**Standalone apps** (no generic host):
+Navigate to local [Grafana](http://localhost:3000/) and [Jaeger](http://http://localhost:16686/) to view telemetry from your app
 
-```csharp
-using Microsoft.Extensions.Logging;
-using SimpleOpenTelemetry;
+Exit your `dotnet run` and `docker compose up`
 
-using var loggerFactory = LoggerFactory.Create(builder =>
-{
-    builder.AddOpenTelemetry();
-});
-
-var sdk = SimpleOpenTelemetryBootstrap.Add(config);
-
-// on shutdown, to flush telemetry before closing
-sdk.Dispose();
-```
-
+In `docker` directory run `docker compose down` (note for full cleanup you will need open docker desktop and delete the volumes it creates)
 
 ## Documentation
 
 For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md) and [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
-
 
 ## Supported OpenTelemetry components
 
@@ -73,16 +67,13 @@ OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel compon
 
 ⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
 
-
 ## License
 
 MIT License - see [LICENSE](https://github.com/degero/simpleopentelemetry/blob/main/LICENSE) file for details.
 
-
 ## Feedback
 
 For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new)
-
 
 ## Contributing
 

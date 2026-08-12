@@ -11,7 +11,10 @@ That PR is opened with a `chore:` commit message, which **does not** trigger a r
 ### When you're ready to cut a release from it
 
 1. Review the PR — check the diff against `Directory.Packages.props` and skim linked release notes/changelogs for anything relevant (breaking changes, new semantic conventions, security fixes).
-2. Before merging, edit the merge commit message (or add a commit to the branch, if not squash-merging) to replace the auto-generated `chore:` message with one that actually describes the bump for the changelog, e.g.:
+
+1. Check/update the [docs/configuration//examples/localdev/aspnetcore-csproj-snippet.xml](docs/configuration//examples/localdev/aspnetcore-csproj-snippet.xml) package versions that are used for the [Nuget quickstart](src/SimpleOpenTelemetry/README.nuget.md#quickstart)
+
+1. Before merging, edit the merge commit message (or add a commit to the branch, if not squash-merging) to replace the auto-generated `chore:` message with one that actually describes the bump for the changelog, e.g.:
 
    ```
    feat: bump OpenTelemetry packages to 1.16.x, Azure.Monitor exporters to 1.5.0/1.8.1
@@ -19,6 +22,6 @@ That PR is opened with a `chore:` commit message, which **does not** trigger a r
 
    Use `fix:` instead of `feat:` if nothing in the bundle is user-visible/new capability from this library's perspective — just bug fixes or maintenance from upstream.
 
-3. Merge. release-please will pick up the commit and include it in its next release PR as normal.
+1. Merge. release-please will pick up the commit and include it in its next release PR as normal.
 
 If you want to skip a given week's bundle (e.g. nothing meaningfully changed, or you're waiting for a specific upstream fix to land first), just leave the PR open — Dependabot will update it in place on the next scheduled run rather than opening a duplicate, as long as it stays within the group.
