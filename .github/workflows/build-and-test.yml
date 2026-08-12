@@ -52,6 +52,5 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           fail_ci_if_error: true
-          search_dir: ./testresults
           report_type: test_results
           token: ${{ secrets.CODECOV_TOKEN }}
