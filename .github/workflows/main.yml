@@ -1,5 +1,4 @@
 name: CI
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,6 +13,6 @@ jobs:
   build-and-test:
     uses: ./.github/workflows/build-and-test.yml
     with:
-      upload-coverage: true #${{ github.event_name == 'push' }}
+      upload-coverage: ${{ github.event_name == 'push' }}
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
