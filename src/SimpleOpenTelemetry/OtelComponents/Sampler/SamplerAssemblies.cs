@@ -11,7 +11,7 @@ internal static class SamplerAssemblies
         KnownSamplers = new()
         {
             /* Contrib samplers */
-            // Disabled until this lib is corrected inline with Otels fluent builder 
+            // Disabled until this lib is corrected inline with Otels fluent builder
             // (ie not needing a prebuilt resourceprovider)
             // [SamplerEnum.AWS] = new(
             //     "OpenTelemetry.Sampler.AWS",

@@ -94,8 +94,8 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
     }
 
     /// <summary>
-    /// Configures the appropriate settings for trace, log and metrics based on 
-    /// SimpleOpenTelemetryOptions values.  
+    /// Configures the appropriate settings for trace, log and metrics based on
+    /// SimpleOpenTelemetryOptions values.
     /// Also sets up:
     ///  - Propagators, extensions, samplers, resource detectors
     ///  - OpenTelmeetry.Resources.Resource based on configured detectors, internal AssemblyVersionResourceDetector Env var detector
@@ -132,7 +132,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
         // Load in configuration
         var section = configuration.GetSection(SimpleOpenTelemetryOptions.SectionName);
 
-        // validate that this config has simpleopentelemetry section exists() as 
+        // validate that this config has simpleopentelemetry section exists() as
         // simpleOpenTelemetryConfig will never be null if any type of config opject was bound
         if (!section.Exists())
         {
@@ -209,7 +209,7 @@ internal sealed class SimpleOpenTelemetryBuilder : ISimpleOpenTelemetryBuilder
 
         _otelBuilder.WithTracing(tracing =>
         {
-            // set any settings            
+            // set any settings
             if (_options.Trace.Settings?.SetErrorStatusOnException.HasValue == true &&
                     _options.Trace.Settings?.SetErrorStatusOnException.Value == true)
                 tracing.SetErrorStatusOnException(_options.Trace.Settings.SetErrorStatusOnException.Value);

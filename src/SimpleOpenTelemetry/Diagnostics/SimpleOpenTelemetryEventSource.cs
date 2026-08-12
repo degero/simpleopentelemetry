@@ -3,15 +3,15 @@ using System.Diagnostics.Tracing;
 namespace SimpleOpenTelemetry.Diagnostics;
 
 /// <summary>
-/// Diagnostics for SimpleOpenTelemetry are emitted via EventSource with IDs like a 
+/// Diagnostics for SimpleOpenTelemetry are emitted via EventSource with IDs like a
 /// logging platform for simplicity
 /// To listen, enable the source named "SimpleOpenTelemetry-Core".
 ///
 /// Event IDs:
 ///   1 = Critical - payload[2] is exception detail (optional)
 ///   2 = Error    — payload[2] is exception detail (optional)
-///   3 = Warn    
-///   4 = Info    
+///   3 = Warn
+///   4 = Info
 ///   5 = Verbose
 ///
 /// Example with dotnet-trace and published app assembly:
@@ -21,12 +21,12 @@ namespace SimpleOpenTelemetry.Diagnostics;
 public sealed class SimpleOpenTelemetryEventSource : EventSource
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public const string EventSourceName = "SimpleOpenTelemetry-Core";
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public static readonly SimpleOpenTelemetryEventSource Log = new();
 
@@ -37,7 +37,7 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     private const int VerboseId = 5;
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="category"></param>
     /// <param name="message"></param>
@@ -50,7 +50,7 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="category"></param>
     /// <param name="message"></param>
@@ -63,7 +63,7 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="category"></param>
     /// <param name="message"></param>
@@ -75,7 +75,7 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="category"></param>
     /// <param name="message"></param>
@@ -87,7 +87,7 @@ public sealed class SimpleOpenTelemetryEventSource : EventSource
     }
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     /// <param name="category"></param>
     /// <param name="message"></param>

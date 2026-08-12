@@ -9,7 +9,7 @@ namespace SimpleOpenTelemetry.Extensions;
 public static class HostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds OpenTelemetry to the host application builder with settings from 
+    /// Adds OpenTelemetry to the host application builder with settings from
     /// env var / json config (in root section 'SimpleOpenTelemetry')
     /// </summary>
     /// <remarks>

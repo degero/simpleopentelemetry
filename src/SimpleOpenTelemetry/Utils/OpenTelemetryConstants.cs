@@ -1,7 +1,7 @@
 namespace SimpleOpenTelemetry.Utils;
 
 /// <summary>
-/// Because OpenTelemetry lib doesn't expose string literals used for 
+/// Because OpenTelemetry lib doesn't expose string literals used for
 /// configuration / env vars. This are created here for reference for any end-user
 /// code work.
 /// </summary>
