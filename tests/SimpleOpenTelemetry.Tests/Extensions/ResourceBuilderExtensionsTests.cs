@@ -1,3 +1,4 @@
+using System.Reflection;
 using OpenTelemetry.Resources;
 using SimpleOpenTelemetry.Extensions;
 using Xunit;
@@ -19,14 +20,19 @@ public class ResourceBuilderExtensionsTests
     [Fact]
     public void AddAssemblyVersionDetector_Should_AddDetector()
     {
+        // ARRANGE
         var builder = ResourceBuilder.CreateEmpty();
-        
         builder.AddAssemblyVersionDetector();
+        // the test framework is the entry assembly the resource detector will find
+        var testFrameworkVersion = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion?.Split('+')[0];
 
+        // ACT
         var resource = builder.Build();
-        Assert.Contains(resource.Attributes, 
-            a => a.Key == "service.version" && a.Value.ToString() == "18.6.0"); 
-        // Not ideal, a tad brittle, The version of the test framework
+
+        // ASSERT
+        Assert.Contains(resource.Attributes,
+            a => a.Key == "service.version" && a.Value.ToString() == testFrameworkVersion);
 
     }
 }

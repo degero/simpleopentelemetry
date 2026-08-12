@@ -37,15 +37,15 @@ public class HostApplicationBuilderExtensionsTests
     {
         // ARRANGE - a config list a webApplicationbuilder would pick up
         var dict = new Dictionary<string, string?>()
-            {
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
-                [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
-                [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = resourceAttributes
-            };
+        {
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
+            [OpenTelemetryConstants.EnvironmentVariables.OTEL_RESOURCE_ATTRIBUTES] = resourceAttributes
+        };
 
         if (serviceName is not null)
-              dict.Add(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, serviceName);
+            dict.Add(OpenTelemetryConstants.EnvironmentVariables.OTEL_SERVICE_NAME, serviceName);
 
         var config = BuildConfig(dict);
         var host = Host.CreateApplicationBuilder();
@@ -67,12 +67,12 @@ public class HostApplicationBuilderExtensionsTests
 
         // ARRANGE - a config list a webApplicationbuilder would pick up
         var config = BuildConfig(new Dictionary<string, string?>()
-                {
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Resource:Detectors:0"] = "assemblyversion",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
-                    [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
-                }
+        {
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Resource:Detectors:0"] = "assemblyversion",
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Trace:Settings:SetErrorStatusOnException"] = "true",
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Metric:Settings:MetricLimit"] = "100",
+            [$"{SimpleOpenTelemetryOptions.SectionName}:Log:Extensions:0"] = "None",
+        }
             );
 
         var host = Host.CreateApplicationBuilder();
@@ -84,16 +84,18 @@ public class HostApplicationBuilderExtensionsTests
 
         // ASSERT
         app.Services.GetRequiredService<TracerProvider>(); // needed to trigger a resource build
-        // Not ideal, a tad brittle, The version of the test framework
-        VerifyOTELSettings(app, "service.version=18.4.0");
+        // the test framework is the entry assembly the resource detector will find
+        var testFrameworkVersion = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+                .InformationalVersion?.Split('+')[0];
+        VerifyOTELSettings(app, $"service.version={testFrameworkVersion}");
     }
 
     private IConfiguration BuildConfig(Dictionary<string, string?> dict)
     {
-         return new ConfigurationBuilder()
-            .AddInMemoryCollection(dict)
-            .AddEnvironmentVariables()
-            .Build();
+        return new ConfigurationBuilder()
+           .AddInMemoryCollection(dict)
+           .AddEnvironmentVariables()
+           .Build();
     }
 
     private void VerifyOTELSettings(IHost app, string expectedResourceAttributes)
@@ -106,12 +108,12 @@ public class HostApplicationBuilderExtensionsTests
         .ToDictionary(
             parts => parts[0].Trim(),
             parts => (object)parts[1].Trim());
-        
-        new List<Resource>() {traceResource, meterResource, loggerResource}.ForEach(r =>
+
+        new List<Resource>() { traceResource, meterResource, loggerResource }.ForEach(r =>
         {
             var actual = r.Attributes
                 .ToDictionary(kv => kv.Key, kv => kv.Value);
-            
+
             foreach (var (key, value) in expected)
             {
                 Assert.True(actual.ContainsKey(key), $"Missing attribute: {key}");

@@ -56,21 +56,13 @@ public static class ServiceProviderExtensions
     /// <returns>The resource if found, otherwise null.</returns>
     private static OpenTelemetry.Resources.Resource? GetResourceFromProviders(IServiceProvider services)
     {
-        // Try TracerProvider first
-        var tracerProvider = services.GetService<TracerProvider>();
-        if (tracerProvider != null)
-            return tracerProvider.GetResource();
+        OpenTelemetry.Resources.Resource?[] candidates =
+        [
+            services.GetService<TracerProvider>()?.GetResource(),
+            services.GetService<MeterProvider>()?.GetResource(),
+            services.GetService<LoggerProvider>()?.GetResource(),
+        ];
 
-        // Try MeterProvider
-        var meterProvider = services.GetService<MeterProvider>();
-        if (meterProvider != null)
-            return meterProvider.GetResource();
-
-        // Try LoggerProvider
-        var loggerProvider = services.GetService<LoggerProvider>();
-        if (loggerProvider != null)
-            return loggerProvider.GetResource();
-
-        return null;
+        return candidates.FirstOrDefault(r => r is not null && r.Attributes.Any());
     }
 }
