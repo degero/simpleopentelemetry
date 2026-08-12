@@ -18,9 +18,9 @@
     <PackageTags>opentelemetry;telemetry;monitoring;traces;observability</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright © Chad Paynter</Copyright>
-    <RepositoryUrl>https://github.com/degero/SimpleOpenTelemetry</RepositoryUrl>
+    <RepositoryUrl>https://github.com/degero/simpleopentelemetry</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageProjectUrl>https://github.com/degero/SimpleOpenTelemetry</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/degero/simpleopentelemetry</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <MinVerTagPrefix>v</MinVerTagPrefix>
     <IncludeSymbols>true</IncludeSymbols>
