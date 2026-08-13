@@ -31,13 +31,13 @@ dotnet new mvc
 dotnet add package SimpleOpenTelemetry
 ```
 
-Copy the example [aspnetcore-appsettings.json](https://github.com/degero/simpleopentelemetry/blob/main/docs/configuration/examples/localdev/aspnetcore-appsettings.json) to replace `appsettings.Development.json`
+Copy the example [aspnetcore-appsettings.json](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/configuration/examples/localdev/aspnetcore-appsettings.json) to replace `appsettings.Development.json`
 
-Copy the localdev dockercompose file [SimpleOpenTelemetry example jaeger-lgtm-otel-collector](https://github.com/degero/simpleopentelemetry/blob/main/example-apps/localdev/otel-servers/jaeger-lgtm-otel-collector/docker-compose.yaml) to a directory `docker\docker-compose.yaml`, in that directory run: `docker compose up`
+Copy the localdev dockercompose file [SimpleOpenTelemetry example jaeger-lgtm-otel-collector](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/example-apps/localdev/otel-servers/jaeger-lgtm-otel-collector/docker-compose.yaml) to a directory `docker\docker-compose.yaml`, in that directory run: `docker compose up`
 
 In the .csproj file:
 
-Add after the 'SimpleOpenTelemetry' package line, add the snippet lines [aspnetcore-csproj-snippet.xml](https://github.com/degero/simpleopentelemetry/blob/main/docs/configuration/examples/localdev/aspnetcore-csproj-snippet.xml)
+Add after the 'SimpleOpenTelemetry' package line, add the snippet lines [aspnetcore-csproj-snippet.xml](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/configuration/examples/localdev/aspnetcore-csproj-snippet.xml)
 
 In Program.cs add:
 
@@ -51,7 +51,7 @@ builder.AddSimpleOpenTelemetry();
 
 In your app directory start the app: `dotnet run` (in another shell)
 
-Navigate to local [Grafana](http://localhost:3000/) and [Jaeger](http://http://localhost:16686/) to view telemetry from your app
+Navigate to local [Grafana](http://localhost:3000/) and [Jaeger](http://localhost:16686/) to view telemetry from your app
 
 Exit your `dotnet run` and `docker compose up`
 
