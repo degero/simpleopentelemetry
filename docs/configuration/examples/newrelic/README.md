@@ -19,9 +19,11 @@ With the [example-apps/localdev/aspnetcore/](../../example-apps/localdev/aspnetc
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. Get your NewRelic api key from the [NewRelic website](https://one.newrelic.com/admin-portal/api-keys/home)
 1. Set a dotnet user-secret with the command in the example app folder:
+
 ```powershell
 dotnet user-secrets set "OTEL_EXPORTER_OTLP_HEADERS" "api-key=<newreliceapikey>"
 ```
+
 1. Run the app via vscode debugger or `dotnet run`
 
 OR
@@ -37,14 +39,18 @@ With an existing / new aspnetcore app:
 
 ## Required package install commands
 
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+<br/>
+
 If you don't need aspnetcore or httpclient metrics / traces, remove from your SimpleOpenTelemetry config and omit those packages below.
 
 Run these in your app project folder:
 
 ```
 dotnet add package SimpleOpenTelemetry
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
-dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x
+dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x
 
 ```
 
@@ -55,7 +61,6 @@ You can check the following guides to configure an open telemetry sidecar with a
 https://docs.newrelic.com/docs/opentelemetry/get-started/collector-processing/opentelemetry-collector-processing-intro/
 
 https://github.com/newrelic/newrelic-opentelemetry-examples/tree/main/other-examples/collector/nr-config
-
 
 ## Checking telemetry on NewRelic
 
@@ -77,7 +82,6 @@ SELECT average(`aspnetcore.memory_pool.allocated`)
 FROM Metric
 TIMESERIES FACET service.name
 ```
-
 
 ## Configuration notes
 

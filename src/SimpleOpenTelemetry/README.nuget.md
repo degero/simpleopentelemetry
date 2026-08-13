@@ -63,9 +63,9 @@ For configuration reference, example configs/snippets, cloud examples, and troub
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
 
-⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
+⚠️ **Ensure you install these versions of component packages.** ⚠️
 
 ## License
 

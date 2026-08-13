@@ -14,6 +14,8 @@ See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quic
 
 ### With a new / existing dotnet app
 
+⚠️ **There are OpenTelemetry package dependencies of SimpleOpenTelemetry pinned at a specific versions. See the main [README.md dependencies](../README.md#dependencies) for further information** ⚠️
+
 - Add the SimpleOpenTelemetry nupkg: `dotnet add package SimpleOpenTelemetry`
 - Add to the root of your `appsettings.{environment}.json`:
   ```json

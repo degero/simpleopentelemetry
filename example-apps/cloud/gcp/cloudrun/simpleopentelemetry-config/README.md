@@ -4,30 +4,30 @@ Included in these files are the minimum recommended resource attributes and trac
 
 See information in [../README.md](../README.md) and [otelj-collector-config/README.md](../otel-collector-config/README.md) for google environment setup and permisions as well as specific constraints in GCP that affect app telemetry collection (eg. Cloud Run's automatic tracing / sampling)
 
-# appsettings.OtelCollector.json
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+## appsettings.OtelCollector.json
 
 This is designed for use running an aspnetcore app containerised with a otel collector sidecar. While there is a Google resource detector, this is included on the collector rather than here. It requires the following nuget packages:
 
 ```
 SimpleOpenTelemetry
-OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
-OpenTelemetry.Instrumentation.Http --version 1.15.1
+OpenTelemetry.Instrumentation.AspNetCore --version x.x.x
+OpenTelemetry.Instrumentation.Http --version x.x.x
 ```
 
-# appsettings.DirectExport.json
+## appsettings.DirectExport.json
 
 This is designed for use running an aspnetcore app with no collector and exports directly to Google's OTLP endpoints.
 It requires the following nuget packages:
 
-
 ```powershell
 SimpleOpenTelemetry
 Google.Apis.Auth
-OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
-OpenTelemetry.Instrumentation.Http --version 1.15.1
-OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1
+OpenTelemetry.Instrumentation.AspNetCore --version x.x.x
+OpenTelemetry.Instrumentation.Http --version x.x.x
+OpenTelemetry.Resources.Gcp --version x.x.x
 ```
-
 
 It also requires custom code which you can see in the example [app/Program.cs](../app/Program.cs). It configures telemetry key adjustments to work correctly with Google Observability as done by the OpenTelemetry collector configs in the [otel-collector-config](../otel-collector-config/) folder.
 

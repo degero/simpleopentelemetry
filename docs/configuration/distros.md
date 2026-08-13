@@ -1,24 +1,26 @@
 # Distribution Configuration
 
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+<br/>
+
 Set a Distribution in the configuration `SimpleOpenTelemetry:Distro` string field.
 
 A distribution in terms of OpenTelemetry is '... a customized version of an OpenTelemetry component...'.
 
 In the case of SimpleOpenTelemetry, it is a library that will set up all signal collection and exporting settings for you with only a few minor settings you can set in "DistroOptions": {}. The OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES settings/env vars should be set also.
 
-**IMPORTANT**: ⚠️ *Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry or OpenTelemetry 'OTEL_' settings.* ⚠️
+⚠️ _Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry configuration or OpenTelemetry 'OTEL\_' settings._ ⚠️
 
 For examples listing all possible options (in their current default) see the [snippets/distro folder](./snippets/distro/)
 
-For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](
-https://opentelemetry.io/ecosystem/distributions/)
+For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](https://opentelemetry.io/ecosystem/distributions/)
 
 Available distros are:
 
-
 ## Azure Monitor AspNetCore
 
-**IMPORTANT**: ⚠️ *This Distro only supports use with generic host WebApplication (does not support using with SimpleOpenTelemetryBootstrap.Add()).* ⚠️
+**IMPORTANT**: ⚠️ _This Distro only supports use with generic host WebApplication (does not support using with SimpleOpenTelemetryBootstrap.Add())._ ⚠️
 
 This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry.
 
@@ -33,9 +35,8 @@ Documentation:
 [MSLearn - Enable Azure Monitor OpenTelemetry for .NET](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-enable?tabs=aspnetcore)
 [MSLearn - Why should I use the Azure Monitor OpenTelemetry Distro?](https://learn.microsoft.com/en-us/azure/azure-monitor/app/application-insights-faq#why-should-i-use-the-azure-monitor-opentelemetry-distro)
 
-
 Nuget Package:
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version 1.5.0`
+`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version x.x.x`
 `dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
 
 SimpleOpenTelemetry:Distro json:
@@ -62,7 +63,6 @@ RBAC (only the key is needed in connectionstring, you can use this placeholder a
 
 You can confirm your telemetry data is flowing with KQL:
 
-
 ```KQL
 union requests, dependencies, traces, exceptions, customMetrics
 | where timestamp > ago(5m)
@@ -71,7 +71,6 @@ union requests, dependencies, traces, exceptions, customMetrics
 | order by itemType
 ```
 
-
 Notes:
 
 There's a lot of transformation to squeeze OTLP data into Azure Monitor's data structures. eg customMetrics has a '_APPRESOURCEPREVIEW_' entry with otel resource attributes. If you can sacrifice the benefits of this distro (see 'Why should I use the Azure Monitor OpenTelemetry Distro' above) and want to store the 'pure' OTLP data look at using an OTLP exporter.
@@ -79,6 +78,5 @@ There's a lot of transformation to squeeze OTLP data into Azure Monitor's data s
 This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./example-apps/localdev/aspnetcore/Program.cs)
 
 If you add a package `OpenTelemetry.Instrumentation.SqlClient` you will need to configure it by code. As the distro will backoff from setting up its own internal sqlclient instrumentation if it detects it.
-
 
 ---

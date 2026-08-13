@@ -20,19 +20,23 @@ If using the AWS legacy metrics export from the collector, you will need to quer
 1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
 1. Ensure AWS Cloudwatch resources are setup
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
-For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../example-apps/cloud/aws/ecs/README.md)
+   For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../example-apps/cloud/aws/ecs/README.md)
 
 ## Required package install commands
+
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+<br/>
 
 Run these in your app project folder:
 
 ```powershell
 dotnet add package SimpleOpenTelemetry
-dotnet add package OpenTelemetry.Instrumentation.AWS --version 1.15.1
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
-dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
-dotnet add package OpenTelemetry.Extensions.AWS --version 1.15.1
-dotnet add package OpenTelemetry.Resources.AWS --version 1.15.1
+dotnet add package OpenTelemetry.Instrumentation.AWS --version x.x.x
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x
+dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x
+dotnet add package OpenTelemetry.Extensions.AWS --version x.x.x
+dotnet add package OpenTelemetry.Resources.AWS --version x.x.x
 ```
 
 ## X-Ray Remote Sampling
@@ -43,16 +47,14 @@ Why:
 
 - The AWS X-Ray remote sampler currently uses a non-standard setup pattern that requires building a resource in code first going against the lazy-loaded OpenTelemetery ResourceProvider pattern.
 
-
 To enable in code, see:
 
 - [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/example-apps/cloud/aws/ecs/README.md) (X-Ray Remote Sampling section)
 
-
 If you also implement the optional code-only X-Ray remote sampler path shown in that example, add:
 
 ```powershell
-dotnet add package OpenTelemetry.Sampler.AWS --prerelease --version 0.1.0-alpha.9
+dotnet add package OpenTelemetry.Sampler.AWS --version x.x.x
 ```
 
 ## Configuration notes

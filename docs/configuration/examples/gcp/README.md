@@ -22,8 +22,11 @@ with an existing / new aspnetcore app:
 1. If running locally, ensure you are logged in with google cloud cli
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
 
-
 ## Required package install commands
+
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+<br/>
 
 If you don't need aspnetcore or httpclient metrics / traces, remove from your SimpleOpenTelemetry config and omit those packages below.
 
@@ -32,11 +35,10 @@ Run these in your app project folder:
 ```powershell
 dotnet add package SimpleOpenTelemetry
 dotnet add package Google.Apis.Auth
-dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2
-dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1
-dotnet add package OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1
+dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x
+dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x
+dotnet add package OpenTelemetry.Resources.Gcp --version x.x.x
 ```
-
 
 ## Configuration notes
 

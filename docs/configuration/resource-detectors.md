@@ -1,14 +1,16 @@
-
 # Resource Detectors Configuration
+
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
+<br/>
 
 Set Resource detectors in the configuration `SimpleOpenTelemetry:Resource:Detectors[]` string array. These will process in the array order.
 
-**IMPORTANT**: ⚠️ *Detectors may override the resource attributes set by a preceding detector eg 'service.name' so it is recommended to read their documentation before adding. Some cloud platforms also have 'reserved' attributes injected such as AWS.* ⚠️
+⚠️ _Detectors may override the resource attributes set by a preceding detector eg 'service.name' so it is recommended to read their documentation before adding. Some cloud platforms also have 'reserved' attributes injected such as AWS._ ⚠️
 
 All the supported resource detectors are listed here [ResourceDetectorEnum](./src/SimpleOpenTelemetry/Resource/ResourceDetectorEnum.cs)
 
 Available resource detectors are:
-
 
 ## AssemblyVersion
 
@@ -20,10 +22,9 @@ Nuget Package: not needed (built into SimpleOpenTelemetry)
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "AssemblyVersion"
- ```
-
+```json
+"AssemblyVersion"
+```
 
 ## Host
 
@@ -32,14 +33,13 @@ Stability: Beta (as of july 2026)
 Documentation: [Resource Host Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Host/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Host --prerelease --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.Host --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "host"
- ```
-
+```json
+"host"
+```
 
 ## Container
 
@@ -48,14 +48,13 @@ Stability: Beta (as of july 2026)
 Documentation: [Container Resource Detector README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Container/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Container --prerelease --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.Container --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "container"
- ```
-
+```json
+"container"
+```
 
 ## Operating System
 
@@ -64,14 +63,13 @@ Stability: Alpha (as of july 2026)
 Documentation: [Operating System Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.OperatingSystem/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.OperatingSystem --prerelease --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.OperatingSystem --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "os"
- ```
-
+```json
+"os"
+```
 
 ## Process
 
@@ -80,14 +78,13 @@ Stability: Beta (as of july 2026)
 Documentation: [Process Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Process/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.Process --prerelease --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.Process --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "process"
- ```
-
+```json
+"process"
+```
 
 ## Process Runtime
 
@@ -96,34 +93,32 @@ Stability: Beta (as of july 2026)
 Documentation: [Process Runtime Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.ProcessRuntime/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.ProcessRuntime --prerelease --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.ProcessRuntime --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "processruntime"
- ```
-
+```json
+"processruntime"
+```
 
 ## AWS
 
-*AWS*
+_AWS_
 
 Stability: Stable
 
 Documentation: [AWS Resource Detectors](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Resources.AWS --version 1.15.1`
+`dotnet add package OpenTelemetry.Resources.AWS --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "aws"
- ```
+```json
+"aws"
+```
 
 For supported configurable options see [snippets/resourcedetectors/aws.json](./snippets/resourcedetectors/aws.json)
-
 
 ## Azure
 
@@ -132,13 +127,13 @@ Stability: Beta (as of July 2026)
 Documentation: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Resources.Azure --version 1.15.1-beta.1`
+`dotnet add package OpenTelemetry.Resources.Azure --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "azure"
- ```
+```json
+"azure"
+```
 
 Notes:
 
@@ -161,10 +156,9 @@ if (!string.IsNullOrEmpty(serviceName)) {
 
 OR
 
-*USE WITH CAUTION*
+_USE WITH CAUTION_
 
 Add an `"envvar"` after this detector. This will 'rewrite' the attributes by taking values from OTEL_RESOURCE_ATTRIBUTES, OTEL_SERVICE_NAME. Refer to the detector doco information on attributes it sets and ensure they are not in OTEL_RESOURCE_ATTRIBUTES.
-
 
 ## Google Cloud Platform
 
@@ -173,14 +167,13 @@ Stability: Alpha (as of July 2026)
 Documentation: [Resource Detectors for Google Cloud Platform](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Gcp/README.md)
 
 Nuget Package:
-`dotnet add package --prerelease OpenTelemetry.Resources.Gcp --version 1.0.0-alpha.1`
+`dotnet add package OpenTelemetry.Resources.Gcp --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "gcp"
- ```
-
+```json
+"gcp"
+```
 
 ## EnvVar
 
@@ -194,10 +187,8 @@ Nuget Package: not needed (Opentelemetry SDK)
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
- ```json
- "EnvVar"
- ```
-
+```json
+"EnvVar"
+```
 
 ---
-

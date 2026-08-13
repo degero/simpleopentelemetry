@@ -8,6 +8,8 @@ If running with RBAC locally (the default of these configs) you will need to ass
 
 ## Packages
 
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+
 ### Required for all
 
 `dotnet add package SimpleOpenTelemetry`
@@ -18,26 +20,24 @@ If running with RBAC locally (the default of these configs) you will need to ass
 Adjust your config related to the optional instrumentations
 
 **optional**
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore  --version 1.5.0`
-`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version 1.15.1-beta.1`
+`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore  --version x.x.x`
+`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
 
-*IMPORTANT*
+_IMPORTANT_
 
 If you add package `OpenTelemetry.Instrumentation.SqlClient` you will need to configure it by code. As the distro will backoff from setting up its own internal sqlclient instrumentation if it detects it.
 
-
-### Required for aspnetcore-azureotel-exporter*rbac.json files
+### Required for aspnetcore-azureotel-exporter\*rbac.json files
 
 These are the core packages as distro uses, adjust your config related to the optional instrumentations
 
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version 1.8.1`
-`dotnet add package OpenTelemetry.Instrumentation.Http --version 1.15.1`
+`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version x.x.x`
+`dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
 
 **optional**
-`dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version 1.15.2`
-`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version 1.15.1-beta.1`
-`dotnet add package OpenTelemetry.Instrumentation.SqlClient --version 1.15.2`
-
+`dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
+`dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
+`dotnet add package OpenTelemetry.Instrumentation.SqlClient --version x.x.x`
 
 ## Appsettings file
 
@@ -45,12 +45,11 @@ The ConnectionString is a placeholder for dev environments so the library will n
 
 Customise:
 
- - Set OTEL_RESOURCE_ATTRIBUTES values and OTEL_SERVICE_NAME with your preferred names. See library quirks below regarding these attributes to ensure all are applied.
- - Trace:Sources: Replace 'yourappnamespace' with your apps root namespace or remove this if you don't have any custom diagnostics events or if using aspnetcore distro you can use the builtin trace source (see doco)
- - Remove any instrumentations you may not need (and their respective nuget package).
- - Adjust logging settings and SetErrorStatusOnException (see notes below)
- - For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
-
+- Set OTEL_RESOURCE_ATTRIBUTES values and OTEL_SERVICE_NAME with your preferred names. See library quirks below regarding these attributes to ensure all are applied.
+- Trace:Sources: Replace 'yourappnamespace' with your apps root namespace or remove this if you don't have any custom diagnostics events or if using aspnetcore distro you can use the builtin trace source (see doco)
+- Remove any instrumentations you may not need (and their respective nuget package).
+- Adjust logging settings and SetErrorStatusOnException (see notes below)
+- For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 
 ## Other options and Sampling
 
@@ -68,25 +67,22 @@ Ensure you set the following recommended item as an Environment variable (this c
 
 ### Required for aspnetcore-azureotel-distro-rbac.json file:
 
-Set a secret/env var for 'SimpleOpenTelemetry__DistroOptions__ConnectionString'
+Set a secret/env var for 'SimpleOpenTelemetry**DistroOptions**ConnectionString'
 eg `InstrumentationKey=<yourinstrumentationkey>`
-
 
 ### Required for aspnetcore-azureotel-exporter-rbac.json file:
 
-Set a secret/env var for 'SimpleOpenTelemetry__BuilderExtensions__0__Options__ConnectionString'
+Set a secret/env var for 'SimpleOpenTelemetry**BuilderExtensions**0**Options**ConnectionString'
 eg `InstrumentationKey=<yourinstrumentationkey>`
 
 ### Required for aspnetcore-azureotel-exporter-by-signal-rbac.json file:
 
-Set a secret/env var for 'SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString'
+Set a secret/env var for 'SimpleOpenTelemetry**ExporterOptions**AzureMonitor\_\_ConnectionString'
 eg `InstrumentationKey=<yourinstrumentationkey>`
-
 
 ## Azure AppInsights authentication
 
 If you wish to NOT use RBAC for the lib to authenticate with AppInsights set a full Application Insights connection string. Remove the 'Credential' setting and ensure the environment has the full connectionstring in the respective env var connection string noted before.
-
 
 ## Configuration notes
 

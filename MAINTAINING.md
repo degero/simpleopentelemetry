@@ -8,6 +8,15 @@ Dependabot is configured (`.github/dependabot.yaml`) to raise a single, grouped 
 
 That PR is opened with a `chore:` commit message, which **does not** trigger a release-please version bump on its own — it's a heads-up, not a release trigger.
 
+The release workflow will update [docs/otel-component-versions.md](docs/otel-component-versions.md) using [scripts/generate-doco.sh](scripts/generate-doco.sh)
+
+Checklist:
+
+- Verify version changes are all in [Directory.Packages.props](Directory.Packages.props) as pinned versions and each projects package lock files have updated
+- Ensure README's compatibility sections are updated [README.md](./README.md#compatibility) [src/SimpleOpenTelemetry/README.nuget.md#compatibility](src/SimpleOpenTelemetry/README.nuget.md#compatibility)
+
+NOTE: OpenTelemetry tends to release new versions of all distro packages with a a new release. To manually update use [scripts/update-otel-packages.sh](scripts/update-otel-packages.sh)
+
 ### When you're ready to cut a release from it
 
 1. Review the PR — check the diff against `Directory.Packages.props` and skim linked release notes/changelogs for anything relevant (breaking changes, new semantic conventions, security fixes).

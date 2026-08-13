@@ -1,6 +1,8 @@
+# Samplers Configuration
 
+**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
 
-# Samplers
+<br/>
 
 Set Trace samplers in the configuration `SimpleOpenTelemetry:Trace:Sampler` string field.
 
@@ -12,7 +14,6 @@ For Azure users, sampling is built into the exporter setup/options.
 
 Available samplers are:
 
-
 ## AWS X-Ray Remote Sampler (Unsupported)
 
 Stability: Alpha (as of July 2026)
@@ -22,14 +23,12 @@ Notes: Currently unsupported due to irregular registration pattern requiring pre
 Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
 Nuget Package:
-`dotnet add package OpenTelemetry.Sampler.AWS --prerelease --version 0.1.0-alpha.9`
+`dotnet add package OpenTelemetry.Sampler.AWS --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Sampler json:
 
 ```json
- "aws"
+"aws"
 ```
 
-
 ---
-

@@ -27,8 +27,12 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting)                         | `1.16.0` | IHostBuilder / DI integration |
 | [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter                 |
 
-These dependencies are included in the package. There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
-These dependencies are included in the SimpleOpenTelemetry nuget package.
+These versions are **PINNED** if your project already references these packages at a different version, NuGet restore will fail (`NU1608`/`NU1107`) or emit a version-conflict warning as . To resolve this, either:
+
+- Remove your direct `PackageReference` entries for these three packages and let `SimpleOpenTelemetry` supply them, or
+- Downgrade/align your direct references to match the pinned versions.
+
+NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
 
 ## Compatibility
 
@@ -64,9 +68,9 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](./docs/otel-component-versions.md).
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](./docs/otel-component-versions.md).
 
-⚠️ **Ensure you install these versions of component packages or use the latest version at your own risk.** ⚠️
+⚠️ **Ensure you install these versions of component packages.** ⚠️
 
 ## Quickstart
 
