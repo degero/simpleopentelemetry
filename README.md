@@ -2,7 +2,7 @@
 
 A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
 
-**Supported Frameworks:** .NET 10.0, .NET 8.0
+**Supported Frameworks:** .NET 10.0, .NET 8.0, .NET Standard 2.0
 
 **Supported .Net App Host Patterns:** WebApplication Host / .Net Generic Host / Non generic host.
 
