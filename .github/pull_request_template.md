@@ -23,6 +23,7 @@
 ## Checklist
 
 - [ ] The PR title follows [the CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-title) conventional commit format (e.g. prefix with the above type of change `feat: add OTLP exporter config`)
+- [ ] If you changed a package version, run `dotnet restore --force-evaluate` and commit the updated `packages.lock.json` alongside your `.csproj` change
 - [ ] Tests added or updated for the change
 - [ ] Public members have XML doc comments
 - [ ] Run `dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verbosity diagnostic`

@@ -41,6 +41,7 @@ Checklist:
 
 - Verify version changes are all in [Directory.Packages.props](Directory.Packages.props) as pinned versions and each projects package lock files have updated
 - Ensure README's compatibility sections are updated [README.md](./README.md#compatibility) [src/SimpleOpenTelemetry/README.nuget.md#compatibility](src/SimpleOpenTelemetry/README.nuget.md#compatibility)
+- Verify package lock files have updated. if not run `dotnet restore --force-evaluate`
 
 NOTE: OpenTelemetry tends to release new versions of all distro packages with a a new release. To manually update use [scripts/update-otel-packages.sh](scripts/update-otel-packages.sh)
 
@@ -50,7 +51,7 @@ NOTE: OpenTelemetry tends to release new versions of all distro packages with a 
 
 1. Check/update the [docs/configuration//examples/localdev/aspnetcore-csproj-snippet.xml](docs/configuration//examples/localdev/aspnetcore-csproj-snippet.xml) package versions that are used for the [Nuget quickstart](src/SimpleOpenTelemetry/README.nuget.md#quickstart)
 
-1. Before merging, edit the merge commit message (or add a commit to the branch, if not squash-merging) to replace the auto-generated `chore:` message with one that actually describes the bump for the changelog, e.g.:
+1. Before merging, edit the merge commit message to replace the auto-generated `chore:` message with one that actually describes the bump for the changelog, e.g.:
 
    ```
    feat: bump OpenTelemetry packages to 1.16.x, Azure.Monitor exporters to 1.5.0/1.8.1

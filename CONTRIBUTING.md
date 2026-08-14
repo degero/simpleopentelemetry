@@ -67,7 +67,8 @@ Add `!` after the type (e.g. `feat!:`) in the PR title and a `BREAKING CHANGE:` 
 
 1. Push your branch and open a PR against `main`.
 1. Set the PR title as mentioned in [Pull request title](#pull-request-title)
-1. Fill in a short description of what changed and why.
+1. Fill in a short description of what changed and why
+1. Complete the checklist in the PR template
 1. Ensure CI (build, test) is green.
 1. A maintainer will review/approve
 1. Merge the PR. If this is a breaking change, add a `BREAKING CHANGE: <description>` line to the squash-merge commit message box before confirming the merge (the title's `!` alone won't carry the migration detail into the changelog)
