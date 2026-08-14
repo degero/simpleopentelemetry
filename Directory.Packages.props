@@ -41,6 +41,10 @@
     <PackageVersion Update="Microsoft.Extensions.Configuration.Abstractions" Version="[8.0.0,)" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <!-- Nothing for now as it will set default inline with OpenTelemetry's Microsoft.* lib vers 10.x.x-->
+  </ItemGroup>
+
   <!--
   Reflection-loaded plugin packages: users install whichever of these they need
   in their own project. Never referenced directly by the shipped library — only
@@ -90,6 +94,7 @@
   <!-- Test dependencies  -->
   <ItemGroup>
     <PackageVersion Include="MinVer" Version="7.0.0" />
+    <PackageVersion Include="PolySharp" Version="1.6.0" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />

@@ -45,10 +45,10 @@ internal abstract class LoaderBase
     {
         if (!string.IsNullOrWhiteSpace(componentName))
         {
-            if (TryGetDescriptor<TEnum, TBuilder>(componentName, descriptors, out var descriptor, out var matchedEnum))
+            if (TryGetDescriptor<TEnum, TBuilder>(componentName!, descriptors, out var descriptor, out var matchedEnum))
             {
                 IConfiguration? config = getConfiguration is not null ? getConfiguration(descriptor!, options!, matchedEnum.ToString()!) : null;
-                return TryInvokeDescriptor(componentName, builder, descriptor!, config);
+                return TryInvokeDescriptor(componentName!, builder, descriptor!, config);
             }
         }
         return false;
@@ -167,7 +167,7 @@ internal abstract class LoaderBase
     {
         if (!string.IsNullOrWhiteSpace(raw) && Enum.TryParse(raw, ignoreCase: true, out value))
         {
-            return Enum.IsDefined(value);
+            return Enum.IsDefined(typeof(TEnum), value);
         }
 
         value = default;

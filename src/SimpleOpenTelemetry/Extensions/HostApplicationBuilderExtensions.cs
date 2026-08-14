@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
+using SimpleOpenTelemetry.Internal;
 
 namespace SimpleOpenTelemetry.Extensions;
 
@@ -22,7 +23,7 @@ public static class HostApplicationBuilderExtensions
     public static OpenTelemetryBuilder AddSimpleOpenTelemetry(
         this IHostApplicationBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
+        Guard.ThrowIfNull(builder);
         return builder.Services.AddSimpleOpenTelemetry(builder.Configuration);
     }
 }

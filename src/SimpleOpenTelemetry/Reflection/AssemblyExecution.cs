@@ -230,7 +230,7 @@ internal class AssemblyExecution : IAssemblyExecution
                     Type? instanceType = Type.GetType(child.Value, throwOnError: false, ignoreCase: true);
                     if (instanceType is null)
                     {
-                        string fullTypeName = child.Value.Trim();
+                        string fullTypeName = child.Value!.Trim();
                         int lastDot = fullTypeName.LastIndexOf('.');
                         string assemblyName = fullTypeName.Substring(0, lastDot);
                         string typeName = fullTypeName; // GetType needs the full name including namespace

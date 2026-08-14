@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Internal;
 
 internal static class ServiceCollectionExtensions
 {
@@ -19,8 +20,8 @@ internal static class ServiceCollectionExtensions
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(configuration);
+        Guard.ThrowIfNull(services);
+        Guard.ThrowIfNull(configuration);
 
         // Structured this way for more testability on injecting otelBuilder to SimpleOpenTelemetryBuilder
         // Always return an OpenTelemetrySdk regardless

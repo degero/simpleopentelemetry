@@ -23,7 +23,7 @@ internal class AssemblyVersionResourceDetector : IResourceDetector
                 .InformationalVersion?.Split('+')[0];
 
             if (!string.IsNullOrWhiteSpace(version))
-                return new OtelResource(new List<KeyValuePair<string, object>>() { new(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version) });
+                return new OtelResource(new List<KeyValuePair<string, object>>() { new(OpenTelemetryConstants.ResourceAttributes.AttributeServiceVersion, version!) });
             else
                 return OtelResource.Empty;
         }

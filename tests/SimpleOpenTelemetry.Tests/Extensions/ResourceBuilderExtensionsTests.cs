@@ -24,7 +24,7 @@ public class ResourceBuilderExtensionsTests
         var builder = ResourceBuilder.CreateEmpty();
         builder.AddAssemblyVersionDetector();
         // the test framework is the entry assembly the resource detector will find
-        var testFrameworkVersion = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
+        var testFrameworkVersion = Assembly.GetEntryAssembly()!.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion?.Split('+')[0];
 
         // ACT

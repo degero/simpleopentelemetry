@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using SimpleOpenTelemetry.Builder;
+using SimpleOpenTelemetry.Internal;
 using SimpleOpenTelemetry.Validation;
 
 namespace SimpleOpenTelemetry;
@@ -25,7 +26,7 @@ public static class SimpleOpenTelemetryBootstrap
     public static OpenTelemetrySdk Add(
         IConfiguration configuration)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
+        Guard.ThrowIfNull(configuration);
 
         // Always return an OpenTelemetrySdk regardless
         // to not disrupt any custom code dependencies in app

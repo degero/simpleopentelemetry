@@ -1,4 +1,5 @@
 using OpenTelemetry.Resources;
+using SimpleOpenTelemetry.Internal;
 using SimpleOpenTelemetry.OtelComponents.Resource;
 
 namespace SimpleOpenTelemetry.Extensions;
@@ -15,7 +16,7 @@ public static class ResourceBuilderExtensions
     /// <returns>The instance of <see cref="ResourceBuilder"/> being configured.</returns>
     public static ResourceBuilder AddAssemblyVersionDetector(this ResourceBuilder builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
+        Guard.ThrowIfNull(builder);
         return builder.AddDetector(new AssemblyVersionResourceDetector());
     }
 }
