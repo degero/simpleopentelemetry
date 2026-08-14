@@ -41,10 +41,13 @@ jobs:
           fi
           sed -i "s/{{TAG}}/${{ github.ref_name }}/g" src/SimpleOpenTelemetry/README.nuget.md
 
+      - name: Dotnet restore (lockfile)
+        run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
+
       - name: Pack
         run: |
           mkdir -p nupkgs
-          dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs
+          dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs  --no-restore
 
       - name: Upload NuGet packages
         uses: actions/upload-artifact@v4

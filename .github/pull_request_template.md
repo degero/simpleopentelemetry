@@ -28,7 +28,7 @@
 - [ ] Run `dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verbosity diagnostic`
 - [ ] Run `npx prettier --check "**/*.{json,yaml,yml,md}"`
 - [ ] `dotnet build` passes with no warnings
-- [ ] `dotnet test` passes locally
+- [ ] `dotnet test` passes
 - [ ] Docs (`README.md` / `docs/`) updated if behaviour or configuration changed
 
 By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/degero/simpleopentelemetry/blob/main/CODE_OF_CONDUCT.md).
