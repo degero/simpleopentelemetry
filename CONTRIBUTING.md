@@ -39,29 +39,39 @@ Please open a [GitHub issue](https://github.com/degero/simpleopentelemetry/issue
 - Keep changes focused — smaller, single-purpose pull requests are easier to review and merge.
 - See the [pull_request_template.md](./.github/pull_request_template.md) for a checklist of required steps to be done before submitting for approval.
 
-### Commit messages
+### Pull request title
 
-This repo uses [release-please](https://github.com/googleapis/release-please) to automate versioning and the changelog, which relies on [Conventional Commits](https://www.conventionalcommits.org/). Please prefix commit messages accordingly:
+This repo uses [release-please](https://github.com/googleapis/release-please) to automate versioning and the changelog, which relies on [Conventional Commits](https://www.conventionalcommits.org/). As squash commits to main are enforced, which will drop a commit message using the conventions, please prefix the PR title with these instead:
 
-| Prefix      | Use for                                                 |
-| ----------- | ------------------------------------------------------- |
-| `feat:`     | a new feature                                           |
-| `fix:`      | a bug fix                                               |
-| `docs:`     | documentation only                                      |
-| `chore:`    | tooling, CI, dependency bumps, etc.                     |
-| `refactor:` | code change that neither fixes a bug nor adds a feature |
-| `test:`     | adding or correcting tests                              |
-
-Add `!` after the type (e.g. `feat!:`) or a `BREAKING CHANGE:` footer for breaking changes.
+| Prefix      | Use for                                                 | Version bump                |
+| ----------- | ------------------------------------------------------- | --------------------------- |
+| `feat:`     | a new feature                                           | minor (`0.X.0`)             |
+| `fix:`      | a bug fix                                               | patch (`0.0.X`)             |
+| `perf:`     | a performance improvement                               | patch (`0.0.X`)             |
+| `docs:`     | documentation only                                      | none — changelog entry only |
+| `chore:`    | tooling, CI, dependency bumps, etc.                     | none — changelog entry only |
+| `refactor:` | code change that neither fixes a bug nor adds a feature | none — changelog entry only |
+| `test:`     | adding or correcting tests                              | none — changelog entry only |
+| `style:`    | formatting/whitespace only, no code meaning change      | none — changelog entry only |
+| `build:`    | changes to the build system or package dependencies     | none — changelog entry only |
+| `ci:`       | changes to CI configuration/scripts                     | none — changelog entry only |
+| `revert:`   | reverts a previous commit                               | none — changelog entry only |
 
 Example: `fix: correct resource attribute mapping for cloud exporters`
+
+### Breaking Changes
+
+Add `!` after the type (e.g. `feat!:`) in the PR title and a `BREAKING CHANGE:` footer of the PR description as its own paragraph. Ensure there is sufficient details in the BREAKING CHANGE message as this will be picked up by release-please for CHANGELOG.md
 
 ## Pull request process
 
 1. Push your branch and open a PR against `main`.
-2. Fill in a short description of what changed and why.
-3. Ensure CI (build, test) is green.
-4. A maintainer will review and merge — release-please will pick up your commit automatically on the next release.
+1. Set the PR title as mentioned in [Pull request title](#pull-request-title)
+1. Fill in a short description of what changed and why.
+1. Ensure CI (build, test) is green.
+1. A maintainer will review/approve
+1. Merge the PR. If this is a breaking change, add a `BREAKING CHANGE: <description>` line to the squash-merge commit message box before confirming the merge (the title's `!` alone won't carry the migration detail into the changelog)
+1. release-please will pick up your commit automatically on the next release and add an entry of the commit message to the CHANGELOG.md
 
 ## Code of conduct
 

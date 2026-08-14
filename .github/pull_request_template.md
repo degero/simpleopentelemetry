@@ -22,7 +22,7 @@
 
 ## Checklist
 
-- [ ] A commit message that follows [the CONTRIBUTING.md](../CONTRIBUTING.md#commit-messages) guideliness
+- [ ] The PR title follows [the CONTRIBUTING.md](../CONTRIBUTING.md#pull-request-title) conventional commit format (e.g. prefix with the above type of change `feat: add OTLP exporter config`)
 - [ ] Tests added or updated for the change
 - [ ] Public members have XML doc comments
 - [ ] Run `dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verbosity diagnostic`
@@ -30,5 +30,12 @@
 - [ ] `dotnet build` passes with no warnings
 - [ ] `dotnet test` passes
 - [ ] Docs (`README.md` / `docs/`) updated if behaviour or configuration changed
+- [ ] If this is a breaking change, add a `BREAKING CHANGE: <description>` line to the squash-merge commit message box before confirming the merge (the title's `!` alone won't carry the migration detail into the changelog)
+
+## Merging the PR
+
+Ensure the merge commit message has the PR title and if it is a BREAKING CHANGE that it has that footer message included
+
+---
 
 By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/degero/simpleopentelemetry/blob/main/CODE_OF_CONDUCT.md).
