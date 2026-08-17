@@ -27,7 +27,6 @@
 - [ ] Tests added or updated for the change
 - [ ] Public members have XML doc comments
 - [ ] Run `dotnet format src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj --verbosity diagnostic`
-- [ ] Run `npx prettier --check "**/*.{json,yaml,yml,md}"`
 - [ ] `dotnet build` passes with no warnings
 - [ ] `dotnet test` passes
 - [ ] Docs (`README.md` / `docs/`) updated if behaviour or configuration changed
