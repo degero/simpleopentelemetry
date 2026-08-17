@@ -223,7 +223,7 @@ To remove all deployed resources on manual terraform deployment:
 terraform destroy
 ```
 
-Or delete the resource group directly if anye issues occur
+Or delete the resource group directly if any issues occur
 ```powershell
 az group delete --name "rg-soteltestazure" --yes --no-wait
 ```
@@ -253,4 +253,4 @@ The app settings are configured in `app/appservicesettings.json` and automatical
 
 ## Production use and other documentation
 
-For production templates and Doco see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md)
+For production templates and documentation see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md)

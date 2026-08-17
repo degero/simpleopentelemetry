@@ -27,7 +27,7 @@ As SimpleOpenTelemetry uses dotnet's IConfiguration concepts and abstractions, i
 
 The configuration system also means you can also [add in other configuration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration) before calling AddSimpleOpenTelemetry(). These are particularly useful for loading in sensitive values (keys, secrets etc).
 
-As the IConfigurationProvider for environment variables is enabled by default, you can define all SimpleOpenTelemetry settings and OTEL* env vars in environment variables or in the appsettings.json file. You can also put the "SimpleOpenTelemetry" section and OTEL* settings in its own file instead of appsettings.json if you wish with some extra configration before calling AddSimpleOpenTelemetry(). See https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#file-configuration-provider
+As the IConfigurationProvider for environment variables is enabled by default, you can define all SimpleOpenTelemetry settings and OTEL* env vars in environment variables or in the appsettings.json file. You can also put the "SimpleOpenTelemetry" section and OTEL* settings in its own file instead of appsettings.json if you wish with some extra configuration before calling AddSimpleOpenTelemetry(). See https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration-providers#file-configuration-provider
 
 For local development with sensitive values, it is recommended to take advantage of [dotnet user-secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). This can be used for any configuration below or
 
@@ -35,20 +35,20 @@ For local development with sensitive values, it is recommended to take advantage
 
 ## Environment variables
 
-When setting SimpleOpenTelemetry configuration as Environment variables use the ** seperator for the hierarchical structure eg SimpleOpenTelemetry:Trace:Options as SimpleOpenTelemetry**Trace\_\_Options. See [MSLearn - configuration-keys-and-values](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#configuration-keys-and-values).
+When setting SimpleOpenTelemetry configuration as Environment variables use the ** separator for the hierarchical structure eg SimpleOpenTelemetry:Trace:Options as SimpleOpenTelemetry**Trace\_\_Options. See [MSLearn - configuration-keys-and-values](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#configuration-keys-and-values).
 
 The OpenTelemetry OTEL\_\* environment variables / json config are partially supported (see details further below) and load in by default (as this is done by the underlying OpenTelemetry SDK registration) but for many components those settings can be defined explicitly for their signal type/functionality in the configuration file or in code using the OpenTelemetryBuilder returned from SimpleOpenTelemetry.
 
 ## OpenTelemetry environment variables
 
-Some required and core OTEL\_ environment variables you can set in Env vars or appsettings.ENV.json value. See [Configuration file setup](#configuration-file-setup) for a template of what the required setttings should be (\* indicates a required setting):
+Some required and core OTEL\_ environment variables you can set in Env vars or appsettings.ENV.json value. See [Configuration file setup](#configuration-file-setup) for a template of what the required settings should be (\* indicates a required setting):
 
 - [OTEL_SERVICE_NAME](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)\*
 - [OTEL_RESOURCE_ATTRIBUTES](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)\*
 - [OTEL_EXPORTER_OTLP_PROTOCOL](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) - default: 'gRPC' which is common for otel collector sidecar use
   [OTEL_EXPORTER_OTLP_ENDPOINT](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) - default: 'http://localhost:4317' which is common for otel collector sidecar use
 - [OTEL_TRACES_SAMPLER, OTEL_TRACES_SAMPLER_ARG](https://opentelemetry.io/docs/languages/dotnet/sampling/#environment-variable-configuration)
-- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) - contrary to spec, examplars are off by default due to performance cost.
+- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) - contrary to spec, exemplars are off by default due to performance cost.
 - [OTEL_SDK_DISABLED](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
 
 <br>
@@ -72,7 +72,7 @@ To verify / validate your configuration you can check for warning / error events
 
 ## Configuration file setup
 
-**IMPORTANT**: ⚠️ _SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured. See [Error handling and diagnsotics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)_ ⚠️
+**IMPORTANT**: ⚠️ _SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured. See [Error handling and diagnostics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)_ ⚠️
 
 To get started, add the "OTEL\_" settings and "SimpleOpenTelemetry" section to the root of your appsettings.json / appsettings.{Environment}.json file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application.
 
@@ -170,18 +170,6 @@ OpenTelemetry Documentation: [opentelemetry.io traces reporting exceptions](http
 
 ## Configuration component details
 
-While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib) distros, and vendor implementations of components _could_ be loaded using SimpleOpenTelemetry's configuration syntax, these are gated through registered assembly sets in the below folders to ensure those configurations have been tested with this library:
-
-- [Distros](./src/SimpleOpenTelemetry/OtelComponents/Distro/DistroAssemblies.cs)
-- [Exporters](./src/SimpleOpenTelemetry/OtelComponents/Exporter/ExporterAssemblies.cs)
-- [Trace / Metric Instrumentations](./src/SimpleOpenTelemetry/OtelComponents/Instrumentation/InstrumentationAssemblies.cs)
-- [Extensions](./src/SimpleOpenTelemetry/OtelComponents/Extensions/ExtensionAssemblies.cs)
-- [Samplers](./src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerAssemblies.cs)
-- [Propagators](./src/SimpleOpenTelemetry/OtelComponents/Propagator/PropagatorAssemblies.cs)
-- [Resource Detectors](./src/SimpleOpenTelemetry/OtelComponents/Resource/ResourceDetectorAssemblies.cs)
-
-<br>
-
 The next sections cover setting up the subsections of your "SimpleOpenTelemetry" config and details config information for components supported and snippets where options are available.
 
 - [Distros](./distros.md)
@@ -191,6 +179,18 @@ The next sections cover setting up the subsections of your "SimpleOpenTelemetry"
 - [Propagators](./propagators.md)
 - [Samplers](./samplers.md)
 - [Extensions](./extensions.md)
+
+<br>
+
+While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib) distros, and vendor implementations of components _could_ be loaded using SimpleOpenTelemetry's configuration syntax, these are gated through registered assembly sets in the below folders to ensure those configurations have been tested with this library:
+
+- [DistroAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Distro/DistroAssemblies.cs)
+- [ExporterAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/ExporterAssemblies.cs)
+- [Trace / Metric InstrumentationAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/InstrumentationAssemblies.cs)
+- [ExtensionAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Extensions/ExtensionAssemblies.cs)
+- [SamplerAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerAssemblies.cs)
+- [PropagatorAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Propagator/PropagatorAssemblies.cs)
+- [ResourceDetectorAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Resource/ResourceDetectorAssemblies.cs)
 
 If a component type (eg. Processors), extension or setting isn't available to configure you can load/configure it in code using the OpenTelemetryBuilder returned from `AddSimpleOpenTelemetry()`. To search for a component check the [OpenTelemetry Registry](https://OpenTelemetry.io/ecosystem/registry/).
 

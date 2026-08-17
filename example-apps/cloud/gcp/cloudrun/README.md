@@ -247,7 +247,7 @@ gcloud projects delete soteltest
 [Github - Google built collector](https://github.com/GoogleCloudPlatform/opentelemetry-operations-collector)
 
 
-**Google saamples**
+**Google samples**
 
 [Google Docs - Samples for collector based Otel exports](https://docs.cloud.google.com/trace/docs/setup/sample-overview)
 

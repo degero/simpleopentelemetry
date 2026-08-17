@@ -46,7 +46,7 @@ _To make OpenTelemetry code-based instrumentation as simple as possible so devel
 
 ## Overview
 
-SimpleOpenTelemetry handles configuration via IConfiguration rather than code calling OpenTelemetry's fluent api when using code-based instrumentation. Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumenation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
+SimpleOpenTelemetry handles configuration via IConfiguration rather than code calling OpenTelemetry's fluent api when using code-based instrumentation. Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
 
 ## Features
 
@@ -72,9 +72,9 @@ OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel compon
 
 ⚠️ **Ensure you install these versions of component packages.** ⚠️
 
-## Quickstart
+## Quickstarts
 
-Run the aspnetcore example app guide in [example-apps/localdev/README.md](./example-apps/localdev/README.md) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
+Run the aspnetcore example app in [example-apps/localdev/README.md](./example-apps/localdev/README.md) or [Nuget package Quickstart guide](src/SimpleOpenTelemetry/README.nuget.md#quickstart) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
 
 ## Documentation
 

@@ -64,7 +64,7 @@ https://github.com/newrelic/newrelic-opentelemetry-examples/tree/main/other-exam
 
 ## Checking telemetry on NewRelic
 
-Viewing traces and logs are straightfoward on the site however here are some sample dashboard queries for
+Viewing traces and logs are straightforward on the site however here are some sample dashboard queries for
 the sample apps httpclient / aspnetcore metrics
 
 httpclient:

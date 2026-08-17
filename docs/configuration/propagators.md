@@ -10,7 +10,7 @@ Set trace propagators in the configuration `SimpleOpenTelemetry:Trace:Propagator
 
 **Nuget Packages**
 
-OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) so dont require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators --version x.x.x`
+OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) so don't require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators --version x.x.x`
 
 **Available Propagators in SimpleOpenTelemetry**
 

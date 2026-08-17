@@ -45,7 +45,7 @@ X-Ray remote sampling cannot be enabled by JSON config in SimpleOpenTelemetry.
 
 Why:
 
-- The AWS X-Ray remote sampler currently uses a non-standard setup pattern that requires building a resource in code first going against the lazy-loaded OpenTelemetery ResourceProvider pattern.
+- The AWS X-Ray remote sampler currently uses a non-standard setup pattern that requires building a resource in code first going against the lazy-loaded OpenTelemetry ResourceProvider pattern.
 
 To enable in code, see:
 

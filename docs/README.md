@@ -4,13 +4,13 @@ SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotn
 
 ## Getting Started
 
-### With an example app
-
-You can use one of the [localdev example applications](../example-apps/localdev/README.md) or [cloud specific example apps](../example-apps/cloud/) (that can be deployed to the cloud, some can be run locally) with all the below code / configuration setup done. There is also [documentation](../example-apps/localdev/README.md#viewing-telemetry) in the localdev example applications to run locally and send telemetry to cloud / 3rd party telemetry services.
-
 ### Quickstart
 
 See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quickstart). This includes a local Grafana to view telemetry.
+
+### With an example app
+
+You can use one of the [localdev example applications](../example-apps/localdev/README.md) or [cloud specific example apps](../example-apps/cloud/) (that can be deployed to the cloud, some can be run locally) with all the below code / configuration setup done. There is also [documentation](../example-apps/localdev/README.md#viewing-telemetry) in the localdev example applications to run locally and send telemetry to cloud / 3rd party telemetry services.
 
 ### With a new / existing dotnet app
 
@@ -33,7 +33,7 @@ See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quic
   }
   ```
 
-- Add boostrapping code:
+- Add bootstrapping code:
 - For Generic Host apps like aspnetcore (or any apps like console using WebApplicationBuilder/HostApplicationBuilder):
   - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
 
@@ -60,9 +60,9 @@ See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quic
 
 - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
-- Read the next sections or [example configrations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
+- Read the next sections or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
 
-## How SimpleOpenTelemtry initialises OpenTelemetry
+## How SimpleOpenTelemetry initialises OpenTelemetry
 
 `AddSimpleOpenTelemetry()` initialises OpenTelemetry with either the service collection extension `AddOpenTelemetry()` for generic host or `OpenTelemetrySdk.Create()` for standalone apps. It will then process the configuration and call the OpenTelemetryBuilder fluentapi methods to configure settings and components.
 
@@ -120,7 +120,7 @@ Several Dotnet SDK libs generate metrics which is usually configured to be colle
 
 - Review the OpenTelemetry Best Practices doco for [Traces](https://opentelemetry.io/docs/languages/dotnet/traces/best-practices/), [Logs](https://opentelemetry.io/docs/languages/dotnet/logs/best-practices/) and [Metrics](https://opentelemetry.io/docs/languages/dotnet/metrics/best-practices/)
 
-- Review the OpenTelemetry dotnet doco for best practices [Tracesw](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
+- Review the OpenTelemetry dotnet doco for best practices [Traces](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
 
 ## SimpleOpenTelemetry Error handling and Diagnostics
 
