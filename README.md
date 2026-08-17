@@ -13,9 +13,12 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | Stability   | Beta                                 |
 | Code Owners | [@degero](https://github.com/degero) |
 
+[![CI](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml)
+[![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
+[![CodeQL](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql)
+[![Lint](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml)
 [![NuGet version badge](https://img.shields.io/nuget/v/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 [![NuGet download count badge](https://img.shields.io/nuget/dt/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
-[![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
 
 [CHANGELOG.md](./CHANGELOG.md)
 
