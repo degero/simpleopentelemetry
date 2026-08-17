@@ -1,0 +1,96 @@
+name: Bug Report
+description: File a bug report.
+title: "[Bug]: "
+labels: ["bug", "triage"]
+projects: ["degero/4"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!  Please fill in as much detail as you can — it makes reproducing and fixing the issue much faster.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      placeholder: When I call X with Y config, I get Z instead of the expected behavior.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: What was the expected behavior?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps or a minimal repro project/snippet that triggers the issue.
+      placeholder: |
+        1. Configure SimpleOpenTelemetry with '...'
+        2. Call '...'
+        3. Observe '...'
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or exception output
+      description: Paste any stack traces, exception messages, or relevant logs. This will be automatically formatted as code.
+      render: shell
+
+  - type: input
+    id: package-version
+    attributes:
+      label: SimpleOpenTelemetry version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: dotnet-version
+    attributes:
+      label: .NET version / TargetFramework
+      placeholder: "net8.0 / .NET SDK 8.0.400"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: hosting-model
+    attributes:
+      label: Hosting model
+      options:
+        - Generic Host (IHostBuilder / WebApplicationBuilder)
+        - Standalone (no host)
+        - Other / not sure
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Anything else relevant — OS, cloud provider config, related issues, etc.
+    validations:
+      required: false
+
+  - type: upload
+    id: screenshots
+    attributes:
+      label: Upload screenshots
+      description: If applicable, add screenshots to help explain your problem.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/degero/simpleopentelemetry/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

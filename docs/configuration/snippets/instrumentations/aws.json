@@ -1,0 +1,16 @@
+{
+  "SimpleOpenTelemetry": {
+    "Trace": {
+      "Instrumentations": [ "AWS" ],
+      "InstrumentationConfig": {
+        "AWS": {
+          "SemanticConventionVersion": "V1_29_0",
+          "SuppressDownstreamInstrumentation": true
+        }
+      }
+    },
+    "Metric": {
+      "Instrumentations": [ "AWS" ]
+    }
+  }
+}

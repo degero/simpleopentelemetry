@@ -1,0 +1,77 @@
+name: Release
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    uses: ./.github/workflows/build-and-test.yml
+    with:
+      fetch-depth: 0 # MinVer needs full history to find the tag for versioning
+      upload-coverage: true
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  pack:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # MinVer needs full history to find the tag for versioning
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Pin README links to release tag
+        run: |
+          if [[ "${{ github.ref_type }}" != "tag" ]]; then
+            echo "::error::Release workflow must run against a tag ref, got ${{ github.ref_type }}:${{ github.ref_name }}"
+            exit 1
+          fi
+          sed -i "s/{{TAG}}/${{ github.ref_name }}/g" src/SimpleOpenTelemetry/README.nuget.md
+
+      - name: Dotnet restore (lockfile)
+        run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
+
+      - name: Pack
+        run: |
+          mkdir -p nupkgs
+          dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs  --no-restore
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: |
+            nupkgs/*.nupkg
+            nupkgs/*.snupkg
+
+  push-to-nuget:
+    needs: pack
+    runs-on: ubuntu-latest
+    environment: nuget-publish
+    steps:
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+
+      - name: Push to NuGet.org
+        run: |
+          for nupkg in *.nupkg; do
+            dotnet nuget push "$nupkg" \
+              --source https://api.nuget.org/v3/index.json \
+              --api-key "${{ secrets.NUGET_API_KEY }}" \
+              --skip-duplicate
+          done

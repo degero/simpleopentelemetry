@@ -1,0 +1,44 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Microsoft.AspNetCore": "Warning",
+      // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
+      "Microsoft.Hosting.Lifetime": "Warning",
+      // Avoid logging Host internal events
+      "Microsoft.Extensions.Hosting.Internal.Host": "Warning"
+    }
+  },
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=unknown,deployment.environment.name=dev",
+  "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",
+  "OTEL_TRACES_SAMPLER_ARG": "0.05",
+  "SimpleOpenTelemetry": {
+    "Distro": "AzureMonitorAspNetCore",
+    "DistroOptions": {
+      "Credential": "Azure.Identity.DefaultAzureCredential",
+      "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+      "SamplingRatio": "0.1",
+      "EnableTraceBasedLogsSampler": "false"
+    },
+    "Metric": {
+      "Instrumentations": [
+        "AspNetCore"
+      ],
+      "CustomMeters": [
+        "System.Net.NameResolution"
+      ]
+    },
+    "Trace": {
+      "Instrumentations": [
+        "AspNetCore",
+        "EFCore"
+      ],
+      "Settings": {
+        "SetErrorStatusOnException": true
+      },
+      "Sources": [
+        "yourappnamespace.*"
+      ]
+    }
+  }
+}

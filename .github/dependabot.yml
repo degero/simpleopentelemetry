@@ -1,0 +1,46 @@
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 2
+    groups:
+      # Ships inside the published package — bundled, reviewed, and released
+      # manually. See MAINTAINING.md before merging.
+      # Keep this list in sync with the actual <PackageReference> entries in
+      # src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj (excluding
+      # PrivateAssets="All" build-time-only packages like MinVer/SourceLink).
+      shipped:
+        patterns:
+          - "OpenTelemetry"
+          - "OpenTelemetry.Extensions.Hosting"
+          - "OpenTelemetry.Exporter.OpenTelemetryProtocol"
+          - "Microsoft.Extensions.Configuration.Abstractions"
+          - "Microsoft.Extensions.DependencyInjection.Abstractions"
+          - "Microsoft.Extensions.Hosting.Abstractions"
+
+      # Everything else — example app, tests, build tooling, transitive
+      # abstractions not directly referenced by the shipped project.
+      dev-and-examples:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "OpenTelemetry"
+          - "OpenTelemetry.Extensions.Hosting"
+          - "OpenTelemetry.Exporter.OpenTelemetryProtocol"
+          - "Microsoft.Extensions.Configuration.Abstractions"
+          - "Microsoft.Extensions.DependencyInjection.Abstractions"
+          - "Microsoft.Extensions.Hosting.Abstractions"
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "chore"
+      include: "scope"

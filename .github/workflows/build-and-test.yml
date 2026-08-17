@@ -1,0 +1,56 @@
+name: .NET Build and Test
+
+on:
+  workflow_call:
+    inputs:
+      fetch-depth:
+        description: "Git history depth (0 = full history, needed for MinVer)"
+        type: number
+        default: 1
+      upload-coverage:
+        description: "Upload test/coverage results to Codecov"
+        type: boolean
+        default: false
+    secrets:
+      CODECOV_TOKEN:
+        required: false
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ inputs.fetch-depth }}
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Dotnet restore (lockfile)
+        run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
+
+      - name: Dotnet build
+        run: dotnet build SimpleOpenTelemetry.sln -c Release --no-incremental --no-restore
+
+      - name: Dotnet test
+        run: dotnet test SimpleOpenTelemetry.sln -c Release --no-build --no-restore --verbosity normal --logger:"junit;LogFilePath=${{ github.workspace }}/testresults/{assembly}-{framework}-junit.xml" --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Upload coverage reports to Codecov
+        if: inputs.upload-coverage
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          files: ./coverage/**/coverage.cobertura.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: inputs.upload-coverage
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
+          report_type: test_results
+          token: ${{ secrets.CODECOV_TOKEN }}

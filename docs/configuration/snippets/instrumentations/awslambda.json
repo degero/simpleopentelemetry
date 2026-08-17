@@ -1,0 +1,14 @@
+{
+  "SimpleOpenTelemetry": {
+    "Trace": {
+      "Instrumentations": [ "AWSLambda" ],
+      "InstrumentationConfig": {
+        "AWSLambda": {
+          "SemanticConventionVersion": "V1_29_0",
+          "DisableAwsXRayContextExtraction": true,
+          "SetParentFromBatch": true
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,27 @@
+name: soteltestazure
+metadata:
+  template: aspnetcore-simpleopentelemetry
+  description: SimpleOpenTelemetry ASP.NET Core Azure App Service demo with Application Insights
+services:
+  web:
+    project: app/soteltestazure.csproj
+    language: csharp
+    host: appservice
+hooks:
+  preprovision:
+    shell: pwsh
+    run: ./azd-scripts/Prompt-Location.ps1
+  postprovision:
+    shell: pwsh
+    run: ./azd-scripts/Set-AzdDeploymentEnv.ps1
+infra:
+  provider: terraform
+  path: ./infra
+  module: main
+  parameters:
+    location: ${AZURE_LOCATION}
+    resource_group_name: rg-soteltestazure
+    app_name: soteltestazure
+    app_service_plan_name: plan-soteltestazure
+    app_insights_name: ai-soteltestazure
+    otel_service_name: soteltestazure

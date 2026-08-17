@@ -1,0 +1,36 @@
+name: generate-doco
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Directory.Packages.props"
+      - "scripts/generate-doco.sh"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Generate doco
+        run: |
+          chmod +x scripts/generate-doco.sh
+          ./scripts/generate-doco.sh
+
+      - name: Commit and push if docs/otel-component-versions.md changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: sync otel component versions doco"
+          file_pattern: docs/otel-component-versions.md
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com

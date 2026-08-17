@@ -1,0 +1,16 @@
+{
+  "SimpleOpenTelemetry": {
+    "Distro": "AzureMonitorAspNetCore",
+    "DistroOptions": {
+      "Credential": "Azure.Identity.DefaultAzureCredential",
+      "SamplingRatio": "1.0",
+      "TracesPerSecond": "5.0",
+      "Version": "v2_1",
+      "StorageDirectory": "c:\\temp\\azureexporter",
+      "DisableOfflineStorage": "false",
+      "EnableTraceBasedLogsSampler": "true",
+      "EnableStandardMetrics": "true",
+      "EnablePerformanceCounters": "true"
+    }
+  }
+}

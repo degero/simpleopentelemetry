@@ -1,0 +1,40 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Microsoft.AspNetCore": "Warning",
+      // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
+      "Microsoft.Hosting.Lifetime": "Warning",
+      // Avoid logging Host internal events
+      "Microsoft.Extensions.Hosting.Internal.Host": "Warning"
+    }
+  },
+  "EnableOtelEventListeners": "true",
+  "OTEL_SERVICE_NAME": "soteltestazure",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev",
+  "OTEL_TRACES_SAMPLER": "microsoft.fixed_percentage",
+  "OTEL_TRACES_SAMPLER_ARG": "1.0",
+  "SimpleOpenTelemetry": {
+    "Distro": "AzureMonitorAspNetCore",
+    "DistroOptions": {
+      "Credential": "Azure.Identity.DefaultAzureCredential",
+      "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
+      "EnableTraceBasedLogsSampler": "false"
+    },
+    "Metric": {
+      "Instrumentations": [
+        "AspNetCore"
+      ]
+    },
+    "Trace": {
+      "Instrumentations": [
+        "AspNetCore"
+      ],
+      "Settings": {
+        "SetErrorStatusOnException": true
+      },
+      "Sources": [
+        "soteltestazure.*"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+gcp_project_id   = "soteltest"
+gcp_region       = "us-east1"
+gcp_service_name = "soteltestgcp"
+gcp_log_name     = "otlp"
+
+use_otel_sidecar               = false
+enable_otel_event_listeners    = true  # Outputs otel/simple otel events to stdout
+ignore_cloudrun_trace_sampling = false # If using default parent based sampling enabling this stop cloudrun causing dropped traces
+
+app_image  = "ghcr.io/<your account and image>"
+otel_image = "us-docker.pkg.dev/cloud-ops-agents-artifacts/google-cloud-opentelemetry-collector/otelcol-google:0.151.0"
+
+otel_resource_attributes = "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=production,gcp.project_id=soteltest"
+
+otel_endpoint = "https://telemetry.googleapis.com"
+otel_protocol = "http/protobuf" # IMPORTANT direct export currently only works correctly with http/protobuf
+

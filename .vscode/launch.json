@@ -1,0 +1,98 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET: example-apps/localdev/console",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/example-apps/localdev/console/bin/Debug/net10.0/Console.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/example-apps/localdev/console",
+      "console": "integratedTerminal",
+      "stopAtEntry": false,
+      "env": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    },
+    {
+      "name": ".NET: example-apps/localdev/aspnetcore",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/example-apps/localdev/aspnetcore/bin/Debug/net10.0/AspNetCore.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/example-apps/localdev/aspnetcore",
+      "stopAtEntry": false,
+      "launchBrowser": {
+        "enabled": true,
+        "args": "http://localhost:5056"
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/example-apps/localdev/aspnetcore/Views"
+      }
+    },
+    {
+      "name": ".NET: example-apps/cloud/gcp/cloudrun",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/example-apps/cloud/gcp/cloudrun/app/bin/Debug/net10.0/soteltestgcp.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/example-apps/cloud/gcp/cloudrun/app",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": ".NET: example-apps/cloud/azure/appservice",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/example-apps/cloud/azure/appservice/app/bin/Debug/net10.0/soteltestazure.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/example-apps/cloud/azure/appservice/app",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": ".NET: example-apps/cloud/aws/ecs",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceFolder}/example-apps/cloud/aws/ecs/app/bin/Debug/net10.0/soteltestaws.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/example-apps/cloud/aws/ecs/app",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "checkForDevCert": false,
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    }
+  ]
+}

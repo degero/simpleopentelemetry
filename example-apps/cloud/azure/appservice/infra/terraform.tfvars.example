@@ -1,0 +1,14 @@
+# Optional example for direct Terraform runs.
+# azd deployments use the parameter values from ../azure.yaml instead of this file.
+
+location              = "eastus"
+resource_group_name   = "rg-soteltestazure"
+app_name              = "app-soteltestazure"
+app_service_plan_name = "plan-soteltestazure"
+app_insights_name     = "appi-soteltestazure"
+otel_service_name     = "soteltestazure"
+
+tags = {
+  "project"     = "demo-simpleopentelemetry"
+  "environment" = "development"
+}

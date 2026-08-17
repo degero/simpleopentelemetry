@@ -1,0 +1,55 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Microsoft.AspNetCore": "Warning",
+      // Avoid logging lifetime events - Comment out for local dev to detect/ launch browser
+      "Microsoft.Hosting.Lifetime": "Warning",
+      // Avoid logging Host internal events
+      "Microsoft.Extensions.Hosting.Internal.Host": "Warning"
+    }
+  },
+  "OTEL_SERVICE_NAME": "yourappname",
+  "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yourappnamespace,deployment.environment.name=dev",
+  "OTEL_EXPORTER_OTLP_ENDPOINT": "https://otlp.nr-data.net:4317",
+  "OTEL_EXPORTER_OTLP_HEADERS": "api-key={yourNRkey}",
+  "SimpleOpenTelemetry": {
+    "Trace": {
+      "Instrumentations": [
+        "AspNetCore",
+        "HttpClient"
+      ],
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
+      "Sources": [
+        "yourappnamespace.*"
+      ]
+    },
+    "Log": {
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
+      "Settings": {
+        "IncludeFormattedMessage": "true"
+      }
+    },
+    "Metric": {
+      "Exporters": [
+        {
+          "type": "otlp"
+        }
+      ],
+      "Instrumentations": [
+        "AspNetCore",
+        "HttpClient"
+      ],
+      "CustomMeters": [
+        "System.Net.NameResolution"
+      ]
+    }
+  }
+}

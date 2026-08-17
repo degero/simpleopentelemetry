@@ -1,0 +1,32 @@
+services:
+  otel:
+    image: us-docker.pkg.dev/cloud-ops-agents-artifacts/google-cloud-opentelemetry-collector/otelcol-google:0.151.0
+    command: --config /config/${OTEL_COLLECTOR_CONFIG}
+    volumes:
+      - ${GCLOUD_CONFIG_DIR}/application_default_credentials.json:/etc/otel/adc.json:ro
+      - ../otel-collector-config:/config:ro
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+      - GOOGLE_CLOUD_REGION=${GOOGLE_CLOUD_REGION}
+      - GOOGLE_APPLICATION_CREDENTIALS=/etc/otel/adc.json
+      - GOOGLE_CLOUD_LOG_NAME=${GOOGLE_CLOUD_LOG_NAME}
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "13133:13133"
+
+  app:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME}
+      - OTEL_RESOURCE_ATTRIBUTES=${OTEL_RESOURCE_ATTRIBUTES}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4317
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT}
+    depends_on:
+      - otel
+    ports:
+      - "8080:8080"

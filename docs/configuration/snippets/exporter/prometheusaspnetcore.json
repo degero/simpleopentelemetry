@@ -1,0 +1,16 @@
+{
+  "SimpleOpenTelemetry": {
+    "Metric": {
+      "Exporters": [
+        { 
+          "type": "prometheusaspnetcore", 
+          "options": {
+            "ScrapeEndpointPath": "/prometheus",
+            "DisableTotalNameSuffixForCounters": "true",
+            "ScrapeResponseCacheDurationMilliseconds": "1000"
+          }
+        }
+      ]
+    }
+  }
+}

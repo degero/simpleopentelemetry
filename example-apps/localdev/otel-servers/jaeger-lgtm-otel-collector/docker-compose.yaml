@@ -1,0 +1,41 @@
+# Converted from https://github.com/grafana/docker-otel-lgtm/k8s/lgtm.yaml
+# Intended for local demo / testing purposes only, not for production usage
+name: jaeger-lgtm-otel-collector
+services:
+  lgtm:
+    image: grafana/otel-lgtm:0.20.0
+    ports:
+      - "3000:3000"   # Grafana
+      - "4040:4040"   # Pyroscope
+      - "4317:4317"   # OpenTelemetry gRPC
+      - "4318:4318"   # OpenTelemetry HTTP
+      - "9090:9090"   # Prometheus
+    volumes:
+      - tempo-data:/data/tempo
+      - grafana-data:/data/grafana
+      - loki-data:/data/loki
+      - loki-storage:/loki
+      - p8s-storage:/data/prometheus
+      - pyroscope-storage:/data/pyroscope
+    healthcheck:
+      test: ["CMD", "cat", "/tmp/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    ports:
+      - "6317:4317" # OTLP gRPC
+      - "16686:16686"   # Jaeger UI
+      - "14250:14250" # Jaeger native gRPC (model.proto)
+    depends_on:
+      lgtm:
+        condition: service_healthy
+volumes:
+  tempo-data:
+  grafana-data:
+  loki-data:
+  loki-storage:
+  p8s-storage:
+  pyroscope-storage:

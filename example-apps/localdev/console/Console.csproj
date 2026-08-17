@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<Version>0.0.1</Version>
+</PropertyGroup>
+
+  <ItemGroup>
+	  <ProjectReference Include="..\..\..\src\SimpleOpenTelemetry\SimpleOpenTelemetry.csproj" />
+	  <ProjectReference Include="..\shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Exporter.Console" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
+    <PackageReference Include="OpenTelemetry.Resources.Container" />
+    <PackageReference Include="OpenTelemetry.Resources.Host" />
+    <PackageReference Include="OpenTelemetry.Resources.OperatingSystem" />
+    <PackageReference Include="OpenTelemetry.Resources.Process" />
+    <PackageReference Include="OpenTelemetry.Resources.ProcessRuntime" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\launchSettings.json">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,2 @@
+# .prettierignore
+**/packages.lock.json

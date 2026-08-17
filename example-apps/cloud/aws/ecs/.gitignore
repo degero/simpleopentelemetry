@@ -1,0 +1,26 @@
+# Terraform files
+.terraform/
+.terraform.lock.hcl
+*.tfplan
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfvars
+
+# Environment
+.env
+.env.local
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# app
+bin/
+obj/
+
+publish/
