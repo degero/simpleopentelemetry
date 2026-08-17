@@ -79,4 +79,4 @@ For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues
 
 Contributions are most welcome.
 
-[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING)
+[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING.md)
