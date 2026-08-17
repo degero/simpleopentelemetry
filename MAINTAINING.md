@@ -41,6 +41,7 @@ Checklist:
 
 - Verify version changes are all in [Directory.Packages.props](Directory.Packages.props) as pinned versions and each projects package lock files have updated
 - Ensure README's compatibility sections are updated [README.md](./README.md#compatibility) [src/SimpleOpenTelemetry/README.nuget.md#compatibility](src/SimpleOpenTelemetry/README.nuget.md#compatibility)
+- Ensure README's dependencies versions are updated [README.md](./README.md#dependencies)
 - Verify package lock files have updated. if not run `dotnet restore --force-evaluate`
 
 NOTE: OpenTelemetry tends to release new versions of all distro packages with a a new release. To manually update use [scripts/update-otel-packages.sh](scripts/update-otel-packages.sh)

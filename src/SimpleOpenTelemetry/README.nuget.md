@@ -18,8 +18,6 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | ------------------- | ------------------------ |
 | 0.1.x               | 1.16.x                   |
 
-These dependencies are included in the package. There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
-
 ## Requirements
 
 - Docker desktop (to get started with the quickstart)
