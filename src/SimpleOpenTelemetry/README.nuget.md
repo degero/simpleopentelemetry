@@ -8,13 +8,15 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 **License:** MIT
 
-[CHANGELOG.md](./CHANGELOG.md)
+[CHANGELOG.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/CHANGELOG.md)
+
+[README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md)
 
 ## Compatibility
 
 | SimpleOpenTelemetry | OpenTelemetry SDK family |
 | ------------------- | ------------------------ |
-| 0.1.0               | 1.16.x                   |
+| 0.1.x               | 1.16.x                   |
 
 These dependencies are included in the package. There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
 
@@ -59,7 +61,7 @@ In `docker` directory run `docker compose down` (note for full cleanup you will 
 
 ## Documentation
 
-For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md) and [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
+For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
 
 ## Supported OpenTelemetry components
 
