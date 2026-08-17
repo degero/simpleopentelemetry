@@ -38,7 +38,7 @@ NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Fam
 
 | SimpleOpenTelemetry | OpenTelemetry SDK family |
 | ------------------- | ------------------------ |
-| 0.1.0               | 1.16.x                   |
+| 0.1.x               | 1.16.x                   |
 
 ## Goal
 
