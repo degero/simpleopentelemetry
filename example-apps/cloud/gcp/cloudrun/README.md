@@ -4,7 +4,6 @@
 
 This example contains low-complexity low-cost hosted app deployment on Google Cloud Run.
 
-
 - Two SimpleOpenTelemetry configurations: Direct export or (Recommended) OpenTelemetry Collector sidecar [./simpleopentelemetry-config/README.md](./simpleopentelemetry-config/README.md)
 
 - Demo AspNetCore app sending all log levels, custom trace test telemetry on homecontroller. Direct export custom code for auth, telemetry processing / filtering when not using a collector [./app](./app/)
@@ -63,6 +62,7 @@ gcloud auth application-default set-quota-project soteltest
 ```
 
 Setup api access:
+
 ```
 gcloud services enable logging.googleapis.com telemetry.googleapis.com monitoring.googleapis.com cloudtrace.googleapis.com --project soteltest
 ```
@@ -89,7 +89,6 @@ gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_
 
 In the [app](./app/) directory:
 
-
 1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) to `appsettings.Development.json`
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. In `appsettings.Development.json` add at the top for extra debugging / logging:
@@ -105,6 +104,7 @@ In the [app](./app/) directory:
   ...existing lines...
 }
 ```
+
 1. In `appsettings.Development.json` adjust the `OTEL_RESOURCE_ATTRIBUTES` value for `gcp.project_id=soteltest,service.instance.id=otel-local-dev,location=us-east1` eg. if using a different projectid (shortname), or location or want a different resource instance id. You can also change the `GOOGLE_CLOUD_LOG_NAME` if you want this different.
 1. Run the app: `dotnet run`
 1. Navigate to [http://localhost:5195](http://localhost:5195) and navigate between the two pages to generate telemetry
@@ -150,7 +150,7 @@ In the [localdev-docker](./localdev-docker/) directory:
 
 ## Deploy to Cloud Run with Terraform
 
-*IMPORTANT*: This terraform is not PRODUCTION ready, it contains the lowest cost request based billing Cloud Run option allowing all direct public access. Note telemetry collection/delivery my be impacted by the 'request based' cpu usage / billing.
+_IMPORTANT_: This terraform is not PRODUCTION ready, it contains the lowest cost request based billing Cloud Run option allowing all direct public access. Note telemetry collection/delivery my be impacted by the 'request based' cpu usage / billing.
 
 Google Cloud Run will log stdout/stderr out of the box, this combined with the OpenTelemetry / SimpleOpenTelemetry event logging to stdout should give adequate logging to detect any configuration issues.
 
@@ -177,6 +177,7 @@ In the [app](./app/) directory:
   ...existing lines...
 }
 ```
+
 1. Run in Powershell: `rmdir ..\publish\` then `dotnet publish -c Release -o ..\publish`
 
 In the [root](./) directory:
@@ -192,7 +193,7 @@ In the [infra](./infra/) directory
 
 1. Cloud Run injects tracing and has sampling that cannot be configured which impacts tracing negatively. To verify all your traces, set the 'demonstration' `ignore_cloudrun_trace_sampling` terraform variable true . See [otel-collector-config/README.md](./otel-collector-config/README.md) and the notes in the app [app/Program.cs](./app/Program.cs) for further detail.
 
-1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/otelcollector-cloudrun-otlpexport.yaml](./otel-collector-config/otelcollector-cloudrun-otlpexport.yaml) or [otel-collector-config/otelcollector-cloudrun-legacyexport.yaml](./otel-collector-config/otelcollector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` beside the terraform.
+1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/otelcollector-cloudrun-otlpexport.yaml](./otel-collector-config/otel-collector-cloudrun-otlpexport.yaml) or [otel-collector-config/otelcollector-cloudrun-legacyexport.yaml](./otel-collector-config/otel-collector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` beside the terraform.
 
 1. Deploy the terraform:
 
@@ -205,11 +206,9 @@ terraform apply
 1. Use `service_url` output to navigate between the two pages to generate telemetry
 1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
-
 **Troubleshooting**:
 
 - Direct export may have issues getting the ADC `Your default credentials were not found.` as the credentials have not propagated yet. Adding a new env var to the app in main.tf and running terraform apply will restart it. As direct export is just a proof of concept and not recommended for production it has not been resolved.
-
 
 <br>
 
@@ -246,18 +245,15 @@ gcloud projects delete soteltest
 
 [Github - Google built collector](https://github.com/GoogleCloudPlatform/opentelemetry-operations-collector)
 
-
 **Google samples**
 
 [Google Docs - Samples for collector based Otel exports](https://docs.cloud.google.com/trace/docs/setup/sample-overview)
 
 [Write OTLP metrics by using an OpenTelemetry Collector sidecar - Google Documentation](https://docs.cloud.google.com/run/docs/tutorials/custom-metrics-opentelemetry-sidecar)
 
-
 **Google Application Default Credentials**
 
 [Set up Application Default Credentials - Google Documentation](https://docs.cloud.google.com/docs/authentication/provide-credentials-adc)
-
 
 **Google Kubernetes OpenTelemetry**
 

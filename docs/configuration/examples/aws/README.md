@@ -4,11 +4,11 @@ This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../example-apps/cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
+- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../../../example-apps/cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
 
 ## ADOT collector configs
 
-AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../example-apps/cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html).
+AWS recommends exporting to the newer OTLP endpoints. See the [adotcollector-ecs-otlpexport.yml](../../../../example-apps/cloud/aws/ecs/adot-collector-config/adotcollector-ecs-otlpexport.yml) example config file for the ADOT collector to use with this config file. There are several methods for telemetry collection in AWS than the collector. For help on choosing which Telemetry collection solution suits your needs see the [Amazon Cloudwatch - Getting started](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPGettingStarted.html).
 
 If using the AWS legacy metrics export from the collector, you will need to query metrics via the 'Classic metrics' area.
 
@@ -20,7 +20,7 @@ If using the AWS legacy metrics export from the collector, you will need to quer
 1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
 1. Ensure AWS Cloudwatch resources are setup
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
-   For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../example-apps/cloud/aws/ecs/README.md)
+   For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/cloud/aws/ecs/README.md)
 
 ## Required package install commands
 
@@ -49,7 +49,7 @@ Why:
 
 To enable in code, see:
 
-- [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/example-apps/cloud/aws/ecs/README.md) (X-Ray Remote Sampling section)
+- [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/cloud/aws/ecs/README.md) (X-Ray Remote Sampling section)
 
 If you also implement the optional code-only X-Ray remote sampler path shown in that example, add:
 

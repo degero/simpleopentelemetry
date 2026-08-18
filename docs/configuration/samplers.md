@@ -8,7 +8,7 @@ Set Trace samplers in the configuration `SimpleOpenTelemetry:Trace:Sampler` stri
 
 The below allow vendor sampler configuration as an alternative to OpenTelemetry's [built-in samplers](https://OpenTelemetry.io/docs/specs/otel/trace/sdk/#built-in-samplers). Builtin samplers can be set in OTEL_TRACES_SAMPLER of the root json configuration or env var. Some requires values in OTEL_TRACES_SAMPLER_ARG. The sampler defaults to 'parentbased_always_on'.
 
-For a full list of all the additional supported samplers see [SamplerEnum](./src/SimpleOpenTelemetry/Sampler/SamplerAssemblies.cs)
+For a list of supported samplers see [SamplerEnum](../../src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerEnum.cs)
 
 For Azure users, sampling is built into the exporter setup/options.
 

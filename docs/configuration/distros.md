@@ -14,6 +14,8 @@ In the case of SimpleOpenTelemetry, it is a library that will set up all signal 
 
 For examples listing all possible options (in their current default) see the [snippets/distro folder](./snippets/distro/)
 
+For a list of supported distros see [DistroEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Distro/DistroEnum.cs)
+
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](https://opentelemetry.io/ecosystem/distributions/)
 
 Available distros are:
@@ -75,7 +77,7 @@ Notes:
 
 There's a lot of transformation to squeeze OTLP data into Azure Monitor's data structures. eg customMetrics has a '_APPRESOURCEPREVIEW_' entry with otel resource attributes. If you can sacrifice the benefits of this distro (see 'Why should I use the Azure Monitor OpenTelemetry Distro' above) and want to store the 'pure' OTLP data look at using an OTLP exporter.
 
-This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](./example-apps/localdev/aspnetcore/Program.cs)
+This distro provides no option to set Trace sources and only sets up `Azure.*` as a source. If you wish to have custom traces in your app you will need to add them in "SimpleOpenTelemetry:Trace:Sources" or by code. For an example see the [aspnetcore example WithTracing() setup](../../example-apps/localdev/aspnetcore/Program.cs)
 
 If you add a package `OpenTelemetry.Instrumentation.SqlClient` you will need to configure it by code. As the distro will backoff from setting up its own internal sqlclient instrumentation if it detects it.
 

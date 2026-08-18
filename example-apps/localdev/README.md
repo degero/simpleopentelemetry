@@ -21,7 +21,7 @@ To reduce console noise, event listeners can be commented out in Program.cs and 
 ### Prerequisites
 
 - .NET 10.0 or later
-- Grafana LGTM stack + Jaeger instance for OTLP traces (to run locally see [docker-compose](../grafana-lgtm-otel-collector/docker-compose.yaml)
+- Grafana LGTM stack + Jaeger instance for OTLP traces (to run locally see [docker-compose](otel-servers/jaeger-lgtm-otel-collector/docker-compose.yaml)
 
 ## Using the sample with the local OTEL server
 

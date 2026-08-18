@@ -17,7 +17,7 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 [![NuGet download count badge](https://img.shields.io/nuget/dt/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 [![CI](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
-[![CodeQL](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql)
+[![CodeQL](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/codeql.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/codeql.yml)
 [![Lint](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml)
 
 [CHANGELOG.md](./CHANGELOG.md)
@@ -58,7 +58,7 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 
 Run the [localdev aspnetcore example app](./example-apps/localdev/README.md) in this repo or use the [Nuget package Quickstart guide](https://www.nuget.org/packages/SimpleOpenTelemetry#quickstart). Both result in a local aspnetcore mvc app using SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry.
 
-These can be used as a good starting point to test out building a config to your needs using the provided [snippets](/docs/configuration//snippets/README.md) or [examples](docs/configuration/examples/). For apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
+These can be used as a good starting point to test out building a config to your needs using the provided [snippets](docs/configuration/snippets/README.md) or [examples](docs/configuration/examples/). For apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
 
 ## Documentation
 

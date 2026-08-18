@@ -96,7 +96,7 @@ Using the [Logging setting](#logging) `IncludeFormattedMessage` is recommended i
 
 ### Distributed Tracing
 
-Additionally to the trace instrumentation libraries covered in the SimpleOpenTelemetry configuration documentation, you can generate custom traces. See the [example aspnetcore app HomeController](./example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for a custom trace example. This requires an `SimpleOpenTelemetry:Trace:Sources[]` entry with the source name or wildcard, see [example aspnetcore app appsettings.Example.json](./example-apps/localdev/aspnetcore/appsettings.Example.json).
+Additionally to the trace instrumentation libraries covered in the SimpleOpenTelemetry configuration documentation, you can generate custom traces. See the [example aspnetcore app HomeController](../example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for a custom trace example. This requires an `SimpleOpenTelemetry:Trace:Sources[]` entry with the source name or wildcard, see [example aspnetcore app appsettings.Example.json](../example-apps/localdev/aspnetcore/appsettings.Example.json).
 
 Using the [Trace setting](#tracing) `SetErrorStatusOnException` as `true` is recommended to record an trace status as `Error` automatically when an exception is thrown in a trace. If you need more detail than a bool it can be recorded in a catch statement
 
@@ -132,7 +132,7 @@ SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/d
 
 SimpleOpenTelemetry records logs or errors as diagnostics events (as OpenTelemetry does). Note that emitted "SimpleOpenTelemetry-" prefixed events only occur at the app startup and will only emit if a listener is registered before calling `AddSimpleOpenTelemetry()`.
 
-Projects in the [examples](./example-apps/localdev/) folder demonstrate custom code (SimpleOtelEventListener, OtelEventListener) listening to the "SimpleOpenTelemetry-" and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
+Projects in the [localdev example apps](../example-apps/localdev/) folder demonstrate custom code (SimpleOtelEventListener, OtelEventListener) listening to the "SimpleOpenTelemetry-" and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
 
 Some options to listen to events if not using a code based event listener/console output in the examples:
 

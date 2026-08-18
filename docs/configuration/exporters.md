@@ -10,7 +10,7 @@ Both the OpenTelemetry SDK exporters (otlp, console, prometheus) and other contr
 
 You can set exporter options for all signals in `SimpleOpenTelemetry:ExporterOptions:[exportername]` or under `SimpleOpenTelemetry:[Metrics/Tracing/Logging]:Exporters` array item `options` field. Setting them here overrides an 'all signal' option
 
-For a full list of all the supported exporters see [TraceExporterEnum / MetricExporterEnum / LogExporterEnum](./src/SimpleOpenTelemetry/Exporter/ExporterAssemblies.cs)
+For a list of supported exporters see [MetricExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/MetricExporterEnum.cs), [LogExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/LogExporterEnum.cs) and [TraceExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/TraceExporterEnum.cs)
 
 For examples listing all possible options (in their current default) see the [snippets/exporter folder](./snippets/exporter/)
 

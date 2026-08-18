@@ -130,7 +130,7 @@ Below covers information about each signal collection settings and documentation
 
 ## Logging
 
-Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this logging provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [examples](./example-apps/localdev/).
+Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this logging provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [localdev example appss](../../example-apps/localdev/).
 
 ## Settings
 
@@ -187,7 +187,7 @@ While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://git
 - [DistroAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Distro/DistroAssemblies.cs)
 - [ExporterAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/ExporterAssemblies.cs)
 - [Trace / Metric InstrumentationAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/InstrumentationAssemblies.cs)
-- [ExtensionAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Extensions/ExtensionAssemblies.cs)
+- [ExtensionAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Extension/ExtensionAssemblies.cs)
 - [SamplerAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerAssemblies.cs)
 - [PropagatorAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Propagator/PropagatorAssemblies.cs)
 - [ResourceDetectorAssemblies](../../src/SimpleOpenTelemetry/OtelComponents/Resource/ResourceDetectorAssemblies.cs)
