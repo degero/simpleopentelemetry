@@ -56,16 +56,9 @@ internal class AssemblyExecution : IAssemblyExecution
         if (existing != null)
             return existing;
 
-        // Try to load from base directory (i.e. user has the package installed)
-        var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
-        if (!File.Exists(path))
-        {
-            return null;
-        }
-
         try
         {
-            var loaded = Assembly.LoadFrom(path);
+            var loaded = Assembly.Load(assemblyName);
             return loaded;
         }
         catch (Exception ex)
