@@ -104,7 +104,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <summary>
     /// Invokes a parameterless public static method on the specified type with a builder argument.
     /// </summary>
-    /// <param name="methodInfo">MethodInfo object found from FindParamtereless.</param>
+    /// <param name="methodInfo">MethodInfo object found from FindParameterless.</param>
     /// <param name="builder">The builder instance to pass as argument.</param>
     /// <returns>The method's return value.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the method is not found.</exception>

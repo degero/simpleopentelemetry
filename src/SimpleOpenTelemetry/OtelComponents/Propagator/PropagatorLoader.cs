@@ -80,7 +80,7 @@ internal class PropagatorLoader : LoaderBase, IPropagatorLoader
             }
 
             // Register propagator
-            var defaultPropagator = propagatorsList.Count > 1 ? (TextMapPropagator)new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0] ?? throw new InvalidOperationException("No valid propagators configured.");
+            var defaultPropagator = propagatorsList.Count > 1 ? new CompositeTextMapPropagator(propagatorsList) : propagatorsList[0] ?? throw new InvalidOperationException("No valid propagators configured.");
             Sdk.SetDefaultTextMapPropagator(defaultPropagator);
             EventSource.Log.VerboseEvent(eventCategory, $"Registered OpenTelemetry Propagator(s) '{string.Join(", ", propagators)}'.");
         }
