@@ -18,12 +18,10 @@ There are also EventListeners for OpenTelemetry and SimpleOpentelemetry events s
 
 To reduce console noise, event listeners can be commented out in Program.cs and the "console" exporter entries in the appsettings.Development.json removed.
 
-
 ### Prerequisites
 
 - .NET 10.0 or later
 - Grafana LGTM stack + Jaeger instance for OTLP traces (to run locally see [docker-compose](../grafana-lgtm-otel-collector/docker-compose.yaml)
-
 
 ## Using the sample with the local OTEL server
 
@@ -34,7 +32,7 @@ cd ./otel-servers/jaeger-lgtm-otel-collector
 docker-compose up
 ```
 
-remove the local grafana / jaeger when finished with
+remove the local grafana LGTM / jaeger when finished with
 
 ```
 docker-compose down
@@ -45,15 +43,15 @@ This uses local volumes so for a full data flush delete the volumes in docker.
 ## Setup the config
 
 For either example, To use config file loading, in the project folder:
-    cp appsettings.Example.json appsettings.Development.json
+cp appsettings.Example.json appsettings.Development.json
 OR to use Env vars, you can set any / all values based on the above appsettings
 eg:
+
 ```powershell
 $Env:SimpleOpenTelemetry__Trace__Settings__SetErrorStatusOnException = "true"
 ```
 
 Make adjustments to these files / env vars based on the different examples below.
-
 
 ## Using the AspNetCore example
 
@@ -74,7 +72,6 @@ When launched, navigate to http://localhost:5056/
 
 Navigate to other links and back to home to trigger log / trace / efcore+sqlclient (if enabled) telemetry on the home page muitple times.
 
-
 ## Using the console example
 
 This uses a generic host setup in the default config. to test with a non-generic host setup change the setting 'UseGenericHost' to 'false' in the appsettings.Development.json
@@ -94,7 +91,7 @@ It runs the below:
 1. **Configuration**: Loads OpenTelemetry via SimpleOpenTelemetry exporter/trace/metrics/logging settings from `appsettings.Development.json` or environment variables
 2. **Initialization**: Sets up SimpleOpenTelemetry with loaded settings
 3. **HTTP Calls**: Makes traced HTTP requests to https://checkip.amazonaws.com and a failing (auth required) https://api.github.com/users/torvalds
-5. **Tracing**: All operations are automatically traced and exported
+4. **Tracing**: All operations are automatically traced and exported
 
 Press any key to exit
 
@@ -102,11 +99,9 @@ Press any key to exit
 
 For either example, a console output stopwatch will show how long it took to run. Just search for "AddSimpleOpenTelemetry() took: X ms".
 
-
 ## Viewing Telemetry
 
 You can view the telemetry collected on your [local grafana server](http://localhost:3000/) and [local jaeger server](http://localhost:16686)
-
 
 ### Grafana
 
@@ -120,14 +115,11 @@ If you enable EFCore as mentioned before, you will see Entity framework and SqlC
 
 ![Grafana Tempo Trace Example](./_README_TempoExplore.png)
 
-
 ### Jaeger UI (using OTLP)
 
 - Navigate to the local url
 - Select "console-simpleopentelemetry" from the service dropdown
 - View traces in real-time
-
-
 
 ## Using the sample with Azure
 
@@ -136,18 +128,14 @@ You can deploy this app to Azure by setting an appsettings.Production.json with 
 - Go to your Application Insights resource in Azure Portal
 - Verify data is flowing using this KQL [Azure monitor exporter] (../README.md#azure-monitor-aspnetcore)
 
-
 ## Using the sample with AWS
 
 You can deploy this app to AWS by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/aws/) and following setup instructions and telemetry verification in the AWS cloud example here: [example-apps/cloud/aws/ecs/README.md](../cloud/aws/ecs/README.md).
-
 
 ## Using the sample with GCP
 
 You can deploy this app to GCP by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/gcp/) and following setup instructions and telemetry verification in the GCP cloud example here: [example-apps/cloud/gcp/cloudrun/README.md](../cloud/gcp/cloudrun/README.md).
 
-
 ## Using the sample with New Relic
-
 
 You can deploy this app to New Relic by setting an appsettings.Production.json with one of the [SimpleOpenTelemetry docs/configuration/examples](../../docs/configuration/examples/newrelic/) and following setup instructions and telemetry verification there.

@@ -8,9 +8,9 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 **License:** MIT
 
-[CHANGELOG.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/CHANGELOG.md)
-
 [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md)
+
+[CHANGELOG.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/CHANGELOG.md)
 
 ## Compatibility
 
@@ -59,13 +59,13 @@ In `docker` directory run `docker compose down` (note for full cleanup you will 
 
 ## Documentation
 
-For configuration reference, example configs/snippets, cloud examples, and troubleshooting, see the SimpleOpenTelemetry [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
+For configuration reference, example configs/snippets, localdev and cloud example apps, and troubleshooting, see the SimpleOpenTelemetry [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components (eg exporters, instrumentation, metrics..) published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/otel-component-versions.md).
 
-⚠️ **Ensure you install these versions of component packages.** ⚠️
+⚠️ **It is recommended you install these versions of component packages that have been tested with SimpleOpenTelemetry.** ⚠️
 
 ## License
 

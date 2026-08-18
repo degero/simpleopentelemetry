@@ -13,29 +13,14 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | Stability   | Beta                                 |
 | Code Owners | [@degero](https://github.com/degero) |
 
+[![NuGet version badge](https://img.shields.io/nuget/v/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
+[![NuGet download count badge](https://img.shields.io/nuget/dt/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 [![CI](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/main.yml)
 [![codecov](https://codecov.io/gh/degero/simpleopentelemetry/graph/badge.svg?token=USK6CSKHSJ)](https://codecov.io/gh/degero/simpleopentelemetry)
 [![CodeQL](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/github-code-scanning/codeql)
 [![Lint](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml/badge.svg)](https://github.com/degero/SimpleOpenTelemetry/actions/workflows/lint.yml)
-[![NuGet version badge](https://img.shields.io/nuget/v/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
-[![NuGet download count badge](https://img.shields.io/nuget/dt/SimpleOpenTelemetry)](https://www.nuget.org/packages/SimpleOpenTelemetry)
 
 [CHANGELOG.md](./CHANGELOG.md)
-
-## Dependencies
-
-| Package                                                                                                                     | Version  | Notes                         |
-| --------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------- |
-| [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry)                                                               | `1.16.0` | Core SDK                      |
-| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting)                         | `1.16.0` | IHostBuilder / DI integration |
-| [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter                 |
-
-These versions are **PINNED** if your project already references these packages at a different version, NuGet restore will fail (`NU1608`/`NU1107`) or emit a version-conflict warning as . To resolve this, either:
-
-- Remove your direct `PackageReference` entries for these three packages and let `SimpleOpenTelemetry` supply them, or
-- Downgrade/align your direct references to match the pinned versions.
-
-NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
 
 ## Compatibility
 
@@ -69,19 +54,36 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 - Complex types or Action<>/Func<>/etc on properties of component options (eg Instrumentation, exporters etc) are not supported which may limit your ability to control some telemetry (eg. AspNetCoreInstrumentation sending GET /health telemetry). These can components with complex options can still be set via code if needed.
 - Not all of [opentelemetry-dotnet-contrib](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) components are supported. You can use SimpleOpenTelemetry and add any via code or raise a PR / [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new) to have it added.
 
+## Quickstarts
+
+Run the aspnetcore example app in this repo [example-apps/localdev/README.md](./example-apps/localdev/README.md) or use the [Nuget package Quickstart guide](https://www.nuget.org/packages/SimpleOpenTelemetry#quickstart). Both result in a local aspnetcore mvc app using SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry.
+
+These can be used as a good starting point to test out building a config to your needs using the provided [snippets](/docs/configuration//snippets/README.md) or [examples](docs/configuration/examples/). For apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
+
+## Documentation
+
+Documentation for setting up SimpleOpenTelemetry and other examples can be found in [docs/README.md](./docs/README.md)
+
+## Dependencies
+
+| Package                                                                                                                     | Version  | Notes                         |
+| --------------------------------------------------------------------------------------------------------------------------- | -------- | ----------------------------- |
+| [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry)                                                               | `1.16.0` | Core SDK                      |
+| [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting)                         | `1.16.0` | IHostBuilder / DI integration |
+| [OpenTelemetry.Exporter.OpenTelemetryProtocol](https://www.nuget.org/packages/OpenTelemetry.Exporter.OpenTelemetryProtocol) | `1.16.0` | OTLP exporter                 |
+
+These versions are **PINNED** if your project already references these packages at a different version, NuGet restore will fail (`NU1608`/`NU1107`) or emit a version-conflict warning as . To resolve this, either:
+
+- Remove your direct `PackageReference` entries for these three packages and let `SimpleOpenTelemetry` supply them, or
+- Downgrade/align your direct references to match the pinned versions.
+
+NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
+
 ## Supported OpenTelemetry components
 
 OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](./docs/otel-component-versions.md).
 
-⚠️ **Ensure you install these versions of component packages.** ⚠️
-
-## Quickstarts
-
-Run the aspnetcore example app in [example-apps/localdev/README.md](./example-apps/localdev/README.md) or [Nuget package Quickstart guide](src/SimpleOpenTelemetry/README.nuget.md#quickstart) for local SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry. This can be used as a good starting point to test out building a config to your needs or for apps setup ready to deploy to the cloud use [example-apps/cloud/](./example-apps/cloud/)
-
-## Documentation
-
-Documentation for setting up SimpleOpenTelemetry can be found in [docs/README.md](./docs/README.md)
+⚠️ **It is recommended you install these versions of component packages that have been tested with SimpleOpenTelemetry.** ⚠️
 
 ## License
 

@@ -1,6 +1,6 @@
 # Samplers Configuration
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../otel-component-versions.md) of packages referenced below.** ⚠️
 
 <br/>
 

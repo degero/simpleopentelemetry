@@ -24,7 +24,7 @@ If using the AWS legacy metrics export from the collector, you will need to quer
 
 ## Required package install commands
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
 
 <br/>
 

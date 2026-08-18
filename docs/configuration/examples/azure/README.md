@@ -8,7 +8,7 @@ If running with RBAC locally (the default of these configs) you will need to ass
 
 ## Packages
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
 
 ### Required for all
 

@@ -6,7 +6,7 @@ SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotn
 
 ### Quickstart
 
-See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quickstart). This includes a local Grafana to view telemetry.
+See the [Nuget package Quickstart guide](https://www.nuget.org/packages/SimpleOpenTelemetry#quickstart) to setup in a local aspnetcore mvc app using SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry.
 
 ### With an example app
 
@@ -60,7 +60,7 @@ You can use one of the [localdev example applications](../example-apps/localdev/
 
 - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
-- Read the next sections or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
+- Read the next sections for configuration guidance and snippets or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
 
 ## How SimpleOpenTelemetry initialises OpenTelemetry
 
@@ -80,7 +80,7 @@ See [configuration/README.md](./configuration/README.md) for full details of eac
 
 ## Consuming App Telemetry
 
-There are many destinations you can export your telemetry to. The [example-apps/cloud](../example-apps/cloud/) and [configuration//examples/](./configuration/examples/) cover cloud environments and 3rd party services. The [example-apps/localdev/](../example-apps/localdev/) show using local Grafana and Jaeger.
+There are many destinations you can export your telemetry to. The [example-apps/cloud](../example-apps/cloud/) and [configuration//examples/](./configuration/examples/) cover cloud environments and 3rd party services. The [example-apps/localdev/](../example-apps/localdev/) show using local Grafana LGTM and Jaeger.
 
 ## Instrumenting your apps
 
