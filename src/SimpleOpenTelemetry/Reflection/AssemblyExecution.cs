@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -185,7 +186,7 @@ internal class AssemblyExecution : IAssemblyExecution
         var options = Activator.CreateInstance(optionsType)!;
         section.Bind(options);
 
-        CreateDefaultInstanceOfComplexObjectProperty(options, section);
+        CreateKnownInstanceForConfigurationProperty(options, section);
 
         var param = Expression.Parameter(optionsType, "opts");
         var source = Expression.Constant(options, optionsType);
@@ -203,7 +204,7 @@ internal class AssemblyExecution : IAssemblyExecution
             .Compile();
     }
 
-    public void CreateDefaultInstanceOfComplexObjectProperty(object config, IConfiguration section)
+    public void CreateKnownInstanceForConfigurationProperty(object config, IConfiguration section)
     {
         Type type = config.GetType();
 
@@ -216,34 +217,53 @@ internal class AssemblyExecution : IAssemblyExecution
 
             Type propType = prop.PropertyType;
 
-            if (IsComplexType(propType) && !string.IsNullOrWhiteSpace(child.Value))
+            // Nothing to do if the property isn't complex, or config didn't
+            // explicitly request an instance for it. No fallback, no default.
+            if (!IsComplexType(propType) || string.IsNullOrWhiteSpace(child.Value))
             {
-                try
-                {
-                    Type? instanceType = Type.GetType(child.Value, throwOnError: false, ignoreCase: true);
-                    if (instanceType is null)
-                    {
-                        string fullTypeName = child.Value!.Trim();
-                        int lastDot = fullTypeName.LastIndexOf('.');
-                        string assemblyName = fullTypeName.Substring(0, lastDot);
-                        string typeName = fullTypeName; // GetType needs the full name including namespace
+                continue;
+            }
 
-                        var assembly = GetAssembly(assemblyName);
-                        instanceType = assembly!.GetType(typeName);
-                    }
-                    object? nestedInstance = Activator.CreateInstance(instanceType!,
-                        BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
-                        null,
-                        Array.Empty<object>(),
-                        null);
-                    if (nestedInstance is null)
-                        throw new Exception("nestedInstance is null");
-                    prop.SetValue(config, nestedInstance);
-                }
-                catch (Exception ex)
+            try
+            {
+                // Guard: child.Value must exactly match a known, allow-listed
+                // entry. Anything else is rejected outright.
+                if (!ComponentOptionsTypes.SupportedTypes.TryGetValue(child.Value ?? "", out var match))
                 {
-                    EventSource.Log.ErrorEvent($"Failed to create default instance of Configuration Action Property {child.Value} for Configuration '{type.Name}'", ex.Message);
+                    EventSource.Log.ErrorEvent(
+                        $"'{child.Value}' is not a recognized instance for property '{prop.Name}' on '{type.Name}'.",
+                        string.Empty);
+                    continue;
                 }
+
+                var descriptor = new AssemblyDescriptor(match.AssemblyName, match.TypeName);
+                var assembly = GetAssembly(descriptor.AssemblyName);
+                Type? instanceType = assembly?.GetType(match.TypeName);
+
+                if (instanceType is null)
+                {
+                    EventSource.Log.ErrorEvent(
+                        $"Could not resolve type '{match.TypeName}' from assembly '{match.AssemblyName}'.",
+                        string.Empty);
+                    continue;
+                }
+
+                object? nestedInstance = Activator.CreateInstance(instanceType,
+                    BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
+                    null,
+                    Array.Empty<object>(),
+                    null);
+
+                if (nestedInstance is null)
+                    throw new Exception("nestedInstance is null");
+
+                prop.SetValue(config, nestedInstance);
+            }
+            catch (Exception ex)
+            {
+                EventSource.Log.ErrorEvent(
+                    $"Failed to create instance for property '{prop.Name}' on Configuration '{type.Name}'.",
+                    ex.Message);
             }
         }
     }
