@@ -16,7 +16,7 @@ Available samplers are:
 
 ## AWS X-Ray Remote Sampler (Unsupported)
 
-Stability: Alpha (as of July 2026)
+Package Stability: Alpha (as of July 2026)
 
 Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. See [example-apps/cloud/aws/ecs](../../example-apps/cloud/aws/ecs/README.md#x-ray-remote-sampling) for using this via code.
 

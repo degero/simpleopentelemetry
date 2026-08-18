@@ -38,7 +38,7 @@ If you wish to disable this, explicitly set SimpleOpenTelemetry:Trace:Propagator
 
 ## AWS X-Ray Id Propagator
 
-Stability: Stable
+Package Stability: Stable
 
 Documentation: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
 
