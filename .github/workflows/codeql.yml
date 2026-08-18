@@ -50,7 +50,9 @@ jobs:
         languages: ${{ matrix.language }}
         queries: security-extended
         build-mode: ${{ matrix.build-mode }}
-        paths: ${{ matrix.language == 'csharp' && 'src' || '.github/workflows' }}
+        config: |
+          paths:
+            - ${{ matrix.language == 'csharp' && 'src' || '.github/workflows' }}
     
     # Manual build — mirrors your real CI build exactly, so CodeQL sees
     # what actually compiles rather than guessing via autobuild.
