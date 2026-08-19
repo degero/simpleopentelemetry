@@ -21,24 +21,14 @@
       "EnableTraceBasedLogsSampler": "false"
     },
     "Metric": {
-      "Instrumentations": [
-        "AspNetCore"
-      ],
-      "CustomMeters": [
-        "System.Net.NameResolution"
-      ]
+      "CustomMeters": ["System.Net.NameResolution"]
     },
     "Trace": {
-      "Instrumentations": [
-        "AspNetCore",
-        "EFCore"
-      ],
+      "Instrumentations": ["EFCore"],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [
-        "yourappnamespace.*"
-      ]
+      "Sources": ["yourappnamespace.*"]
     }
   }
 }
