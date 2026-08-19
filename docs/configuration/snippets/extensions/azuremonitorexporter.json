@@ -1,10 +1,11 @@
 {
   "SimpleOpenTelemetry": {
     "BuilderExtensions": [
-      { 
+      {
         "Type": "AzureMonitorExporter",
         "Options": {
           "Credential": "Azure.Identity.DefaultAzureCredential",
+          "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
           "SamplingRatio": "1.0",
           "TracesPerSecond": "5.0",
           "Version": "v2_1",

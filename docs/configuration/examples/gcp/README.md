@@ -4,11 +4,11 @@ This folder contains Google Cloud Platform focused appsettings examples for Simp
 
 ## Included files
 
-- `aspnetcore-cloudrun-collectorsidecar.json`: Base appsettings for ASP.NET Core apps that send telemetry via a 'Google Built' Google distro for OpenTelemetry collector sidecar. See the [example app README](../../example-apps/cloud/gcp/cloudrun/README.md) for how to use this config in Google and confiugre the sidecar.
+- `aspnetcore-cloudrun-collectorsidecar.json`: Base appsettings for ASP.NET Core apps that send telemetry via a 'Google Built' Google distro for OpenTelemetry collector sidecar.
 
 ## How to use
 
-See the [full working example](../../example-apps/cloud/gcp/cloudrun/) with application, permissions, collector config (including for local docker use) and infrastructure. This also covers google observability constraints and quirks from a normal standards.
+See the [example app README](../../../../example-apps/cloud/gcp/cloudrun/README.md) for how to use this config in Google and configure the sidecar. This includes application, permissions, collector config (including for local docker use) and infrastructure. This also covers google observability constraints and quirks from a normal standards. There is configuration, quirks and production use tips in this example apps [otel-collector-config/README.md](../../../../example-apps/cloud/gcp/cloudrun/otel-collector-config/README.md)
 
 OR
 
@@ -24,7 +24,7 @@ with an existing / new aspnetcore app:
 
 ## Required package install commands
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
 
 <br/>
 

@@ -13,7 +13,7 @@ For EU users use `otlp.eu01.nr-data.net:4317` rather than the endpoint given in 
 
 ## How to use
 
-With the [example-apps/localdev/aspnetcore/](../../example-apps/localdev/aspnetcore/) app:
+With the [example-apps/localdev/aspnetcore/](../../../../example-apps/localdev/aspnetcore/) app:
 
 1. Copy the contents (except for OTEL_SERVICE_NAME, OTEL_RESOURCE_ATTRIBUTES) of `aspnetcore-newrelic-directexport.json` file into the example app `appsettings.Development.json`
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
@@ -33,13 +33,13 @@ With an existing / new aspnetcore app:
 1. Copy content from the one of the config files into your app as `appsettings.Development.json` or `appsettings.Production.json`.
 1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, namespace, version, environment etc.
 1. Ensure the required packages below are installed in your app.
-1. look at the [component-snippets](../component-snippets/) to add any other instrumentations, resource detectors etc for your hosted env and add their relevant packages
+1. look at the [component-snippets](../../snippets/) to add any other instrumentations, resource detectors etc for your hosted env and add their relevant packages
 1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
 1. Run the app and verify telemetry on the NewRelic website
 
 ## Required package install commands
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
 
 <br/>
 
@@ -64,7 +64,7 @@ https://github.com/newrelic/newrelic-opentelemetry-examples/tree/main/other-exam
 
 ## Checking telemetry on NewRelic
 
-Viewing traces and logs are straightfoward on the site however here are some sample dashboard queries for
+Viewing traces and logs are straightforward on the site however here are some sample dashboard queries for
 the sample apps httpclient / aspnetcore metrics
 
 httpclient:
