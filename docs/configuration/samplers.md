@@ -1,18 +1,24 @@
 # Samplers Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
-Set Trace samplers in the configuration `SimpleOpenTelemetry:Trace:Sampler` string field.
+Set a trace sampler in the configuration string field:
 
-The below allow vendor sampler configuration as an alternative to OpenTelemetry's [built-in samplers](https://OpenTelemetry.io/docs/specs/otel/trace/sdk/#built-in-samplers). Builtin samplers can be set in OTEL_TRACES_SAMPLER of the root json configuration or env var. Some requires values in OTEL_TRACES_SAMPLER_ARG. The sampler defaults to 'parentbased_always_on'.
+```json
+ "SimpleOpenTelemetry": {
+    "Sampler": ""
+ }
+```
 
-For a list of supported samplers see [SamplerEnum](../../src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerEnum.cs)
+The below allow vendor sampler configuration as an alternative to OpenTelemetry's [built-in samplers](https://OpenTelemetry.io/docs/specs/otel/trace/sdk/#built-in-samplers). Builtin samplers can only be set in `OTEL_TRACES_SAMPLER` of the root json configuration or env var. Some require values in `OTEL_TRACES_SAMPLER_ARG` setting. The sampler used in SimpleOpenTelemetry defaults to `'parentbased_always_on'` from OpenTelemetry's default.
 
-For Azure users, sampling is built into the exporter setup/options.
+For a list of supported to set in `SimpleOpenTelemetry:Sampler` see [SamplerEnum](../../src/SimpleOpenTelemetry/OtelComponents/Sampler/SamplerEnum.cs)
 
 Available samplers are:
+
+- [AWS Xray Remote Sampler (Unsupported)](#aws-x-ray-remote-sampler-unsupported)
 
 ## AWS X-Ray Remote Sampler (Unsupported)
 

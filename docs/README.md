@@ -33,32 +33,32 @@ You can use one of the [localdev example applications](../example-apps/localdev/
   }
   ```
 
-- Add bootstrapping code:
-- For Generic Host apps like aspnetcore (or any apps like console using WebApplicationBuilder/HostApplicationBuilder):
-  - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
+- Add bootstrapping code
+  - For Generic Host apps like aspnetcore (or any apps like console using WebApplicationBuilder/HostApplicationBuilder):
+    - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
 
-  - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry. This may be best to do if console / std logging is enabled on a cloud hosting platform.
+    - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry. This may be best to do if console / std logging is enabled on a cloud hosting platform.
 
-  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
+    - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
 
-- For Standalone apps (no Generic host):
-  - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and
+  - For Standalone apps (no Generic host):
+    - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and
 
-  ```csharp
-  using var loggerFactory = LoggerFactory.Create(builder =>
-  {
-      builder.AddOpenTelemetry();
-      // You may want to set log levels using builder.AddConfiguration()
-  });
+    ```csharp
+    using var loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder.AddOpenTelemetry();
+        // You may want to set log levels using builder.AddConfiguration()
+    });
 
-  var sdk = SimpleOpenTelemetryBootstrap.Add(config);
+    var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
-  // on shutdown to push telemetry before closing - you can also access this via Bootstrap.Sdk
-  sdk.Dispose();
+    // on shutdown to push telemetry before closing - you can also access this via Bootstrap.Sdk
+    sdk.Dispose();
 
-  ```
+    ```
 
-- Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
+  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
 - Read the next sections for configuration guidance and snippets or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
 
