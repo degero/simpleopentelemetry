@@ -1,4 +1,4 @@
-name: Release please
+name: release-please
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
