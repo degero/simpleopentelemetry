@@ -1,6 +1,6 @@
 # Extensions Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
@@ -34,7 +34,7 @@ Available extensions are:
 **Options**: required (connection string at miniumum), [snippets/extensions/azuremonitorexporter.json](./snippets/extensions/azuremonitorexporter.json) and
 [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)
 
-Notes: This is the same underlying exporter as [Azure Monitor exporter](exporters.md#azure-monitor-exporter) with one crucial difference: supporting Live Metrics (on by default, only configurable using this extension). Live metrics will only work with a Generic host application and will not work with SimpleOpenTelemetryBootstrap.Add(). It also simplifies your config if you want exports for all signals with all the same settings. For the full features set look at distro [Azure Montor AspNetCore](distros.md#azure-monitor-aspnetcore)
+**Notes**: This is the same underlying exporter as [Azure Monitor exporter](exporters.md#azure-monitor-exporter) with one crucial difference: supporting Live Metrics (on by default, only configurable using this extension). Live metrics will only work with a Generic host application and will not work with SimpleOpenTelemetryBootstrap.Add(). It also simplifies your config if you want exports for all signals with all the same settings. For the full features set look at distro [Azure Montor AspNetCore](distros.md#azure-monitor-aspnetcore)
 
 **Nuget Package**:
 `dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version x.x.x`
@@ -55,7 +55,7 @@ SimpleOpenTelemetry:BuilderExtensions[] json:
 
 **Options**: none
 
-Notes: This is commonly used with the AWS Xray Propagator as mentioned in README.md above.
+**Notes**: This is commonly used with the AWS Xray Propagator as mentioned in README.md above.
 
 **Nuget Package**:
 `dotnet add package OpenTelemetry.Extensions.AWS  --version x.x.x`

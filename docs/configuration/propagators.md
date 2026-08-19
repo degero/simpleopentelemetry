@@ -1,6 +1,6 @@
 # Propagators Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 

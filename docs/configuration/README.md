@@ -120,9 +120,9 @@ For a json configuration file, you can start with a full pre-built configuration
 
 ---
 
-## Telemetry signal settings
+## Enabling telemetry signal collection
 
-OpenTelemetry signal handling is enabled via setting `SimpleOpenTelemetry:[Metrics/Tracing/Logging]` as `{}`, this will register OpenTelemetry's WithMetrics()/WithTracing()/WithLogging(). Omitting any of these will not register the collection / exporting or that signals telemetry. As en example, if your cloud provider is already collecting all the metrics you need you may opt to not collect them here.
+OpenTelemetry signal collection is enabled via setting `SimpleOpenTelemetry:[Metrics/Tracing/Logging]` as `{}`, this will register OpenTelemetry's WithMetrics()/WithTracing()/WithLogging(). Omitting any of these will not register the collection / exporting or that signals telemetry. As en example, if your cloud provider is already collecting all the metrics you need you may opt to not collect them here.
 
 Normally you will want to add other components for each signal, most importantly an exporter like OTLP. These are covered in the [configuration-component-details](#configuration-component-details)
 
@@ -132,7 +132,7 @@ Below covers information about each signal collection settings and documentation
 
 Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this logging provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [localdev example appss](../../example-apps/localdev/).
 
-## Settings
+### Settings
 
 The following are supported to switch on OpenTelemetry dotnet SDK settings via `SimpleOpenTelemetry:Log:Settings`:
 
@@ -146,7 +146,7 @@ The following are supported to switch on OpenTelemetry dotnet SDK settings via `
 
 ## Metrics
 
-## Settings
+### Settings
 
 The following are supported to switch on OpenTelemetry dotnet SDK settings via `SimpleOpenTelemetry:Metric:Settings`:
 
@@ -154,7 +154,7 @@ The following are supported to switch on OpenTelemetry dotnet SDK settings via `
 
 OpenTelemetry Documentation: [opentelemetry.io metrics best practices](https://opentelemetry.io/docs/languages/dotnet/metrics/best-practices)
 
-## CustomMeters
+### CustomMeters
 
 Set via `SimpleOpenTelemetry:Metric:CustomMeters`, it is possible to consume other meters not setup by `SimpleOpenTelemetry:Metric:Instrumentation` components. Eg a custom metric you output from your app see [Instrumenting your apps](../README.md#metrics)
 
@@ -164,7 +164,7 @@ Set via `SimpleOpenTelemetry:Metric:CustomMeters`, it is possible to consume oth
 
 Tracing in OpenTelemetry dotnet sdk defaults to `parentbased_always_on` meaning 100% of traces are emitted. For production environments, a sampling strategy should be in place either at the app side, collector side or both.
 
-## Settings
+### Settings
 
 The following are supported to switch on OpenTelemetry dotnet SDK settings via `SimpleOpenTelemetry:Trace:Settings`:
 
@@ -172,7 +172,7 @@ The following are supported to switch on OpenTelemetry dotnet SDK settings via `
 
 OpenTelemetry Documentation: [opentelemetry.io traces reporting exceptions](https://opentelemetry.io/docs/languages/dotnet/traces/reporting-exceptions/)
 
-## Sources
+### Sources
 
 Set via `SimpleOpenTelemetry:Trace:Sources`, this sets up listening to other traces not listened to by the ``SimpleOpenTelemetry:Trace:Instrumentation` components. Eg. your app custom traces. See [Instrumenting your apps](../README.md#distributed-tracing) and the [aspnetcore example app](../../example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for an example custom trace.
 
@@ -180,7 +180,7 @@ Set via `SimpleOpenTelemetry:Trace:Sources`, this sets up listening to other tra
 
 ## Configuration component details
 
-The next sections cover setting up the subsections of your "SimpleOpenTelemetry" config and details config information for components supported and snippets where options are available.
+The next sections cover setting up the subsections of your "SimpleOpenTelemetry" config to enable components, with nuget package to add and snippets / samples:
 
 - [Distros](./distros.md)
 - [Instrumentation](./instrumentations.md)

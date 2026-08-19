@@ -1,10 +1,10 @@
 # Distribution Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
-Set a Distribution in the and it's options in the configuration:
+Set a Distribution and it's options in the configuration:
 
 ```json
  "SimpleOpenTelemetry": {
@@ -45,7 +45,7 @@ SimpleOpenTelemetry:Distro json:
 "AzureMonitorAspNetCore"
 ```
 
-This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry.
+This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics, sampling and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry save for custom meters or trace sources.
 
 **Options**: required, (ConnectionString at minimum) see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json) and [AzureMonitorOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/src/AzureMonitorOptions.cs). For a full configuration file see [examples/azure/aspnetcore-azureotel-distro-rbac.json](./examples/azure/aspnetcore-azureotel-distro-rbac.json)
 

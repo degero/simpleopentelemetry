@@ -1,6 +1,6 @@
 # Resource Detectors Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
@@ -15,7 +15,7 @@ Set Resource detectors in the configuration:
  }
 ```
 
-Detectors specifieid will process in the array order, multiple are supported.
+Detectors specified will process in the array order, multiple are supported.
 
 ⚠️ _Detectors may override the resource attributes set by a preceding detector eg 'service.name' so it is recommended to read their documentation before adding. Some cloud platforms also have 'reserved' attributes injected such as AWS._ ⚠️
 
@@ -44,7 +44,7 @@ Available resource detectors are:
 
 **Package Stability**:: Stable
 
-Notes: Examines the 'built' assembly version that may be set in a CICD pipeline and in msbuild and assigns this to service.version resource attribute. Avoids the need to explicitly set service.version in config. eg set a dotnet build / publish parameter V-p:Version=<<MyVersion>>. This detector can be overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env vars.
+**Notes**: Examines the 'built' assembly version that may be set in a CICD pipeline and in msbuild and assigns this to service.version resource attribute. Avoids the need to explicitly set service.version in config. eg set a dotnet build / publish parameter V-p:Version=<<MyVersion>>. This detector can be overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env vars.
 
 **Nuget Package**: not needed (built into SimpleOpenTelemetry)
 

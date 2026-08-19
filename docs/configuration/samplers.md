@@ -1,6 +1,6 @@
 # Samplers Configuration
 
-**IMPORTANT**: ⚠️ **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
@@ -22,13 +22,13 @@ Available samplers are:
 
 ## AWS X-Ray Remote Sampler (Unsupported)
 
-Package Stability: Alpha (as of July 2026)
+**Package Stability**: Alpha (as of July 2026)
 
-Notes: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. See [example-apps/cloud/aws/ecs](../../example-apps/cloud/aws/ecs/README.md#x-ray-remote-sampling) for using this via code.
+**Notes**: Currently unsupported due to irregular registration pattern requiring prebuilt opentelemetry resource. See [example-apps/cloud/aws/ecs](../../example-apps/cloud/aws/ecs/README.md#x-ray-remote-sampling) for using this via code.
 
-Documentation: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
+**Documentation**: [AWS X-Ray Remote Sampler](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Sampler.AWS --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Sampler json:
