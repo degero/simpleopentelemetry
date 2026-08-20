@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using SimpleOpenTelemetry.OtelComponents.Common;
 using System.Linq.Expressions;
 using System.Reflection;
 using EventSource = SimpleOpenTelemetry.Diagnostics.SimpleOpenTelemetryEventSource;
@@ -56,16 +57,9 @@ internal class AssemblyExecution : IAssemblyExecution
         if (existing != null)
             return existing;
 
-        // Try to load from base directory (i.e. user has the package installed)
-        var path = Path.Combine(AppContext.BaseDirectory, $"{assemblyName}.dll");
-        if (!File.Exists(path))
-        {
-            return null;
-        }
-
         try
         {
-            var loaded = Assembly.LoadFrom(path);
+            var loaded = Assembly.Load(assemblyName);
             return loaded;
         }
         catch (Exception ex)
@@ -110,7 +104,7 @@ internal class AssemblyExecution : IAssemblyExecution
     /// <summary>
     /// Invokes a parameterless public static method on the specified type with a builder argument.
     /// </summary>
-    /// <param name="methodInfo">MethodInfo object found from FindParamtereless.</param>
+    /// <param name="methodInfo">MethodInfo object found from FindParameterless.</param>
     /// <param name="builder">The builder instance to pass as argument.</param>
     /// <returns>The method's return value.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the method is not found.</exception>
@@ -192,7 +186,7 @@ internal class AssemblyExecution : IAssemblyExecution
         var options = Activator.CreateInstance(optionsType)!;
         section.Bind(options);
 
-        CreateDefaultInstanceOfComplexObjectProperty(options, section);
+        CreateKnownInstanceForConfigurationProperty(options, section);
 
         var param = Expression.Parameter(optionsType, "opts");
         var source = Expression.Constant(options, optionsType);
@@ -210,7 +204,12 @@ internal class AssemblyExecution : IAssemblyExecution
             .Compile();
     }
 
-    public void CreateDefaultInstanceOfComplexObjectProperty(object config, IConfiguration section)
+    /// <summary>
+    /// Create a complex type instance (if in the ComponentOptionsTypes.SupportedTypes) for options properties
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="section"></param>
+    public void CreateKnownInstanceForConfigurationProperty(object config, IConfiguration section)
     {
         Type type = config.GetType();
 
@@ -223,34 +222,53 @@ internal class AssemblyExecution : IAssemblyExecution
 
             Type propType = prop.PropertyType;
 
-            if (IsComplexType(propType) && !string.IsNullOrWhiteSpace(child.Value))
+            // Nothing to do if the property isn't complex, or config didn't
+            // explicitly request an instance for it. No fallback, no default.
+            if (!IsComplexType(propType) || string.IsNullOrWhiteSpace(child.Value))
             {
-                try
-                {
-                    Type? instanceType = Type.GetType(child.Value, throwOnError: false, ignoreCase: true);
-                    if (instanceType is null)
-                    {
-                        string fullTypeName = child.Value!.Trim();
-                        int lastDot = fullTypeName.LastIndexOf('.');
-                        string assemblyName = fullTypeName.Substring(0, lastDot);
-                        string typeName = fullTypeName; // GetType needs the full name including namespace
+                continue;
+            }
 
-                        var assembly = GetAssembly(assemblyName);
-                        instanceType = assembly!.GetType(typeName);
-                    }
-                    object? nestedInstance = Activator.CreateInstance(instanceType!,
-                        BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
-                        null,
-                        Array.Empty<object>(),
-                        null);
-                    if (nestedInstance is null)
-                        throw new Exception("nestedInstance is null");
-                    prop.SetValue(config, nestedInstance);
-                }
-                catch (Exception ex)
+            try
+            {
+                // Guard: child.Value must exactly match a known, allow-listed
+                // entry. Anything else is rejected outright.
+                if (!ComponentOptionsTypes.SupportedTypes.TryGetValue(child.Value ?? "", out var match))
                 {
-                    EventSource.Log.ErrorEvent($"Failed to create default instance of Configuration Action Property {child.Value} for Configuration '{type.Name}'", ex.Message);
+                    EventSource.Log.ErrorEvent(
+                        $"'{child.Value}' is not a supported ComponentOptionsType for property '{prop.Name}' on '{type.Name}'.",
+                        string.Empty);
+                    continue;
                 }
+
+                var descriptor = new AssemblyDescriptor(match.AssemblyName, match.TypeName);
+                var assembly = GetAssembly(descriptor.AssemblyName);
+                Type? instanceType = assembly?.GetType(match.TypeName);
+
+                if (instanceType is null)
+                {
+                    EventSource.Log.ErrorEvent(
+                        $"Could not resolve type '{match.TypeName}' from assembly '{match.AssemblyName}'.",
+                        string.Empty);
+                    continue;
+                }
+
+                object? nestedInstance = Activator.CreateInstance(instanceType,
+                    BindingFlags.CreateInstance | BindingFlags.Public | BindingFlags.Instance | BindingFlags.OptionalParamBinding,
+                    null,
+                    Array.Empty<object>(),
+                    null);
+
+                if (nestedInstance is null)
+                    throw new Exception("nestedInstance is null");
+
+                prop.SetValue(config, nestedInstance);
+            }
+            catch (Exception ex)
+            {
+                EventSource.Log.ErrorEvent(
+                    $"Failed to create instance for property '{prop.Name}' on Configuration '{type.Name}'.",
+                    ex.Message);
             }
         }
     }
