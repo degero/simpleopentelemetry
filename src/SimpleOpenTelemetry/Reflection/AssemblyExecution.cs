@@ -204,6 +204,11 @@ internal class AssemblyExecution : IAssemblyExecution
             .Compile();
     }
 
+    /// <summary>
+    /// Create a complex type instance (if in the ComponentOptionsTypes.SupportedTypes) for options properties
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="section"></param>
     public void CreateKnownInstanceForConfigurationProperty(object config, IConfiguration section)
     {
         Type type = config.GetType();
@@ -231,7 +236,7 @@ internal class AssemblyExecution : IAssemblyExecution
                 if (!ComponentOptionsTypes.SupportedTypes.TryGetValue(child.Value ?? "", out var match))
                 {
                     EventSource.Log.ErrorEvent(
-                        $"'{child.Value}' is not a recognized instance for property '{prop.Name}' on '{type.Name}'.",
+                        $"'{child.Value}' is not a supported ComponentOptionsType for property '{prop.Name}' on '{type.Name}'.",
                         string.Empty);
                     continue;
                 }
