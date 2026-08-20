@@ -18,6 +18,8 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -41,7 +43,7 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         if: inputs.upload-coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
         with:
           fail_ci_if_error: true
           files: ./coverage/**/coverage.cobertura.xml
@@ -49,7 +51,7 @@ jobs:
 
       - name: Upload test results to Codecov
         if: inputs.upload-coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5
         with:
           fail_ci_if_error: true
           report_type: test_results
