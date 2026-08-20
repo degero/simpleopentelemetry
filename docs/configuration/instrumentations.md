@@ -1,30 +1,57 @@
 # Instrumentation Configuration
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
-Set instrumentations in the the configuration `SimpleOpenTelemetry:[Metrics/Tracing]:Instrumentations[]` json arrays.
+Set metrics and trace instrumentations in the the configuration:
 
-Options for instrumentations can be placed in `SimpleOpenTelemetry:[Metrics/Tracing]:InstrumentationConfig:<Type>:<OptionsField>`
+```json
+ "SimpleOpenTelemetry": {
+    "Trace": {
+      "Instrumentations": [],
+      "InstrumentationConfig": {},
+    },
+    "Metric": {
+      "Instrumentations": [],
+      "InstrumentationConfig": {}
+    }
+ }
+```
+
+Options for instrumentations can be placed in `SimpleOpenTelemetry:[Metric/Trace]:InstrumentationConfig:<Type>:<OptionsField>`
 
 eg `SimpleOpenTelemetry:Trace:InstrumentationConfig:AWS:SuppressDownstreamInstrumentation = "true"`
 
 ⚠️ _Complex types or Func<>/Action<>/etc aren't supported on Options fields. It will NOT be possible to use filters to prevent instrumentation of specific scenarios for AspNetCore, HttpClient, SqlClient etc eg (GET /health). You can either add+configure the instrumentation manually in code after AddSimpleOpenTelemetry() or if using an otel collector use a filter there (this generates more telemetry traffic/processing load)._ ⚠️
 
+For a list of supported instrumentations see [MetricsInstrumentationEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/MetricsInstrumentationEnum.cs) and [TracingInstrumentationEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/TracingInstrumentationEnum.cs)
+
 Available instrumentations are:
+
+- [AspNetCore](#aspnetcore)
+- [AWS](#aws)
+- [AWSLambda](#aws-lambda)
+- [EFCore](#entity-framework-core)
+- [HttpClient](#httpclient)
+- [Process](#process)
+- [Runtime](#runtime)
+- [SqlClient](#sql-client)
+- [WCF](#wcf)
+
+<br/>
 
 ## AspNetCore
 
-Documentation: [ASP.NET Core Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/README.md)
+**Documentation**: [ASP.NET Core Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: trace, metric
+**Signals supported**: trace, metric
 
-Options: [AspNetCoreTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/AspNetCoreTraceInstrumentationOptions.cs)
+**Options**: trace only, unsupported, [AspNetCoreTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/AspNetCoreTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -34,15 +61,15 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 ## HTTPClient
 
-Documentation: [HttpClient and HttpWebRequest instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/README.md)
+**Documentation**: [HttpClient and HttpWebRequest instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: trace, metric
+**Signals supported**: trace, metric
 
-Options: unsupported [HttpClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/HttpClientTraceInstrumentationOptions.cs)
+**Options**: trace only, unsupported, [HttpClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/HttpClientTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -52,15 +79,15 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 ## AWS
 
-Documentation: [AWS SDK client instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/README.md)
+**Documentation**: [AWS SDK client instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: trace, metric
+**Signals supported**: trace, metric
 
-Options: [AWSClientInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/AWSClientInstrumentationOptions.cs)
+**Options**: metric only, optional, see [snippets/instrumentations/aws.json](./snippets/instrumentations/aws.json) and [AWSClientInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/AWSClientInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWS --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.AWS --version x.x.x`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -68,19 +95,17 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 "AWS"
 ```
 
-For supported configurable options see [snippets/instrumentations/aws.json](./snippets/instrumentations/aws.json)
-
 ## AWS Lambda
 
-Documentation: [AWS OTel .NET SDK for Lambda](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/README.md)
+**Documentation**: [AWS OTel .NET SDK for Lambda](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: trace
+**Signals supported**: trace
 
-Options: [AWSLambdaInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/AWSLambdaInstrumentationOptions.cs)
+**Options**: optional, see [snippets/instrumentations/awslambda.json](./snippets/instrumentations/awslambda.json) and [AWSLambdaInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/AWSLambdaInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.AWSLambda --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.AWSLambda --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -88,19 +113,17 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 "AWSLambda"
 ```
 
-For supported configurable options see [snippets/instrumentations/awslambda.json](./snippets/instrumentations/awslambda.json)
-
 ## Sql Client
 
-Documentation: [SqlClient Instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/README.md)
+**Documentation**: [SqlClient Instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: trace, metric
+**Signals supported**: trace, metric
 
-Options: [SqlClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/SqlClientTraceInstrumentationOptions.cs)
+**Options**: trace only, unsupported, see [SqlClientTraceInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/SqlClientTraceInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.SqlClient --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.SqlClient --version x.x.x`
 
 SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
@@ -110,15 +133,15 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 ## Entity Framework Core
 
-Documentation: [EntityFrameworkCore Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/README.md)
+**Documentation**: [EntityFrameworkCore Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/README.md)
 
-Stability: Beta (as of July 2026)
+**Package Stability**:: Beta (as of July 2026)
 
-Signals: trace
+**Signals supported**: trace
 
-Options: unsupported [EntityFrameworkInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/EntityFrameworkInstrumentationOptions.cs)
+**Options**: unsupported, see [EntityFrameworkInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/EntityFrameworkInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -128,15 +151,15 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 ## WCF
 
-Documentation: [WCF Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/README.md)
+**Documentation**: [WCF Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/README.md)
 
-Stability: Beta (as of July 2026)
+**Package Stability**:: Beta (as of July 2026)
 
-Signals: trace
+**Signals supported**: trace
 
-Options: [WcfInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/WcfInstrumentationOptions.cs)
+**Options**: unsupported, see [WcfInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/WcfInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Wcf --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.Wcf --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
@@ -146,15 +169,15 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 ## Runtime
 
-Documentation: [Runtime Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/README.md)
+**Documentation**: [Runtime Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/README.md)
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Signals: metric
+**Signals supported**: metric
 
-Options: [RuntimeInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/RuntimeInstrumentationOptions.cs)
+**Options**: unsupported, see [RuntimeInstrumentationOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/RuntimeInstrumentationOptions.cs)
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Runtime --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.Runtime --version x.x.x`
 
 SimpleOpenTelemetry:Metric:Instrumentations[] json:
 
@@ -164,15 +187,15 @@ SimpleOpenTelemetry:Metric:Instrumentations[] json:
 
 ## Process
 
-Documentation: [Process Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Process/README.md)
+**Documentation**: [Process Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Process/README.md)
 
-Stability: Beta (as of July 2026)
+**Package Stability**:: Beta (as of July 2026)
 
-Signals: metric
+**Signals supported**: metric
 
-Options: none
+**Options**: none
 
-Nuget Package: `dotnet add package OpenTelemetry.Instrumentation.Process --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.Process --version x.x.x`
 
 SimpleOpenTelemetry:Metric:Instrumentations[] json:
 

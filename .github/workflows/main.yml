@@ -11,6 +11,8 @@ on:
 
 jobs:
   build-and-test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/build-and-test.yml
     with:
       upload-coverage: ${{ github.event_name == 'push' }}

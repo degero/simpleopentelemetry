@@ -1,22 +1,30 @@
 # Propagators Configuration
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
-Set trace propagators in the configuration `SimpleOpenTelemetry:Trace:Propagators[]` json array. Multiple propagators can be specified.
+Set trace propagators in the configuration string array (multiple can be specified):
 
-⚠️ _The OpenTelemetry env var OTEL_PROPAGATORS is not supported (as of July 2026) in the OpenTelemetry dotnet sdk implementation_ ⚠️
+```json
+ "SimpleOpenTelemetry": {
+    "Trace": {
+      "Propagators": []
+    }
+ }
+```
 
-**Nuget Packages**
+⚠️ _The OpenTelemetry spec env var OTEL_PROPAGATORS is not supported (as of July 2026) in OpenTelemetry dotnet_ ⚠️
 
-OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) so dont require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators --version x.x.x`
+**Available built-in OpenTelemetry Propagators**
 
-**Available Propagators in SimpleOpenTelemetry**
+OpenTelemetry has builtin default [SDK propagators](https://github.com/open-telemetry/OpenTelemetry-dotnet/tree/main/src/OpenTelemetry.Api/Context/Propagation) that can be set in the array and don't require adding a nupkg. To use the B3 propagator you will need to add the core sdk extensions nupkg: `dotnet add package OpenTelemetry.Extensions.Propagators --version x.x.x`
 
-For a full list of all the supported propagators see [PropagatorEnum](./src/SimpleOpenTelemetry/Propagator/PropagatorAssemblies.cs)
+**Available additional Propagators in SimpleOpenTelemetry**
 
-Available propagators are:
+For a list of supported propagators see [PropagatorEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Propagator/PropagatorEnum.cs)
+
+Available additional propagators are:
 
 ## Default
 
@@ -38,7 +46,7 @@ If you wish to disable this, explicitly set SimpleOpenTelemetry:Trace:Propagator
 
 ## AWS X-Ray Id Propagator
 
-Stability: Stable
+Package Stability: Stable
 
 Documentation: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
 

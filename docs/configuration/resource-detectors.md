@@ -1,24 +1,52 @@
 # Resource Detectors Configuration
 
-**IMPORTANT**: ⚠️ **Ensure you install [these versions](../otel-component-versions.md) of packages referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
 
 <br/>
 
-Set Resource detectors in the configuration `SimpleOpenTelemetry:Resource:Detectors[]` string array. These will process in the array order.
+Set Resource detectors in the configuration:
+
+```json
+ "SimpleOpenTelemetry": {
+    "Resource": {
+      "Detectors": [],
+      "DetectorConfig": {}
+    },
+ }
+```
+
+Detectors specified will process in the array order, multiple are supported.
 
 ⚠️ _Detectors may override the resource attributes set by a preceding detector eg 'service.name' so it is recommended to read their documentation before adding. Some cloud platforms also have 'reserved' attributes injected such as AWS._ ⚠️
 
-All the supported resource detectors are listed here [ResourceDetectorEnum](./src/SimpleOpenTelemetry/Resource/ResourceDetectorEnum.cs)
+Options for resource detectors can be placed in `SimpleOpenTelemetry:Resource:DetectorConfig:<Type>:<OptionsField>`
+
+eg `SimpleOpenTelemetry:Resource:DetectorConfig::AWS:SemanticConventionVersion = "V1_29_0"`
+
+⚠️ _Complex types or Func<>/Action<>/etc aren't supported on Options fields._ ⚠️
+
+For a list of supported resource detectors see [ResourceDetectorEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Resource/ResourceDetectorEnum.cs)
 
 Available resource detectors are:
 
+- [AssemblyVersion](#assemblyversion)
+- [AWS](#aws)
+- [Azure](#azure)
+- [Container](#container)
+- [EnvVar](#envvar)
+- [Google Cloud Platform](#google-cloud-platform)
+- [Host](#host)
+- [Operating System](#operating-system)
+- [Process](#process)
+- [Process Runtime](#process-runtime)
+
 ## AssemblyVersion
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Notes: Examines the 'built' assembly version that may be set in a CICD pipeline and in msbuild and assigns this to service.version resource attribute. Avoids the need to explicitly set service.version in config. eg set a dotnet build / publish parameter V-p:Version=<<MyVersion>>
+**Notes**: Examines the 'built' assembly version that may be set in a CICD pipeline and in msbuild and assigns this to service.version resource attribute. Avoids the need to explicitly set service.version in config. eg set a dotnet build / publish parameter V-p:Version=<<MyVersion>>. This detector can be overridden by setting 'service.version' in OTEL_RESOURCE_ATTRIBUTES of appsettings.json / env vars.
 
-Nuget Package: not needed (built into SimpleOpenTelemetry)
+**Nuget Package**: not needed (built into SimpleOpenTelemetry)
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
@@ -28,11 +56,11 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## Host
 
-Stability: Beta (as of july 2026)
+**Package Stability**:: Beta (as of july 2026)
 
-Documentation: [Resource Host Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Host/README.md)
+**Documentation**: [Resource Host Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Host/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.Host --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -43,11 +71,11 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## Container
 
-Stability: Beta (as of july 2026)
+**Package Stability**:: Beta (as of july 2026)
 
-Documentation: [Container Resource Detector README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Container/README.md)
+**Documentation**: [Container Resource Detector README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Container/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.Container --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -58,11 +86,11 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## Operating System
 
-Stability: Alpha (as of july 2026)
+**Package Stability**:: Alpha (as of july 2026)
 
-Documentation: [Operating System Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.OperatingSystem/README.md)
+**Documentation**: [Operating System Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.OperatingSystem/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.OperatingSystem --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -73,11 +101,11 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## Process
 
-Stability: Beta (as of july 2026)
+**Package Stability**:: Beta (as of july 2026)
 
-Documentation: [Process Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Process/README.md)
+**Documentation**: [Process Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Process/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.Process --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -88,11 +116,11 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## Process Runtime
 
-Stability: Beta (as of july 2026)
+**Package Stability**:: Beta (as of july 2026)
 
-Documentation: [Process Runtime Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.ProcessRuntime/README.md)
+**Documentation**: [Process Runtime Resource Detectors README.md](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.ProcessRuntime/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.ProcessRuntime --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -103,13 +131,13 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## AWS
 
-_AWS_
+**Package Stability**:: Stable
 
-Stability: Stable
+**Documentation**: [AWS Resource Detectors](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/README.md)
 
-Documentation: [AWS Resource Detectors](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/README.md)
+**Options**:: optional, see [AWSResourceBuilderOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.AWS/AWSResourceBuilderOptions.cs) and [snippets/resourcedetectors/aws.json](./snippets/resourcedetectors/aws.json)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.AWS --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -118,15 +146,13 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 "aws"
 ```
 
-For supported configurable options see [snippets/resourcedetectors/aws.json](./snippets/resourcedetectors/aws.json)
-
 ## Azure
 
-Stability: Beta (as of July 2026)
+**Package Stability**:: Beta (as of July 2026)
 
-Documentation: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
+**Documentation**: [Resource Detectors for Azure cloud environments](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Azure/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.Azure --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -135,7 +161,7 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 "azure"
 ```
 
-Notes:
+**Notes**:
 
 OTEL_SERVICENAME / service.name (and several OTEL_RESOURCE attributes), a core OTEL attribute will be overridden by the Azure's resource detector using the Azure resource's name and resource information. Information regarding which are set is in the above doco.
 
@@ -162,11 +188,11 @@ Add an `"envvar"` after this detector. This will 'rewrite' the attributes by tak
 
 ## Google Cloud Platform
 
-Stability: Alpha (as of July 2026)
+**Package Stability**:: Alpha (as of July 2026)
 
-Documentation: [Resource Detectors for Google Cloud Platform](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Gcp/README.md)
+**Documentation**: [Resource Detectors for Google Cloud Platform](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Resources.Gcp/README.md)
 
-Nuget Package:
+**Nuget Package**:
 `dotnet add package OpenTelemetry.Resources.Gcp --version x.x.x`
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
@@ -177,18 +203,18 @@ SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ## EnvVar
 
-Stability: Stable
+**Package Stability**:: Stable
 
-Notes: OpenTelemetry SDK adds this by default. Only use this if the SDK changes to not include it by default.
+**Documentation**: [OpenTelemetry SDK ResourceBuilderExtensions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/08df7481053204a5ba10c61bb4f1a21d5d3fcefa/src/OpenTelemetry/Resources/ResourceBuilderExtensions.cs#L124)
 
-Documentation: [OpenTelemetry SDK ResourceBuilderExtensions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/08df7481053204a5ba10c61bb4f1a21d5d3fcefa/src/OpenTelemetry/Resources/ResourceBuilderExtensions.cs#L124)
-
-Nuget Package: not needed (Opentelemetry SDK)
+**Nuget Package**: not needed (Opentelemetry SDK)
 
 SimpleOpenTelemetry:Resource:Detectors[] json:
 
 ```json
 "EnvVar"
 ```
+
+**Notes**: OpenTelemetry SDK adds this by default. Only use this if the SDK changes to not include it by default.
 
 ---

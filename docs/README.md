@@ -4,13 +4,13 @@ SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotn
 
 ## Getting Started
 
+### Quickstart
+
+See the [Nuget package Quickstart guide](https://www.nuget.org/packages/SimpleOpenTelemetry#quickstart) to setup in a local aspnetcore mvc app using SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry.
+
 ### With an example app
 
 You can use one of the [localdev example applications](../example-apps/localdev/README.md) or [cloud specific example apps](../example-apps/cloud/) (that can be deployed to the cloud, some can be run locally) with all the below code / configuration setup done. There is also [documentation](../example-apps/localdev/README.md#viewing-telemetry) in the localdev example applications to run locally and send telemetry to cloud / 3rd party telemetry services.
-
-### Quickstart
-
-See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quickstart). This includes a local Grafana to view telemetry.
 
 ### With a new / existing dotnet app
 
@@ -33,36 +33,36 @@ See [README.nuget.md Quickstart](../src/SimpleOpenTelemetry/README.nuget.md#quic
   }
   ```
 
-- Add boostrapping code:
-- For Generic Host apps like aspnetcore (or any apps like console using WebApplicationBuilder/HostApplicationBuilder):
-  - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
+- Add bootstrapping code
+  - For Generic Host apps like aspnetcore (or any apps like console using WebApplicationBuilder/HostApplicationBuilder):
+    - In your startup code (eg Program.cs) add `using SimpleOpenTelemetry.Extensions;` and before builder.build() add `builder.AddSimpleOpenTelemetry();`
 
-  - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry. This may be best to do if console / std logging is enabled on a cloud hosting platform.
+    - Optionally, add `builder.Logging.ClearProviders();` before this to clear all default WebApplicationBuilder/HostApplicationBuilder loggers and use just the logger to OpenTelemetry. This may be best to do if console / std logging is enabled on a cloud hosting platform.
 
-  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
+    - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var app = builder.Build();`. This writes any errors to the EventLog and returns false if invalid.
 
-- For Standalone apps (no Generic host):
-  - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and
+  - For Standalone apps (no Generic host):
+    - In your startup code file add `using Microsoft.Extensions.Logging; using SimpleOpenTelemetry;` and
 
-  ```csharp
-  using var loggerFactory = LoggerFactory.Create(builder =>
-  {
-      builder.AddOpenTelemetry();
-      // You may want to set log levels using builder.AddConfiguration()
-  });
+    ```csharp
+    using var loggerFactory = LoggerFactory.Create(builder =>
+    {
+        builder.AddOpenTelemetry();
+        // You may want to set log levels using builder.AddConfiguration()
+    });
 
-  var sdk = SimpleOpenTelemetryBootstrap.Add(config);
+    var sdk = SimpleOpenTelemetryBootstrap.Add(config);
 
-  // on shutdown to push telemetry before closing - you can also access this via Bootstrap.Sdk
-  sdk.Dispose();
+    // on shutdown to push telemetry before closing - you can also access this via Bootstrap.Sdk
+    sdk.Dispose();
 
-  ```
+    ```
 
-- Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
+  - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
-- Read the next sections or [example configrations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
+- Read the next sections for configuration guidance and snippets or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
 
-## How SimpleOpenTelemtry initialises OpenTelemetry
+## How SimpleOpenTelemetry initialises OpenTelemetry
 
 `AddSimpleOpenTelemetry()` initialises OpenTelemetry with either the service collection extension `AddOpenTelemetry()` for generic host or `OpenTelemetrySdk.Create()` for standalone apps. It will then process the configuration and call the OpenTelemetryBuilder fluentapi methods to configure settings and components.
 
@@ -80,7 +80,7 @@ See [configuration/README.md](./configuration/README.md) for full details of eac
 
 ## Consuming App Telemetry
 
-There are many destinations you can export your telemetry to. The [example-apps/cloud](../example-apps/cloud/) and [configuration//examples/](./configuration/examples/) cover cloud environments and 3rd party services. The [example-apps/localdev/](../example-apps/localdev/) show using local Grafana and Jaeger.
+There are many destinations you can export your telemetry to. The [example-apps/cloud](../example-apps/cloud/) and [configuration//examples/](./configuration/examples/) cover cloud environments and 3rd party services. The [example-apps/localdev/](../example-apps/localdev/) show using local Grafana LGTM and Jaeger.
 
 ## Instrumenting your apps
 
@@ -96,7 +96,7 @@ Using the [Logging setting](#logging) `IncludeFormattedMessage` is recommended i
 
 ### Distributed Tracing
 
-Additionally to the trace instrumentation libraries covered in the SimpleOpenTelemetry configuration documentation, you can generate custom traces. See the [example aspnetcore app HomeController](./example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for a custom trace example. This requires an `SimpleOpenTelemetry:Trace:Sources[]` entry with the source name or wildcard, see [example aspnetcore app appsettings.Example.json](./example-apps/localdev/aspnetcore/appsettings.Example.json).
+Additionally to the trace instrumentation libraries covered in the SimpleOpenTelemetry configuration documentation, you can generate custom traces. See the [example aspnetcore app HomeController](../example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for a custom trace example. This requires an `SimpleOpenTelemetry:Trace:Sources[]` entry with the source name or wildcard, see [example aspnetcore app appsettings.Example.json](../example-apps/localdev/aspnetcore/appsettings.Example.json).
 
 Using the [Trace setting](#tracing) `SetErrorStatusOnException` as `true` is recommended to record an trace status as `Error` automatically when an exception is thrown in a trace. If you need more detail than a bool it can be recorded in a catch statement
 
@@ -120,7 +120,7 @@ Several Dotnet SDK libs generate metrics which is usually configured to be colle
 
 - Review the OpenTelemetry Best Practices doco for [Traces](https://opentelemetry.io/docs/languages/dotnet/traces/best-practices/), [Logs](https://opentelemetry.io/docs/languages/dotnet/logs/best-practices/) and [Metrics](https://opentelemetry.io/docs/languages/dotnet/metrics/best-practices/)
 
-- Review the OpenTelemetry dotnet doco for best practices [Tracesw](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
+- Review the OpenTelemetry dotnet doco for best practices [Traces](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/trace), [Logs](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/logs) and [Metrics](https://github.com/open-telemetry/opentelemetry-dotnet/tree/main/docs/metrics)
 
 ## SimpleOpenTelemetry Error handling and Diagnostics
 
@@ -132,7 +132,7 @@ SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/d
 
 SimpleOpenTelemetry records logs or errors as diagnostics events (as OpenTelemetry does). Note that emitted "SimpleOpenTelemetry-" prefixed events only occur at the app startup and will only emit if a listener is registered before calling `AddSimpleOpenTelemetry()`.
 
-Projects in the [examples](./example-apps/localdev/) folder demonstrate custom code (SimpleOtelEventListener, OtelEventListener) listening to the "SimpleOpenTelemetry-" and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
+Projects in the [localdev example apps](../example-apps/localdev/) folder demonstrate custom code (SimpleOtelEventListener, OtelEventListener) listening to the "SimpleOpenTelemetry-" and "OpenTelemetry-" events and outputting to console. This maybe useful to adapt from and use if you app environment only has stdout as a means to view events.
 
 Some options to listen to events if not using a code based event listener/console output in the examples:
 
