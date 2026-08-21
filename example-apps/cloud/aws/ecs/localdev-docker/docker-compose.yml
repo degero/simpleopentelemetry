@@ -15,8 +15,8 @@ services:
       - COLLECTOR_SPIKE_LIMIT_MB=${COLLECTOR_SPIKE_LIMIT_MB}
       - GOMEMLIMIT=${GOMEMLIMIT}
     ports:
-      - '4317:4317'
-      - '2000:2000'
+      - "4317:4317"
+      - "2000:2000"
 
   app:
     build:
@@ -33,6 +33,6 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - '8080:8080'
+      - "8080:8080"
     volumes:
       - ~/.aws:/root/.aws:ro

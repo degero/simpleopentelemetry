@@ -18,7 +18,7 @@ Included in this example is:
 
 - Exporting Log/Trace/Metric to AWS Cloudwatch using OTLP or Legacy Cloudwatch/XRay exporters
 
-- Trace source listening for anything under this app dotnet namespace 'soteltestaws.*'
+- Trace source listening for anything under this app dotnet namespace 'soteltestaws.\*'
 
 - AWS XRay Propagator - Required for propagating the Trace Context to AWS Services that are integrated with X-Ray
 
@@ -34,19 +34,19 @@ Included in this example is:
 
 - Generates log and custom trace on HomeController.cs - app logging defaults to trace level to capture all log levels generated
 
-
 Note: collector--legacyexport.yml uses the awsxray exporter which does not include any of the sent attributes on child spans. This may be useful to quickly identify child spans in the transaction search. the awsemf metrics exports to a log group it creates whereas the new otlp metrics export uses cloudwatch manage metrics store
-
 
 ## Prereqs
 
-dotnet 10 SDK, AWS CLI logged in (with your default region set), Docker Desktop, Terraform
-
+- .NET 10 SDK
+- Docker Desktop
+- Terraform
+- AWS CLI logged in (with your default region set)
+- Public container repository to use with terraform deployment (eg Github Container Registry or Docker hub)
 
 ## Selecting your region
 
 Full OTLP endpoint support in AWS is not in GA at all regions in June 2026. To enable to full set of functionality either check in your region or use the initial supported preview regions: US East (N. Virginia), US West (Oregon), Asia Pacific (Sydney), Asia Pacific (Singapore), and Europe (Ireland).
-
 
 ## Example SimpleOpenTelemetry config collector dependency
 
@@ -58,7 +58,6 @@ In simpleopentelemetry-config:
 
 NOTE: AWS recommends to use [OTLP for metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/metrics-otel-recommended.html) as it uses a metrics store supporting PromQL rather than the legacy EMF which writes to a separate log group. Traces using legacy Xray are now in maintenance mode and it is [recommended to migrate to OTLP](https://docs.aws.amazon.com/xray/latest/devguide/xray-sdk-migration.html). There is no formal stance on logs but the direction appears to have shifted to using OTLP also
 
-
 ## AWS Cloudwatch / XRay traces setup
 
 1. Setup IAM access to CloudWatch (if any identity's will access it directly)
@@ -67,13 +66,11 @@ NOTE: AWS recommends to use [OTLP for metrics](https://docs.aws.amazon.com/Amazo
 
 Guides:
 
-
 [AWS - Enable Transaction search guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Enable-TransactionSearch.html#CloudWatch-Transaction-Search-EnableConsole)
 
 [AWS - CloudWatch IAM setup guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLP-UsingADOT.html#setup-iam-permissions-role)
 
 [AWS - General OTLP endpoint guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLPEndpoint.html)
-
 
 ## X-Ray Remote Sampling
 
@@ -85,7 +82,6 @@ For Documentation to setup X-Ray Sampling and sampling rules in your AWS env see
 
 [XRay Remote Sampling getting started](https://aws-otel.github.io/docs/getting-started/remote-sampling)
 
-
 ## Run locally and send telemetry directly to AWS
 
 The configuration [simpleopentelemetry-config/appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) allows for a simplified quick way to run apps locally or in lower AWS envs and confirm/use telemetry in AWS Cloudwatch. It is not recommended for PRODUCTION due to no offline storage / batching amongst other reasons.
@@ -96,16 +92,15 @@ The configuration [simpleopentelemetry-config/appsettings.DirectExport.json](./s
 
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 
-1. Set your OTEL_EXPORTER_OTLP_* and AWS_REGION to the AWS endpoints and region you are using (see below guide)
+1. Set your OTEL*EXPORTER_OTLP*\* and AWS_REGION to the AWS endpoints and region you are using (see below guide)
 
 1. Run the application
 
-1. Check Metrics (CloudWatch Query Studio), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to your service name)
-
+1. Check Metrics (CloudWatch Query Studio/Classic metrics for legacy export), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to your service name)
 
 ## Run locally using AWS otel collector
 
-Note: the 'AWSSDK*' packages are not needed for this type of app, it is only for direct export example above and can be removed with the code in Program.cs to reduce the app footprint.
+Note: the 'AWSSDK\*' packages are not needed for this type of app, it is only for direct export example above and can be removed with the code in Program.cs to reduce the app footprint.
 
 The configuration [simpleopentelemetry-config/appsettings.OtelCollector.json](./simpleopentelemetry-config/appsettings.OtelCollector.json) requires either running the app and collector in the /localdev-docker/ or you can debug the app locally and remove the app service from the docker-compose.yml.
 
@@ -121,15 +116,13 @@ The configuration [simpleopentelemetry-config/appsettings.OtelCollector.json](./
 
 1. Run the app in container with BuildAndRunDocker.ps1 or if you removed the app service from docker-compose.yml use in /app: dotnet run, and in /localdev-docker: docker compose up
 
-1. Check Metrics (CloudWatch Query Studio), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to your service name)
-
+1. Check Metrics (CloudWatch Query Studio/Classic metrics for legacy export), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to your service name)
 
 ## Deploy to AWS ECS+EC2
 
-
 This example only allows using the simpleopentelemetry-config/appsettings.OtelCollector.json. The terraform is NOT PRODUCTION GRADE, it is for getting the cheapest ECS instance (ec2 spot t3.micro) up to verify your telemetry, it has no vpc/gw, allows public ssh to the ec2 instance, as well as logging container stdout for extra troubleshooting. For a better guide on infra best practices see [https://github.com/aws-samples/amazon-ecs-fullstack-app-terraform](https://github.com/aws-samples/amazon-ecs-fullstack-app-terraform/tree/main).
 
-*IMPORTANT:* The sample adotcollector-local-X.yml configs are designed for PRODUCTION with health check, trace filters, memory limit and tail sampling to reduce load/cost of telemetry. If wanting to test all traces or using xray sampling (appsetting UseXraySampler - default on) remove the tail sampling from the config.
+_IMPORTANT:_ The sample adotcollector-local-X.yml configs are designed for PRODUCTION with health check, trace filters, memory limit and tail sampling to reduce load/cost of telemetry. If wanting to test all traces or using xray sampling (appsetting UseXraySampler - default on) remove the tail sampling from the config.
 
 1. In /app: Copy the /simpleopentelemetry-config/appsettings.OtelCollector.json settings file to appsettings.Production.json adjust feature flags as needed
 
@@ -147,7 +140,7 @@ This example only allows using the simpleopentelemetry-config/appsettings.OtelCo
 
 1. View the app on the uri output and navigate between pages to generate more telemetry
 
-1. Check Metrics (CloudWatch Query Studio), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to /app/service-name/dev default is /app/soteltestaws/dev)
+1. Check Metrics (CloudWatch Query Studio/Classic metrics for legacy export), Logs (Log analytics with filter to your log group), Traces (Transaction search and filter to /app/service-name/dev default is /app/soteltestaws/dev)
 
 1. in the /infra: Use `terraform destroy` to destroy the ECS+EC2 instance, roles etc (you may need to terminate/delete the ec2 instance to unblock)
 
@@ -161,33 +154,24 @@ aws ec2 describe-spot-price-history \
   --max-results 5
 ```
 
-
 ## Refining your ECS environment
 
 To add other telemetry attributes, refer to the ECS samples from this [aws-observability repo](https://github.com/aws-observability/aws-otel-collector/tree/main/config/ecs)
-
 
 ## Other links
 
 An alternative to SimpleOpenTelemetry is to send data directly to OTLP endpoints with AWS distro (ADOT) autoinstrumentation (logs are not supported):
 
-
 [AWS - Exporting collector-less telemetry using AWS Distro for OpenTelemetry (ADOT) SDK](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-OTLP-UsingADOT.html)
-
 
 [ADOT aws-opentelemetry-collector github repo](https://github.com/aws-observability/aws-otel-collector)
 
-
- [Xray remote sampler github repo](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
-
+[Xray remote sampler github repo](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Sampler.AWS/README.md)
 
 [AWS dotnet manual Otel instrumentation guide for legacy and OTEL SDK](https://docs.aws.amazon.com/xray/latest/devguide/introduction-dotnet.html#manual-instrumentation-dotnet)
 
-
 [AWS dotnet manual Otel instrumentation guid for OTEL SDK](https://aws-otel.github.io/docs/getting-started/dotnet-sdk/manual-instr)
 
-
 [Getting Started with the AWS Distro for OpenTelemetry Collector](https://aws-otel.github.io/docs/getting-started/collector)
-
 
 [AWS blog April 2026 - PromQL for Cloudwatch](https://aws.amazon.com/blogs/mt/introducing-opentelemetry-promql-support-in-amazon-cloudwatch/)

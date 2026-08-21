@@ -2,7 +2,8 @@ receivers:
   otlp:
     protocols:
       grpc:
-    
+        endpoint: 0.0.0.0:4317
+
 processors:
   memory_limiter:
     check_interval: 1s
@@ -50,13 +51,13 @@ service:
   pipelines:
     logs:
       receivers: [otlp]
-      processors: [memory_limiter,batch/logs]
+      processors: [memory_limiter, batch/logs]
       exporters: [awscloudwatchlogs]
     traces:
       receivers: [otlp]
-      processors: [memory_limiter,filter/traces,batch/traces]
+      processors: [memory_limiter, filter/traces, batch/traces]
       exporters: [awsxray]
     metrics:
       receivers: [otlp]
-      processors: [memory_limiter,batch/metrics]
+      processors: [memory_limiter, batch/metrics]
       exporters: [awsemf]
