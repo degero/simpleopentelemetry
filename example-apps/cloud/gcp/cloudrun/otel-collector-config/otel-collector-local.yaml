@@ -9,7 +9,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4319
+        endpoint: 0.0.0.0:4317
 
 processors:
   batch:
@@ -101,8 +101,9 @@ processors:
 
 exporters:
   otlp_http/google:
-    encoding: proto
-    endpoint: http://host.docker.internal:4318
+    endpoint: https://telemetry.googleapis.com
+    auth:
+      authenticator: googleclientauth
   googlecloud:
     project: ${GOOGLE_CLOUD_PROJECT}
     log:
@@ -141,5 +142,5 @@ service:
             exporter:
               otlp:
                 protocol: grpc
-                endpoint: localhost:4319
+                endpoint: localhost:4317
                 insecure: true
