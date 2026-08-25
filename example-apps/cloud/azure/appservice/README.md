@@ -6,22 +6,22 @@ This example contains a low-complexity Azure App Service demo app that shows how
 
 - Two main folders: [app/](./app/) for the ASP.NET Core app and [simpleopentelemetry-config/](./simpleopentelemetry-config/) for OpenTelemetry config templates.
 - Three sample config files are provided:
-  - `aspnetcore-azureotel-distro-rbac.json` — (Recommended) Azure Monitor AspNetCore distro library config. Feature rich with livemetrics offline storage etc.
-  - `aspnetcore-azureotel-exporter-rbac.json` — Azure Monitor exporter library with RBAC auth to app insights config.
-  - `aspnetcore-azureotel-exporter-by-signal-rbac.json` —  Azure Monitor exporter library with explicit trace/metric/log exporter config.
+  - `aspnetcore-azureotel-distro-rbac.json` — (Recommended) Azure Monitor AspNetCore distro library config. Feature rich with livemetrics
+  - `aspnetcore-azureotel-exporter-rbac.json` — Azure Monitor exporter library with RBAC auth to app insights config. Supports live metrics
+  - `aspnetcore-azureotel-exporter-by-signal-rbac.json` — Azure Monitor exporter library with explicit trace/metric/log exporter config. No live metrics
 - The sample app uses `builder.AddSimpleOpenTelemetry()` and the Azure resource detector.
 - For more Azure-specific config guidance and package notes, see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md).
 - OpenTelemetry/SimpleOpenTelemetry events to console via `EnableOtelEventListeners` app setting
 - Trace/Metrics for AspNetCore and HttpClient (distro includes httpclient, sqlclient automatically)
+- Distro config adds the OpenTelemetry.Instrumentation.AspNetCore for metrics as the distro only includes a subset in dotnet 8+ of `Microsoft.AspNetCore.Hosting` of the meters used in the lib: aspnetcore hosting, aspnetcore.memory and kestrel etc.
 
 ## Prerequisites
 
 - .NET 10 SDK
 - Azure CLI authenticated: `az login`
 - Azure subscription
-- Azure Application Insights resource or Azure RBAC with `DefaultAzureCredential`
-- Optional: App Service if deploying to Azure
-- If using RBAC locally, assign your Azure user the required Azure Monitor roles as described in [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md).
+- If using apps locally, ability to create a Resource group and Appinsights instance and, if using RBAC (default), assign your Azure user the required Azure Monitor roles as described below. Scripts are provided below.
+- If deploying to Azure, contributor role on the subscription or a management group. Various tools [covered below](#prerequisites-1)
 
 ## Azure observability environment setup and configuration
 
@@ -63,6 +63,7 @@ In `example-apps/cloud/azure/appservice/app/`:
 ## Local run with selected config
 
 1. Create a Resource Group
+
 ```powershell
 az group create --location "eastus" --name "rg-soteltestazure"
 ```
@@ -88,7 +89,6 @@ az monitor app-insights component show `
 ```
 
 1. If using RBAC (default), follow [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md) for role assignment and Azure RBAC setup.
-
 
 1. Add debug logging at the top of `appsettings.Development.json`:
 
@@ -137,24 +137,36 @@ This approach uses Infrastructure as Code (Terraform) with Azure Developer CLI f
 
 ### Prerequisites
 
-- Azure subscription
-- .NET 10 SDK
 - [Terraform](https://www.terraform.io/downloads.html) (>= 1.0)
 - [Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/install-azd) (azd)
 - Azure CLI authenticated: `az login`
 - AZD authenticated: `azd auth login --use-device-code`
 - A `appsettings.Production.json` file setup in the /app folder from sample in [simpleopentelemetry-config/](./simpleopentelemetry-config/)
 
-
 ### Deployment
+
+This uses Azure Developer CLI combined with terraform to provision infrastructure then deploy to it.
+
+Terraform will create:
+
+- A resource group
+- A log analytics workspace for app insights
+- An Application Insights resource
+- An App Service Plan (Free tier `F1`)
+- An App Service with system-assigned managed identity
+- A role assignment granting the App Service identity `Monitoring Metrics Publisher` access to Application Insights
+
+The deployment will also configure the [required app settings](../../../../docs/configuration/examples/azure/README.md#app-settings-configuration-reference), including the app insights connectionstring for RBAC access. You can test using the full connectionstring (no RBAC) by removing the 'Credential' setting from your `appsettings.Production.json`
+
+The values for the Terraform deployment are passed directly from [azure.yaml](azure.yaml) to the infrastructure module, so there is no need to setup a local `terraform.tfvars` file.
+
+Before provisioning starts, the deployment will prompt you to choose an environment name, subscription, and an Azure region from the list of available locations, and if you wish to use RBAC, select which suits. These settings are saved in the `.azure` folder. There are also other defaults, such as the resourcegroup name of `rg-soteltestazure` and other resource names, if you want to override, edit the `parameters` block in [azure.yaml](azure.yaml) before running the `azd up` command.
+
+To deploy:
 
 ```powershell
 azd up
 ```
-
-The values for the Terraform deployment are passed directly from [azure.yaml](azure.yaml) to the infrastructure module, so there is no need to copy [infra/terraform.tfvars.example](infra/terraform.tfvars.example) into a local `terraform.tfvars` file.
-
-Before provisioning starts, the deployment will prompt you to choose an Azure region from the list of available locations and store it in the azd environment. If you want to override the defaults, edit the `parameters` block in [azure.yaml](azure.yaml) before running `azd up`.
 
 To redeploy the app on changes:
 
@@ -163,7 +175,6 @@ azd deploy
 ```
 
 The app url is output to the console to navigate the pages to generate telemetry.
-
 
 ### Run Terraform directly for troubleshooting
 
@@ -176,30 +187,14 @@ terraform plan
 terraform apply
 ```
 
-Terraform will create:
-- A resource group
-- A log analtyics workspace for app insights
-- An Application Insights resource
-- An App Service Plan (Free tier `F1`)
-- An App Service with system-assigned managed identity
-- A role assignment granting the App Service identity `Monitoring Metrics Publisher` access to Application Insights
-
-The deployment will also configure the required app settings, including:
-- `APPLICATIONINSIGHTS_STATSBEAT_DISABLED=true`
-- `OTEL_SERVICE_NAME`
-- `OTEL_RESOURCE_ATTRIBUTES`
-- `OTEL_METRICS_EXEMPLAR_FILTER`
-- `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` (automatically set to the App Insights instrumentation key)
-
-The log analtyics assignment may have issues on deployment where you will see an error when browsing telemetry 'Error retrieving data'. If you re-assign the workspace in the appinsights properties this should resolve.
+Or see [troubleshooting](#troubleshooting-production-use-and-other-documentation)
 
 ### Verify telemetry in Azure Monitor
 
-   - Go to the [Azure Portal](https://portal.azure.com)
-   - Navigate to the Application Insights resource (name: `ai-soteltestazure` by default)
-   - Use **Live Metrics** or **Logs** to verify traces, metrics, and dependency calls
-   - Query the `traces`, `requests`, or `dependencies` tables in the **Logs** section
-
+- Go to the [Azure Portal](https://portal.azure.com)
+- Navigate to the Application Insights resource (name: `ai-soteltestazure` by default)
+- Use **Live Metrics** or **Logs** to verify traces, metrics, and dependency calls
+- Query the `traces`, `requests`, or `dependencies` tables in the **Logs** section
 
 Example KQL query to view recent requests:
 
@@ -224,33 +219,11 @@ terraform destroy
 ```
 
 Or delete the resource group directly if any issues occur
+
 ```powershell
 az group delete --name "rg-soteltestazure" --yes --no-wait
 ```
 
-## Troubleshooting
-
-- Verify the Application Insights connection string or RBAC permissions if telemetry does not appear.
-- Ensure `DefaultAzureCredential` can authenticate locally with `az login`.
-- Confirm `APPLICATIONINSIGHTS_STATSBEAT_DISABLED=true` is set.
-- Validate `service.name` and custom resource values if telemetry metadata is not appearing as expected.
-
-## App Settings Configuration Reference
-
-The app settings are configured in `app/appservicesettings.json` and automatically applied by the Terraform deployment. Key mappings:
-
-| App Setting Name | Value | Purpose |
-|---|---|---|
-| `APPLICATIONINSIGHTS_STATSBEAT_DISABLED` | `true` | Disable Application Insights statsbeat (internal metrics) to reduce overhead |
-| `OTEL_METRICS_EXEMPLAR_FILTER` | `trace_based` | Use trace-based sampling for exemplars |
-| `OTEL_RESOURCE_ATTRIBUTES` | `service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev` | Add custom resource attributes for telemetry identification |
-| `OTEL_SERVICE_NAME` | `soteltestazure` | Service name for OpenTelemetry |
-| `SCM_DO_BUILD_DURING_DEPLOYMENT` | `true` | Enable build during App Service deployment (if using Git/ZIP deployment) |
-| `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` | `InstrumentationKey=<key>` | Application Insights instrumentation key (set by Terraform) |
-
-**Note:** In App Service environment variables, colons (`:`) in configuration keys are converted to double underscores (`__`). For example, `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` becomes `SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString` in the environment.
-
-
 ## Production use and other documentation
 
-For production templates and documentation see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md)
+For production templates, troubleshooting and documentation see [docs/configuration/examples/azure/README.md](../../../../docs/configuration/examples/azure/README.md)

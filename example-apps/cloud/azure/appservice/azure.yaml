@@ -10,7 +10,8 @@ services:
 hooks:
   preprovision:
     shell: pwsh
-    run: ./azd-scripts/Prompt-Location.ps1
+    run: ./azd-scripts/Prompt-Location.ps1; ./azd-scripts/Prompt-RBAC.ps1
+    interactive: true
   postprovision:
     shell: pwsh
     run: ./azd-scripts/Set-AzdDeploymentEnv.ps1
@@ -25,3 +26,4 @@ infra:
     app_service_plan_name: plan-soteltestazure
     app_insights_name: ai-soteltestazure
     otel_service_name: soteltestazure
+    use_rbac: ${USE_RBAC}

@@ -40,7 +40,7 @@ resource "azurerm_application_insights" "appinsights" {
 
   # Optional: cap daily data volume to control costs in dev
   daily_data_cap_in_gb                     = 1
-  
+
   tags = var.tags
 
   depends_on = [azurerm_log_analytics_workspace.law]
@@ -94,6 +94,10 @@ resource "azurerm_service_plan" "appserviceplan" {
   tags = var.tags
 }
 
+locals {
+  conn_string = var.use_rbac ? "InstrumentationKey=${azurerm_application_insights.appinsights.instrumentation_key}" : azurerm_application_insights.appinsights.connection_string
+}
+
 # App Service (Windows Web App)
 resource "azurerm_windows_web_app" "appservice" {
   name                = var.app_name
@@ -108,13 +112,12 @@ resource "azurerm_windows_web_app" "appservice" {
 
   app_settings = {
     "APPLICATIONINSIGHTS_STATSBEAT_DISABLED"                          = "true"
-    "OTEL_METRICS_EXEMPLAR_FILTER"                                    = "trace_based"
     "OTEL_RESOURCE_ATTRIBUTES"                                        = "service.version=1.0.0,service.namespace=demo-simpleopentelemetry,deployment.environment.name=dev"
     "OTEL_SERVICE_NAME"                                               = var.otel_service_name
     "SCM_DO_BUILD_DURING_DEPLOYMENT"                                  = "true"
-    "SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString" = "InstrumentationKey=${azurerm_application_insights.appinsights.instrumentation_key}"
-    "SimpleOpenTelemetry__DistroOptions__ConnectionString" = "InstrumentationKey=${azurerm_application_insights.appinsights.instrumentation_key}"
-    "SimpleOpenTelemetry__BuilderExtensions__0__Options__ConnectionString" = "InstrumentationKey=${azurerm_application_insights.appinsights.instrumentation_key}"
+    "SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString" = local.conn_string
+    "SimpleOpenTelemetry__DistroOptions__ConnectionString" = local.conn_string
+    "SimpleOpenTelemetry__BuilderExtensions__0__Options__ConnectionString" = local.conn_string
   }
 
   # Site config

@@ -13,10 +13,12 @@ if (builder.Configuration.GetValue("EnableOtelEventListeners", false))
     simpleOtelListener = new SimpleOtelEventListener();
 }
 
-var otelBuilder = builder.AddSimpleOpenTelemetry();
 
 // OPTIONAL: clear loggers so only the OpenTelemetry logger is attached
 //builder.Logging.ClearProviders();
+
+var otelBuilder = builder.AddSimpleOpenTelemetry();
+
 
 builder.Services.AddControllersWithViews();
 

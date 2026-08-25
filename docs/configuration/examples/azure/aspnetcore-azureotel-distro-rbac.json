@@ -21,10 +21,11 @@
       "EnableTraceBasedLogsSampler": "false"
     },
     "Metric": {
+      "Instrumentations": ["HttpClient", "AspNetCore"],
       "CustomMeters": ["System.Net.NameResolution"]
     },
     "Trace": {
-      "Instrumentations": ["EFCore"],
+      "Instrumentations": ["HttpClient", "AspNetCore", "EFCore", "SqlClient"],
       "Settings": {
         "SetErrorStatusOnException": true
       },

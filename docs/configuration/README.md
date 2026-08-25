@@ -48,7 +48,7 @@ Below are required and some core OTEL\_ environment variables you can set in Env
 - [OTEL_EXPORTER_OTLP_PROTOCOL](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) - default: 'gRPC' which is common for otel collector sidecar use
   [OTEL_EXPORTER_OTLP_ENDPOINT](https://opentelemetry.io/docs/specs/otel/protocol/exporter/) - default: 'http://localhost:4317' which is common for otel collector sidecar use
 - [OTEL_TRACES_SAMPLER, OTEL_TRACES_SAMPLER_ARG](https://opentelemetry.io/docs/languages/dotnet/sampling/#environment-variable-configuration)
-- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) - contrary to spec, exemplars are off by default due to performance cost.
+- [OTEL_METRICS_EXEMPLAR_FILTER](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#exemplar) contrary to spec, exemplars are 'always_off' by default due to performance costs concerns by the implementation team. See the [opentelemetry-dotnet doco](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/metrics/exemplars/README.md) for how to use.
 - [OTEL_SDK_DISABLED](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/#general-sdk-configuration)
 
 <br>

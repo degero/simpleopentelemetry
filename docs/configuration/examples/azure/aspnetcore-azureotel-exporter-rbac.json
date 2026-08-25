@@ -25,32 +25,18 @@
       }
     ],
     "Trace": {
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore",
-        "SqlClient",
-        "EFCore"
-      ],
+      "Instrumentations": ["HttpClient", "AspNetCore", "SqlClient", "EFCore"],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [
-        "yourappnamespace.*"
-      ]
+      "Sources": ["yourappnamespace.*"]
     },
     "Metric": {
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ],
-      "CustomMeters": [
-        "System.Net.NameResolution"
-      ]
+      "Instrumentations": ["HttpClient", "AspNetCore"],
+      "CustomMeters": ["System.Net.NameResolution"]
     },
     "Resource": {
-      "Detectors": [
-        "azure"
-      ]
+      "Detectors": ["azure"]
     }
   }
 }
