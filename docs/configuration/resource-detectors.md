@@ -25,8 +25,6 @@ eg `SimpleOpenTelemetry:Resource:DetectorConfig::AWS:SemanticConventionVersion =
 
 ⚠️ _Complex types or Func<>/Action<>/etc aren't supported on Options fields._ ⚠️
 
-For a list of supported resource detectors see [ResourceDetectorEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Resource/ResourceDetectorEnum.cs)
-
 Available resource detectors are:
 
 - [AssemblyVersion](#assemblyversion)

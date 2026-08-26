@@ -22,8 +22,6 @@ OpenTelemetry has builtin default [SDK propagators](https://github.com/open-tele
 
 **Available additional Propagators in SimpleOpenTelemetry**
 
-For a list of supported propagators see [PropagatorEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Propagator/PropagatorEnum.cs)
-
 Available additional propagators are:
 
 ## Default

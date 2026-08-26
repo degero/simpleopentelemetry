@@ -14,8 +14,6 @@ Set Extensions in the the configuration:
 
 Extensions offer the ability to extend the OpenTelemetry SDK beyond the core spec where it does not fall into the key component categories.
 
-For a list of supported extensions see [ExtensionEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Extension/ExtensionEnum.cs)
-
 Available extensions are:
 
 - [AWSXrayTraceId](#aws-x-ray-trace-id-generator)

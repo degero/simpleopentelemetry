@@ -25,8 +25,6 @@ eg `SimpleOpenTelemetry:Trace:InstrumentationConfig:AWS:SuppressDownstreamInstru
 
 ⚠️ _Complex types or Func<>/Action<>/etc aren't supported on Options fields. It will NOT be possible to use filters to prevent instrumentation of specific scenarios for AspNetCore, HttpClient, SqlClient etc eg (GET /health). You can either add+configure the instrumentation manually in code after AddSimpleOpenTelemetry() or if using an otel collector use a filter there (this generates more telemetry traffic/processing load)._ ⚠️
 
-For a list of supported instrumentations see [MetricsInstrumentationEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/MetricsInstrumentationEnum.cs) and [TracingInstrumentationEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Instrumentation/TracingInstrumentationEnum.cs)
-
 Available instrumentations are:
 
 - [AspNetCore](#aspnetcore)
