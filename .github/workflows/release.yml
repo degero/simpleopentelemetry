@@ -11,6 +11,8 @@ on:
 
 jobs:
   build-and-test:
+    permissions:
+      contents: read
     uses: ./.github/workflows/build-and-test.yml
     with:
       fetch-depth: 0 # MinVer needs full history to find the tag for versioning
@@ -19,6 +21,8 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   pack:
+    permissions:
+      contents: read
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
@@ -58,6 +62,8 @@ jobs:
             nupkgs/*.snupkg
 
   push-to-nuget:
+    permissions:
+      contents: read
     needs: pack
     runs-on: ubuntu-latest
     environment: nuget-publish
