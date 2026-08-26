@@ -52,7 +52,7 @@
   -->
   <ItemGroup>
     <PackageVersion Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="[1.5.0]" IsReflectionPlugin="true" />
-    <PackageVersion Include="Azure.Monitor.OpenTelemetry.Exporter" Version="[1.8.3]" IsReflectionPlugin="true" />
+    <PackageVersion Include="Azure.Monitor.OpenTelemetry.Exporter" Version="[1.8.1]" IsReflectionPlugin="true" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="[1.16.0]" IsReflectionPlugin="true" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="[1.16.0-beta.1]" IsReflectionPlugin="true" />
     <PackageVersion Include="OpenTelemetry.Exporter.Prometheus.HttpListener" Version="[1.16.0-beta.1]" IsReflectionPlugin="true" />
