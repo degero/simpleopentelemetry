@@ -25,7 +25,7 @@ Available extensions are:
 
 ## Azure Monitor Exporter
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: All
 
@@ -47,7 +47,7 @@ SimpleOpenTelemetry:BuilderExtensions[] json:
 
 ## AWS X-Ray Trace ID Generator
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: Trace
 

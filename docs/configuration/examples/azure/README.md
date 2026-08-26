@@ -23,7 +23,7 @@ These configs include registering all optional packages mentioned below and cust
 ### Required for all configs
 
 `dotnet add package SimpleOpenTelemetry`
-`dotnet add package Azure.Identity` (if using RBAC to connect to azure monitor)
+`dotnet add package Azure.Identity` (if using the default RBAC to connect to azure monitor)
 
 ### Required for aspnetcore-azureotel-distro-rbac.json file:
 
@@ -32,6 +32,7 @@ Adjust your config related to the optional instrumentations
 `dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore  --version x.x.x`
 
 **optional**
+
 `dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
 `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
 `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
@@ -50,8 +51,10 @@ While the distro does instrument some aspnetcore metrics, it is only a subset of
 These are the core packages as distro uses, adjust your config related to the optional instrumentations
 
 `dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version x.x.x`
+`dotnet add package OpenTelemetry.Resources.Azure  --version x.x.x`
 
 **optional**
+
 `dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
 `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
 `dotnet add package OpenTelemetry.Instrumentation.EntityFrameworkCore --version x.x.x`
@@ -77,7 +80,7 @@ Copy one of the examples to your `appsettings.Development.json` or `appsettings.
 1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
 1. If you wish to NOT use RBAC for the lib to authenticate with AppInsights remove the `Credential` config file setting.
 1. Create an AppInsights instance and get your connection string [see here for scripts](../../../../example-apps/cloud/azure/appservice/README.md#local-run-with-selected-config), set using the configuration key needed by your chosen config mentioned before. See below for more detail on setting this based on your choice of RBAC or not.
-1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder (eg Program.cs) before the builder.Build();
+1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder (eg Program.cs) before the `builder.Build()`;
 1. Run the app or deploy to app service
 1. Confirm your telemetry in Azure Application Insights
 

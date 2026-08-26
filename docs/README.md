@@ -92,13 +92,13 @@ You can alter your app in the below areas to utilise all the telemetry features
 
 Logging to OpenTelemetry can be done with a standard dotnet ILogger<> with all the log levels supported.
 
-Using the [Logging setting](#logging) `IncludeFormattedMessage` is recommended if using parameterised logging eg `_logger.LogInformation("Test message. {Action}",action);` and you want parameter easy to query in your monitoring platform.
+Using the [Logging setting](configuration/README.md#logging) `IncludeFormattedMessage` is recommended if using parameterised logging eg `_logger.LogInformation("Test message. {Action}",action);` and you want parameter easy to query in your monitoring platform.
 
 ### Distributed Tracing
 
 Additionally to the trace instrumentation libraries covered in the SimpleOpenTelemetry configuration documentation, you can generate custom traces. See the [example aspnetcore app HomeController](../example-apps/localdev/aspnetcore/Controllers/HomeController.cs) for a custom trace example. This requires an `SimpleOpenTelemetry:Trace:Sources[]` entry with the source name or wildcard, see [example aspnetcore app appsettings.Example.json](../example-apps/localdev/aspnetcore/appsettings.Example.json).
 
-Using the [Trace setting](#tracing) `SetErrorStatusOnException` as `true` is recommended to record an trace status as `Error` automatically when an exception is thrown in a trace. If you need more detail than a bool it can be recorded in a catch statement
+Using the [Trace setting](configuration/README.md#tracing) `SetErrorStatusOnException` as `true` is recommended to record an trace status as `Error` automatically when an exception is thrown in a trace. If you need more detail than a bool it can be recorded in a catch statement
 
 For an example of all the dotnet tracing features available see [MSLearn - Adding distributed tracing instrumentation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing-instrumentation-walkthroughs)
 

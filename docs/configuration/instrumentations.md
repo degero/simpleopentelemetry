@@ -45,7 +45,7 @@ Available instrumentations are:
 
 **Documentation**: [ASP.NET Core Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AspNetCore/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: trace, metric
 
@@ -53,7 +53,7 @@ Available instrumentations are:
 
 **Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.AspNetCore --version x.x.x`
 
-SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
+SimpleOpenTelemetry:Trace/Metric:Instrumentations[] json:
 
 ```json
 "AspNetCore"
@@ -63,7 +63,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Documentation**: [HttpClient and HttpWebRequest instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Http/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: trace, metric
 
@@ -71,7 +71,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x`
 
-SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
+SimpleOpenTelemetry:Trace/Metric:Instrumentations[] json:
 
 ```json
 "HttpClient"
@@ -81,7 +81,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Documentation**: [AWS SDK client instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWS/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: trace, metric
 
@@ -89,7 +89,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.AWS --version x.x.x`
 
-SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
+SimpleOpenTelemetry:Trace/Metric:Instrumentations[] json:
 
 ```json
 "AWS"
@@ -99,7 +99,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Documentation**: [AWS OTel .NET SDK for Lambda](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.AWSLambda/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: trace
 
@@ -117,7 +117,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 **Documentation**: [SqlClient Instrumentation for OpenTelemetry](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.SqlClient/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: trace, metric
 
@@ -125,7 +125,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 **Nuget Package**: `dotnet add package OpenTelemetry.Instrumentation.SqlClient --version x.x.x`
 
-SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
+SimpleOpenTelemetry:Trace/Metric:Instrumentations[] json:
 
 ```json
 "SqlClient"
@@ -135,7 +135,7 @@ SimpleOpenTelemetry:<Signal>:Instrumentations[] json:
 
 **Documentation**: [EntityFrameworkCore Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.EntityFrameworkCore/README.md)
 
-**Package Stability**:: Beta (as of July 2026)
+**Package Stability**: Beta (as of July 2026)
 
 **Signals supported**: trace
 
@@ -153,7 +153,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 **Documentation**: [WCF Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Wcf/README.md)
 
-**Package Stability**:: Beta (as of July 2026)
+**Package Stability**: Beta (as of July 2026)
 
 **Signals supported**: trace
 
@@ -171,7 +171,7 @@ SimpleOpenTelemetry:Trace:Instrumentations[] json:
 
 **Documentation**: [Runtime Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Runtime/README.md)
 
-**Package Stability**:: Stable
+**Package Stability**: Stable
 
 **Signals supported**: metric
 
@@ -189,7 +189,7 @@ SimpleOpenTelemetry:Metric:Instrumentations[] json:
 
 **Documentation**: [Process Instrumentation for OpenTelemetry .NET](https://github.com/open-telemetry/opentelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Instrumentation.Process/README.md)
 
-**Package Stability**:: Beta (as of July 2026)
+**Package Stability**: Beta (as of July 2026)
 
 **Signals supported**: metric
 

@@ -2,28 +2,41 @@
 
 **IMPORTANT**: ⚠️ _Config keys and values are NOT CASE SENSITIVE_ ⚠️
 
-SimpleOpenTelemetry is made up of these key configurable components:
+SimpleOpenTelemetry is made up of these key configurable components covering a large portion of the OpenTelemetry fluent api:
 
 - Distributions
 - Trace/Metric/Log Exporters
 - Trace/Metric Instrumentation
 - Trace/Metric/Log Extensions
-- Custom meters
-- Trace sources
 - Resource detectors
 - Samplers
+- Propagators
 - Extensions
-- Exporters
+
   <br>
   <br>
 
 Details on each of these components can be found in [OpenTelemetry.io docs/concepts](https://opentelemetry.io/docs/concepts/).
 
+Next sections:
+
+- [Configuration sources](#configuration-sources)
+- [Environment variables](#environment-variables)
+- [OpenTelemetry environment variables](#opentelemetry-environment-variables)
+- [Configuration testing, debugging and deployment](#configuration-testing-debugging-and-deployment)
+- [Configuration file setup](#configuration-file-setup)
+- [Enabling telemetry signal collection](#enabling-telemetry-signal-collection)
+- [Logging](#logging)
+- [Metrics](#metrics)
+- [Tracing](#tracing)
+- [OpenTelemetry component configuration](#opentelemetry-component-configuration)
+- [Available components](#available-components)
+
 ---
 
 ## Configuration sources
 
-As SimpleOpenTelemetry uses dotnet's IConfiguration concepts and abstractions, it relies on the default configuration sources setup in generic host platforms to load in appsettings.json. Settings are loaded in a particular hierarchy noted [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#default-app-configuration-sources), meaning settings in the config file can be overridden via Env vars.
+SimpleOpenTelemetry uses dotnet's IConfiguration concepts and abstractions, it relies on the default configuration sources setup in generic host platforms to load in appsettings.json. Settings are loaded in a particular hierarchy noted [here](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-10.0#default-app-configuration-sources), meaning settings in the config file can be overridden via Env vars.
 
 The configuration system also means you can also [add in other configuration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration) before calling AddSimpleOpenTelemetry(). These are particularly useful for loading in sensitive values (keys, secrets etc).
 
@@ -66,17 +79,17 @@ The OpenTelemetry Documentation [SDK Environment Variables](https://OpenTelemetr
 
 Rather than building a configuration from scratch, you may want to start with one of the [example configs](./examples/) to find the configuration that is closest to your needs.
 
-For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local Grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and connect a local Grafan LGTM or to your cloud provider endpoints. The cloud examples are setup with everything you need to deploy.
+For initial file setup and testing you can use a [example-apps/localdev/](../../example-apps/localdev/) with a local Grafana LGTM to view telemetry or use one of the [example-apps/cloud/](../../example-apps/cloud/) and connect a local Grafana LGTM or to your cloud provider endpoints. The cloud examples are setup with everything you need to deploy.
 
-To verify / validate your configuration you can check the local Grafan instance and for warning / error events emitted from SimpleOpenTelemetry / OpenTelemetry by wiring up a listener see [SimpleOpenTelemetry Error Handling and Diagnostics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)
+To verify / validate your configuration you can check the local Grafana instance and for warning / error events emitted from SimpleOpenTelemetry / OpenTelemetry by wiring up a listener see [SimpleOpenTelemetry Error Handling and Diagnostics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)
 
 ## Configuration file setup
 
 **IMPORTANT**: ⚠️ _SimpleOpenTelemetry will emit error events and skip its setup if key settings are missing or misconfigured. See [Error handling and diagnostics](../README.md#simpleopentelemetry-error-handling-and-diagnostics)_ ⚠️
 
-To get started, add the `OTEL\_` settings and `SimpleOpenTelemetry` section to the root of your `appsettings.{Environment}.json` file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this is not set it will not run AddOpenTelemetry() with your application and emit a critical error event (not an exception).
+To get started, add the `OTEL_` settings and `SimpleOpenTelemetry` section to the root of your `appsettings.{Environment}.json` file in your project folder. SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application. If this config sections is not set it will not run OpenTelemetry's `AddOpenTelemetry()` and emit a critical error event (not an exception).
 
-Similarly for the subsections `Metric/Trace/Log`, OpenTelemetry's WithLogging/Tracing/Metrics() extension methods will only run (and subsequent exports etc) when the corresponding section exists. If at least one is not set it will not run AddOpenTelemetry() with your application and emit a critical error event.
+Similarly for the subsections `Metric/Trace/Log`, OpenTelemetry's `WithLogging/Tracing/Metrics()` extension methods will only run (and subsequent exports etc) when the corresponding section exists. If at least one is not set it will not run AddOpenTelemetry() with your application and emit a critical error event.
 
 For a json configuration file, you can start with a full pre-built configuration in [examples](./examples/) or add in using [snippets](./snippets) or setup the top level config items and follow the next sections covering the items you can add:
 
@@ -130,7 +143,7 @@ Below covers information about each signal collection settings and documentation
 
 ## Logging
 
-Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this logging provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [localdev example appss](../../example-apps/localdev/).
+Logging providers are not cleared by SimpleOpenTelemetry, but one will be added if the SimpleOpenTelemetry:Log section is defined. If you wish to have only use this logging provider and not the defaults in a Generic host application run `builder.Logging.ClearProviders()` before AddSimpleOpenTelemetry() as you can see in the [localdev example apps](../../example-apps/localdev/).
 
 ### Settings
 
@@ -140,7 +153,7 @@ The following are supported to switch on OpenTelemetry dotnet SDK settings via `
 - IncludeScopes - bool (default: false)
 - ParseStateValues - bool (default: false)
 
-[View OpenTelemetryLoggerOptions.cs for settings details](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/Logs/ILogger/OpenTelemetryLoggerOptions.cs)
+For settings details see [github opentelemetry-dotnet OpenTelemetryLoggerOptions.cs](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/Logs/ILogger/OpenTelemetryLoggerOptions.cs)
 
 ---
 
@@ -178,7 +191,7 @@ Set via `SimpleOpenTelemetry:Trace:Sources`, this sets up listening to other tra
 
 ---
 
-## Configuration component details
+## OpenTelemetry component configuration
 
 The next sections cover setting up the subsections of your "SimpleOpenTelemetry" config to enable components, with nuget package to add and snippets / samples:
 
@@ -190,7 +203,7 @@ The next sections cover setting up the subsections of your "SimpleOpenTelemetry"
 - [Samplers](./samplers.md)
 - [Extensions](./extensions.md)
 
-<br>
+## Available components
 
 While all OpenTelemetry components in [OpenTelemetry-dotnet-contrib](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib) distros, and vendor implementations of components _could_ be loaded using SimpleOpenTelemetry's configuration syntax, these are gated through registered assembly sets in the below folders for security and to ensure those configurations have been tested with this library:
 
