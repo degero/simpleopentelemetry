@@ -21,13 +21,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+          ssh-key: ${{ secrets.DOCO_DEPLOY_KEY }}
 
       - name: Generate doco
         run: |
           chmod +x scripts/generate-doco.sh
           ./scripts/generate-doco.sh
 
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet -- docs/otel-component-versions.md; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Commit and push if docs/otel-component-versions.md changed
+        if: steps.diff.outputs.changed == 'true'
         uses: stefanzweifel/git-auto-commit-action@b863ae1933cb653a53c021fe36dbb774e1fb9403 # v5
         with:
           commit_message: "chore: sync otel component versions doco"
