@@ -5,7 +5,7 @@
 | Package | Tested Version |
 |---|---|
 | Azure.Monitor.OpenTelemetry.AspNetCore | [1.5.0] |
-| Azure.Monitor.OpenTelemetry.Exporter | [1.8.3] |
+| Azure.Monitor.OpenTelemetry.Exporter | [1.8.1] |
 | OpenTelemetry.Exporter.Console | [1.16.0] |
 | OpenTelemetry.Exporter.Prometheus.AspNetCore | [1.16.0-beta.1] |
 | OpenTelemetry.Exporter.Prometheus.HttpListener | [1.16.0-beta.1] |
