@@ -4,7 +4,7 @@ This folder contains AWS-focused appsettings examples for SimpleOpenTelemetry.
 
 ## Included files
 
-- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar. See the [example app](../../../../example-apps/cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
+- `aspnetcore-ecs-otelcollector.json`: Base appsettings for ASP.NET Core apps that send telemetry via an ADOT (AWS Distro for OpenTelemetry) collector sidecar.
 
 ## ADOT collector configs
 
@@ -14,15 +14,11 @@ If using the AWS legacy metrics export from the collector, you will need to quer
 
 ## How to use
 
-1. Copy `aspnetcore-ecs-otelcollector.json` into your app as `appsettings.Development.json` or `appsettings.Production.json`.
-1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
-1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, region, and endpoint settings for your environment.
-1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
-1. Ensure AWS Cloudwatch resources are setup
-1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
-   For a full working application and infrastructure example, see: [example-apps/cloud/aws/ecs/README.md](../../../../example-apps/cloud/aws/ecs/README.md)
+See the [example app](../../../../example-apps/cloud/aws/ecs/) for how to use this config in AWS and configure the sidecar.
 
-## Required package install commands
+OR
+
+Follow the below:
 
 **IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
 
@@ -38,6 +34,15 @@ dotnet add package OpenTelemetry.Instrumentation.Http --version x.x.x
 dotnet add package OpenTelemetry.Extensions.AWS --version x.x.x
 dotnet add package OpenTelemetry.Resources.AWS --version x.x.x
 ```
+
+1. Copy `aspnetcore-ecs-otelcollector.json` into your app as `appsettings.Development.json` or or whichever environment you are using.
+1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
+1. Update values such as `OTEL_SERVICE_NAME`, `OTEL_RESOURCE_ATTRIBUTES`, region, and endpoint settings for your environment.
+1. Ensure the required AWS/OpenTelemetry packages are installed in your app.
+1. Ensure AWS Cloudwatch resources are setup
+1. Add `using SimpleOpenTelemetry.Extensions; builder.AddSimpleOpenTelemetry();` on your WebApplicationBuilder before the builder.Build();
+1. Run the app in docker compose with a sidecar (see the example app for a dockerfile and dockercompose)
+1. Confirm your telemetry on Cloudwatch
 
 ## X-Ray Remote Sampling
 

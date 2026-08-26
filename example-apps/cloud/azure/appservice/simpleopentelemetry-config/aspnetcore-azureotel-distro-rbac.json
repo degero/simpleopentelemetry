@@ -24,7 +24,12 @@
       "Settings": {
         "SetErrorStatusOnException": true
       },
+      "Instrumentations": ["HttpClient", "AspNetCore"],
       "Sources": ["soteltestazure.*"]
+    },
+    "Metric": {
+      "Instrumentations": ["HttpClient", "AspNetCore"],
+      "CustomMeters": ["System.Net.NameResolution"]
     }
   }
 }

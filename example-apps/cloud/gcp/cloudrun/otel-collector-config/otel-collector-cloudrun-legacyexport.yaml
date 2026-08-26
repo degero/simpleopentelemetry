@@ -141,8 +141,9 @@ processors:
           sampling_percentage: 10   # 10% of everything that isn't an error or slow
 
 exporters:
-  otlp_http/google:
-    endpoint: https://telemetry.googleapis.com
+  otlp_grpc:
+    endpoint: telemetry.googleapis.com:443
+    balancer_name: pick_first
     auth:
       authenticator: googleclientauth
   googlecloud:
@@ -165,7 +166,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter,filter/traces,resourcedetection,transform/set_project_id,resource/required_labels,batch]
-      exporters: [otlp_http/google]
+      exporters: [otlp_grpc]
     logs:
       receivers: [otlp]
       processors: [memory_limiter,resourcedetection,transform/fix_severity,resource/required_labels,batch]

@@ -48,39 +48,45 @@ Choose a name for your project. All examples use the ProjectID/Shortname 'sotelt
 
 Create a project:
 
-```
-gcloud projects create soteltest --name="SotelTest"
+```powershell
+$Env:projName = "soteltest-PUT_YOUR_CUSTOM_SUFFIX_HERE"
+gcloud projects create $Env:projName --name="SotelTest"
 ```
 
-Set active project, enable billing (or on [web console](https://console.cloud.google.com/billing/linkedaccount?project=soteltest), request who controls billing to do so) and login for ADC (Google Application Default Credentials):
+Next up, set the active project, enable billing (or on [web console](https://console.cloud.google.com/billing/linkedaccount?project=soteltest), request who controls billing to do so) and login for ADC (Google Application Default Credentials):
 
-```
-gcloud config set project soteltest
-gcloud billing projects link soteltest --billing-account=<yourbillingaccoutid>
+```powershell
+gcloud config set project $Env:projName
+gcloud billing projects link $Env:projName --billing-account=<yourbillingaccoutid>
 gcloud auth application-default login
-gcloud auth application-default set-quota-project soteltest
+gcloud auth application-default set-quota-project $Env:projName
 ```
 
 Setup api access:
 
-```
-gcloud services enable logging.googleapis.com telemetry.googleapis.com monitoring.googleapis.com cloudtrace.googleapis.com --project soteltest
+```powershell
+gcloud services enable logging.googleapis.com telemetry.googleapis.com monitoring.googleapis.com cloudtrace.googleapis.com --project $Env:projName
 ```
 
 If running the app locally (direct or with collector on Docker)
 
 ```powershell
-$Env:PROJECT_ID="soteltest"
 $Env:USER_EMAIL="yourgoogleconsoleaccount@email.com"
 
-gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/monitoring.metricWriter"
+gcloud projects add-iam-policy-binding $Env:projName --member="user:$Env:USER_EMAIL" --role="roles/monitoring.metricWriter"
 
-gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/cloudtrace.agent"
+gcloud projects add-iam-policy-binding $Env:projName --member="user:$Env:USER_EMAIL" --role="roles/cloudtrace.agent"
 
-gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/logging.logWriter"
+gcloud projects add-iam-policy-binding $Env:projName --member="user:$Env:USER_EMAIL" --role="roles/logging.logWriter"
 
-gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_EMAIL" --role="roles/serviceusage.serviceUsageConsumer"
+gcloud projects add-iam-policy-binding $Env:projName --member="user:$Env:USER_EMAIL" --role="roles/serviceusage.serviceUsageConsumer"
 
+```
+
+If you dont want to deploy to us-east1 for the next sections, run this command to choose a region name to replace with:
+
+```powershell
+gcloud run regions list
 ```
 
 <br>
@@ -89,26 +95,21 @@ gcloud projects add-iam-policy-binding $Env:PROJECT_ID --member="user:$Env:USER_
 
 In the [app](./app/) directory:
 
-1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) to `appsettings.Development.json`
-1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
+1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) `cp ..\simpleopentelemetry-config\appsettings.DirectExport.json .\appsettings.Development.json`
+1. In `appsettings.Development.json`, when using local vscode debugging launch, remove `Microsoft.Hosting.Lifetime` logging setting
+1. In `appsettings.Development.json` Adjust the `OTEL_RESOURCE_ATTRIBUTES` value for `gcp.project_id=<yourprojectname>,service.instance.id=otel-local-dev,location=us-east1` eg. gcp.project_id is the $Env:projName set earlier, or deploy region, or you want a different resource instance id show up in telemetry. You can also change the `GOOGLE_CLOUD_LOG_NAME` if you want this different.
 1. In `appsettings.Development.json` add at the top for extra debugging / logging:
 
 ```
 {
   "EnableOtelEventListeners": "true",
-  "Logging": {
-    "LogLevel": {
-      "Default": "Trace"
-    }
-  },
   ...existing lines...
 }
 ```
 
-1. In `appsettings.Development.json` adjust the `OTEL_RESOURCE_ATTRIBUTES` value for `gcp.project_id=soteltest,service.instance.id=otel-local-dev,location=us-east1` eg. if using a different projectid (shortname), or location or want a different resource instance id. You can also change the `GOOGLE_CLOUD_LOG_NAME` if you want this different.
 1. Run the app: `dotnet run`
 1. Navigate to [http://localhost:5195](http://localhost:5195) and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
+1. Validate telemetry in [Metrics Explorer](https://console.cloud.google.com/monitoring/metrics-explorer;), [Logs Explorer](https://console.cloud.google.com/logs/query) and [Trace Explorer](https://console.cloud.google.com/traces/explorer). Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 <br>
 
@@ -116,26 +117,24 @@ In the [app](./app/) directory:
 
 In the [app](./app/) directory:
 
-1. Copy [simpleopentelemetry-config/appsettings.OtelCollector.json](./simpleopentelemetry-config/appsettings.OtelCollector.json) to `appsettings.Development.json`
-1. For local vscode debugging launch use, remove `Microsoft.Hosting.Lifetime` logging setting
+1. Copy [simpleopentelemetry-config/appsettings.OtelCollector.json](./simpleopentelemetry-config/appsettings.OtelCollector.json) `cp ..\simpleopentelemetry-config\appsettings.OtelCollector.json .\appsettings.Development.json`
+1. In `appsettings.Development.json`, when using local vscode debugging launch, remove `Microsoft.Hosting.Lifetime` logging setting
 1. In `appsettings.Development.json` add at the top for extra debugging / logging:
 
 ```
 {
   "EnableOtelEventListeners": "true",
-  "Logging": {
-    "LogLevel": {
-      "Default": "Trace"
-    }
-  },
   ...existing lines...
 }
 ```
 
 In the [localdev-docker](./localdev-docker/) directory:
 
-1. Copy [localdev-docker/.env](./localdev-docker/.env.example) to `.env` file
-1. Verify values for `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_REGION` and `OTEL_RESOURCE_ATTRIBUTES` related to your project id / region. Set `GCLOUD_CONFIG_DIR` to where gcloud cli stores its files, specifically `application_default_credentials.json`
+1. Copy [localdev-docker/.env](./localdev-docker/.env.example) to '.env' `cp .\.env.example .\.env`
+1. Verify values for `GOOGLE_CLOUD_PROJECT`, `GOOGLE_CLOUD_REGION` and `OTEL_RESOURCE_ATTRIBUTES` related to your project id / region. eg. GOOGLE_CLOUD_PROJECT is the $Env:projName set earlier. Set `GCLOUD_CONFIG_DIR` to where gcloud cli stores its files, specifically `application_default_credentials.json` (search for the location in your OS user folder it may be hidden)
+
+In the [main folder](./)
+
 1. Run:
 
 ```powershell
@@ -144,7 +143,7 @@ In the [localdev-docker](./localdev-docker/) directory:
 
 1. Check in your docker that the otel container logs show `Everything is ready. Begin running and processing data.` as it may take a moment to start up.
 1. Open `http://localhost:8080` and navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
+1. Validate telemetry in [Metrics Explorer](https://console.cloud.google.com/monitoring/metrics-explorer;), [Logs Explorer](https://console.cloud.google.com/logs/query) and [Trace Explorer](https://console.cloud.google.com/traces/explorer). Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 <br>
 
@@ -154,7 +153,7 @@ _IMPORTANT_: This terraform is not PRODUCTION ready, it contains the lowest cost
 
 Google Cloud Run will log stdout/stderr out of the box, this combined with the OpenTelemetry / SimpleOpenTelemetry event logging to stdout should give adequate logging to detect any configuration issues.
 
-NOTE: If using a (recommended) github container registry image (ghcr.io). With the github cli run:
+NOTE: If using the (recommended) github container registry for your image (ghcr.io). With the github cli run:
 
 ```
 gh auth refresh -h github.com -s write:packages,read:packages
@@ -163,48 +162,51 @@ gh auth token | docker login ghcr.io -u YOUR_GITHUB_USERNAME --password-stdin
 
 In the [app](./app/) directory:
 
-1. Copy the [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) for direct exporting in Cloud Run (no collector sidecar) or [simpleopentelemetry-config/appsettings.OtelCollector.json](simpleopentelemetry-config/appsettings.OtelCollector.json) to `appsettings.Production.json`
+1. Copy the[simpleopentelemetry-config/appsettings.OtelCollector.json](simpleopentelemetry-config/appsettings.OtelCollector.json) or [appsettings.DirectExport.json](./simpleopentelemetry-config/appsettings.DirectExport.json) for direct exporting in Cloud Run (no collector sidecar, not recommended for prod) to `appsettings.Production.json`
+1. If you chose direct export, ensure you update the `OTEL_RESOURCE_ATTRIBUTES` `cloud.region` and `gcp.project_id`with the location and project id set in the [setup gcp environment step](#setup-your-google-cloud-platform-environment).
 1. In `appsettings.Production.json` add at the top for trace level extra logging:
 
 ```
 {
   "EnableOtelEventListeners": "true",
-  "Logging": {
-    "LogLevel": {
-      "Default": "Trace"
-    }
-  },
   ...existing lines...
 }
 ```
 
-1. Run in Powershell: `rmdir ..\publish\` then `dotnet publish -c Release -o ..\publish`
+3. Publish the app:
 
-In the [root](./) directory:
+```powershell
+rmdir ..\publish\
+dotnet publish -c Release -o ..\publish
+```
 
-1. Run `docker build --no-cache -t [ghcr.io/docker.io]/username/[yourtag] .`
-1. Run `docker push ghcr.io/username/[yourtag]`
+4. If using ghcr (otherwise build and push to elsewhere, like docker.io), In the [root](./) directory:
 
-In the [infra](./infra/) directory
+```
+docker build --no-cache -t [ghcr.io/docker.io]/username/[yourtag] .
+docker push ghcr.io/username/[yourtag]
+```
 
-1. Based on the app configuration you chose copy [terraform.tfvars.directexportexample](./infra/terraform.tfvars.directexportexample) or [terraform.tfvars.sidecarexample](./infra/terraform.tfvars.sidecarexample) to `terraform.tfvars`
+In the [infra](./infra/) directory:
 
-1. Update `terraform.tfvars` file `app_image` with your image '`ghcr.io/username/[yourtag]`', set `region` to your project region and `project_id`/`otel_resource_attributes` if project is not '`soteltest`'.
+1. Based on the app configuration you chose copy [terraform.tfvars.sidecarexample](./infra/terraform.tfvars.sidecarexample) or [terraform.tfvars.directexportexample](./infra/terraform.tfvars.directexportexample) to `terraform.tfvars`
 
-1. Cloud Run injects tracing and has sampling that cannot be configured which impacts tracing negatively. To verify all your traces, set the 'demonstration' `ignore_cloudrun_trace_sampling` terraform variable true . See [otel-collector-config/README.md](./otel-collector-config/README.md) and the notes in the app [app/Program.cs](./app/Program.cs) for further detail.
+1. Update `terraform.tfvars` file `app_image` with your image (eg '[ghcr.io/docker.io]/username/[yourtag]'), set `gcp_region` to your project region and `gcp_project_id`/`otel_resource_attributes` if projectid set in [setup gcp environment step](#setup-your-google-cloud-platform-environment) is not '`soteltest`'.
 
-1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/otelcollector-cloudrun-otlpexport.yaml](./otel-collector-config/otel-collector-cloudrun-otlpexport.yaml) or [otel-collector-config/otelcollector-cloudrun-legacyexport.yaml](./otel-collector-config/otel-collector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` beside the terraform.
+1. Cloud Run injects tracing and has sampling that cannot be configured which impacts tracing negatively. To verify all your traces, set the 'demonstration' `ignore_cloudrun_trace_sampling` terraform variable true. See [otel-collector-config/README.md](./otel-collector-config/README.md) and the notes in the app [app/Program.cs](./app/Program.cs) for further detail.
+
+1. If using `terraform.tfvars.sidecarexample`. Copy either recommended [otel-collector-config/otelcollector-cloudrun-otlpexport.yaml](./otel-collector-config/otel-collector-cloudrun-otlpexport.yaml) or [otel-collector-config/otelcollector-cloudrun-legacyexport.yaml](./otel-collector-config/otel-collector-cloudrun-legacyexport.yaml) to `otel-collector-config.yaml` located beside the terraform.
 
 1. Deploy the terraform:
 
-```
+```powershell
 terraform init
 terraform plan
 terraform apply
 ```
 
 1. Use `service_url` output to navigate between the two pages to generate telemetry
-1. Validate telemetry in Cloud Logging, Trace Explorer, and Cloud Monitoring. Logs appear under the logname 'otlp' by default. You can check app side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
+1. Validate telemetry in [Metrics Explorer](https://console.cloud.google.com/monitoring/metrics-explorer;), [Logs Explorer](https://console.cloud.google.com/logs/query) and [Trace Explorer](https://console.cloud.google.com/traces/explorer). Logs appear under the logname 'otlp' by default. You can check app-side metrics by selecting 'Prometheus Target > Aspnetcore > ...'
 
 **Troubleshooting**:
 
@@ -224,7 +226,7 @@ terraform destroy
 
 If you don't having billing access, request who does to unlink before delete
 
-```
+```powershell
 gcloud billing projects unlink soteltest
 gcloud projects delete soteltest
 ```

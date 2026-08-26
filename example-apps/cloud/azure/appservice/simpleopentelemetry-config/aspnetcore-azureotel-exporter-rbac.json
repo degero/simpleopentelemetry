@@ -25,27 +25,18 @@
       }
     ],
     "Trace": {
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ],
+      "Instrumentations": ["HttpClient", "AspNetCore"],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [
-        "soteltestazure.*"
-      ]
+      "Sources": ["soteltestazure.*"]
     },
     "Metric": {
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ]
+      "CustomMeters": ["System.Net.NameResolution"],
+      "Instrumentations": ["HttpClient", "AspNetCore"]
     },
     "Resource": {
-      "Detectors": [
-        "azure"
-      ]
+      "Detectors": ["azure"]
     }
   }
 }

@@ -42,3 +42,8 @@ variable "tags" {
     "environment" = "development"
   }
 }
+
+variable "use_rbac" {
+  description = "Use RBAC access from appservice to appinsights"
+  type        = bool
+}

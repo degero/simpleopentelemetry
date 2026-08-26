@@ -27,18 +27,11 @@
           "type": "AzureMonitor"
         }
       ],
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore",
-        "SqlClient",
-        "EFCore"
-      ],
+      "Instrumentations": ["HttpClient", "AspNetCore", "SqlClient", "EFCore"],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [
-        "yourappnamespace.*"
-      ]
+      "Sources": ["yourappnamespace.*"]
     },
     "Metric": {
       "Exporters": [
@@ -46,13 +39,8 @@
           "type": "AzureMonitor"
         }
       ],
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ],
-      "CustomMeters": [
-        "System.Net.NameResolution"
-      ]
+      "Instrumentations": ["HttpClient", "AspNetCore"],
+      "CustomMeters": ["System.Net.NameResolution"]
     },
     "Log": {
       "Exporters": [
@@ -65,9 +53,7 @@
       }
     },
     "Resource": {
-      "Detectors": [
-        "azure"
-      ]
+      "Detectors": ["azure"]
     }
   }
 }

@@ -7,6 +7,7 @@ app_name              = "app-soteltestazure"
 app_service_plan_name = "plan-soteltestazure"
 app_insights_name     = "appi-soteltestazure"
 otel_service_name     = "soteltestazure"
+use_rbac              = true
 
 tags = {
   "project"     = "demo-simpleopentelemetry"

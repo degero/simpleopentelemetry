@@ -146,8 +146,9 @@ processors:
         action: insert
   
 exporters:
-  otlp_http/google:
-    endpoint: https://telemetry.googleapis.com
+  otlp_grpc:
+    endpoint: telemetry.googleapis.com:443
+    balancer_name: pick_first
     auth:
       authenticator: googleclientauth
 
@@ -157,15 +158,15 @@ service:
     traces:
       receivers: [otlp]
       processors: [memory_limiter,filter/traces,resourcedetection,resource/required_labels,transform/set_project_id,batch]
-      exporters: [otlp_http/google]
+      exporters: [otlp_grpc]
     logs:
       receivers: [otlp]
       processors: [memory_limiter,resourcedetection,resource/required_labels,transform/fix_severity,transform/log_name,batch]
-      exporters: [otlp_http/google]
+      exporters: [otlp_grpc]
     metrics:
       receivers: [otlp]
       processors: [memory_limiter,filter/self-metrics,resourcedetection,resource/required_labels,transform/collision,batch]
-      exporters: [otlp_http/google]
+      exporters: [otlp_grpc]
   telemetry:
     resource:
         service.name: opentelemetry-collector/metrics

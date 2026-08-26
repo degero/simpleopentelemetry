@@ -27,27 +27,20 @@
           "type": "AzureMonitor"
         }
       ],
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ],
+      "Instrumentations": ["HttpClient", "AspNetCore"],
       "Settings": {
         "SetErrorStatusOnException": true
       },
-      "Sources": [
-        "soteltestazure.*"
-      ]
+      "Sources": ["soteltestazure.*"]
     },
     "Metric": {
+      "CustomMeters": ["System.Net.NameResolution"],
       "Exporters": [
         {
           "type": "AzureMonitor"
         }
       ],
-      "Instrumentations": [
-        "HttpClient",
-        "AspNetCore"
-      ]
+      "Instrumentations": ["HttpClient", "AspNetCore"]
     },
     "Log": {
       "Exporters": [
@@ -60,9 +53,7 @@
       }
     },
     "Resource": {
-      "Detectors": [
-        "azure"
-      ]
+      "Detectors": ["azure"]
     }
   }
 }
