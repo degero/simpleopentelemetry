@@ -19,7 +19,6 @@
         "Options": {
           "Credential": "Azure.Identity.DefaultAzureCredential",
           "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000",
-          "SamplingRatio": "0.1",
           "EnableTraceBasedLogsSampler": "false"
         }
       }

@@ -91,7 +91,15 @@ If you opt for (default) RBAC, see here for [setup guide](https://learn.microsof
 
 ## Documentation
 
+For the full set of options see the [snippets/distro/azuremonitoraspnetcore.json](../../snippets/distro/azuremonitoraspnetcore.json) and [/snippets/exporter/azuremonitor.json](../../snippets/exporter/azuremonitor.json)
+
 For detailed documentation on all the configurable components of the aspnetcore and exporter libs see [Configure Azure Monitor OpenTelemetry](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-configuration?tabs=aspnetcore)
+
+## Sampling
+
+Sampling can be set by either options or ENV vars. For more details on Sampling settings see [Enable sampling](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-configuration?tabs=aspnetcore#enable-sampling)
+
+Sampling in these files are set to a MS recommended very safe 5% fixed percentage. But you should read the above and adjust based on your usage scenario.
 
 ## Troubleshooting
 
@@ -101,28 +109,6 @@ For detailed documentation on all the configurable components of the aspnetcore 
 - If using `DefaultAzureCredential` and running locally, ensure you are logged in with `az login` and have set the connectionstring to your appinsights instance instrumentation key.
 - Validate `service.name` and custom resource values if telemetry metadata is not appearing as expected.
 - The log analytics assignment may have issues on deployment where you will see an error when browsing telemetry 'Error retrieving data'. If you re-assign the workspace in the appinsights properties this should resolve.
-
-## App Settings Configuration Reference
-
-| App Setting Name                                                    | Value                        | Purpose                                                                      |
-| ------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------- |
-| `APPLICATIONINSIGHTS_STATSBEAT_DISABLED`                            | `true`                       | Disable Application Insights statsbeat (internal metrics) to reduce overhead |
-| `OTEL_RESOURCE_ATTRIBUTES`                                          |                              | Add custom resource attributes for telemetry identification                  |
-| `OTEL_SERVICE_NAME`                                                 | `soteltestazure`             | Service name for OpenTelemetry                                               |
-| `SCM_DO_BUILD_DURING_DEPLOYMENT`                                    | `true`                       | Enable build during App Service deployment (if using Git/ZIP deployment)     |
-| `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
-| `SimpleOpenTelemetry:DistroOptions:ConnectionString`                | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
-| `SimpleOpenTelemetry:BuilderExtensions:0:Options:ConnectionString`  | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
-| `OTEL_TRACES_SAMPLER`                                               | `microsoft.fixed_percentage` | OpenTelemetry sampler                                                        |
-| `OTEL_TRACES_SAMPLER_ARG`                                           | `0.05`                       | OpenTelemetry sampler arg (in this case 5% traces are consumed)              |
-
-**Note:** In App Service environment variables, colons (`:`) in configuration keys are converted to double underscores (`__`). For example, `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` becomes `SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString` in the environment.
-
-## Other options and Sampling
-
-Options can be set with the settings file (eg 'EnableTraceBasedLogsSampler' correlates to the code based Action<> options) and sampling by either options or ENV vars. For more details on Sampling settings see [Enable sampling](https://learn.microsoft.com/en-us/azure/azure-monitor/app/opentelemetry-configuration?tabs=aspnetcore#enable-sampling)
-
-Sampling in these files are set to a MS recommended very safe 5% fixed percentage. But you should read the above and adjust based on your usage scenario.
 
 ## Environment variables
 
@@ -148,6 +134,22 @@ Other trace/metric instrumentations that may be useful in the this hosting scena
 See the [SimpleOpenTelemetry README.md](../../README.md#process-runtime) to set these up
 
 A custom meter for System.Net.NameResolution is included as an example and can be removed if this metric is unneeded
+
+## App Settings Configuration Reference
+
+| App Setting Name                                                    | Value                        | Purpose                                                                      |
+| ------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------- |
+| `APPLICATIONINSIGHTS_STATSBEAT_DISABLED`                            | `true`                       | Disable Application Insights statsbeat (internal metrics) to reduce overhead |
+| `OTEL_RESOURCE_ATTRIBUTES`                                          |                              | Add custom resource attributes for telemetry identification                  |
+| `OTEL_SERVICE_NAME`                                                 | `soteltestazure`             | Service name for OpenTelemetry                                               |
+| `SCM_DO_BUILD_DURING_DEPLOYMENT`                                    | `true`                       | Enable build during App Service deployment (if using Git/ZIP deployment)     |
+| `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
+| `SimpleOpenTelemetry:DistroOptions:ConnectionString`                | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
+| `SimpleOpenTelemetry:BuilderExtensions:0:Options:ConnectionString`  | `InstrumentationKey=<key>`   | Application Insights instrumentation key (set by Terraform)                  |
+| `OTEL_TRACES_SAMPLER`                                               | `microsoft.fixed_percentage` | OpenTelemetry sampler                                                        |
+| `OTEL_TRACES_SAMPLER_ARG`                                           | `0.05`                       | OpenTelemetry sampler arg (in this case 5% traces are consumed)              |
+
+**Note:** In App Service environment variables, colons (`:`) in configuration keys are converted to double underscores (`__`). For example, `SimpleOpenTelemetry:ExporterOptions:AzureMonitor:ConnectionString` becomes `SimpleOpenTelemetry__ExporterOptions__AzureMonitor__ConnectionString` in the environment.
 
 ## Library Quirks
 
