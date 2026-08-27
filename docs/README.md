@@ -1,6 +1,6 @@
 # SimpleOpenTelemetry Documentation
 
-SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotnet's IConfiguration. If you are unfamiliar with OpenTelemetry or it's different ways of instrumenting apps, see the [What is OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/) guide.
+SimpleOpenTelemetry aids OpenTelemetry's code-based app instrumentation via dotnet's [IConfiguration](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration) providers. If you are unfamiliar with OpenTelemetry or it's different ways of instrumenting apps, see the [What is OpenTelemetry](https://opentelemetry.io/docs/what-is-opentelemetry/) guide.
 
 ## Getting Started
 
@@ -17,7 +17,7 @@ You can use one of the [localdev example applications](../example-apps/localdev/
 ⚠️ **There are OpenTelemetry package dependencies of SimpleOpenTelemetry pinned at a specific versions. See the main [README.md dependencies](../README.md#dependencies) for further information** ⚠️
 
 - Add the SimpleOpenTelemetry nupkg: `dotnet add package SimpleOpenTelemetry`
-- Add to the root of your `appsettings.{environment}.json`:
+- Add to the root of your `appsettings.{environment}.json` adjusting values to your app details:
   ```json
   "OTEL_SERVICE_NAME": "yourappname",
   "OTEL_RESOURCE_ATTRIBUTES": "service.version=1.0.0,service.namespace=yourservicenamespace,deployment.environment.name=dev",
@@ -60,41 +60,27 @@ You can use one of the [localdev example applications](../example-apps/localdev/
 
   - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
-- Read the next section for configuration guidance or use [example configurations](./configuration/examples/)
+- Read the next section for configuration guidance (eg setting where to send your telemetry) or use [example configurations](./configuration/examples/)
 
 ## Configuration
 
-For full details of `"SimpleOpenTelemetry": {}` config section See [configuration/README.md](./configuration/README.md)
+For full details of `"SimpleOpenTelemetry": {}` config section setup see [configuration/README.md](./configuration/README.md)
 
-## How SimpleOpenTelemetry uses OpenTelemetry
-
-`AddSimpleOpenTelemetry()` initialises OpenTelemetry with either the service collection extension `AddOpenTelemetry()` for generic host or `OpenTelemetrySdk.Create()` for standalone apps. It will then process the configuration and call the OpenTelemetryBuilder fluentapi methods to configure settings and components.
-
-For more detail on OpenTelemetry's two methods of initialisation see:
-
-- [Initialize the SDK using a host](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/README.md#initialize-the-sdk-using-a-host)
-
-- [Initialize the SDK manually](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/README.md#initialize-the-sdk-manually)
-
-SimpleOpenTelemetry Settings and components are read from the IConfiguration and the OpenTelemetry fluentapi is called. In the case of components the assembly is loaded and the fluent api extension methods of that component are invoked via reflection.
-
-OpenTelemetry automatically reads in it's standard 'OTEL' env vars from either IConfiguration or Environment variables.
-
-## Consuming App Telemetry
+## Consuming app telemetry
 
 There are many destinations you can export your telemetry to. The [example-apps/cloud](../example-apps/cloud/) and [configuration//examples/](./configuration/examples/) cover cloud environments and 3rd party services. The [example-apps/localdev/](../example-apps/localdev/) show using local Grafana LGTM and Jaeger.
 
-## Instrumenting your apps
+## App instrumentation tips
 
 Telemetry can be quite costly (especially traces) in hosting costs, resource needs, performance and storage depending on the scale of your app. Ensure you only gather what you identify as important for your monitoring / alerting needs and ensure sampling settings are in place for production environments.
 
-You can alter your app in the below areas to utilise all the telemetry features
+You can alter your app code in the below way to get an optimal observability outcome.
 
 ### Logging
 
 Logging to OpenTelemetry can be done with a standard dotnet ILogger<> with all the log levels supported.
 
-Using the [Logging setting](configuration/README.md#logging) `IncludeFormattedMessage` is recommended if using parameterised logging eg `_logger.LogInformation("Test message. {Action}",action);` and you want parameter easy to query in your monitoring platform.
+Using the [Logging setting](configuration/README.md#logging) `IncludeFormattedMessage` is recommended if using parameterised logging eg `_logger.LogInformation("Test message. {Action}",action);` also making it is easy to query by parameter in your monitoring platform.
 
 ### Distributed Tracing
 
@@ -163,3 +149,17 @@ Information on collecting OpenTelemetry events: [OpenTelemetry Troubleshooting](
 
 You can also make use of OpenTelemetry's diagnostics writer. This writes any diagnostics to log files. You can place a OTEL_DIAGNOSTICS.json file in the apps working directory.
 [OpenTelemetry-dotnet self-diagnostics](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry/README.md#self-diagnostics)
+
+## How SimpleOpenTelemetry uses OpenTelemetry
+
+`AddSimpleOpenTelemetry()` initialises OpenTelemetry by calling either it's service collection extension `AddOpenTelemetry()` for generic host or `OpenTelemetrySdk.Create()` for standalone apps. It will then process the configuration and call the OpenTelemetryBuilder fluentapi methods to configure settings and components.
+
+For more detail on OpenTelemetry's two methods of initialisation see:
+
+- [Initialize the SDK using a host](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/README.md#initialize-the-sdk-using-a-host)
+
+- [Initialize the SDK manually](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/README.md#initialize-the-sdk-manually)
+
+SimpleOpenTelemetry Settings and components are read from the IConfiguration and the OpenTelemetry fluentapi is called. In the case of components the assembly is loaded and the fluent api extension methods of that component are invoked via reflection.
+
+OpenTelemetry automatically reads in it's standard 'OTEL' environment variables from either IConfiguration or environment variables.
