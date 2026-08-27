@@ -25,8 +25,6 @@ Both the OpenTelemetry SDK exporters (otlp, console, prometheus) and other contr
 
 You can set exporter options for all signals in `SimpleOpenTelemetry:ExporterOptions:exportername` or under `SimpleOpenTelemetry:[Metric/Trace/Log]:Exporters` array item `options` field. Setting them in the latter overrides an 'all signal' option.
 
-For examples listing all possible options (in their current default) see the [snippets/exporter folder](./snippets/exporter/)
-
 Available exporters are:
 
 - [azuremonitor](#azure-monitor-exporter)
@@ -45,7 +43,7 @@ Available exporters are:
 
 **Options**: optional, see [snippets/exporter/otlp.json](./snippets/exporter/otlp.json) and [OtlpExporterOptions.cs](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)
 
-**Nuget Package**: none (builtin to OpenTelemetry .net lib)
+**Nuget Package**: none (included in SimpleOpenTelemetry)
 
 SimpleOpenTelemetry:Log/Trace/Metric:Exporters[] json:
 

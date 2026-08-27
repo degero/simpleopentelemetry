@@ -2,6 +2,7 @@
 
 ## Table of contents
 
+- [Overview](#overview)
 - [Configuration structure](#configuration-structure)
 - [Configuration file setup](#configuration-file-setup)
 - [Enabling telemetry signal collection](#enabling-telemetry-signal-collection)
@@ -30,9 +31,9 @@ SimpleOpenTelemetry configuration at a high level is is made up of settings and 
 
 Details on each of these components can be found in [OpenTelemetry.io docs/concepts](https://opentelemetry.io/docs/concepts/).
 
-While JSON file setup is the common means of configuring SimpleOpenTelemetry, and all examples / snippets are in this format, you can choose from other [IConfiguration providers](#configuration-sources).
+While JSON file setup is the common means of configuring SimpleOpenTelemetry, and all [examples](./examples/) / [snippets](./snippets/) are in this format, you can choose from other [IConfiguration providers](#configuration-sources).
 
-SimpleOpenTelemetry will set up all the components with OpenTelemetry for your application by processing your configuration. If the `"SimpleOpenTelemetry"` config section is not set it will not run OpenTelemetry's `AddOpenTelemetry()` and emit a critical error event (not an exception).
+SimpleOpenTelemetry will set up settings and components with OpenTelemetry by processing your configuration. If the `"SimpleOpenTelemetry"` config section is not set it will not run OpenTelemetry's `AddOpenTelemetry()` and emit a critical error event (not an exception).
 
 Similarly for subsections including `Metric/Trace/Log`, OpenTelemetry's `WithLogging/Tracing/Metrics()` extension methods will only run (and subsequent exports etc) when the corresponding section exists. If at least one is not set it will not run AddOpenTelemetry() with your application and emit a critical error event.
 
@@ -78,15 +79,15 @@ For information on viewing these events see [Error handling and diagnostics](../
 
 ## Configuration file setup
 
-To get started, add the configuration structure to the root of your `appsettings.{Environment}.json` and follow the next sections covering settings and components. Empty sections are not required.
+Add the configuration structure to the root of your `appsettings.{Environment}.json / appsettings.json` file and follow the next sections covering settings and components. Empty sections are not required.
 
 The environment variables `"OTEL_SERVICE_NAME", "OTEL_RESOURCE_ATTRIBUTES"` also need to be defined in order for useful telemetry to be emitted. You can set these in the root of your file for convenience but it is not recommended in deployed environments (as they need to be adjusted by environment). Use the template from [docs/README.md Getting Started](../README.md#with-a-new--existing-dotnet-app) if you haven't already set these.
 
 ## Enabling telemetry signal collection
 
-OpenTelemetry signal collection is enabled via setting `SimpleOpenTelemetry:[Metric/Trace/Log]` sections as `{}`. Omitting any of these will not register the collection / exporting or that signals telemetry. As an example, if your cloud provider is already collecting logs you need you may opt omit the `"Log"` section.
+Omitting any of the `SimpleOpenTelemetry:[Metric/Trace/Log]` sections will not register the collection / exporting or that signals telemetry. As an example, if your cloud provider is already collecting logs you need you may opt omit the `"Log"` section.
 
-Normally you will want to add other components for each signal, most importantly an exporter (like OTLP). These are covered in the [OpenTelemetry ](#opentelemetry-component-configuration)
+Normally you will want to add other components for each signal, at a minimum an exporter (like OTLP). These are covered in the [OpenTelemetry component configuration](#opentelemetry-component-configuration)
 
 Below covers information about each signal collection settings and documentation. See [App instrumentation tips](../README.md#app-instrumentation-tips) for guidance on what to set these to.
 
