@@ -1,8 +1,8 @@
 # SimpleOpenTelemetry supported otel components
 
-These nuget packages are the recommended versions to use with SimpleOpenTelemetry.
+These are the recommended versions of nuget packages to use with SimpleOpenTelemetry.
 
-| Package | Tested Version |
+| Package | Version |
 |---|---|
 | Azure.Monitor.OpenTelemetry.AspNetCore | [1.5.0] |
 | Azure.Monitor.OpenTelemetry.Exporter | [1.8.1] |
