@@ -1,6 +1,6 @@
-# SimpleOpenTelemetry tested otel components
+# SimpleOpenTelemetry supported otel components
 
-> This file is auto-generated from Directory.Packages.props. Do not edit by hand.
+These nuget packages are the recommended versions to use with SimpleOpenTelemetry.
 
 | Package | Tested Version |
 |---|---|
@@ -29,3 +29,6 @@
 | OpenTelemetry.Resources.Process | [1.16.0-rc.1] |
 | OpenTelemetry.Resources.ProcessRuntime | [1.16.0-beta.1] |
 | OpenTelemetry.Sampler.AWS | [0.1.0-alpha.11] |
+
+> This file is auto-generated from Directory.Packages.props. Do not edit by hand.
+
