@@ -16,13 +16,16 @@ if [ ${#rows[@]} -eq 0 ]; then
 fi
 
 {
-  echo "# SimpleOpenTelemetry tested otel components"
+  echo "# SimpleOpenTelemetry supported otel components"
   echo
-  echo "> This file is auto-generated from Directory.Packages.props. Do not edit by hand."
+  echo "These nuget packages are the recommended versions to use with SimpleOpenTelemetry."
   echo
   echo "| Package | Tested Version |"
   echo "|---|---|"
   printf '%s\n' "${rows[@]}"
+  echo
+  echo "> This file is auto-generated from Directory.Packages.props. Do not edit by hand."
+  echo
 } > "$OUTPUT_FILE"
 
 echo "Wrote $OUTPUT_FILE with ${#rows[@]} tested plugin versions."
