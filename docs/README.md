@@ -60,9 +60,13 @@ You can use one of the [localdev example applications](../example-apps/localdev/
 
   - Optionally, to validate OpenTelemetry has the key otel resource attributes and service.name set, run `app.Services.SimpleOpenTelemetryValidate();` after `var sdk = SimpleOpenTelemetryBootstrap.Add(config);`. This writes any errors to the EventLog and returns false if invalid if you wish to throw a unhandled exception.
 
-- Read the next sections for configuration guidance and snippets or [example configurations](./configuration/examples/) to setup the SimpleOpenTelemetry section.
+- Read the next section for configuration guidance or use [example configurations](./configuration/examples/)
 
-## How SimpleOpenTelemetry initialises OpenTelemetry
+## Configuration
+
+For full details of `"SimpleOpenTelemetry": {}` config section See [configuration/README.md](./configuration/README.md)
+
+## How SimpleOpenTelemetry uses OpenTelemetry
 
 `AddSimpleOpenTelemetry()` initialises OpenTelemetry with either the service collection extension `AddOpenTelemetry()` for generic host or `OpenTelemetrySdk.Create()` for standalone apps. It will then process the configuration and call the OpenTelemetryBuilder fluentapi methods to configure settings and components.
 
@@ -72,11 +76,9 @@ For more detail on OpenTelemetry's two methods of initialisation see:
 
 - [Initialize the SDK manually](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/docs/README.md#initialize-the-sdk-manually)
 
-## Configuration
+SimpleOpenTelemetry Settings and components are read from the IConfiguration and the OpenTelemetry fluentapi is called. In the case of components the assembly is loaded and the fluent api extension methods of that component are invoked via reflection.
 
-If you wish to skip reading the configuration information for now see [example configs](./configuration/examples/) to find the configuration that closest suits your cloud / 3rd party telemetry services needs. You may wish to check this later to find any other instrumentation features you can make use of.
-
-See [configuration/README.md](./configuration/README.md) for full details of each configuration area.
+OpenTelemetry automatically reads in it's standard 'OTEL' env vars from either IConfiguration or Environment variables.
 
 ## Consuming App Telemetry
 
@@ -124,11 +126,11 @@ Several Dotnet SDK libs generate metrics which is usually configured to be colle
 
 ## SimpleOpenTelemetry Error handling and Diagnostics
 
-## Error handling
+### Error handling
 
 SimpleOpenTelemetry follows the same [spec guideline](https://opentelemetry.io/docs/specs/otel/error-handling/) as OpenTelemetry for error handling in that it _'MUST NOT throw unhandled exceptions at runtime.'_. Building on that, it will not throw any unhandled exceptions if a configuration does not work (eg config env var / files change), it will not prevent the app from running. SimpleOpenTelemetry WILL throw exceptions for null parameters passed to it's registration methods.
 
-## Diagnostics
+### Diagnostics
 
 SimpleOpenTelemetry records logs or errors as diagnostics events (as OpenTelemetry does). Note that emitted "SimpleOpenTelemetry-" prefixed events only occur at the app startup and will only emit if a listener is registered before calling `AddSimpleOpenTelemetry()`.
 

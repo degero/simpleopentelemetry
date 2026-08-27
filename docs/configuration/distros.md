@@ -31,12 +31,11 @@ Available distros are:
 
 **IMPORTANT**: ⚠️ _This Distro only supports use with generic host WebApplication (does not support using with SimpleOpenTelemetryBootstrap.Add())._ ⚠️
 
-**Nuget Package**:
+**Signals supported**: trace, metric, log
 
-```
-dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version x.x.x`
-dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
-```
+**Package Stability**: Stable
+
+**Nuget Package**: `dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version x.x.x`, (if using RBAC to connect to app insights) `dotnet add package Azure.Identity`
 
 SimpleOpenTelemetry:Distro json:
 

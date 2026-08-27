@@ -62,7 +62,7 @@ These can be used as a good starting point to test out building a config to your
 
 ## Documentation
 
-Documentation for setting up SimpleOpenTelemetry and other localdev and cloud app examples can be found in [docs/README.md](./docs/README.md)
+[docs/README.md](./docs/README.md)
 
 ## Supported OpenTelemetry components
 

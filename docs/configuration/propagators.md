@@ -44,17 +44,16 @@ If you wish to disable this, explicitly set SimpleOpenTelemetry:Trace:Propagator
 
 ## AWS X-Ray Id Propagator
 
-Package Stability: Stable
+**Package Stability**: Stable
 
-Documentation: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
-
-Nuget Package:
-`dotnet add package OpenTelemetry.Extensions.AWS --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Extensions.AWS --version x.x.x`
 
 SimpleOpenTelemetry:Trace:Propagators[] json:
 
 ```json
 "awsxray"
 ```
+
+**Documentation**: [AWS X-Ray Id Propagator](https://github.com/open-telemetry/OpenTelemetry-dotnet-contrib/blob/main/src/OpenTelemetry.Extensions.AWS/README.md)
 
 ---
