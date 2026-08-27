@@ -4,6 +4,8 @@ concurrency:
   cancel-in-progress: false
 
 on:
+  release:
+    types: [published]
   push:
     tags:
       - "v*"
@@ -28,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.release.tag_name || github.ref_name }}
           fetch-depth: 0 # MinVer needs full history to find the tag for versioning
 
       - name: Setup .NET
@@ -39,11 +42,12 @@ jobs:
 
       - name: Pin README links to release tag
         run: |
-          if [[ "${{ github.ref_type }}" != "tag" ]]; then
-            echo "::error::Release workflow must run against a tag ref, got ${{ github.ref_type }}:${{ github.ref_name }}"
+          TAG="${{ github.event.release.tag_name || github.ref_name }}" # covers both release event and pushed rc tags
+          if [[ -z "$TAG" ]]; then
+            echo "::error::Could not resolve a tag for this release run"
             exit 1
           fi
-          sed -i "s/{{TAG}}/${{ github.ref_name }}/g" src/SimpleOpenTelemetry/README.nuget.md
+          sed -i "s/{{TAG}}/${TAG}/g" src/SimpleOpenTelemetry/README.nuget.md
 
       - name: Dotnet restore (lockfile)
         run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
