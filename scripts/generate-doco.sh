@@ -18,9 +18,9 @@ fi
 {
   echo "# SimpleOpenTelemetry supported otel components"
   echo
-  echo "These nuget packages are the recommended versions to use with SimpleOpenTelemetry."
+  echo "These are the recommended versions of nuget packages to use with SimpleOpenTelemetry."
   echo
-  echo "| Package | Tested Version |"
+  echo "| Package | Version |"
   echo "|---|---|"
   printf '%s\n' "${rows[@]}"
   echo

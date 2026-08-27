@@ -1,6 +1,6 @@
 # Extensions Configuration
 
-⚠️ **IMPORTANT** **It is recommended you install [package versions tested against SimpleOpenTelemetry](../otel-component-versions.md) referenced below.** ⚠️
+⚠️ **IMPORTANT** **It is recommended you install these [package versions](../otel-component-versions.md) used below.** ⚠️
 
 <br/>
 

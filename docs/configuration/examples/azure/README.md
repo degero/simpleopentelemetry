@@ -18,7 +18,7 @@ These configs include registering all optional packages mentioned below and cust
 
 ## Packages
 
-**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install these [package versions](../../../otel-component-versions.md) used below.** ⚠️
 
 ### Required for all configs
 

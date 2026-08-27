@@ -26,7 +26,7 @@ with an existing / new aspnetcore app:
 
 ## Required package install commands
 
-**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install these [package versions](../../../otel-component-versions.md) used below.** ⚠️
 
 <br/>
 
