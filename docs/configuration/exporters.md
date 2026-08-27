@@ -25,10 +25,6 @@ Both the OpenTelemetry SDK exporters (otlp, console, prometheus) and other contr
 
 You can set exporter options for all signals in `SimpleOpenTelemetry:ExporterOptions:exportername` or under `SimpleOpenTelemetry:[Metric/Trace/Log]:Exporters` array item `options` field. Setting them in the latter overrides an 'all signal' option.
 
-For a list of supported exporters see [MetricExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/MetricExporterEnum.cs), [LogExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/LogExporterEnum.cs) and [TraceExporterEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Exporter/TraceExporterEnum.cs)
-
-For examples listing all possible options (in their current default) see the [snippets/exporter folder](./snippets/exporter/)
-
 Available exporters are:
 
 - [azuremonitor](#azure-monitor-exporter)
@@ -45,17 +41,17 @@ Available exporters are:
 
 **Package Stability**: Stable
 
-**Documentation**: [OpenTelemetry OTLP Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/README.md)
-
 **Options**: optional, see [snippets/exporter/otlp.json](./snippets/exporter/otlp.json) and [OtlpExporterOptions.cs](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/OtlpExporterOptions.cs)
 
-**Nuget Package**: none (builtin to OpenTelemetry .net lib)
+**Nuget Package**: none (included in SimpleOpenTelemetry)
 
 SimpleOpenTelemetry:Log/Trace/Metric:Exporters[] json:
 
 ```json
 { "type": "otlp", "options": { ... } }
 ```
+
+**Documentation**: [OpenTelemetry OTLP Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.OpenTelemetryProtocol/README.md)
 
 **Notes**: All OpenTelemetry SDK OTEL\_ environment variables or (root) settings json values will be used to send to OTLP endpoints for entries don't have options defined.
 
@@ -67,12 +63,9 @@ There are unsupported configuration options such as HttpFactory. If you wish to 
 
 **Package Stability**: Stable (for dev purposes only)
 
-**Documentation**: [OpenTelemetry Console Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Console/README.md)
+**Options**: none (unsupported, see documentation for supported OTEL environment variables/json config)
 
-**Options**: none (unsupported, see above readme for supported OTEL\_\* environment variables/json config)
-
-**Nuget Package**:
-`dotnet add package OpenTelemetry.Exporter.Console --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Exporter.Console --version x.x.x`
 
 SimpleOpenTelemetry:Log/Trace/Metric:Exporters[] json:
 
@@ -80,20 +73,17 @@ SimpleOpenTelemetry:Log/Trace/Metric:Exporters[] json:
 { "type": "Console" }
 ```
 
+**Documentation**: [OpenTelemetry Console Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Console/README.md)
+
 ## Prometheus HttpListener Exporter
 
 **Signals supported**: metric
 
 **Package Stability**: Stable (for dev purposes only)
 
-**Documentation**: [OpenTelemetry Prometheus HttpListener Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.HttpListener/README.md)
-
 **Options**: optional, see [snippets/exporter/prometheushttplistener.json](./snippets/exporter/prometheushttplistener.json) and [PrometheusHttpListenerOptions.cs](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.HttpListener/PrometheusHttpListenerOptions.cs)
 
-**Notes**: This is only for dev use. It is never intended for prod. Defaults to host prometheus scrape endpoint on http://localhost:9464/metrics. Not recommended for aspnetcore apps, instead use [Prometheus AspNetCore Exporter](#prometheus-aspnetcore-exporter-prerelease)
-
-**Nuget Package**:
-`dotnet add package OpenTelemetry.Exporter.Prometheus.HttpListener --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Exporter.Prometheus.HttpListener --version x.x.x`
 
 SimpleOpenTelemetry:Metric:Exporters[] json:
 
@@ -101,24 +91,27 @@ SimpleOpenTelemetry:Metric:Exporters[] json:
 { "type": "prometheushttplistener", "options": {...} }
 ```
 
+**Documentation**: [OpenTelemetry Prometheus HttpListener Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.HttpListener/README.md)
+
+**Notes**: This is only for dev use. It is never intended for prod. Defaults to host prometheus scrape endpoint on http://localhost:9464/metrics. Not recommended for aspnetcore apps, instead use [Prometheus AspNetCore Exporter](#prometheus-aspnetcore-exporter-prerelease)
+
 ## Prometheus AspNetCore Exporter
 
 **Signals supported**: metric
 
 **Package Stability**: Beta (as of july 2026)
 
-Documentations: [OpenTelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md)
-
 **Options**: optional, see [snippets/exporter/prometheusaspnetcore.json](./snippets/exporter/prometheusaspnetcore.json) and [PrometheusAspNetCoreOptions.cs)](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/PrometheusAspNetCoreOptions.cs)
 
-**Nuget Package**:
-`dotnet add package OpenTelemetry.Exporter.Prometheus.AspNetCore --version x.x.x`
+**Nuget Package**: `dotnet add package OpenTelemetry.Exporter.Prometheus.AspNetCore --version x.x.x`
 
 SimpleOpenTelemetry:Metric:Exporters[] json:
 
 ```json
 { "type": "prometheusaspnetcore", "options": {...} }
 ```
+
+**Documentation**: [OpenTelemetry Prometheus AspNetCore Exporter README.md](https://github.com/open-telemetry/OpenTelemetry-dotnet/blob/main/src/OpenTelemetry.Exporter.Prometheus.AspNetCore/README.md)
 
 **Notes**: For AspNetCore apps only. Hosts prometheus scrape endpoint defaulted on http://apphost:port/metrics.
 
@@ -138,20 +131,18 @@ app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 **Package Stability**: Stable
 
-**Documentation**: [Azure Monitor Exporter client library for .NET README.md](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/README.md)
-
 **Options**: required (if not defined in top level SimpleOpenTelemetry:ExporterOptions:Azure:ConnectionString), see [snippets/exporter/azuremonitor.json](./snippets/exporter/azuremonitor.json) and
 [AzureMonitorExporterOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/src/AzureMonitorExporterOptions.cs)
 
-**Nuget Package**:
-`dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version x.x.x`
-`dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
+**Nuget Package**: `dotnet add package Azure.Monitor.OpenTelemetry.Exporter --version x.x.x`, (if using RBAC to connect to app insights)`dotnet add package Azure.Identity`
 
 SimpleOpenTelemetry:Log/Trace/Metric:Exporters[] json:
 
 ```json
 { "type": "AzureMonitor", "options": {...} }
 ```
+
+**Documentation**: [Azure Monitor Exporter client library for .NET README.md](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.Exporter/README.md)
 
 **Notes**:
 

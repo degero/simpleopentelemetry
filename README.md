@@ -30,16 +30,18 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 
 ## Goal
 
-_To make OpenTelemetry code-based instrumentation as simple as possible so developers can focus on their apps_
+_To make OpenTelemetry instrumentation simple so developers can focus on their apps, not observability setup_
 
 ## Overview
 
-SimpleOpenTelemetry handles configuration via IConfiguration rather than code calling OpenTelemetry's fluent api when using code-based instrumentation. Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
+SimpleOpenTelemetry allows configuration via IConfiguration rather than adding code to your app calling OpenTelemetry's fluent api when using [code-based instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/code-based/). Settings defined in configuration are processed by SimpleOpenTelemetry and the fluent api is invoked. It is designed to streamline setup for most common configurations. If you need to extend on what SimpleOpenTelemetry provides, you can access the OpenTelemetryBuilder to run any of OpenTelemetry's fluent api methods. The use of OpenTelemetry here is not related to [auto-instrumentation/zero-code instrumentation](https://opentelemetry.io/docs/concepts/instrumentation/zero-code/)
 
 ## Features
 
-- One line OpenTelemetry initialisation via `builder.AddSimpleOpenTelemetry()` or `SimpleOpenTelemetryBootstrap.Add()` for non-generic host applications.
-- Plug in OpenTelemetry components by adding a config entry and NuGet package to your app for telemetry features you need (eg Exporters, Instrumentation, Resource detectors etc)
+- One line OpenTelemetry initialisation via `builder.AddSimpleOpenTelemetry()` or for non-generic host applications: `SimpleOpenTelemetryBootstrap.Add()`.
+- Plug in [supported OpenTelemetry components](#supported-opentelemetry-components) by adding a config entry and NuGet package to your app for telemetry features you need (eg Exporters, Instrumentation, Resource detectors etc)
+- Dependency to OpenTelemetry.Exporter.OpenTelemetryProtocol included for convenience
+- Ability to use other [IConfiguration providers](https://learn.microsoft.com/en-us/dotnet/core/extensions/configuration) other than file and environment variables (eg for secrets)
 - Pre-tested example configuration files for common app / cloud platform / 3rd party telemetry service scenarios [docs/configuration/examples](./docs/configuration/examples/)
 - Component snippets so you can quickly add in extra otel components [docs/configuration/snippets](./docs/configuration/snippets/)
 - Cloud example apps for AWS, Azure and GCP in [example-apps/cloud/](./example-apps/cloud/)
@@ -54,7 +56,7 @@ SimpleOpenTelemetry handles configuration via IConfiguration rather than code ca
 - Complex types or Action<>/Func<>/etc on properties of component fluentapi registration options (eg Instrumentation, exporters etc) are not supported which may limit your ability to control some telemetry (eg. AspNetCoreTraceInstrumentationOptions.Filter). Components with complex options can still be set via code if needed.
 - Not all of [opentelemetry-dotnet-contrib](https://github.com/open-telemetry/opentelemetry-dotnet-contrib) components are supported. You can use SimpleOpenTelemetry and add any via code or raise a PR / [raise an issue](https://github.com/degero/simpleopentelemetry/issues/new) to have it added.
 
-## Quickstarts
+## Quickstart
 
 Run the [localdev aspnetcore example app](./example-apps/localdev/README.md) in this repo or use the [Nuget package Quickstart guide](https://www.nuget.org/packages/SimpleOpenTelemetry#quickstart). Both result in a local aspnetcore mvc app using SimpleOpenTelemetry with Grafana LGTM running in docker to view telemetry.
 
@@ -62,11 +64,11 @@ These can be used as a good starting point to test out building a config to your
 
 ## Documentation
 
-Documentation for setting up SimpleOpenTelemetry and other localdev and cloud app examples can be found in [docs/README.md](./docs/README.md)
+[docs/README.md](./docs/README.md)
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of supported / unit tested OpenTelemetry packages you can plug in see [SimpleOpenTelemetry tested otel components](./docs/otel-component-versions.md).
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). You can still add others not listed here, but only via the code-based OpenTelemetry fluent api.
 
 ⚠️ **It is recommended you install these versions of component packages that have been tested with SimpleOpenTelemetry.** ⚠️
 

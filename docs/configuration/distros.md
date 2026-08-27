@@ -19,10 +19,6 @@ In the case of SimpleOpenTelemetry, it is a library that will set up all signal 
 
 ⚠️ _Any other SimpleOpenTelemetry configuration will also be added after the distro is loaded. Ensure you carefully read what the distro is setting up before adding any other SimpleOpenTelemetry configuration or OpenTelemetry 'OTEL\_' settings._ ⚠️
 
-For examples listing all possible options (in their current default) see the [snippets/distro folder](./snippets/distro/)
-
-For a list of supported distros see [DistroEnum.cs](../../src/SimpleOpenTelemetry/OtelComponents/Distro/DistroEnum.cs)
-
 For a list of all OpenTelemetry distros see [OpenTelemetry - Third-party distributions](https://opentelemetry.io/ecosystem/distributions/)
 
 Available distros are:
@@ -35,9 +31,11 @@ Available distros are:
 
 **IMPORTANT**: ⚠️ _This Distro only supports use with generic host WebApplication (does not support using with SimpleOpenTelemetryBootstrap.Add())._ ⚠️
 
-**Nuget Package**:
-`dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version x.x.x`
-`dotnet add package Azure.Identity` (if using RBAC to connect to app insights)
+**Signals supported**: trace, metric, log
+
+**Package Stability**: Stable
+
+**Nuget Package**: `dotnet add package Azure.Monitor.OpenTelemetry.AspNetCore --version x.x.x`, (if using RBAC to connect to app insights) `dotnet add package Azure.Identity`
 
 SimpleOpenTelemetry:Distro json:
 
@@ -45,9 +43,11 @@ SimpleOpenTelemetry:Distro json:
 "AzureMonitorAspNetCore"
 ```
 
-This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics, sampling and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry save for custom meters or trace sources.
+**Options**: required, (ConnectionString at minimum) see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json) for all supported options. Example full config file: [examples/azure/aspnetcore-azureotel-distro-rbac.json](./examples/azure/aspnetcore-azureotel-distro-rbac.json)
 
-**Options**: required, (ConnectionString at minimum) see [snippets/distro/azuremonitoraspnetcore.json](./snippets/distro/azuremonitoraspnetcore.json) and [AzureMonitorOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/src/AzureMonitorOptions.cs). For a full configuration file see [examples/azure/aspnetcore-azureotel-distro-rbac.json](./examples/azure/aspnetcore-azureotel-distro-rbac.json)
+**Details**
+
+This Distro sets up all signal collection and exporting to Azure monitor. It also sets up several types of instrumentation, resource detectors, offline storage, live metrics, sampling and more. Normally you will not need to add anything in the other configuration areas of SimpleOpenTelemetry save for, sampling settings, custom meters or trace sources.
 
 If you wish to setup for Azure Monitor in a Standalone app, configure to use the exporter [Azure Monitor](exporters.md#azure-monitor-exporter) or for all signals, the extension: [Azure Monitor Exporter](extensions.md#azure-monitor-exporter). Note some features of the distro wont be included, see 'Why should I use the Azure Monitor OpenTelemetry Distro?' link below.
 
@@ -63,9 +63,9 @@ If you want more control over your setup you can still use most (not all) featur
 You must specify an Application Insights connection string, or use RBAC (by adding the 'Credential' field in DistroOptions). You can set the ConnectionString via: 'SimpleOpenTelemetry:DistroOptions:ConnectionString'.
 It is recommended to set as using 'dotnet user-secrets' or as a secret setting in Azure. [MSLearn - Use OpenTelemetry with Azure Monitor and Application Insights](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/observability-applicationinsights#3-specify-the-connection-string)
 
-SimpleOpenTelemetry:DistroOptions json:
+RBAC (only the InstrumentationKey is needed in connectionstring, you can use this placeholder and the real key as a secret / env var in hosted envs)
 
-RBAC (only the key is needed in connectionstring, you can use this placeholder and the real key as a secret in hosted envs)
+SimpleOpenTelemetry:DistroOptions json:
 
 ```json
 {
@@ -73,6 +73,10 @@ RBAC (only the key is needed in connectionstring, you can use this placeholder a
   "ConnectionString": "InstrumentationKey=00000000-0000-0000-0000-000000000000"
 }
 ```
+
+For more configuration detail of the component see [github azure-sdk AzureMonitorOptions.cs](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/monitor/Azure.Monitor.OpenTelemetry.AspNetCore/src/AzureMonitorOptions.cs).
+
+**Verification**
 
 You can confirm your telemetry data is flowing with KQL:
 
