@@ -68,9 +68,9 @@ These can be used as a good starting point to test out building a config to your
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). You can still add others not listed here, but only via the code-based OpenTelemetry fluent api.
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you can use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). You can still add others not listed here, but only via the code-based OpenTelemetry fluent api.
 
-⚠️ **It is recommended you install these versions of component packages that have been tested with SimpleOpenTelemetry.** ⚠️
+⚠️ **It is recommended you install these versions of component packages.** ⚠️
 
 ## Dependencies
 

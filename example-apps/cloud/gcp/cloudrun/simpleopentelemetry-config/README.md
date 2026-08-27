@@ -4,7 +4,7 @@ Included in these files are the minimum recommended resource attributes and trac
 
 See information in [../README.md](../README.md) and [otelj-collector-config/README.md](../otel-collector-config/README.md) for google environment setup and permisions as well as specific constraints in GCP that affect app telemetry collection (eg. Cloud Run's automatic tracing / sampling)
 
-**IMPORTANT**: ⚠️ **It is recommended you install [these versions tested against SimpleOpenTelemetry](../../../../../docs/otel-component-versions.md) of packages referenced below.** ⚠️
+**IMPORTANT**: ⚠️ **It is recommended you install these [package versions](../../../../../docs/otel-component-versions.md) used below.** ⚠️
 
 ## appsettings.OtelCollector.json
 
