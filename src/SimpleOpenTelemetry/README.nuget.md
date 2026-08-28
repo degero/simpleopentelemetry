@@ -10,8 +10,6 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | ------------------- | ------------------------ |
 | 0.1.x               | 1.16.x                   |
 
-If you find SimpleOpenTelemetry helpful, please kindly consider [buying me a ☕](https://ko-fi.com/degero) 🙏
-
 ## Table of Contents
 
 - [Prerequisites](#prerequisites)
@@ -87,9 +85,7 @@ For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues
 
 ## Contributing
 
-Contributions are most welcome.
-
-[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING.md)
+Contributions are most welcome, see [CONTRIBUTING](./CONTRIBUTING.md)
 
 ## License
 

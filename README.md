@@ -113,7 +113,7 @@ NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Fam
 
 ## Support the project
 
-If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ via the 💗 Sponsor button at the top of repo page or [ko-fi.com/degero](https://ko-fi.com/degero) 🙏
+If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ via the 💗 Sponsor button at the top of [repo page](https://github.com/degero/simpleopentelemetry/) or [ko-fi.com/degero](https://ko-fi.com/degero) 🙏
 
 ## Feedback
 
@@ -121,9 +121,7 @@ For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues
 
 ## Contributing
 
-Contributions are most welcome.
-[CONTRIBUTING](./CONTRIBUTING.md)
-[MAINTAINING](./MAINTAINING.md)
+Contributions are most welcome, see [CONTRIBUTING](./CONTRIBUTING.md)
 
 ## License
 
