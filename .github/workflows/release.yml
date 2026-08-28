@@ -10,6 +10,10 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (for manual re-runs)"
+        required: true
 
 jobs:
   build-and-test:
@@ -27,10 +31,22 @@ jobs:
       contents: read
     needs: build-and-test
     runs-on: ubuntu-latest
+    outputs:
+      resolved-tag: ${{ steps.resolve-tag.outputs.tag }}
     steps:
+      - name: Resolve tag
+        id: resolve-tag
+        run: |
+          TAG="${{ github.event.inputs.tag || github.event.release.tag_name || github.ref_name }}"
+          if [[ -z "$TAG" ]]; then
+            echo "::error::Could not resolve a tag for this release run"
+            exit 1
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name || github.ref_name }}
+          ref: ${{ steps.resolve-tag.outputs.tag }}
           fetch-depth: 0 # MinVer needs full history to find the tag for versioning
 
       - name: Setup .NET
@@ -42,12 +58,7 @@ jobs:
 
       - name: Pin README links to release tag
         run: |
-          TAG="${{ github.event.release.tag_name || github.ref_name }}" # covers both release event and pushed rc tags
-          if [[ -z "$TAG" ]]; then
-            echo "::error::Could not resolve a tag for this release run"
-            exit 1
-          fi
-          sed -i "s/{{TAG}}/${TAG}/g" src/SimpleOpenTelemetry/README.nuget.md
+          sed -i "s/{{TAG}}/${{ steps.resolve-tag.outputs.tag }}/g" src/SimpleOpenTelemetry/README.nuget.md
 
       - name: Dotnet restore (lockfile)
         run: dotnet restore SimpleOpenTelemetry.sln --force-evaluate
@@ -55,7 +66,25 @@ jobs:
       - name: Pack
         run: |
           mkdir -p nupkgs
-          dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs  --no-restore
+          dotnet pack src/SimpleOpenTelemetry/SimpleOpenTelemetry.csproj -c Release -o nupkgs --no-restore
+
+      - name: Verify package version matches tag
+        run: |
+          TAG="${{ steps.resolve-tag.outputs.tag }}"
+          EXPECTED="${TAG#v}" # strip leading 'v'
+          for nupkg in nupkgs/*.nupkg; do
+            PKG_VERSION=$(unzip -p "$nupkg" '*.nuspec' | grep -oP '(?<=<version>).*?(?=</version>)')
+            if [[ "$PKG_VERSION" != "$EXPECTED" ]]; then
+              echo "::error::Package version '$PKG_VERSION' does not match tag '$TAG' (expected '$EXPECTED')"
+              exit 1
+            fi
+          done
+
+      - name: Validate packages
+        run: |
+          for nupkg in nupkgs/*.nupkg; do
+            dotnet nuget verify "$nupkg"
+          done
 
       - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
@@ -68,6 +97,8 @@ jobs:
   push-to-nuget:
     permissions:
       contents: read
+      id-token: write
+      attestations: write
     needs: pack
     runs-on: ubuntu-latest
     environment: nuget-publish
@@ -85,3 +116,43 @@ jobs:
               --api-key "${{ secrets.NUGET_API_KEY }}" \
               --skip-duplicate
           done
+
+      - name: Generate build provenance attestation
+        uses: actions/attest@v4
+        with:
+          subject-path: "*.nupkg"
+          predicate-type: "https://slsa.dev/provenance/v1"
+
+      - name: Attach packages to GitHub Release
+        if: github.event.release.tag_name != '' || startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${{ needs.pack.outputs.resolved-tag }}"
+          gh release upload "$TAG" *.nupkg *.snupkg --clobber
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"❌ Release failed for tag ${{ needs.pack.outputs.resolved-tag }}: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "${{ secrets.SLACK_WEBHOOK_URL }}"
+
+  # Release please will only push a gh release / fill in release notes from changelog on a non -rc tag
+  # So an RC needs a manual release / notes generation
+  create-rc-release:
+    permissions:
+      contents: write
+    needs: [pack, push-to-nuget]
+    if: startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-rc')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create GitHub Release for RC
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes \
+            --prerelease
