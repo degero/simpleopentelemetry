@@ -19,6 +19,7 @@ If you find SimpleOpenTelemetry helpful, please kindly consider [buying me a ☕
 - [Releases](#releases)
 - [Documentation](#documentation)
 - [Supported OpenTelemetry components](#supported-opentelemetry-components)
+- [Support the project](#support-the-project)
 - [Feedback](#feedback)
 - [Contributing](#contributing)
 - [License](#license)
@@ -75,6 +76,10 @@ For documentation, configuration reference, example configs/snippets, localdev a
 OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you can use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). ⚠️ **It is recommended you install these versions of component packages.** ⚠️
 
 It is still possible to add other components not listed here, but only via the code-based OpenTelemetry fluent api.
+
+## Support the project
+
+If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ via the 💗 Sponsor button at the top of [repo page](https://github.com/degero/simpleopentelemetry/) or [ko-fi.com/degero](https://ko-fi.com/degero) 🙏
 
 ## Feedback
 

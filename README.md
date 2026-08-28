@@ -24,8 +24,6 @@ A lightweight, low-code .NET library for configuring OpenTelemetry code-based in
 | ------------------- | ------------------------ |
 | 0.1.x               | 1.16.x                   |
 
-If you find SimpleOpenTelemetry helpful, please kindly consider [buying me a ☕](https://ko-fi.com/degero) 🙏
-
 <details>
 <summary>Table of Contents</summary>
 
@@ -38,6 +36,7 @@ If you find SimpleOpenTelemetry helpful, please kindly consider [buying me a ☕
 - [Releases](#releases)
 - [Supported OpenTelemetry components](#supported-opentelemetry-components)
 - [Dependencies](#dependencies)
+- [Support the project](#support-the-project)
 - [Feedback](#feedback)
 - [Contributing](#contributing)
 - [License](#license)
@@ -111,6 +110,10 @@ These versions are **PINNED** if your project already references these packages 
 - Downgrade/align your direct references to match the pinned versions.
 
 NOTE: There are also Microsoft.\* are transitive deps from OpenTelemetry SDK Family.
+
+## Support the project
+
+If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ via the 💗 Sponsor button at the top of repo page or [ko-fi.com/degero](https://ko-fi.com/degero) 🙏
 
 ## Feedback
 
