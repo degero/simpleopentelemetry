@@ -28,18 +28,20 @@ If you find SimpleOpenTelemetry helpful, please kindly consider [buying me a ☕
 
 <details>
 <summary>Table of Contents</summary>
-* [Goal](#goal)
-* [Overview](#overview)
-* [Features](#features)
-* [Limitations](#limitations)
-* [Quickstart](#quickstart)
-* [Documentation](#documentation)
-* [Releases](#releases)
-* [Supported OpenTelemetry components](#supported-opentelemetry-components)
-* [Dependencies](#dependencies)
-* [Feedback](#feedback)
-* [Contributing](#contributing)
-* [License](#license)
+
+- [Goal](#goal)
+- [Overview](#overview)
+- [Features](#features)
+- [Limitations](#limitations)
+- [Quickstart](#quickstart)
+- [Documentation](#documentation)
+- [Releases](#releases)
+- [Supported OpenTelemetry components](#supported-opentelemetry-components)
+- [Dependencies](#dependencies)
+- [Feedback](#feedback)
+- [Contributing](#contributing)
+- [License](#license)
+
 </details>
 
 ## Goal
