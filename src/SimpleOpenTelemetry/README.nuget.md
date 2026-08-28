@@ -1,28 +1,30 @@
 # SimpleOpenTelemetry
 
-A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example config snippets and configurations for major cloud platforms can be dropped in easily and the underlying OpenTelemetryBuilder stays accessible for adding settings via code.
+A lightweight, low-code .NET library for configuring OpenTelemetry code-based instrumentation via IConfiguration, supporting both generic-host and standalone apps. Pre-tested example configurations for major cloud platforms can be dropped in easily to get telemetry flowing quickly. The underlying OpenTelemetryBuilder stays accessible for adding settings via code. Check out the [Features](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md#features) and [Limitations](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md#limitations) before diving in to be sure SimpleOpenTelemetry covers your needs.
 
-**Supported Frameworks:** .NET 10.0, .NET 8.0, .NET Standard 2.0
+**Supported .NET Versions:** .NET 10.0, .NET 8.0, .NET Standard 2.0
 
-**Supported .Net App Host Patterns:** WebApplication Host / .Net Generic Host / Non generic host.
-
-**License:** MIT
-
-[README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md)
-
-[CHANGELOG.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/CHANGELOG.md)
-
-## Compatibility
+**Supported .NET App Host Patterns:** WebApplication Host / .Net Generic Host / Non generic host.
 
 | SimpleOpenTelemetry | OpenTelemetry SDK family |
 | ------------------- | ------------------------ |
 | 0.1.x               | 1.16.x                   |
 
-## Requirements
+## Table of Contents
 
-- Docker desktop (to get started with the quickstart)
+- [Prerequisites](#prerequisites)
+- [Quickstart](#quickstart)
+- [Releases](#releases)
+- [Documentation](#documentation)
+- [Supported OpenTelemetry components](#supported-opentelemetry-components)
+- [Support the project](#support-the-project)
+- [Feedback](#feedback)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Quickstart
+
+**Prerequisites:** Docker desktop
 
 In an empty directory:
 
@@ -57,19 +59,25 @@ Exit your `dotnet run` and `docker compose up`
 
 In `docker` directory run `docker compose down` (note for full cleanup you will need open docker desktop and delete the volumes it creates)
 
+## Releases
+
+[Releases](http://github.com/degero/simpleopentelemetry/releases)
+
+[CHANGELOG.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/CHANGELOG.md)
+
 ## Documentation
 
-For configuration reference, example configs/snippets, localdev and cloud example apps, and troubleshooting, see the SimpleOpenTelemetry [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md)
+For documentation, configuration reference, example configs/snippets, localdev and cloud example apps, troubleshooting, and more see the SimpleOpenTelemetry [docs](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/docs/README.md) and [README.md](https://github.com/degero/simpleopentelemetry/blob/{{TAG}}/README.md).
 
 ## Supported OpenTelemetry components
 
-OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you can use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). You can still add others not listed here, but only via the code-based OpenTelemetry fluent api.
+OpenTelemetry, OpenTelemetry-contrib and other 3rd parties have many otel components published as NuGet packages. For a list of OpenTelemetry packages you can use with SimpleOpenTelemetry see [SimpleOpenTelemetry supported otel components](./docs/otel-component-versions.md). ⚠️ **It is recommended you install these versions of component packages.** ⚠️
 
-⚠️ **It is recommended you install these versions of component packages.** ⚠️
+It is still possible to add other components not listed here, but only via the code-based OpenTelemetry fluent api.
 
-## License
+## Support the project
 
-MIT License - see [LICENSE](https://github.com/degero/simpleopentelemetry/blob/main/LICENSE) file for details.
+If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ via the 💗 Sponsor button at the top of [repo page](https://github.com/degero/simpleopentelemetry/) or [ko-fi.com/degero](https://ko-fi.com/degero) 🙏
 
 ## Feedback
 
@@ -77,6 +85,8 @@ For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues
 
 ## Contributing
 
-Contributions are most welcome.
+Contributions are most welcome, see [CONTRIBUTING](./CONTRIBUTING.md)
 
-[CONTRIBUTING](https://github.com/degero/simpleopentelemetry/blob/main/CONTRIBUTING.md)
+## License
+
+MIT License - see [LICENSE](https://github.com/degero/simpleopentelemetry/blob/main/LICENSE) file for details.

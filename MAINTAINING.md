@@ -10,11 +10,12 @@ This is handled via git tags of `vX.X.X` and MinVer setting assembly / nupkg ver
 
 SimpleOpenTelemetry aims to release a new minor version inline for each OpenTelemetry minor version release as noted in [OpenTelemetry dependency updates](#opentelemetry-dependency-updates). This is not required to be explicitly 1:1 (eg. only a new minor for SimpleOpenTelemetry when OpenTelemetry does) as there may be other changes within SimpleOpenTelemetry.
 
-Once 'main' has PRs merged. To initiate a new release:
+Once 'main' has PRs merged. To initiate a new release (eg below with v0.3.0):
 
 1. Determine the new version number based on either the active release-please PR tag name or determine it from the [conventions](CONTRIBUTING.md#pull-request-title)
 1. Tag a -rc.# of latest main for the new version eg `git tag v0.3.0-rc.1`
 1. Push this tag `git push origin v0.3.0-rc.1`
+1. The `Release.yml` workflow will validate that the packed NuGet version matches your pushed tag (with the `v` prefix stripped) before pushing to NuGet.org. If you made a tagging typo (e.g. `v0.3.0-rc1` instead of `v0.3.0-rc.1`), this check will fail the run — fix the tag and re-push rather than letting a malformed version reach NuGet.org.
 1. Wait for the Github Actions run, MinVer reads the v1.3.0-rc.1 tag to stamp the package version as 1.3.0-rc.1.
 1. Confirm everything for the version is correct and shows as prerelease on [nuget.org](https://www.nuget.org/packages/SimpleOpenTelemetry)
 1. Notify maintainers to test the new rc
@@ -25,9 +26,16 @@ Once 'main' has PRs merged. To initiate a new release:
 1. On merge, release-please:
    - Bumps `.release-please-manifest.json` to the new version.
    - Creates the git tag eg `v0.3.0` (final, no `-rc` suffix) and a GitHub Release.
-1. The pushed `v0.3.0` tag triggers `Release.yml`, which packs and pushes the real package to NuGet.org.
-1. Check `nuget.org/packages/YourPackage/1.3.0` shows as the latest stable version.
-1. Check the GitHub Release notes match `CHANGELOG.md`.
+1. The pushed `v0.3.0` tag triggers `Release.yml` and:
+   - Validates the tag for correct structure / no confict / matching in the nuspec
+   - Run actions/attest and verifies on package
+   - Packs and pushes the release nupkg/snupkg to NuGet.org.
+   - Adds the packages to the github release
+   - Sends notification on release failure
+1. Verify the release:
+   - Check `nuget.org/packages/SimpleOpenTelemetry/0.3.0` shows as the latest stable version.
+   - Check the Nuget readme links are pointing at the correct repo tag.
+   - Check the [releases](https://github.com/degero/simpleopentelemetry/releases) notes match [CHANGELOG.md](./CHANGELOG.md) and nupkg/snupkg is in the release.
 
 ## OpenTelemetry dependency updates
 
