@@ -95,7 +95,7 @@
   <ItemGroup>
     <PackageVersion Include="MinVer" Version="7.0.0" />
     <PackageVersion Include="PolySharp" Version="1.6.0" />
-    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.301" />
+    <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="10.0.401" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="xunit" Version="2.9.3" />
