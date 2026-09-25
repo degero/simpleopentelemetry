@@ -44,7 +44,7 @@ jobs:
           fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ steps.resolve-tag.outputs.tag }}
           fetch-depth: 0 # MinVer needs full history to find the tag for versioning
@@ -147,7 +147,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/') && contains(github.ref_name, '-rc')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Create GitHub Release for RC
         env:
           GH_TOKEN: ${{ github.token }}

@@ -117,7 +117,7 @@ If you find SimpleOpenTelemetry helpful please kindly consider buying me a ☕ v
 
 ## Feedback
 
-For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new)
+For issues, feature requests etc please submit here: [SimpleOpenTelemetry issues](https://github.com/degero/simpleopentelemetry/issues/new). **Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
 
 ## Contributing
 
