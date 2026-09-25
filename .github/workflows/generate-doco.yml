@@ -11,14 +11,16 @@ on:
       - "scripts/generate-doco.sh"
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 jobs:
   sync:
+    name: Generate doco
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: main
           ssh-key: ${{ secrets.DOCO_DEPLOY_KEY }}
