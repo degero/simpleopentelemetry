@@ -16,6 +16,8 @@ For maintainer-specific processes (releases, dependency bundling), see [MAINTAIN
 
 Please open a [GitHub issue](https://github.com/degero/simpleopentelemetry/issues) and select the appropriate template.
 
+**Please do not report security vulnerabilities through public GitHub issues, discussions, or pull requests.**
+
 ### Getting started
 
 1. Fork the repo and clone your fork.
