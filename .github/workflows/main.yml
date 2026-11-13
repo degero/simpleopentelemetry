@@ -6,6 +6,8 @@ concurrency:
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "docs/**" # dont build / test on a doco change commit or generate-doco.yml workflow commit
   pull_request:
     branches: [main]
 
